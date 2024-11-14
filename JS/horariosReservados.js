@@ -1,5 +1,5 @@
 let HorariosReservados;
-let URL = "https://script.google.com/macros/s/AKfycbyG3APYz2xze5N0dGu8gdKGojKiUYrlbXRPiJ0XsfJdOS8xU9UFK-GAXyLqTJyS1Q/exec";
+let URL = "https://script.google.com/macros/s/AKfycbzCYWjTBgnj_VfhlpiirxcsAINxDAcNbcOLNJ0Bg762WiEqitx5gHjJB7S3CePVhA/exec";
 
 async function cargarHorarios(funcion,numeroHoja){
     let retornar;
