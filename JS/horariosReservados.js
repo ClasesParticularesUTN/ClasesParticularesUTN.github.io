@@ -64,7 +64,7 @@ async function obtenerHorarios(numeroHoja) {
     let resultado = await arrayHorarios;
     return await resultado;
 }
-var Semana1;
+var Semana1 = [];
 
 (function cargarDatosInicial(){
         document.querySelector(".cajaBotonReservar").style.display = "none";
