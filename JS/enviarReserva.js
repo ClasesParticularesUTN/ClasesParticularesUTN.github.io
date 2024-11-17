@@ -1,10 +1,10 @@
-sinTurnosDisponibles = -1;
+sinTurnosDisponibles = 0;
 document.querySelector(".botonReservar").addEventListener("click", async () => {
     if(sinTurnosDisponibles == 0 && numeroHoja == 0){
         Swal.fire({
             icon: "error",
             title: "Error",
-            text: "De momento no hay mas cupos disponibles. Reserve la prioxima semana o consulte turnos por whatsapp",
+            text: "Quedan muy pocos horarios disponibles. Consulte por WhatsApp o reserve la proxima semana",
           });
     }else
     if (Alumno == null || !Alumno.sesion) {
