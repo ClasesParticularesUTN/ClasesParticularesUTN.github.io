@@ -73,13 +73,13 @@ var Semana1 = [];
         document.querySelector(".tablaHorarios").appendChild(loader);
 
         obtenerHorarios("0").then((celdas) => {
-            //cambiarFondoCeldas(celdas);  Llamada a la función con el array
-            //Semana1 = celdas;
-            Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "Quedan muy pocos horarios disponibles. Consulte por WhatsApp o reserve la proxima semana",
-          });
+            cambiarFondoCeldas(celdas);  Llamada a la función con el array
+            Semana1 = celdas;
+           // Swal.fire({
+            //icon: "error",
+           // title: "Error",
+            //text: "Quedan muy pocos horarios disponibles. Consulte por WhatsApp o reserve la proxima semana",
+         // });
         });
         
         
