@@ -440,9 +440,10 @@ function multiplicarDosNumeros(n1,n2){
                 elem.style.opacity = "1";
             }) 
         }else{
-	    window.location.href = "../IniciarSesion";
             console.log("usuario no permitido");
         }
+     }else{
+	     window.location.href = "../IniciarSesion";
      }
 })()
 
