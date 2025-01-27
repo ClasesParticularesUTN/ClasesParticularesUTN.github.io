@@ -14,7 +14,7 @@ const observer = new IntersectionObserver((entries, observer) => {
     }
   });
 }, {
-  threshold: 0.5  // El 50% del elemento debe estar visible para activar la animación
+  threshold: 0.1  // El 50% del elemento debe estar visible para activar la animación
 });
 
 // Observamos cada elemento
