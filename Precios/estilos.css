@@ -1,0 +1,106 @@
+body{
+    margin: 0;
+}
+*{
+    box-sizing: border-box;
+}
+.portadaContainer{
+    background-color: #f8a270;
+    width: 100%;
+    height: 100dvh;
+    display: none;
+}
+
+#seleccion:target{
+    display: flex;
+}
+
+@media (min-width:1000px){
+    .portada{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 150%;
+        width: 50%;
+        height: 100dvh;
+        flex-direction: column;
+    }
+    
+    .portada img{
+        width: 50%;
+        height: 50%;
+    }
+    .portadaGrupales{
+        border-left: 2px solid black;
+    }
+    #clasesGrupalesMovil {
+        display: none;
+    }
+    #clasesGrupalesPC {
+        display: none;
+    }
+    #clasesIndividualesPC {
+        display: none;
+    }
+    #clasesIndividualesMovil{
+        display: none;
+    }
+    #clasesGrupalesPC:target{
+        display: block;
+        width: 100%;
+        height: 100dvh;
+    }
+    #clasesIndividualesPC:target{
+        display: block;
+        width: 100%;
+        height: 100dvh;
+    }
+}
+
+@media (max-width:1000px){
+    .portadaContainer{
+        flex-direction: column;
+    }
+    .portada{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 300%;
+        width: 100%;
+        height: 50dvh;
+        flex-direction: column;
+    }
+    .portada img{
+        width: 70%;
+        height: 70%;
+    }
+    .portadaGrupales{
+        border-top: 2px solid black;
+    }
+    
+    #clasesGrupalesMovil {
+        display: none;
+    }
+    #clasesGrupalesPC {
+        display: none;
+    }
+    #clasesIndividualesPC {
+        display: none;
+    }
+    #clasesIndividualesMovil{
+        display: none;
+    }
+    #clasesGrupalesMovil:target{
+        display: block;
+        width: 100%;
+        height: 100dvh;
+    }
+    #clasesIndividualesMovil:target{
+        display: block;
+        width: 100%;
+        height: 100dvh;
+    }
+}
+

@@ -1,0 +1,2 @@
+let URLHorarios = "https://script.google.com/macros/s/AKfycbz21LzDXKGY3BYZf69Tk-wGScekjTV2cQvwYtQN89FOzU8n3OZigCgrTDhjUNVNiUU/exec";
+let URLUsuarios = "https://script.google.com/macros/s/AKfycbx-P-6GQwdpIoFoLkXytS7cKdC-M8uk-z2ckxE8uzviIZdZRmvgQ549-3Yp7Ipw_RK4/exec";

@@ -1,0 +1,53 @@
+body{
+    margin: 0;
+}
+*{
+    box-sizing: border-box;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate; /* Cambiado de 'collapse' a 'separate' */
+  border-spacing: 10px; /* Espacio de 10px entre las celdas */
+  height: 85dvh;
+  background-color: #9b4922;
+}
+.primero{
+    border-color: transparent;
+}
+td {
+  max-width: calc(100% / 6); /* Ancho fijo para las celdas */
+  border: 1px solid #000;
+  white-space: normal; /* Permite saltos de línea */
+  word-wrap: break-word; /* Asegura que el contenido largo se ajuste dentro de la celda */
+  text-align: center;
+  font-weight: 800;
+  font-size: 100%;
+  border-radius: 5%;
+  
+}
+.horario , .hora{
+    background-color: white;
+}
+.dia{
+    background-color: #d8a790; color: #764b36
+}
+
+.loginMovil {
+    display: none;
+}
+@media (max-width: 900px){
+    td{
+        font-size: 70%;
+        padding: 5px;
+        box-sizing: border-box;
+        border-radius: 10%;
+    }
+}
+
+@media (min-width: 900px){
+    table{
+        padding-left: 15%;
+        padding-right: 15%;
+    }
+}

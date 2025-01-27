@@ -1,0 +1,39 @@
+body{
+    margin: 0;
+}
+*{
+    box-sizing: border-box;
+}
+@media (min-width:1000px){
+    .portadaMovil{
+        display: none;
+    }
+    .portada{
+        width: 100%;
+        height: 100dvh;
+        position: relative;
+        margin: 0;
+    }
+    .portada img{
+        width: 100%;
+        height: 100%;
+    }
+    .portada .contacto, .portada .informacion{
+        background-color: #2a2e30;
+        width: 200px;
+        height: 40px;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 800;
+        margin: 10px;
+        position: absolute;
+        bottom: 3dvh;
+        right: 5dvw;
+        cursor: pointer;
+    }
+    .portada .contacto{
+        right: calc(5dvw + 200px + 20px);
+    }
+}

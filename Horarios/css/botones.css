@@ -1,0 +1,42 @@
+.botones div {
+    color: black;
+    background-color: #d8a790;
+    width: 20dvw;
+    height: 10dvh;
+    border-radius: 20px;
+    border: 3px solid black;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 20px;
+    font-weight: 800;
+    font-family: url(assets/fuentes/Montserrat.woff2);
+    cursor: pointer;
+    margin: 10px;
+}
+.botones {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: #9b4922;
+}
+
+@media only screen and (max-width: 900px) {
+    .botones div {
+        color: black;
+        background-color: #d8a790;
+        width: 20dvh;
+        height: 8dvh;
+        border-radius: 20px;
+        border: 2px solid black;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        font-size: 15px;
+        font-weight: 800;
+        font-family: url(assets/fuentes/Montserrat.woff2);
+        cursor: pointer;
+        text-align: center;
+        margin: 10px;
+    }
+}

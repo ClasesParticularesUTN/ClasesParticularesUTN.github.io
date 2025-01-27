@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserva Horarios</title>
+  <link rel="stylesheet" href="css/horarios.css">
+  <link rel="stylesheet" href="css/botones.css">
+  <link rel="stylesheet" href="css/loader.css">
+  <link rel="stylesheet" href="css/titulo.css">
+  <link rel="stylesheet" href="css/menuUsuario.css">
+  <link rel="stylesheet" href="css/VentanaModal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+  <div class="titulo">
+    <p class="semana animate__animated animate__flash">Reserva de Horarios</p>
+    <div class="login">
+        <div class="cajaMensajeLogin">
+            <p id="MensajeLogin">Iniciar Sesion / Registrarse</p>
+        </div>
+        <div class="cajaIncognito">
+            <img class="incognito" src="assets/fotos/Incognito.svg" alt="Fondo" >
+        </div>
+    </div>
+    <div class="loginMovil">
+        <img class="incognitoMovil" src="assets/fotos/Incognito.svg" alt="Fondo" >
+    </div>
+</div>
+  </div>
+    <div class="containerLoader">
+        <div class="loaderSencillo"></div>
+    </div>
+        <div class="menu animate__animated">
+            <p class="usuarioClasesAFAvor">Cantida de horas a Favor: </p>
+            <p class="usuarioClasesAFAvor numero">0</p>
+            <hr style="border: 0.1px solid white; width: 100%; padding: 0;">
+            <p class="usuarioDatos usuarioNombre">Nombre Completo: </p>
+            <p class="usuarioDatos usuarioCorreo">Correo Electronico: </p>
+            <p class="usuarioDatos usuarioTelefono">Telefono: </p>
+            <p class="usuarioDatos">Horarios Reservados:</p>
+            <ul class="listaHorarios"></ul>
+            <div id="LoaderSencillo" class="loaderSencillo"></div>
+        </div>
+  <table style="display: none;">
+    <tr>
+      <td class="primero"></td>
+      <td data-name="B2" class="dia">Lunes<br>12/10</td>
+      <td data-name="C2" class="dia">Martes<br>12/10</td>
+      <td data-name="D2" class="dia">Miercoles<br>12/10</td>
+      <td data-name="E2" class="dia">Jueves<br>12/10</td>
+      <td data-name="F2" class="dia">Viernes<br>12/10</td>
+    </tr>
+    <tr>
+      <td class="hora">8:00</td>
+      <td data-name="B3" class="horario"></td>
+      <td data-name="C3" class="horario"></td>
+      <td data-name="D3" class="horario"></td>
+      <td data-name="E3" class="horario"></td>
+      <td data-name="F3" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">9:00</td>
+        <td data-name="B4" class="horario"></td>
+        <td data-name="C4" class="horario"></td>
+        <td data-name="D4" class="horario"></td>
+        <td data-name="E4" class="horario"></td>
+        <td data-name="F4" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">10:00</td>
+        <td data-name="B5" class="horario"></td>
+        <td data-name="C5" class="horario"></td>
+        <td data-name="D5" class="horario"></td>
+        <td data-name="E5" class="horario"></td>
+        <td data-name="F5" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">11:00</td>
+        <td data-name="B6" class="horario"></td>
+        <td data-name="C6" class="horario"></td>
+        <td data-name="D6" class="horario"></td>
+        <td data-name="E6" class="horario"></td>
+        <td data-name="F6" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">12:00</td>
+        <td data-name="B7" class="horario"></td>
+        <td data-name="C7" class="horario"></td>
+        <td data-name="D7" class="horario"></td>
+        <td data-name="E7" class="horario"></td>
+        <td data-name="F7" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">13:00</td>
+        <td data-name="B8" class="horario"></td>
+        <td data-name="C8" class="horario"></td>
+        <td data-name="D8" class="horario"></td>
+        <td data-name="E8" class="horario"></td>
+        <td data-name="F8" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">14:00</td>
+        <td data-name="B9" class="horario"></td>
+        <td data-name="C9" class="horario"></td>
+        <td data-name="D9" class="horario"></td>
+        <td data-name="E9" class="horario"></td>
+        <td data-name="F9" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">15:00</td>
+        <td data-name="B10" class="horario"></td>
+        <td data-name="C10" class="horario"></td>
+        <td data-name="D10" class="horario"></td>
+        <td data-name="E10" class="horario"></td>
+        <td data-name="F10" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">16:00</td>
+        <td data-name="B11" class="horario"></td>
+        <td data-name="C11" class="horario"></td>
+        <td data-name="D11" class="horario"></td>
+        <td data-name="E11" class="horario"></td>
+        <td data-name="F11" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">17:00</td>
+        <td data-name="B12" class="horario"></td>
+        <td data-name="C12" class="horario"></td>
+        <td data-name="D12" class="horario"></td>
+        <td data-name="E12" class="horario"></td>
+        <td data-name="F12" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">18:00</td>
+        <td data-name="B13" class="horario"></td>
+        <td data-name="C13" class="horario"></td>
+        <td data-name="D13" class="horario"></td>
+        <td data-name="E13" class="horario"></td>
+        <td data-name="F13" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">19:00</td>
+        <td data-name="B14" class="horario"></td>
+        <td data-name="C14" class="horario"></td>
+        <td data-name="D14" class="horario"></td>
+        <td data-name="E14" class="horario"></td>
+        <td data-name="F14" class="horario"></td>
+    </tr>
+  </table>
+  <div style="display: none;"class="botones">
+        <div class="sig">Siguiente Semana</div>
+        <div class="enviarReserva">Reservar</div>
+        
+  </div>
+  <div id="VentanaModal" class="modal">
+    <div class="VentanaModal">
+        <a href="#cerrar" id="cerrarVentana">X</a>
+        <h1>Elegir Metodo De Pago</h1>
+        <div class="botonPago efectivo">
+            EFECTIVO<br>(Al finalizar la clase)
+            <img src="assets/fotos/efectivo.png" alt="">
+
+        </div>
+        <div class="botonPago transferencia">
+            <p>TRANSFERENCIA<br>(Al finalizar la clase)</p>
+            <img src="assets/fotos/Transferencia.png" alt="">
+
+        </div>
+        <div class="botonPago mercadopago">
+            Pago Anticipado<br>(Dejar la clase ya paga)
+            <img src="assets/fotos/mercadopago.png" alt="">
+        </div>
+    </div>
+  </div>
+  <script src="JS/URLS.js"></script>
+  <script src="JS/horariosReservados.js"></script>
+  <script src="JS/horariosFijos.js"></script>
+  <script src="JS/clickEnCelda.js"></script>
+  <script src="JS/siguienteSemana.js"></script>
+  <script src="JS/enviarReserva.js"></script>
+  <script src="JS/login.js"></script>
+  <script src="JS/usuarioRegistrado.js"></script>
+  <script src="JS/metodosDePago.js"></script>
+  <script src="JS/inhabilitarPago.js"></script>
+</body>
+</html>

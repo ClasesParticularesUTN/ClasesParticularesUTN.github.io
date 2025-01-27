@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Precios</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <div id="seleccion" class="portadaContainer">
+        <div class="portada portadaIndividuales">
+            ꧁༒☬𝓒𝓵𝓪𝓼𝓮𝓼 𝓘𝓷𝓭𝓲𝓿𝓲𝓭𝓾𝓪𝓵𝓮𝓼☬༒꧂
+            <img src="assets/imagenes/clasesIndividuales.png" alt="">
+        </div>
+        <div class="portada portadaGrupales">
+            ꧁༒☬𝓒𝓵𝓪𝓼𝓮𝓼 𝓖𝓻𝓾𝓪𝓹𝓪𝓵𝓮𝓼☬༒꧂
+            <img src="assets/imagenes/clasesGrupales.png" alt="">
+        </div>
+    </div>
+    <img id="clasesGrupalesPC" src="assets/imagenes/PrecioPCGrupales.png" alt="">
+    <img id="clasesIndividualesPC" src="assets/imagenes/PrecioPCIndividuales.png" alt="">
+    <img id="clasesGrupalesMovil" src="assets/imagenes/PrecioMovilGrupales.png" alt="">
+    <img id="clasesIndividualesMovil" src="assets/imagenes/PrecioMovilIndividuales.png" alt="">
+
+    <script>
+        let grupal = document.querySelector(".portadaGrupales");
+        let individual = document.querySelector(".portadaIndividuales");
+
+        console.log(grupal, individual);
+
+        grupal.addEventListener("click", () => {
+            window.location.hash = window.innerWidth < 1000 ? 'clasesGrupalesMovil' : 'clasesGrupalesPC';
+        });
+
+        individual.addEventListener("click", () => {
+            window.location.hash = window.innerWidth < 1000 ? 'clasesIndividualesMovil' : 'clasesIndividualesPC';
+        });
+
+    </script>
+</body>
+</html>
