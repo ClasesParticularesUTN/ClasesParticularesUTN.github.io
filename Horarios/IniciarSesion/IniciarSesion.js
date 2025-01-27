@@ -33,8 +33,10 @@ function enviar(urlFinal) {
   document.querySelector("body").style.cursor = "wait";
   document.querySelector("#botonEnviar").style.cursor = "wait";
   document.querySelector(".contenedorLoader").style.display = "flex";
-  fetch(urlFinal)
-      .then(response => {
+  fetch(urlFinal, {
+    method: 'GET',  // o 'POST' dependiendo de tu solicitud
+    mode: 'no-cors'  // Establecer el modo 'no-cors'
+}).then(response => {
           if (!response.ok) {
               throw new Error('Network response was not ok');
           }
