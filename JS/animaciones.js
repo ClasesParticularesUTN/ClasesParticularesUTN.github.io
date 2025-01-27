@@ -9,6 +9,7 @@ const observer = new IntersectionObserver((entries, observer) => {
       // Cuando el elemento está en la vista, le agregamos las clases de animación
       entry.target.classList.remove('hidden');
       if(window.innerWidth < 1000) entry.target.classList.add('animate__backInDown'); // O cualquier animación de Animate.css que desees
+      else entry.target.classList.add('animate__fadeIn');
       // Deja de observar el elemento una vez se ha animado
       observer.unobserve(entry.target);
     }

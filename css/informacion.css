@@ -27,6 +27,7 @@
         padding: 5%;
         position: relative;
         z-index: 2;
+        opacity: 0;
     }
     .bloque img{
         width: 300px;
