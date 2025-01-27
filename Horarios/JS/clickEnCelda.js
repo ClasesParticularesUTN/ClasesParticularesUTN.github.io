@@ -6,11 +6,12 @@ tds.forEach(td => {
 
     
     if (td.style.backgroundColor === "red") {
-        td.style.backgroundColor = "white"; // Cambiar a blanco
+        td.style.backgroundColor = "white"; 
         horariosSeleccionados =  eliminarElemento(horariosSeleccionados,dataName);
       } else if(td.style.backgroundColor === "white" || td.style.backgroundColor === ""){
         if(validarHorariosSeleccionados(dataName)){
-          if(validarFecha(dataName)){
+          // if(validarFecha(dataName)){
+          if(true){
             td.style.backgroundColor = "red";
             horariosSeleccionados.push(dataName);
 
