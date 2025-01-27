@@ -6,29 +6,32 @@
     <title>Clases Particulares</title>
     <link rel="stylesheet" href="css/portada.css">
     <link rel="stylesheet" href="css/informacion.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>
     <div class="portada">
-        <img class="portadaMovil" src="assets/fotos/portadaMovil.png" alt="portadaMovil">
-        <img class="portadaPC" src="assets/fotos/portadaPC.png" alt="portadaPC">
+        <picture>
+            <source srcset="assets/fotos/portadaMovil.png" media="(max-width: 1000px)">
+            <img src="assets/fotos/portadaPC.png" alt="portadaPC">
+          </picture>
         <div onClick="window.location.href='https://wa.me/3425271005';" class="contacto">Contactame</div>
         <div class="informacion" onClick="irASeccion('opciones')">Mas Informacion</div>
     </div>
-    <div class="secciones" id="opciones">
+    <div class="secciones animate__animated  animate__backInDownbloque " id="opciones">
         <img class="fondo" src="assets/fotos/fondo.png" alt="">
-        <div onClick="window.location.href='materias.html';" class="bloque materias">
+        <div onClick="window.location.href='materias.html';" class="animate__animated animate__backInDown bloque materias">
             <img src="assets/fotos/materias.png" alt="">
             <p>𝓜𝓪𝓽𝓮𝓻𝓲𝓪𝓼 𝓺𝓾𝓮 𝓭𝓲𝓬𝓽𝓸</p>
         </div>
-        <div class="bloque ubicacion">
+        <div class="bloque ubicacion animate__animated animate__backInDown">
             <img onClick="window.location.href='ubicacion.html';" src="assets/fotos/ubicacion.png" alt="">
             <p>𝓤𝓫𝓲𝓬𝓪𝓬𝓲𝓸𝓷 𝔂 𝓛𝓾𝓰𝓪𝓻</p>
         </div>
-            <div onClick="window.location.href='/Precios/index.html#seleccion';"  class="bloque precios">
+            <div onClick="window.location.href='/Precios/index.html#seleccion';"  class="animate__animated animate__backInDown bloque precios">
             <img src="assets/fotos/precios.jpg" alt="">
             <p>𝓟𝓻𝓮𝓬𝓲𝓸𝓼</p>
         </div>
-        <div onClick="window.location.href='/Horarios/index.html';" class="bloque horarios">
+        <div onClick="window.location.href='/Horarios/index.html';" class="animate__animated animate__backInDown bloque horarios">
             <img src="assets/fotos/calendario.png" alt="">
             <p>𝓡𝓮𝓼𝓮𝓻𝓿𝓪𝓻 𝓗𝓸𝓻𝓪𝓻𝓲𝓸𝓼</p>
         </div>

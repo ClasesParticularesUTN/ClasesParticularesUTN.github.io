@@ -5,9 +5,6 @@ body{
     box-sizing: border-box;
 }
 @media (min-width:1000px){
-    .portadaMovil{
-        display: none;
-    }
     .portada{
         width: 100%;
         height: 100dvh;
@@ -35,5 +32,40 @@ body{
     }
     .portada .contacto{
         right: calc(5dvw + 200px + 20px);
+    }
+}
+
+@media (max-width:500px){
+    .portada{
+        width: 100dvw;
+        height: 100dvh;
+        position: relative;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        background-color: aqua;
+        --tamanioBotones: 5dvh;
+    }
+    .portada img{
+        width: 100dvw;
+        height: 100dvh;
+    }
+    .portada .contacto, .portada .informacion{
+        background-color: #2a2e30;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 800;
+        margin: 10px;
+        position: absolute;
+        bottom: 0;
+        flex-direction: column;
+        width: 90%;
+        height: var(--tamanioBotones);
+    }
+    .portada .informacion{
+        bottom: calc( var(--tamanioBotones) + 10px);
     }
 }
