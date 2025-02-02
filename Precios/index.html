@@ -23,9 +23,10 @@
     <img id="clasesIndividualesMovil" src="assets/imagenes/PrecioMovilIndividuales.png" alt="">
 
     <script>
-        if (!window.location.hash) {
-            window.location.href = 'https://clasesparticularesutn.com.ar/Precios/index.html#seleccion';
+       if (!window.location.hash) {
+            window.location.hash = 'seleccion';
         }
+
 
         let grupal = document.querySelector(".portadaGrupales");
         let individual = document.querySelector(".portadaIndividuales");
