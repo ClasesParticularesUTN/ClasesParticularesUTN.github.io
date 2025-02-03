@@ -31,7 +31,7 @@
     }
     .bloque img{
         width: 50%;
-        height: 50%;
+        height: 100%;
         border-radius: 50%;
         border: 5px solid black;
     }
