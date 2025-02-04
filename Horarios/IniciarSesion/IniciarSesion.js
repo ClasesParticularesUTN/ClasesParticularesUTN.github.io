@@ -24,7 +24,7 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
       datosAEnviar.push(valor);
   });
   datosAEnviar[0] = datosAEnviar[0].toLowerCase();
-  let urlFinal = URLUsuarios + "?correo=" + datosAEnviar[0] + "&contrasenia=" + datosAEnviar[1] + "&funcion=validarUsuario";
+  let urlFinal = URLUsuarios + "?correo=" + encodeURIComponent(datosAEnviar[0]) + "&contrasenia=" + encodeURIComponent(datosAEnviar[1]) + "&funcion=validarUsuario";
   enviar(urlFinal);
 })
 
@@ -33,10 +33,7 @@ function enviar(urlFinal) {
   document.querySelector("body").style.cursor = "wait";
   document.querySelector("#botonEnviar").style.cursor = "wait";
   document.querySelector(".contenedorLoader").style.display = "flex";
-  fetch(urlFinal, {
-    method: 'GET',  // o 'POST' dependiendo de tu solicitud
-    mode: 'no-cors'  // Establecer el modo 'no-cors'
-}).then(response => {
+  fetch(urlFinal).then(response => {
           if (!response.ok) {
               throw new Error('Network response was not ok');
           }
