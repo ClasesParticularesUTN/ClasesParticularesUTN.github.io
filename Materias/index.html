@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Educativa</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="section">
+        <div class="titulo text-container">
+            <h2>¿Qué enseño?</h2>
+            <p>En esta sección, podrás descubrir las materias que imparto, cada una diseñada para enriquecer el aprendizaje y fomentar el desarrollo integral de mis estudiantes. Desde asignaturas académicas hasta habilidades prácticas, cada materia está enfocada en brindar un conocimiento sólido y relevante.</p>
+            <a href="#materias" class="btn">Ver Materias</a>
+        </div>
+    </div>
+    <div id="materias" class="section">
+        <div class="text-container algoritmos">
+            <h2 class="tituloMateria">Algoritmos y Estructuras de Datos</h2>
+            <div class="image-container">
+                <img src="algoritmos.jpg" alt="Algoritmos y Estructuras de Datos">
+            </div>
+            <p class="centrar">En nuestras Clases de Algoritmos y Estructuras de Datos, te prepararás de manera integral para los desafíos académicos de la facultad. A lo largo del curso, profundizaremos en conceptos clave como la complejidad algorítmica, estructuras de selección, repetición, recursividad, así como pilas, colas y árboles, asegurando que desarrolles un entendimiento sólido y aplicable</p>
+        </div>
+    </div>
+    <div class="section">
+        <div class="text-container arquitectura">
+            <h2 class="tituloMateria">Arquitectura de Computadoras</h2>
+            <div class="image-container">
+                <img src="arquitectura.jpg" alt="Arquitectura de Computadoras">
+            </div>
+            <p class="centrar">Esta materia de Electrónica se enfoca en los fundamentos de los sistemas numéricos y el código binario, esenciales para entender la lógica digital. A través de clases teóricas y prácticas, exploraremos los sistemas lógicos combinacionales y secuenciales, proporcionando a los estudiantes las herramientas necesarias para diseñar y analizar circuitos electrónicos</p>
+        </div>
+    </div>
+    <div class="section">
+        <div class="text-container sintaxis">
+            <h2 class="tituloMateria">Sintaxis y Semántica de los Lenguajes</h2>
+            <div class="image-container">
+                <img class="proximamente" src="sintaxis.jpg" alt="Sintaxis y Semántica de los Lenguajes">
+                <p>PROXIMAMENTE</p>
+            </div>
+            <p class="centrar">La materia de Sintaxis Semántica de los Lenguajes se adentra en los fundamentos teóricos que rigen la estructura y el significado de los lenguajes formales. A través del estudio de autómatas finitos, expresiones regulares y laántica, se explorarán las jerarquías de Chomsky y otros conceptos clave que permiten comprender cómo se construyen y analizan los lenguajes. Esta asignatura es esencial para aquellos interesados en la teoría de la computación y el desarrollo de lenguajes de programación  La materia de Sintaxis Semántica de los Lenguajes se adentra en los fundamentos teóricos que rigen la estructura y el significado de los lenguajes formales. A través del estudio de autómatas finitos, expresiones regulares y laántica, se explorarán las jerarquías de Chomsky y otros conceptos clave que permiten comprender cómo se construyen y analizan los lenguajes. Esta asignatura es esencial para aquellos interesados en la teoría de la computación y el desarrollo de lenguajes de programación</p>
+        </div>
+    </div>
+    <div class="section">
+        <div class="text-container paradigmas">
+            <h2 class="tituloMateria">Paradigmas de Programación</h2>
+            <div class="image-container">
+                <img class="proximamente" src="paradigmas.jpg" alt="Paradigmas de Programación">
+                <p>PROXIMAMENTE</p>
+            </div>
+            <p class="centrar">La asignatura explora tres paradigmas clave: el paradigma lógico, que se centra en el uso de la lógica formal para resolver problemas; el paradigma de objetos, que organiza el código en torno a "objetos" que combinan datos y comportamiento; y el paradigma funcional, que promueve el uso de funciones puras y evita el estado mutable</p>
+        </div>
+    </div>
+    <script>
+        function agruparEnContenedor(materia) {
+            contenedorPadre = document.querySelector(`.${materia}`);
+                const h2 = document.querySelector(`.${materia} .tituloMateria`);
+                const imageContainer = document.querySelector(`.${materia} .image-container`);
+                const parrafo = document.querySelector(`.${materia} .centrar`);
+                const nuevoDiv = document.createElement('div');
+                nuevoDiv.className = "container";
+                nuevoDiv.appendChild(imageContainer);
+                nuevoDiv.appendChild(parrafo);
+                contenedorPadre.innerHTML = '';
+            if (window.innerWidth > 900) {
+                contenedorPadre.appendChild(h2);
+                contenedorPadre.appendChild(nuevoDiv);
+            }else{
+                contenedorPadre.appendChild(h2);
+                contenedorPadre.appendChild(imageContainer);
+                contenedorPadre.appendChild(parrafo);
+            }
+        }
+
+// Ejecutar al cargar la página y al redimensionar la ventana
+window.addEventListener('load', agruparEnContenedor("algoritmos"));
+window.addEventListener('load', agruparEnContenedor("arquitectura"));
+window.addEventListener('load', agruparEnContenedor("sintaxis"));
+window.addEventListener('load', agruparEnContenedor("paradigmas"));
+window.addEventListener('resize', agruparEnContenedor("algoritmos"));
+window.addEventListener('resize', agruparEnContenedor("arquitectura"));
+window.addEventListener('resize', agruparEnContenedor("sintaxis"));
+window.addEventListener('resize', agruparEnContenedor("paradigmas"));
+
+    </script>
+</body>
+</html>
