@@ -23,16 +23,10 @@ document.querySelector(".enviarReserva").addEventListener("click", async () => {
             showConfirmButton: true
           });
     } else {
-        window.location.hash = 'VentanaModal';
+        await asignarHorario(reservados,numeroHoja);
+        await enviarCeldasReservadas(reservados,numeroHoja);
     }
 });
-
-async function elegirMetodoDePago() {
-    let metodosDePago = document.querySelector("metodosPago");
-
-    // await enviarCeldasReservadas(reservados,numeroHoja);
-    // await asignarHorario(reservados,numeroHoja);
-}
 
 async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
     if (numeroDeHoja == undefined) numeroDeHoja = 0;
@@ -61,8 +55,9 @@ async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
          window.location.reload();
       });
 }
+let metodoDePago = "";
 
-async function asignarHorario(celdas, numeroDeHoja, metodoDePago) {
+async function asignarHorario(celdas, numeroDeHoja) {
     if (numeroDeHoja == undefined) numeroDeHoja = 0;
     let datos = {
         persona: Alumno,
