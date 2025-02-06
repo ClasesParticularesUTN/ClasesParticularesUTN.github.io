@@ -5,7 +5,6 @@
     width: 60px;
     height: 60px;
     animation: spin 1s linear infinite;
-    margin-left: 50px;
 }
 
 /* Animación del loader */
