@@ -35,9 +35,7 @@ async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
         celdas: horariosSeleccionados,
         numeroHoja: numeroDeHoja,
     };
-    document.querySelector("table").style.display = "none";
-    document.querySelector(".botones").style.display = "none";
-    document.querySelector(".containerLoader").style.display = "flex";
+    
     
     
     await fetch(URLHorarios, {
@@ -67,7 +65,10 @@ async function asignarHorario(celdas, numeroDeHoja) {
         metodoDePago: metodoDePago
     };
     
-    console.log("AsginarHorarios",datos);
+    document.querySelector("table").style.display = "none";
+    document.querySelector(".botones").style.display = "none";
+    document.querySelector(".containerLoader").style.display = "flex";
+    
     await fetch(URLUsuarios, {
         method: 'POST',
         mode: 'no-cors',
