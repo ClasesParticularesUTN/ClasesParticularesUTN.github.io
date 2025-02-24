@@ -7,8 +7,7 @@ document.querySelector(".enviarReserva").addEventListener("click", async () => {
             title: "Error",
             text: "Quedan muy pocos horarios disponibles. Consulte por WhatsApp o reserve la proxima semana",
           });
-    }else
-    if (Alumno == null || !Alumno.sesion) {
+    }else if (Alumno == null || !Alumno.sesion) {
         Swal.fire({
             title: "Accion Erronea",
             icon: "info",
@@ -22,7 +21,14 @@ document.querySelector(".enviarReserva").addEventListener("click", async () => {
             html: `Debes clickear las celdas que quieres reservar`,
             showConfirmButton: true
           });
-    } else {
+    }else if(parseInt(Alumno.dineroQueDebe.slice(1)) > 0){
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Debe dinero, antes de reservar otra clase debe saldar la deuda.",
+          });
+    }
+    else {
         await asignarHorario(reservados,numeroHoja);
         await enviarCeldasReservadas(reservados,numeroHoja);
     }

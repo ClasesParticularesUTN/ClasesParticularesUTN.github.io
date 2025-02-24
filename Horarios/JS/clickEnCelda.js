@@ -10,11 +10,9 @@ tds.forEach(td => {
         horariosSeleccionados =  eliminarElemento(horariosSeleccionados,dataName);
       } else if(td.style.backgroundColor === "white" || td.style.backgroundColor === ""){
         if(validarHorariosSeleccionados(dataName)){
-          // if(validarFecha(dataName)){
-          if(true){
+          if(validarFecha(dataName)){
             td.style.backgroundColor = "red";
             horariosSeleccionados.push(dataName);
-
           }else{
             Swal.fire({
               icon: "error",

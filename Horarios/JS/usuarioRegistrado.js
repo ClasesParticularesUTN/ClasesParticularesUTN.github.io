@@ -9,29 +9,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     }
 })
 
-async function colocarDatos(){
-    Alumno = JSON.parse(sessionStorage.getItem('persona'));
-    document.querySelector("#MensajeLogin").innerHTML = `Hola, ${Alumno.nombre}`
-    document.querySelector(".cajaMensajeLogin").style.justifyContent = "end";
-    document.querySelector(".cajaMensajeLogin").style.paddingRight = "10px";
-    document.querySelector(".usuarioClasesAFAvor").innerHTML = "0";
-    document.querySelector(".usuarioNombre").innerHTML = "Nombre Completo: " + Alumno.nombre + " " + Alumno.apellido;
-    document.querySelector(".usuarioCorreo").innerHTML = "Correo: " + "ICKKCK";
-    document.querySelector(".usuarioTelefono").innerHTML= "Telefono: " + Alumno.telefono;
-    document.querySelector(".listaHorarios").innerHTML = '';
-    Alumno.horarios.forEach(horario => {
-        let li = document.createElement("li");
-        li.className = "usuarioHorarios";
-        li.innerHTML = horario;
-        document.querySelector(".listaHorarios").appendChild(li);
-    });
-    if(Object.keys(Alumno.horarios).length == 0){
-        let li = document.createElement("li");
-        li.className = "usuarioHorarios";
-        li.innerHTML = "(Sin Horarios Reservados)";
-        document.querySelector(".listaHorarios").appendChild(li);
-    }
-}
 
 function actualizarDatos(correo,contraseña){
     let urlFinal = URLUsuarios + "?correo=" + correo + "&contrasenia=" + contraseña + "&funcion=validarUsuario";
@@ -65,7 +42,11 @@ function actualizarDatos(correo,contraseña){
 function colocarDatos(){
         Alumno = JSON.parse(sessionStorage.getItem('persona'));
         document.querySelector("#MensajeLogin").innerHTML = `Hola, ${Alumno.nombre}`;
-        document.querySelector(".numero").innerHTML = Alumno.horasAFavor;
+        if(parseInt(Alumno.dineroQueDebe.slice(1)) > 0){
+            document.querySelector(".usuarioClasesAFAvor").innerHTML = "Dinero que debe: ";
+            document.querySelector(".numero").innerHTML = Alumno.dineroQueDebe;
+        }
+        else document.querySelector(".numero").innerHTML = Alumno.horasAFavor; 
         document.querySelector(".cajaMensajeLogin").style.justifyContent = "end";
         document.querySelector(".cajaMensajeLogin").style.paddingRight = "10px";
         document.querySelector(".usuarioNombre").innerHTML = "Nombre Completo: " + Alumno.nombre + " " + Alumno.apellido;

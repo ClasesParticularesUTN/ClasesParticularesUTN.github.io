@@ -24,7 +24,10 @@ td {
   font-weight: 800;
   font-size: 100%;
   border-radius: 5%;
-  
+  box-shadow: 4px 4px 4px;
+}
+.primero, .dia{
+    box-shadow: none;
 }
 .horario , .hora{
     background-color: white;
