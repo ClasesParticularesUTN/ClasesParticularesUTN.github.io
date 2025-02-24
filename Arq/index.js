@@ -443,7 +443,7 @@ function multiplicarDosNumeros(n1,n2){
             console.log("usuario no permitido");
         }
      }else{
-	     window.location.href = "../IniciarSesion";
+	     window.location.href = "../Horarios/IniciarSesion/IniciarSesion.html";
      }
 })()
 
