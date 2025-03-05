@@ -3,15 +3,17 @@ var horariosSeleccionados = [];
 tds.forEach(td => {
   td.addEventListener("click", () => {
     const dataName = td.getAttribute("data-name");
-
-    
     if (td.style.backgroundColor === "red") {
-        td.style.backgroundColor = "white"; 
+        if(!diasRosados.includes(dataName))td.style.backgroundColor = "white"; 
+        else td.style.backgroundColor = "violet"; 
         horariosSeleccionados =  eliminarElemento(horariosSeleccionados,dataName);
-      } else if(td.style.backgroundColor === "white" || td.style.backgroundColor === ""){
+      } else if(td.style.backgroundColor === "white" || td.style.backgroundColor === "" || td.style.backgroundColor === "violet"){
+        
         if(validarHorariosSeleccionados(dataName)){
+          
           if(validarFecha(dataName)){
             td.style.backgroundColor = "red";
+            console.log("Entre")
             horariosSeleccionados.push(dataName);
           }else{
             Swal.fire({
@@ -32,6 +34,7 @@ tds.forEach(td => {
     });
       
 });
+
 
 function eliminarElemento(array, elemento) {
     return array.filter(item => item !== elemento);
