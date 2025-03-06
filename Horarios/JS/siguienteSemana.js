@@ -13,6 +13,7 @@ botonSiguiente.addEventListener("click",()=>{
         despintarCeldas();
         colocarDias(semana1[0]);
         pintarCeldas(semana1[1]);
+        pintarCeldas(celdasFijas);
         ponerEnVioleta(diasConDemandaSemana1,1);
         botonSiguiente.innerHTML = "Siguiente Semana";
         horariosSeleccionados = [];
