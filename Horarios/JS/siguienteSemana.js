@@ -5,6 +5,7 @@ botonSiguiente.addEventListener("click",()=>{
         despintarCeldas();
         colocarDias(semana2[0]);
         pintarCeldas(semana2[1]);
+        pintarCeldas(celdasFijas);
         ponerEnVioleta(diasConDemandaSemana2,1);
         botonSiguiente.innerHTML = "Semana Anterior";
         horariosSeleccionados = [];
