@@ -156,23 +156,25 @@
         
   </div>
   <div id="VentanaModal" class="modal">
-    <div class="VentanaModal">
+    <div class="VentanaModal container">
         <a href="#cerrar" id="cerrarVentana">X</a>
-        <h1>Elegir Metodo De Pago</h1>
-        <div class="botonPago efectivo">
-            EFECTIVO<br>(Al finalizar la clase)
-            <img src="assets/fotos/efectivo.png" alt="">
+        <h1>Selecciona la modalidad de la clase</h1>
+        <label>
+            <input type="radio" name="modalidad" value="individual" onclick="mostrarCampos()" checked>
+            Individual
+        </label>
+        <label>
+            <input type="radio" name="modalidad" value="grupal" onclick="mostrarCampos()">
+            Grupal
+        </label>
+        
+        <div style="display:none" id="grupo-container" class="hidden">
+            <label for="num-integrantes">Cantidad de integrantes:</label>
+            <input style="margin:5px" type="number" id="num-integrantes" min="1" max="3" onchange="generarCampos()">
+            <div id="integrantes"></div>
+        </div>
 
-        </div>
-        <div class="botonPago transferencia">
-            <p>TRANSFERENCIA<br>(Al finalizar la clase)</p>
-            <img src="assets/fotos/Transferencia.png" alt="">
-
-        </div>
-        <div class="botonPago mercadopago">
-            Pago Anticipado<br>(Dejar la clase ya paga)
-            <img src="assets/fotos/mercadopago.png" alt="">
-        </div>
+        <div class="enviar" onclick="guardarNombres()">Enviar</div>
     </div>
   </div>
   <script src="JS/URLS.js"></script>
@@ -183,8 +185,8 @@
   <script src="JS/enviarReserva.js"></script>
   <script src="JS/login.js"></script>
   <script src="JS/usuarioRegistrado.js"></script>
-  <script src="JS/metodosDePago.js"></script>
   <script src="JS/inhabilitarPago.js"></script>
   <script src="JS/diaConDemanda.js"></script>
+  <script src="JS/modalidadDeClase.js"></script>
 </body>
 </html>
