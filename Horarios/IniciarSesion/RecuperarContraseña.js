@@ -34,7 +34,7 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
   })
 
   function enviarCodigo(urlFinal) {
-
+    console.log(urlFinal)
     document.querySelector("body").style.cursor = "wait";
     document.querySelector("#botonEnviar").style.cursor = "wait";
     document.querySelector(".contenedorLoader").style.display = "flex";
@@ -46,13 +46,28 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
         return response.json();
     })
     .then(res => {
+        console.log(res,!res.sesion);
         // Aquí puedes manejar los datos de la respuesta
-        if(!res.status){
+        if(res.status == false){
+            console.log("Entre aca");
             Swal.fire({
             icon: "error",
             title: "Error",
             text: "El correo no existe en la base de datos del servidor. Comuniquese con un administrador.",
           });
+        }else if(res.status){
+            Swal.fire({
+                title: "Información",
+                icon: "info",
+                html: `Revise su correo electrónico para obtener el código de verificación`,
+                showConfirmButton: true
+              });
+              const botonEnviar = document.querySelector("#botonEnviar");
+              const codigo = document.querySelector(".codigo");
+              if (codigo) {
+                codigo.style.display = "block";
+              }
+              botonEnviar.innerHTML = "Cambiar Contraseña";
         }
     })
     .catch(error => {
@@ -61,26 +76,11 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
     .finally(() => {
         document.querySelector("body").style.cursor = "default";
         
-        const botonEnviar = document.querySelector("#botonEnviar");
         const contenedorLoader = document.querySelector(".contenedorLoader");
-        const codigo = document.querySelector(".codigo");
 
-        if (botonEnviar) {
-            botonEnviar.style.cursor = "default";
-            botonEnviar.innerHTML = "Cambiar Contraseña";
-        }
         if (contenedorLoader) {
             contenedorLoader.style.display = "none";
         }
-        if (codigo) {
-            codigo.style.display = "block";
-        }
-        Swal.fire({
-            title: "Información",
-            icon: "info",
-            html: `Revise su correo electrónico para obtener el código de verificación`,
-            showConfirmButton: true
-          });
     });
   }
   
@@ -93,27 +93,8 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
         resultado += caracteres[indice];
     }
     return resultado;
-}
+  }
 
-function verificarPortapapeles() {
-    if (navigator.clipboard) {
-        navigator.clipboard.readText().then(textoCopiado => {
-            if (textoCopiado.length === 6) {
-                document.getElementById('codigoInput').value = textoCopiado;
-            }
-        }).catch(error => {
-            console.error('No se pudo acceder al portapapeles:', error);
-        });
-    }
-}
-
-// Escuchar cuando el usuario vuelve a la pestaña
-document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
-        // Esperar interacción del usuario antes de leer el portapapeles
-        document.addEventListener("click", verificarPortapapeles, { once: true });
-    }
-});
 
 
 function enviar(urlFinal) {
