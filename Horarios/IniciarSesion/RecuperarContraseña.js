@@ -9,7 +9,6 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
             datosAEnviar.push(valor);
         });
         datosAEnviar[0] = datosAEnviar[0].toLowerCase();
-        console.log(clave);
         let urlFinal = URLUsuarios + "?correo=" + encodeURIComponent(datosAEnviar[0]) + "&funcion=recuperarContrasenia"+"&codigo="+clave;
         enviarCodigo(urlFinal);
     }else{
@@ -25,13 +24,16 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
             let urlFinal = URLUsuarios + "?correo=" + encodeURIComponent(datosAEnviar[0]) + "&contrasenia=" + encodeURIComponent(datosAEnviar[1]) + "&funcion=modificarContrasenia";
             enviar(urlFinal);
         }else{
-            alert("Codigo incorrecto, revisa bien en tu correo");
+            Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Codigo incorrecto. Intente nuevamente. Respete Mayúsculas y Minúsculas.",
+          });
         }
     }
   })
 
   function enviarCodigo(urlFinal) {
-    console.log(urlFinal)
 
     document.querySelector("body").style.cursor = "wait";
     document.querySelector("#botonEnviar").style.cursor = "wait";
