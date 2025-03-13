@@ -47,7 +47,13 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
     })
     .then(res => {
         // Aquí puedes manejar los datos de la respuesta
-        console.log("Respuesta del servidor:", res);
+        if(!res.status){
+            Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "El correo no existe en la base de datos del servidor. Comuniquese con un administrador.",
+          });
+        }
     })
     .catch(error => {
         console.log("Hubo un problema con la solicitud:", error);
