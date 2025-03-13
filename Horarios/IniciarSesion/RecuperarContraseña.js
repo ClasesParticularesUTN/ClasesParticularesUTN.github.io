@@ -67,6 +67,12 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
         if (codigo) {
             codigo.style.display = "block";
         }
+        Swal.fire({
+            title: "Información",
+            icon: "info",
+            html: `Revise su correo electrónico para obtener el código de verificación`,
+            showConfirmButton: true
+          });
     });
   }
   
