@@ -1,7 +1,7 @@
 let avisos = {
     CambioUbicacion: "Revisar cambio de ubicacion desde la pagina principal.",
     ColoresDeCeldas: "Blanco: Disponible,<br><span style='color:#9b4922'>Marron</span>: Ocupado, <br><span style='color:violet'>Violeta</span>: Recarga de $1000 al abonar el pago.",
-    Sabados: "Es posible reservar horarios sabados por la mañana, aunque no aparesca en la grilla, contactarse por whatsapp."
+    Sabados: "Es posible reservar horarios sabados por la mañana, aunque no aparesca en la grilla. De querer hacerlo, contactarse por whatsapp."
 }
 
 let nombreAvisos = Object.keys(avisos);
