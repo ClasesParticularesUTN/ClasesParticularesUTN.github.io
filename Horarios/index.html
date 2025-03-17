@@ -10,6 +10,8 @@
   <link rel="stylesheet" href="css/titulo.css">
   <link rel="stylesheet" href="css/menuUsuario.css">
   <link rel="stylesheet" href="css/VentanaModal.css">
+  <link rel="stylesheet" href="css/VentanaModalAvisos.css">
+  <link rel="stylesheet" href="css/Avisos.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -152,8 +154,21 @@
   </table>
   <div style="display: none;"class="botones">
         <div class="sig">Siguiente Semana</div>
-        <div class="enviarReserva">Reservar</div>
-        
+        <div class="enviarReserva">Reservar</div>       
+  </div>
+  <template id="aviso-template">
+    <div class="tarjeta">
+        <h2 class="titulo"></h2>
+        <p class="descripcion"></p>
+    </div>
+</template>
+  <img style="display: none;" class="cafe" src="assets/fotos/aviso.png" alt="AvisoImportante">
+  <div id="VentanaModalAvisos" class="modalAvisos">
+    <div class="VentanaModalAvisos container">
+        <a href="#cerrar" id="cerrarVentana">X</a>
+        <h1>Avisos</h1>
+        <div class="avisos"></div>
+    </div>
   </div>
   <div id="VentanaModal" class="modal">
     <div class="VentanaModal container">
@@ -188,5 +203,6 @@
   <script src="JS/inhabilitarPago.js"></script>
   <script src="JS/diaConDemanda.js"></script>
   <script src="JS/modalidadDeClase.js"></script>
+  <script src="JS/Avisos.js"></script>
 </body>
 </html>
