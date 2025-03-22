@@ -24,7 +24,7 @@ function ponerEnVioleta(vector,numeroSemana) {
                         Swal.fire({
                             title: "Recordatorio",
                             icon: "info",
-                            html: `Los horarios en violeta tienen un valor extra de $1000`,
+                            html: `Los horarios en violeta tienen un valor extra de $1000(Puede seleccionar varias celdas y solo se cobrara una vez el recargo)`,
                             showConfirmButton: true
                         });
                     }
