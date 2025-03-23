@@ -51,7 +51,7 @@ function enviar(urlFinal) {
               Swal.fire({
                   icon: "error",
                   title: "Error",
-                  text: "El correo o la contraseña son erroneas",
+                  text: data.error,
                 });
           }
       })
