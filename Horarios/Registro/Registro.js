@@ -19,7 +19,6 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
             if(llave == "Materia" && contadorMateria == 0){
                 materia+=valor;
                 contadorMateria++;
-                
             }
             else if(contadorMateria == 1){
                 if(llave=="Materia"){
@@ -33,7 +32,9 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
                     
                 }
             }
-            if(llave != "Area" && llave != "Telefono" && llave != "Materia" && llave != "RepetirContrasenia"){
+            if(llave == "correoElectronico"){
+                datosAEnviar.push(valor.trim());
+            }else if(llave != "Area" && llave != "Telefono" && llave != "Materia" && llave != "RepetirContrasenia"){
                 datosAEnviar.push(valor);
             }else if(llave == "Area"){
                 numeroTelefonico+=valor;
