@@ -36,6 +36,6 @@ function ponerEnVioleta(vector,numeroSemana) {
 }
 
 function esDeMañana(celda){
-    return (celda.getAttribute("data-name").slice(1) == "4" or celda.getAttribute("data-name").slice(1) == "5")
+    return (celda.getAttribute("data-name").slice(1) == "4" || celda.getAttribute("data-name").slice(1) == "5")
 }
 
