@@ -1,4 +1,4 @@
-let diasConDemandaSemana1 = [];
+let diasConDemandaSemana1 = ["Miercoles"];
 let diasConDemandaSemana2 = [];
 let diasRosados = [];
 function ponerEnVioleta(vector,numeroSemana) {
