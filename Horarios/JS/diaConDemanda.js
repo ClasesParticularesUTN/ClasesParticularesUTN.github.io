@@ -17,7 +17,7 @@ function ponerEnVioleta(vector,numeroSemana) {
     diasComoLetras.forEach((dia)=>{
         let celdas = document.querySelectorAll(`td.horario[data-name*="${dia}"]`);
         celdas.forEach((celda) => {
-            if (celda.style.backgroundColor === "white" || celda.style.backgroundColor === "" && celda.getAttribute("data-name").slice(1) != "4" && celda.getAttribute("data-name").slice(1) != "5") {
+            if (celda.style.backgroundColor === "white" || celda.style.backgroundColor === "" /*&& !esDeMañana(celda)*/) {
                 celda.style.backgroundColor = "violet";
                 celda.addEventListener("click",(e)=>{
                     if(e.target.style.backgroundColor == "red"){
@@ -33,5 +33,9 @@ function ponerEnVioleta(vector,numeroSemana) {
             }
         });                
     })
+}
+
+function esDeMañana(celda){
+    return (celda.getAttribute("data-name").slice(1) == "4" or celda.getAttribute("data-name").slice(1) == "5")
 }
 
