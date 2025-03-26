@@ -33,7 +33,6 @@ document.querySelector(".enviarReserva").addEventListener("click", async () => {
             if(!listaClases.contains("animate__zoomOutUp") && !listaClases.contains("animate__slideInDown")){
               listaClases.add("animate__slideInDown");
             }
-          }
         });
     }
     else {
