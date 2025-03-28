@@ -102,16 +102,16 @@
     </div>
     
     <script>
-        if (sessionStorage.getItem('persona') == null) {
-            // document.getElementById("contenedor").style.display = "none";
-            // document.getElementById("info").style.display = "block";
+        if (sessionStorage.getItem('Nombre') == null) {
+            document.getElementById("contenedor").style.display = "none";
+            document.getElementById("info").style.display = "block";
         }
 
-        const nombre = "Joaquin";
-        const apellido = "Da Silva";
+        const nombre = sessionStorage.getItem('Nombre');
+        const apellido = sessionStorage.getItem('Apellido');
         
         async function obtenerArchivos(nombre, apellido) {
-            const url = "https://script.google.com/macros/s/AKfycbxbrDcowfjV4_WnPO5FHVF89n3drCYZeBMWCiJ_a0H1LHEny-ZPO8eF1FbwO0sMN_cL/exec";
+            const url = "https://script.google.com/macros/s/AKfycbzcmlkBQDzZYA8eI3eJunzSNXtKO9N0t2618yjpfg5N_zxiqrkrsADe_KMjij5Tz9cz/exec";
             const params = new URLSearchParams({
                 funcion: "obtenerArchivos",
                 nombre: nombre,
