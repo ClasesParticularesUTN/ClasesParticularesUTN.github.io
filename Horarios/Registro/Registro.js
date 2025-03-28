@@ -197,3 +197,16 @@ function enviar(datos){
           console.error('Error al enviar datos:', error);
       });
 }
+function completar(){
+    document.getElementById("first_20").value = "Joaquin";
+    document.getElementById("last_20").value = "Da Silva Catela";
+    document.getElementById("input_4").value = "joadasilvacatela@gmail.com";
+    document.getElementById("Contraseña").value = "santafesino123";
+    document.getElementById("RepetiContraseña").value = "santafesino123";
+    document.getElementById("input_22_area").value = "342";
+    document.getElementById("input_22_phone").value = "5986867";
+    document.getElementById("input_24").value = "2023";
+    document.getElementById("input_84_0").checked = true;
+    document.getElementById("input_26").value = "Recursando";
+    document.getElementById("input_27").value = "Prueba";       
+}
