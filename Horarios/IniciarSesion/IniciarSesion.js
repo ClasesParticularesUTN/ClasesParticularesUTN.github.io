@@ -45,6 +45,8 @@ function enviar(urlFinal) {
               const personaJSON = JSON.stringify(data);
               ;
               sessionStorage.setItem('persona', personaJSON);
+              sessionStorage.setItem('Nombre', JSON.stringify(data.nombre);
+              sessionStorage.setItem('Apellido', JSON.stringify(data.apellido);
               window.location.href = "../index.html";
           }
           else{
