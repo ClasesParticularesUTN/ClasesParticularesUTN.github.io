@@ -46,7 +46,7 @@ function enviar(urlFinal) {
               ;
               sessionStorage.setItem('persona', personaJSON);
               localStorage.setItem('Nombre', JSON.stringify(data.nombre));
-              localStorage.setItem('Apellido', JSON.stringify(data.apellido);
+              localStorage.setItem('Apellido', JSON.stringify(data.apellido));
               window.location.href = "../index.html";
           }
           else{
