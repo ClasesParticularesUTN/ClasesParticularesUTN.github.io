@@ -107,8 +107,8 @@
             document.getElementById("info").style.display = "block";
         }
 
-        const nombre = localStorage.getItem('Nombre');
-        const apellido = localStorage.getItem('Apellido');
+        const nombre = JSON.parse(localStorage.getItem('Nombre'));
+        const apellido = JSON.parse(localStorage.getItem('Apellido'));
         
         async function obtenerArchivos(nombre, apellido) {
             const url = "https://script.google.com/macros/s/AKfycbzcmlkBQDzZYA8eI3eJunzSNXtKO9N0t2618yjpfg5N_zxiqrkrsADe_KMjij5Tz9cz/exec";
