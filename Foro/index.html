@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivos del Alumno</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100dvh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3);
+            color: #222;
+        }
+        h1 {
+            color: #222;
+            margin-bottom: 20px;
+        }
+        #archivo-lista {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 15px;
+            background: #17a2b8;
+            color: white;
+            border-radius: 8px;
+            transition: transform 0.2s, background 0.3s;
+            box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.15);
+        }
+        li:hover {
+            background: #138496;
+            transform: scale(1.05);
+        }
+        a {
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            flex-grow: 1;
+        }
+        .file-icon {
+            margin-right: 10px;
+        }
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            margin-top: 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .refresh-btn:hover {
+            background: #218838;
+        }
+        .loading {
+            display: none;
+            font-size: 18px;
+            color: #222;
+            margin-top: 15px;
+        }
+        .info {
+            font-size: 18px;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            margin: 50px auto;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="info" class="info">📂 En esta sección podrán encontrar todo el material compartido en clase.</div>
+    <div class="container" id="contenedor">
+        <h1>Archivos del Alumno</h1>
+        <p id="loading" class="loading">Cargando archivos...</p>
+        <ul id="archivo-lista"></ul>
+        <button class="refresh-btn" onclick="obtenerArchivos(nombre, apellido)">Actualizar</button>
+    </div>
+    
+    <script>
+        if (sessionStorage.getItem('persona') == null) {
+            // document.getElementById("contenedor").style.display = "none";
+            // document.getElementById("info").style.display = "block";
+        }
+
+        const nombre = "Joaquin";
+        const apellido = "Da Silva";
+        
+        async function obtenerArchivos(nombre, apellido) {
+            const url = "https://script.google.com/macros/s/AKfycbxbrDcowfjV4_WnPO5FHVF89n3drCYZeBMWCiJ_a0H1LHEny-ZPO8eF1FbwO0sMN_cL/exec";
+            const params = new URLSearchParams({
+                funcion: "obtenerArchivos",
+                nombre: nombre,
+                apellido: apellido
+            });
+            document.getElementById("loading").style.display = "block";
+            try {
+                let response = await fetch(`${url}?${params.toString()}`);
+                let data = await response.json();
+                document.getElementById("loading").style.display = "none";
+                
+                if (data.status) {
+                    mostrarArchivos(data.listaArchivos);
+                } else {
+                    document.getElementById("archivo-lista").innerHTML = `<li>${data.error}</li>`;
+                }
+            } catch (error) {
+                document.getElementById("loading").style.display = "none";
+                console.error("Error en la solicitud:", error);
+            }
+        }
+        
+        function mostrarArchivos(archivos) {
+            const lista = document.getElementById("archivo-lista");
+            lista.innerHTML = "";
+            archivos.forEach(archivo => {
+                let li = document.createElement("li");
+                let enlace = document.createElement("a");
+                let icono = document.createElement("span");
+                
+                icono.innerHTML = "📄";
+                icono.classList.add("file-icon");
+                enlace.href = archivo.url;
+                enlace.textContent = archivo.name;
+                enlace.target = "_blank";
+                
+                li.appendChild(icono);
+                li.appendChild(enlace);
+                lista.appendChild(li);
+            });
+        }
+        
+        obtenerArchivos(nombre, apellido);
+    </script>
+</body>
+</html>
