@@ -63,7 +63,8 @@ async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
       .catch(function (error) {
           console.error('Error al enviar datos:', error);
       }).finally(() => {
-        console.log(datos);
+        console.log(datos); 
+         sessionStorage.setItem('turnoReservado');
          window.location.reload();
       });
 }
