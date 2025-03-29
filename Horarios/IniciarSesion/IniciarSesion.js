@@ -47,7 +47,16 @@ function enviar(urlFinal) {
               sessionStorage.setItem('persona', personaJSON);
               localStorage.setItem('Nombre', JSON.stringify(data.nombre));
               localStorage.setItem('Apellido', JSON.stringify(data.apellido));
-              window.location.href = "../index.html";
+              console.log(sessionStorage.getItem("volverAForo"));
+              if(sessionStorage.getItem("volverAForo") != null){
+                sessionStorage.removeItem("volverAForo");
+                window.location.href = "/Foro";
+              }else if(sessionStorage.getItem("volverAArq") != null){
+                  sessionStorage.removeItem("volverAArq");
+                  window.location = '/Arq';
+              }else{
+                window.location.href = "../index.html";
+              }
           }
           else{
               Swal.fire({

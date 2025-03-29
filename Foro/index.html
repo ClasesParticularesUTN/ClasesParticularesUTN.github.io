@@ -10,7 +10,7 @@
         }
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(to right, #1e3c72, #2a5298);
+            background: linear-gradient(to right, #9b4922, #e96b31);
             text-align: center;
             margin: 0;
             padding: 0;
@@ -20,6 +20,7 @@
             align-items: center;
             height: 100dvh;
             padding: 5%;
+            flex-direction: column;
         }
         .container {
             max-width: 600px;
@@ -94,12 +95,17 @@
             margin: 50px auto;
             display: none;
             line-height: 1.5; /* 1.5 veces el tamaño de la fuente */
-
+        }
+        #IniciarSesion{
+            display: none;
+            background-color: #a13503b0;
+            border:1px outset #4b1902;
         }
     </style>
 </head>
 <body>
     <div id="info" class="info">📂 En esta sección podrán encontrar todo el material compartido en clase (pizarras donde se escribio o material de estudio).</div>
+    <button id="IniciarSesion" class="refresh-btn" onclick="IniciarSesion()">Iniciar Sesion</button>
     <div class="container" id="contenedor">
         <h1>Archivos del Alumno</h1>
         <p id="loading" class="loading">Cargando archivos...</p>
@@ -111,6 +117,7 @@
         if (localStorage.getItem('Nombre') == null) {
             document.getElementById("contenedor").style.display = "none";
             document.getElementById("info").style.display = "block";
+            document.getElementById("IniciarSesion").style.display = "block";
         }
 
         const nombre = JSON.parse(localStorage.getItem('Nombre'));
@@ -159,7 +166,10 @@
                 lista.appendChild(li);
             });
         }
-        
+        function IniciarSesion() {
+            sessionStorage.setItem("volverAForo","");
+            window.location='../Horarios/IniciarSesion/IniciarSesion.html';
+        }        
         obtenerArchivos(nombre, apellido);
     </script>
 </body>
