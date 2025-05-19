@@ -442,9 +442,12 @@ function multiplicarDosNumeros(n1,n2){
         }else{
             console.log("usuario no permitido");
         }
-     }else{
-        sessionStorage.setItem("volverAArq","");
-	     window.location.href = "../Horarios/IniciarSesion/IniciarSesion.html";
+     }
+     else{
+        if (confirm("¿Desea iniciar sesión?")) {
+            sessionStorage.setItem("volverAArq", "");
+            window.location.href = "../Horarios/IniciarSesion/IniciarSesion.html";
+        }
      }
 })()
 
