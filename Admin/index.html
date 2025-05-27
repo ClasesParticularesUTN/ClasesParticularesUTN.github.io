@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Horarios por Dar</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #horarios {
+      max-width: 600px;
+      margin: auto;
+      border-collapse: collapse;
+      width: 100%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background-color: #fff;
+    }
+
+    #horarios th, #horarios td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+
+    #horarios th {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    #mensaje {
+      text-align: center;
+      margin-top: 20px;
+      font-style: italic;
+      color: #888;
+    }
+
+    button {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Horarios de Clases por Dar</h1>
+
+  <button onclick="cargarHorarios()">Cargar Horarios</button>
+
+  <table id="horarios">
+    <thead>
+      <tr>
+        <th>Horario</th>
+        <th>Persona</th>
+      </tr>
+    </thead>
+    <tbody id="tabla-body">
+      <!-- Contenido dinámico -->
+    </tbody>
+  </table>
+
+  <p id="mensaje"></p>
+
+  <script>
+    async function cargarHorarios() {
+      const url = "https://script.google.com/macros/s/AKfycbz8Wn9OU94Xg6zFHYYh44iZ9_ETUE4HUI-se9WtjAnd2OhKAS4ct2pXNKWLFWbio9PK/exec?funcion=horariosPorDar";
+
+      const tabla = document.getElementById("tabla-body");
+      const mensaje = document.getElementById("mensaje");
+
+      tabla.innerHTML = "";
+      mensaje.textContent = "Cargando...";
+
+      try {
+        const res = await fetch(url);
+        const datos = await res.json();
+
+        if (datos.length === 0) {
+          mensaje.textContent = "No hay horarios por dar.";
+          return;
+        }
+
+        datos.forEach(item => {
+          const fila = document.createElement("tr");
+          const celdaHorario = document.createElement("td");
+          const celdaPersona = document.createElement("td");
+
+          // Si estás devolviendo strings del tipo "miércoles, 28/05 15:00 Joaquin Lorincz"
+          // podés separar el horario y la persona
+          const partes = item.split(" ");
+          const horario = partes.slice(0, 3).join(" ");
+          const persona = partes.slice(3).join(" ");
+
+          celdaHorario.textContent = horario;
+          celdaPersona.textContent = persona;
+
+          fila.appendChild(celdaHorario);
+          fila.appendChild(celdaPersona);
+          tabla.appendChild(fila);
+        });
+
+        mensaje.textContent = "";
+      } catch (error) {
+        console.error(error);
+        mensaje.textContent = "Error al obtener los horarios.";
+      }
+    }
+  </script>
+</body>
+</html>
