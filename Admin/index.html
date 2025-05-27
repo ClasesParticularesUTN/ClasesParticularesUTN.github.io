@@ -81,7 +81,7 @@
 
   <script>
     async function cargarHorarios() {
-      const url = "https://script.google.com/macros/s/AKfycbz8Wn9OU94Xg6zFHYYh44iZ9_ETUE4HUI-se9WtjAnd2OhKAS4ct2pXNKWLFWbio9PK/exec?funcion=horariosPorDar";
+      const url = "https://script.google.com/macros/s/AKfycbxZ7FlfGCHXdmVTD7UFUMwVxu-Cjz1NEL_cf7021PUWEcfLTXKjU6WyFHAKouTU21wc/exec?funcion=horariosPorDar";
 
       const tabla = document.getElementById("tabla-body");
       const mensaje = document.getElementById("mensaje");
@@ -123,6 +123,14 @@
         mensaje.textContent = "Error al obtener los horarios.";
       }
     }
+
+    document.getElementById("tabla-body").addEventListener("click", function(event) {
+      if (event.target && event.target.nodeName === "TD" && event.target.cellIndex === 1) {
+        const nombre = event.target.textContent.trim();
+        const nombreCodificado = encodeURIComponent(nombre);
+        window.location.href = `alumnos.html#${nombreCodificado}`;
+      }
+    });
   </script>
 </body>
 </html>

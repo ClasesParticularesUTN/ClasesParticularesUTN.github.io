@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Panel Alumnos Responsive Mejorado</title>
+<style>
+  /* --- estilos que ya tenías --- */
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    background: #f4f6f8;
+    color: #2f2f2f;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  #app {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  aside {
+    width: 260px;
+    background-color: #2e3a59;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+
+  aside h2 {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+
+  #buscadorAlumnos {
+    padding: 0.5rem;
+    border-radius: 6px;
+    border: none;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+  }
+
+  #listaAlumnos {
+    flex-grow: 1;
+    overflow-y: auto;
+  }
+
+  .alumno-btn {
+    width: 100%;
+    background: #3b4b6b;
+    border: none;
+    color: white;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.4rem;
+    border-radius: 5px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+  }
+  .alumno-btn:hover {
+    background: #506087;
+  }
+
+  main {
+    flex-grow: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    background: white;
+  }
+
+  .info-card {
+    max-width: 600px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+
+  .info-card h2 {
+    margin-bottom: 1rem;
+    color: #2e3a59;
+  }
+
+  .info-card ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  .info-card li {
+    margin-bottom: 0.6rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.4rem;
+  }
+
+  .info-card li span {
+    font-weight: 600;
+  }
+
+  #btnMenu {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: #2e3a59;
+    border: none;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 1100;
+  }
+
+  #btnMenu:focus {
+    outline: 2px solid #506087;
+  }
+
+  #btnMenu div {
+    width: 25px;
+    height: 3px;
+    background: white;
+    margin: 4px 0;
+  }
+
+  #loader {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  .spinner {
+    border: 5px solid #ccc;
+    border-top: 5px solid #2e3a59;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to {transform: rotate(360deg);}
+  }
+
+  @media (max-width: 768px) {
+    #btnMenu {
+      display: block;
+    }
+
+    #app {
+      position: relative;
+    }
+
+    aside {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      transform: translateX(-100%);
+      box-shadow: 2px 0 12px rgba(0,0,0,0.3);
+    }
+
+    aside.open {
+      transform: translateX(0);
+    }
+
+    main {
+      padding: 1rem 1rem 2rem 1rem;
+      overflow-y: auto;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .info-card {
+      padding: 1rem 1rem 1.5rem 1rem;
+    }
+
+    .alumno-btn {
+      font-size: 0.9rem;
+      padding: 0.6rem 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <button id="btnMenu" aria-label="Abrir menú">
+    <div></div>
+    <div></div>
+    <div></div>
+  </button>
+  <div id="app">
+    <aside id="sidebar" role="navigation" aria-label="Lista de alumnos">
+      <h2>Lista de Alumnos</h2>
+      <input type="text" id="buscadorAlumnos" placeholder="Buscar alumno..." aria-label="Buscar alumno" />
+      <div id="listaAlumnos" tabindex="0"></div>
+      <div id="loader">
+        <div class="spinner"></div>
+      </div>
+    </aside>
+    <main id="mainContent" tabindex="0" aria-live="polite">
+      <div id="infoAlumno" class="info-card" style="display:none;"></div>
+      <p id="mensajeSeleccion" style="max-width:600px; margin: 2rem auto; color:#666; text-align:center;">Selecciona un alumno para ver su información.</p>
+    </main>
+  </div>
+  <script src="datosFicticios.js"></script>
+<script>
+  const btnMenu = document.getElementById('btnMenu');
+  const sidebar = document.getElementById('sidebar');
+  const listaAlumnos = document.getElementById('listaAlumnos');
+  const infoAlumno = document.getElementById('infoAlumno');
+  const buscador = document.getElementById('buscadorAlumnos');
+  const loader = document.getElementById('loader');
+  const mensajeSeleccion = document.getElementById('mensajeSeleccion');
+
+  let alumnosGlobal = [];
+
+  btnMenu.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+  });
+
+  async function obtenerAlumnos() {
+    loader.style.display = "flex";
+    try {
+      const res = await fetch("https://script.google.com/macros/s/AKfycbxZ7FlfGCHXdmVTD7UFUMwVxu-Cjz1NEL_cf7021PUWEcfLTXKjU6WyFHAKouTU21wc/exec?funcion=obtenerAlumnos");
+      let alumnos = await res.json();
+
+      // Si quieres agregar alumnos ficticios para demo, descomenta esta línea y crea un array alumnosFicticios
+    
+
+      alumnosGlobal = alumnos;
+      if (location.hash !== "#true") {
+          alumnosGlobal = alumnosGlobal.concat(alumnosFicticios);
+      }
+      mostrarAlumnos(alumnosGlobal);
+    } catch (err) {
+      alert("Error al obtener alumnos");
+      console.error(err);
+    } finally {
+      loader.style.display = "none";
+    }
+  }
+
+  function mostrarAlumnos(alumnos) {
+    listaAlumnos.innerHTML = "";
+    if (alumnos.length === 0) {
+      listaAlumnos.innerHTML = "<p style='color:#ccc; text-align:center;'>No se encontraron alumnos</p>";
+      return;
+    }
+    alumnos.forEach(alumno => {
+      const btn = document.createElement("button");
+      btn.className = "alumno-btn";
+      btn.textContent = `${alumno.nombre} ${alumno.apellido}`;
+      btn.onclick = () => {
+        mostrarInfo(alumno);
+        if (window.innerWidth <= 768) {
+          sidebar.classList.remove('open');
+        }
+      };
+      listaAlumnos.appendChild(btn);
+    });
+  }
+
+  async function obtenerHorariosAlumno(alumno) {
+    const indice = alumnosGlobal.findIndex(a => a.correoElectronico === alumno.correoElectronico);
+    console.log("Índice del alumno en la lista:", indice);
+    loader.style.display = "flex";
+    try {
+      // Cambia 'alumno.id' por el campo que identifique único a cada alumno
+      const urlHorarios = `https://script.google.com/macros/s/AKfycbxvxM3V6s4Pg4CKcSCOTpq44_9JtpaBGiyZJwYTEcQW0hNZ2SMVPcCUaWi4dOL-sFjP/exec?funcion=horariosCompleto&indiceHoja=${indice}`;
+      const res = await fetch(urlHorarios);
+      if(!res.ok) throw new Error("Error en la petición de horarios");
+      const horarios = await res.json();
+      return horarios;
+    } catch (error) {
+      alert("Error al obtener horarios del alumno");
+      console.error(error);
+      return null;
+    } finally {
+      loader.style.display = "none";
+    }
+  }
+
+  async function mostrarInfo(alumno) {
+    mensajeSeleccion.style.display = "none";
+    infoAlumno.style.display = "block";
+
+    infoAlumno.innerHTML = `
+      <h2>${alumno.nombre} ${alumno.apellido}</h2>
+      <ul>
+        ${Object.entries(alumno).map(([key, val]) => {
+          if (key.toLowerCase() === "nombre" || key.toLowerCase() === "apellido") return "";
+          if (key === "contrasea") return `<li><span>Contraseña:</span> ${val}</li>`;
+          if (key === "aoIngreso") return `<li><span>Año Ingreso:</span> ${val}</li>`;
+          if (key === "estadoEnLaMateriaa") return `<li><span>Estado en La materia:</span> ${val}</li>`;
+          const keyCapitalized = key.charAt(0).toUpperCase() + key.slice(1);
+          return `<li><span>${keyCapitalized}:</span> ${val}</li>`;
+        }).join("")}
+      </ul>
+      <button id="btnMostrarHorarios" style="margin-top:1rem; padding:0.5rem 1rem; background:#2e3a59; color:white; border:none; border-radius:5px; cursor:pointer;">Mostrar horarios</button>
+      <div id="contenedorHorarios" style="margin-top:1rem;"></div>
+    `;
+
+    const btnHorarios = document.getElementById('btnMostrarHorarios');
+    const contenedorHorarios = document.getElementById('contenedorHorarios');
+
+    btnHorarios.onclick = async () => {
+      contenedorHorarios.innerHTML = '<p>Cargando horarios...</p>';
+      const horarios = await obtenerHorariosAlumno(alumno);
+      if (!horarios || horarios.length === 0) {
+        contenedorHorarios.innerHTML = "<p>No se encontraron horarios para este alumno.</p>";
+        return;
+      }
+      let htmlHorarios = "<ul>";
+      horarios.forEach(h => {
+        htmlHorarios += `<li><strong>${h}</li>`;
+      });
+      htmlHorarios += "</ul>";
+      contenedorHorarios.innerHTML = htmlHorarios;
+    };
+  }
+
+  buscador.addEventListener('input', () => {
+    const filtro = buscador.value.toLowerCase();
+    const filtrados = alumnosGlobal.filter(alumno => {
+      return alumno.nombre.toLowerCase().includes(filtro) || alumno.apellido.toLowerCase().includes(filtro);
+    });
+    mostrarAlumnos(filtrados);
+  });
+
+
+  // Cerrar sidebar al hacer clic fuera en móvil
+  document.addEventListener('click', e => {
+    if (window.innerWidth <= 768 && sidebar.classList.contains('open')) {
+      if (!sidebar.contains(e.target) && e.target !== btnMenu) {
+        sidebar.classList.remove('open');
+      }
+    }
+  });
+
+  function normalizar(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
+
+  window.addEventListener("DOMContentLoaded", async () => {
+    const hash = decodeURIComponent(window.location.hash.substring(1)).toLowerCase().trim(); // "joaquín lorincs"
+    await obtenerAlumnos(); // Cargar los alumnos al inicio
+    if (hash) {
+        const alumno = alumnosGlobal.find(a => 
+            normalizar(`${a.nombre} ${a.apellido}`) === normalizar(hash)
+        );
+        if (alumno) {
+        mostrarInfo(alumno); // ✅ tu función que muestra los datos
+        } else {
+        console.warn("No se encontró ningún alumno con el nombre del hash:", normalizar(hash));
+        }
+    }
+});
+
+</script>
+</body>
+</html>
