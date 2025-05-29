@@ -37,8 +37,7 @@ document.querySelector(".enviarReserva").addEventListener("click", async () => {
 
     }
     else {
-        await asignarHorario(reservados,numeroHoja);
-        await enviarCeldasReservadas(reservados,numeroHoja);
+        window.location.hash = "#VentanaModal";
     }
 });
 
@@ -64,25 +63,36 @@ async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
           console.error('Error al enviar datos:', error);
       }).finally(() => {
         console.log(datos); 
-         sessionStorage.setItem('turnoReservado','');
-         window.location.reload();
+         Swal.fire({
+                icon: 'success',
+                title: 'Datos enviados',
+                text: 'Los datos se han enviado correctamente.',
+            }).then(() => {
+                // Redirige a la página de horarios
+                window.location.hash = "";
+                location.reload();
+
+            });
       });
 }
 let metodoDePago = "";
 
-async function asignarHorario(celdas, numeroDeHoja) {
+async function asignarHorario(celdas, numeroDeHoja,integrantes = []) {
     if (numeroDeHoja == undefined) numeroDeHoja = 0;
     let datos = {
         persona: Alumno,
         funcion: "asignarHorario",
         celdas: celdas,
         numeroHoja: numeroDeHoja,
-        metodoDePago: metodoDePago
+        metodoDePago: metodoDePago,
+        integrantes: integrantes,
     };
     
-    document.querySelector("table").style.display = "none";
-    document.querySelector(".botones").style.display = "none";
-    document.querySelector(".containerLoader").style.display = "flex";
+    if (!integrantes || integrantes.length === 0) {
+        document.querySelector("table").style.display = "none";
+        document.querySelector(".botones").style.display = "none";
+        document.querySelector(".containerLoader").style.display = "flex";
+    }
     
     await fetch(URLUsuarios, {
         method: 'POST',

@@ -3,70 +3,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    top:0;
-    right:0;
-    bottom:0;
-    left:0;
-    background-color: #0008;
+    top:0; right:0; bottom:0; left:0;
+    background-color: rgba(0, 0, 0, 0.5);
     opacity: 0;
-    transition: opacity 1s;
-    z-index:-1;
+    transition: opacity 0.5s ease;
+    z-index: -1;
     width: 100%;
-}
-
-.VentanaModal {
-    position:relative;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 70%;
-    height: 70%;
-    border: thin solid black;
-    border-radius: 15px;
-    overflow: auto;
-    background-color: white;
-    box-shadow: -3px -8px 71px 12px rgba(0, 179, 255, 0.75); -webkit-box-shadow: -3px -8px 71px 12px rgba(0, 179, 255, 0.75); -moz-box-shadow: -3px -8px 71px 12px rgba(0, 179, 255, 0.75);
-}
-
-.VentanaModal p, .VentanaModal h1 {
-    text-align: center;
-}
-
-.VentanaModal #cerrarVentana{
-    position: absolute;
-    top:20px;
-    right: 30px;
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    text-align: center;
-    line-height: 30px;
-    border-radius: 50%;
-    border: 2px solid black;
-    text-decoration: none;
-    color: black;
-    transition: transform 0.2s;
-    &:hover{
-        transform:scale(1.5);
-    }
-}
-
-#abrirVentana {
-    border: 2px solid black;
-    border-radius: 15px;
-    background-color: yellow;
-    width: 300px;
-    height: 50px;
-    overflow: auto;
-    position:relative;
-    z-index: 2;
-    &:hover{
-        cursor:pointer
-    }
-    text-align: center;
-    line-height: 50px;
-    top:calc(50vh - 50px);
+    padding: 1rem;
 }
 
 #VentanaModal:target {
@@ -74,51 +17,95 @@
     z-index: 3;
 }
 
-.botonPago{
+.VentanaModal {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 0 20px rgba(0, 179, 255, 0.75);
     display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: 800;
-    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-    width: 40%;
-    height: 10dvh;
-    background-color: aquamarine;
-    margin: 10px;
-    border-radius: 5%;
-    white-space: pre-line;
-    text-align: center;
+    flex-direction: column;
+    gap: 1.5rem;
     position: relative;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.botonPago img{
-    width: 20%;
-    height: 100%;
+.VentanaModal h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+    text-align: center;
+}
+
+#cerrarVentana {
     position: absolute;
-    right: 20px;
+    top: 1rem;
+    right: 1rem;
+    background-color: #eee;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 32px;
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
-.transferencia img{
-    height: 90%;
+#cerrarVentana:hover {
+    background-color: #ccc;
+    transform: scale(1.2);
 }
 
-#OpcionesMercadoPago:target {
-    opacity: 1;
-    z-index: 4;
+.modalidad-opciones {
+    display: flex;
+    flex-direction: column; /* Esto hace que estén una debajo de la otra */
+    gap: 1rem;
+    align-items: center; /* Opcional: alinear a la izquierda */
 }
 
-@media (max-width:1000px){
-    .botonPago{
-        font-size: 60%;
+
+.radio-option {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+input[type="number"] {
+    padding: 0.4rem;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 100px;
+}
+
+.btn-enviar {
+    background-color: #00b3ff;
+    color: white;
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    align-self: center;
+    transition: background-color 0.3s;
+}
+
+.btn-enviar:hover {
+    background-color: #0099cc;
+}
+
+@media (max-width: 600px) {
+    .VentanaModal {
+        padding: 1rem;
+    }
+
+    .modalidad-opciones {
         flex-direction: column;
-        height: 15dvh;
-    }
-    .botonPago img{
-        position:static;
-        width: 50%;
-        height: 50%;
-        margin: 10px;
-    }
-    .VentanaModal h1{
-        font-size: 100%;
+        gap: 1rem;
     }
 }
