@@ -128,9 +128,23 @@
       if (event.target && event.target.nodeName === "TD" && event.target.cellIndex === 1) {
         const nombre = event.target.textContent.trim();
         const nombreCodificado = encodeURIComponent(nombre);
+
         window.location.href = `alumnos.html#${nombreCodificado}`;
       }
     });
+
+    cargarHorarios();
+
+    const nombre = JSON.parse(localStorage.getItem("Nombre"));
+    const apellido = JSON.parse(localStorage.getItem("Apellido"));
+
+    const esNombreValido = nombre === "Valentin";
+    const esApellidoValido = apellido === "Da Silva Catela" || apellido === "Da Silva";
+    if (!esNombreValido || !esApellidoValido) {
+      sessionStorage.setItem("Admin", "");
+      window.location.href = "../Horarios/IniciarSesion/IniciarSesion.html";
+    }
+
   </script>
 </body>
 </html>

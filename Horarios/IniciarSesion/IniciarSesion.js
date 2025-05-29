@@ -47,13 +47,17 @@ function enviar(urlFinal) {
               sessionStorage.setItem('persona', personaJSON);
               localStorage.setItem('Nombre', JSON.stringify(data.nombre));
               localStorage.setItem('Apellido', JSON.stringify(data.apellido));
-              console.log(sessionStorage.getItem("volverAForo"));
               if(sessionStorage.getItem("volverAForo") != null){
                 sessionStorage.removeItem("volverAForo");
                 window.location.href = "/Foro";
               }else if(sessionStorage.getItem("volverAArq") != null){
                   sessionStorage.removeItem("volverAArq");
                   window.location = '/Arq';
+
+              }else if(sessionStorage.getItem("Admin") != null){
+                alert("Seras redirigido a la administracion.");
+                sessionStorage.removeItem("Admin");
+                window.location.href = "/Admin";
               }else{
                 window.location.href = "../index.html";
               }
