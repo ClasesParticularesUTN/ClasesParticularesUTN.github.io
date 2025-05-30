@@ -38,7 +38,7 @@
     text-align: center;
 }
 
-#cerrarVentana {
+#cerrarVentanaModalidad {
     position: absolute;
     top: 1rem;
     right: 1rem;
@@ -55,7 +55,7 @@
     transition: background-color 0.3s, transform 0.2s;
 }
 
-#cerrarVentana:hover {
+#cerrarVentanaModalidad:hover {
     background-color: #ccc;
     transform: scale(1.2);
 }
@@ -101,7 +101,7 @@ input[type="number"] {
 
 @media (max-width: 600px) {
     .VentanaModal {
-        padding: 1rem;
+        padding: 60px;
     }
 
     .modalidad-opciones {

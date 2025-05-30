@@ -1,13 +1,15 @@
 function mostrarCampos() {
+    const modalidad = document.querySelector('input[name="modalidad"]:checked');
     const grupoContainer = document.getElementById('grupo-container');
     const numIntegrantes = document.getElementById('num-integrantes');
-    
-    grupoContainer.style.display = 'flex';
-    
-    if (numIntegrantes.value) {
-    
-        generarCampos();
-    
+
+    if (modalidad && modalidad.value === 'grupal') {
+        grupoContainer.style.display = 'flex';
+        if (numIntegrantes.value) {
+            generarCampos();
+        }
+    } else {
+        grupoContainer.style.display = 'none';
     }
 }
 
@@ -146,4 +148,27 @@ if (btnEnviar) {
     });
 }
 
+// Reinicia el modal al hacer clic en "cerrarVentana"
+const btnCerrar = document.getElementById('cerrarVentanaModalidad');
+if (btnCerrar) {
+    btnCerrar.addEventListener('click', () => {
+        // Reinicia el campo de cantidad de integrantes
+        const numIntegrantes = document.getElementById('num-integrantes');
+        if (numIntegrantes) {
+            numIntegrantes.value = '';
+        }
+        // Oculta el contenedor de grupo
+        const grupoContainer = document.getElementById('grupo-container');
+        if (grupoContainer) {
+            grupoContainer.style.display = 'none';
+        }
+        // Limpia los campos de integrantes
+        const integrantesDiv = document.getElementById('integrantes');
+        if (integrantesDiv) {
+            integrantesDiv.innerHTML = '';
+        }
 
+        const modalidadRadios = document.querySelectorAll('input[name="modalidad"]');
+        modalidadRadios.forEach(radio => radio.checked = false);
+    });
+}
