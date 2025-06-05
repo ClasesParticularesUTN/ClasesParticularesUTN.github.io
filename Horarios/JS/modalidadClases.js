@@ -77,10 +77,13 @@ async function enviarCorreosIntegrantes() {
         const response = await fetch(url);
         const data = await response.json();
         if (data.error && data.error !== false) {
+            console.log(data);
+            let mensaje = calcularMensaje(data);
+            console.log(mensaje);
             Swal.fire({
                 icon: 'error',
-                title: 'Error',
-                text: data.error
+                title: 'Todos los integrantes deben estar registrados en la pagina',
+                html: mensaje
             }).then(() => {
                 // Muestra nuevamente los campos del modal
                 const modal = document.querySelector('.modal');
@@ -218,4 +221,16 @@ function cargarLoader() {
                 }
             }
         }
+}
+
+function calcularMensaje(data) {
+    let mensaje = '';
+    if(data.faltantes){
+        mensaje += data.faltantes;
+        mensaje += '<br><br>';
+    }
+    if(data.deudores != false){
+        mensaje += data.deudores;
+    }
+    return mensaje;
 }
