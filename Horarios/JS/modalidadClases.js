@@ -234,3 +234,14 @@ function calcularMensaje(data) {
     }
     return mensaje;
 }
+
+document.addEventListener('keydown', function(e) {
+        // Solo si el modal está visible
+        const modal = document.querySelector('.modal');
+        if (!modal || modal.style.display === 'none') return;
+        // Si el foco está en un input de correo de integrante
+        if (e.key === 'Enter' && document.activeElement && document.activeElement.matches('input[id^="correo-integrante-"]')) {
+            e.preventDefault();
+            btnEnviar.click();
+        }
+    });
