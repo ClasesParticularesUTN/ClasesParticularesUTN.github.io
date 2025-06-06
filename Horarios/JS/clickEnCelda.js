@@ -47,13 +47,14 @@ tds.forEach(td => {
         if(validarHorariosSeleccionados(dataName)){
           
           if(validarFecha(dataName)){
+
+            if(td.style.backgroundColor == 'rgb(255, 224, 102)'){
+              seleccionoUnGrupal = true;
+            }
             td.style.backgroundColor = "red";
             
             console.log("Entre")
             horariosSeleccionados.push(dataName);
-            if(td.style.backgroundColor == 'rgb(255, 224, 102)'){
-              seleccionoUnGrupal = true;
-            }
           }else{
             Swal.fire({
               icon: "error",
