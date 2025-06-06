@@ -2021,7 +2021,7 @@ async function grupos(expresion){
         let filas = tablaKarnaught.rows;
         for(let i = 1; i < filas.length; i++){
             for(let j = 1; j < filas[0].cells.length; j++){
-                //                 if(filas[i].cells[j].innerHTML == "X"){
+                                 if(filas[i].cells[j].innerHTML == "X"){
                     hayX = true;
                     break;
                 }
@@ -2032,7 +2032,7 @@ async function grupos(expresion){
             karnaughConX(tablaKarnaught);
         }
         expresion = primerFormaCanonica();
-    } 
+
     if(typeof expresion == "string") expresion = sumaDeProductosComoVector(expresion);
     let comb = combinaciones(expresion,8);
     for(let elem of comb){
@@ -2101,7 +2101,7 @@ async function grupos(expresion){
             if(unaLibre) await pintar(vector);
     }
     let vector = simplificarExpresion(expresion);
-    let vectorFinal = [];
+    var vectorFinal = [];
     let elemento = document.createElement("p");
     if(document.getElementById("pasos").lastChild.innerHTML = "Suma"){
         document.getElementById("pasos").removeChild(document.getElementById("pasos").lastChild);
@@ -2147,7 +2147,7 @@ function devolverCelda(posicionBinaria){
     if(posicionBinaria.length == 3){
         fila = parseInt(posicionBinaria[0])+1;
         columna = posicionBinaria.slice(1);
-        //         switch(columna){
+                 switch(columna){
             case "00": columna = 1;break;
             case "01": columna = 2;break;
             case "11": columna = 3;break;
@@ -2214,7 +2214,7 @@ function tablaDeNxM(fila,columna){
                     else if(td.innerText == "1") td.innerText = "X";
                     else if(td.innerText == "X") td.innerText = "0";
                      //                 }); 
-            } 
+            }) 
             tr.appendChild(td);
         }
         table.appendChild(tr);
@@ -2346,7 +2346,7 @@ function menuSimplificar(){
         document.getElementById(id).addEventListener('click', () =>{
             cambiarDeContenedor(id);
         })
-    }))
+    //}))
 }
 
 function tablaDeVerdad(cantVariables){
@@ -2420,7 +2420,7 @@ function tablaASumaDeProductos(tabla){
             let combinacion = "";
             //             for(let j = 0; j < filas[1].cells.length - 1;j++){
                 combinacion+=filas[i].cells[j].innerHTML;
-            }
+            //}
             if(filas[i].cells[filas[i].cells.length - 1].innerHTML == "1"){
                 resultado.push(pasarALetras(combinacion));
             }
@@ -2442,7 +2442,7 @@ function formaMasEficiente(tabla){
     let filas = tabla.rows;
     let indices = [];
     let contadorX = 0;
-    let sumaDeProductosActual, tablaFinal;
+    var sumaDeProductosActual, tablaFinal;
     for(let i = 2; i < filas.length; i++){
         let resultado = filas[i].cells[filas[i].cells.length - 1].innerHTML;
         if(resultado == "X") {
@@ -2458,14 +2458,14 @@ function formaMasEficiente(tabla){
         let indiceIndices = 0;
 //                 for(let i = 0; i < indices.length;i++){
             tablaAux.rows[indices[i]].cells[tablaAux.rows[2].cells.length - 1].innerHTML = numero[i];
-        }
+        //}
         let suma = simplificarExpresion(tablaASumaDeProductos(tablaAux));
         suma = eliminarCadenasVacias(suma).join("+");
         //         if(i == 0){
             sumaDeProductosActual = suma;
             tablaFinal = tablaAux;
-        }
-        else if(primerCadenaMasSimplificada(suma,sumaDeProductosActual)){
+        //}
+        if(primerCadenaMasSimplificada(suma,sumaDeProductosActual)){
             //             sumaDeProductosActual = suma;
             tablaFinal = tablaAux;
         }else{
@@ -2537,11 +2537,11 @@ function karnaughConX(tablaKarnaugh){
         intercambiarPosiciones(valores,6,7);
         //         for(let j = 1; j < filasKarnaugh[0].cells.length;j++){
             valores.push(filasKarnaugh[4].cells[j].innerHTML);
-        }
+        //}
         intercambiarPosiciones(valores,10,11);
         //         for(let j = 1; j < filasKarnaugh[0].cells.length;j++){
             valores.push(filasKarnaugh[3].cells[j].innerHTML);
-        }
+        //}
         intercambiarPosiciones(valores,14,15);
         //         let cantVariables = 4
         let tabla = document.createElement("table");
@@ -2611,8 +2611,3 @@ function karnaughConX(tablaKarnaugh){
         }
     }
 }
-
-//Combinaciones
-/* 
-    0000,0010,0100(X),0110,1000,1010
-*/

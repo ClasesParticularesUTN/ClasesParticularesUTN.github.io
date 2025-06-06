@@ -2,11 +2,10 @@ let diasConDemanda = [];
 let soloGrupales = ["Miércoles<br>11/06"];
 // --- Pintar columnas según demanda o solo grupales ---
 async function pintarColumnasPorDemanda() {
-    // Selecciona todos los th de la tabla de horarios
-    // Asegúrate de seleccionar los th dentro del thead de la tabla de horarios
     const ths = document.querySelectorAll('.dia');
+    
          ths.forEach((th, idx) => {
-        
+        console.log(th.innerHTML);
         const thHtml = th.innerHTML.trim();
                  // Busca si el th está en alguno de los vectores
         if (diasConDemanda.includes(thHtml)) {
