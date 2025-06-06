@@ -143,6 +143,9 @@ if (btnEnviar) {
                     text: 'El horario seleccionado es exclusivo para clases grupales. Por favor, elige otro horario para la modalidad individual.'
                 });
                 return;
+            }else{
+                console.log(seleccionoUnGrupal);
+                alert();
             }
             window.location.hash = '';
             await asignarHorario(reservados,numeroHoja);
