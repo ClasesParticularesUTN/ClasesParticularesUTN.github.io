@@ -77,13 +77,10 @@ async function enviarCorreosIntegrantes() {
         const response = await fetch(url);
         const data = await response.json();
         if (data.error && data.error !== false) {
-            console.log(data);
-            let mensaje = calcularMensaje(data);
-            console.log(mensaje);
             Swal.fire({
                 icon: 'error',
-                title: 'Todos los integrantes deben estar registrados en la pagina',
-                html: mensaje
+                title: 'Error',
+                text: data.error
             }).then(() => {
                 // Muestra nuevamente los campos del modal
                 const modal = document.querySelector('.modal');
@@ -127,8 +124,16 @@ if (btnEnviar) {
     btnEnviar.addEventListener('click', async ()=>{
         const modalidad = document.querySelector('input[name="modalidad"]:checked').value;
         if (modalidad === 'grupal') {
+            if (horariosSeleccionados.length < 2) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Selecciona al menos dos horarios',
+                    text: 'En la modalidad grupal debes reservar por lo menos dos horas.'
+                });
+                return;
+            }
             enviarCorreosIntegrantes();
-        }else if (modalidad === 'individual') {
+        } else if (modalidad === 'individual') {
             window.location.hash = '';
             await asignarHorario(reservados,numeroHoja);
             await enviarCeldasReservadas(reservados,numeroHoja);
@@ -221,16 +226,4 @@ function cargarLoader() {
                 }
             }
         }
-}
-
-function calcularMensaje(data) {
-    let mensaje = '';
-    if(data.faltantes){
-        mensaje += data.faltantes;
-        mensaje += '<br><br>';
-    }
-    if(data.deudores != false){
-        mensaje += data.deudores;
-    }
-    return mensaje;
 }
