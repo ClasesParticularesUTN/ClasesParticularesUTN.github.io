@@ -6,7 +6,7 @@ botonSiguiente.addEventListener("click",()=>{
         colocarDias(semana2[0]);
         pintarCeldas(semana2[1]);
         pintarCeldas(celdasFijas);
-        ponerEnVioleta(diasConDemandaSemana2,1);
+        pintarColumnasPorDemanda();
         botonSiguiente.innerHTML = "Semana Anterior";
         horariosSeleccionados = [];
         numeroHoja  = 1;
@@ -15,7 +15,7 @@ botonSiguiente.addEventListener("click",()=>{
         colocarDias(semana1[0]);
         pintarCeldas(semana1[1]);
         pintarCeldas(celdasFijas);
-        ponerEnVioleta(diasConDemandaSemana1,1);
+        pintarColumnasPorDemanda();
         botonSiguiente.innerHTML = "Siguiente Semana";
         horariosSeleccionados = [];
         numeroHoja  = 0;
