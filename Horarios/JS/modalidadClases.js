@@ -46,6 +46,13 @@ async function enviarCorreosIntegrantes() {
             text: 'En la modalidad grupal debe haber al menos 2 integrantes.'
         });
         return;
+    }else if(horariosSeleccionados.length < 2){
+        Swal.fire({
+            icon: 'error',
+            title: 'Horas insuficientes',
+            text: 'Las clases grupales tienen un minimo de dos horas.'
+        });
+        return;
     }
     let correos = [];
     let camposCompletos = true;
