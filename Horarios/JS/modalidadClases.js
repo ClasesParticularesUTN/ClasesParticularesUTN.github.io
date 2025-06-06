@@ -86,10 +86,10 @@ async function enviarCorreosIntegrantes() {
         if (data.error && data.error !== false) {
             console.log(data);
             let mensaje = calcularMensaje(data);
-            console.log(mensaje);
+            let titulo = data.faltantes? 'Todos los integrantes deben estar registrados en la pagina':'Deben dinero';
             Swal.fire({
                 icon: 'error',
-                title: 'Todos los integrantes deben estar registrados en la pagina',
+                title: titulo,
                 html: mensaje
             }).then(() => {
                 // Muestra nuevamente los campos del modal
@@ -136,6 +136,14 @@ if (btnEnviar) {
         if (modalidad === 'grupal') {
             enviarCorreosIntegrantes();
         }else if (modalidad === 'individual') {
+            if(seleccionoUnGrupal){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario no disponible',
+                    text: 'El horario seleccionado es exclusivo para clases grupales. Por favor, elige otro horario para la modalidad individual.'
+                });
+                return;
+            }
             window.location.hash = '';
             await asignarHorario(reservados,numeroHoja);
             await enviarCeldasReservadas(reservados,numeroHoja);
