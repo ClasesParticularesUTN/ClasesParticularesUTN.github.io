@@ -27,7 +27,7 @@ var listoSemana2 = false;
         semana1 = await cargarHorarios("celdasOcupadas","0");
         await colocarDias(semana1[0]);
         await pintarCeldas(semana1[1]);
-        await ponerEnVioleta(diasConDemandaSemana1,1);
+        await pintarColumnasPorDemanda();
         semana2 = await cargarHorarios("celdasOcupadas","1");
         quitarLoader();
     } catch (err) {
