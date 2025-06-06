@@ -1,6 +1,6 @@
 let botonSiguiente = document.querySelector(".sig");
 let numeroHoja  = 0;
-botonSiguiente.addEventListener("click",()=>{
+botonSiguiente.addEventListener("click",async ()=>{
     if(botonSiguiente.innerHTML == "Siguiente Semana"){
         despintarCeldas();
         colocarDias(semana2[0]);
@@ -13,9 +13,9 @@ botonSiguiente.addEventListener("click",()=>{
     }else{
         despintarCeldas();
         colocarDias(semana1[0]);
-        pintarCeldas(semana1[1]);
-        pintarCeldas(celdasFijas);
-        pintarColumnasPorDemanda();
+        await pintarCeldas(semana1[1]);
+        await pintarCeldas(celdasFijas);
+        await pintarColumnasPorDemanda();
         botonSiguiente.innerHTML = "Siguiente Semana";
         horariosSeleccionados = [];
         numeroHoja  = 0;

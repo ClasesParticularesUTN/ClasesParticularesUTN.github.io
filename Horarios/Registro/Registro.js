@@ -7,7 +7,6 @@ class EnvioPOST{
 
 
 document.getElementById('formularioRegistro').addEventListener('submit', function(event) {
-    console.log("asdasdasd")
     event.preventDefault();
     if(validarFormulario()){
         let formData = new FormData(this);
@@ -131,7 +130,6 @@ function validarFormulario() {
 function detectarSecuenciaNumeros(texto) {
     let resultado = false, contadorAscendente = 0,contadorDescendente = 0;
     for(let i = 0; i < (texto.length - 1);i++){
-        console.log(codigoAscii(texto[i]),codigoAscii(texto[i+1]));
         if(codigoAscii(texto[i]) === codigoAscii(texto[i+1])-1){
             contadorAscendente++;
         }else{
@@ -170,7 +168,6 @@ function textoConPalabrasProhibidas(texto, palabrasProhibidas) {
 
 
 function enviar(datos){
-	console.log(datos);
       // Envío de datos al servidor
       document.querySelector(".contenedorLouder").style.zIndex = "100";
       document.querySelector(".loader").style.display = "block";

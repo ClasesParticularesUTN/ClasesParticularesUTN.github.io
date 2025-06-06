@@ -58,11 +58,11 @@ async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(datos)
-    }).then(console.log("datos enviados"))
+    }).then()
       .catch(function (error) {
           console.error('Error al enviar datos:', error);
       }).finally(() => {
-        console.log(datos); 
+        
          Swal.fire({
                 icon: 'success',
                 title: 'Datos enviados',
@@ -101,8 +101,7 @@ async function asignarHorario(celdas, numeroDeHoja,integrantes = []) {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(datos)
-    }).then(console.log("datos enviados")).finally(console.log(datos))
-      .catch(function (error) {
+    }).then(       ).catch(function (error) {
           console.error('Error al enviar datos:', error);
       });
 }

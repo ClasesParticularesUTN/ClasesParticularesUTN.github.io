@@ -8,7 +8,6 @@ let nombreAvisos = Object.keys(avisos);
 
 nombreAvisos.forEach((aviso)=>{
     if(localStorage.getItem(aviso) === null && sessionStorage.getItem("persona")){
-        console.log("asdasdasdkaka");
         document.querySelector(".cafe").style.display = "block";
         const template = document.getElementById('aviso-template');
 

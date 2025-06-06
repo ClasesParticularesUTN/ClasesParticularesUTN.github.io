@@ -5,12 +5,10 @@ async function pintarColumnasPorDemanda() {
     // Selecciona todos los th de la tabla de horarios
     // Asegúrate de seleccionar los th dentro del thead de la tabla de horarios
     const ths = document.querySelectorAll('.dia');
-    console.log(ths,"ths");
-    ths.forEach((th, idx) => {
+         ths.forEach((th, idx) => {
         
         const thHtml = th.innerHTML.trim();
-        console.log(thHtml);
-        // Busca si el th está en alguno de los vectores
+                 // Busca si el th está en alguno de los vectores
         if (diasConDemanda.includes(thHtml)) {
             // Pintar toda la columna de violeta
             pintarColumna(idx+1, 'violet');
@@ -29,6 +27,7 @@ function pintarColumna(colIdx, color) {
         const celdas = fila.children;
         if (celdas[colIdx] && celdas[colIdx].innerHTML == '' && celdas[colIdx].style.backgroundColor != 'transparent') {
             celdas[colIdx].style.backgroundColor = color;
+            celdas[colIdx].innerHTML = 'Solo Grupal';
         }
     });
 }

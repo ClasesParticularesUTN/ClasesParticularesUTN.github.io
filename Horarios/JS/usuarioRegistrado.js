@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
 function actualizarDatos(correo,contraseña){
     let urlFinal = URLUsuarios + "?correo=" + correo + "&contrasenia=" + contraseña + "&funcion=validarUsuario";
     document.querySelector(".listaHorarios").style.display = "none";
-    console.log(urlFinal);
     fetch(urlFinal)
       .then(response => {
           if (!response.ok) {
@@ -22,7 +21,6 @@ function actualizarDatos(correo,contraseña){
           return response.json();
       })
       .then(data => {
-          console.log(data,"estoy aca");
           if(data.sesion){
               const personaJSON = JSON.stringify(data);
               sessionStorage.removeItem('persona');
@@ -30,13 +28,11 @@ function actualizarDatos(correo,contraseña){
               colocarDatos();
               document.querySelector(".listaHorarios").style.display = "block";
               document.querySelector("#LoaderSencillo").style.display = "none";
-              console.log("Llegue hasta aca")
           }
       })
       .catch(error => {
           console.error('There was a problem with the fetch operation:', error);
       })
-      console.log("Datos actualizados");
 }
 
 function colocarDatos(){

@@ -433,15 +433,13 @@ function multiplicarDosNumeros(n1,n2){
 (function activar(){
     if(sessionStorage.getItem('persona') !== null){
         let Aux = JSON.parse(sessionStorage.getItem('persona'));
-        console.log("probando validacion")
-        if(Aux.correoElectronico == "valedasilvacatela.vdc@gmail.com"){
+                 if(Aux.correoElectronico == "valedasilvacatela.vdc@gmail.com"){
             let contenedores = document.querySelectorAll(".container");
             contenedores.forEach((elem)=>{
                 elem.style.opacity = "1";
             }) 
         }else{
-            console.log("usuario no permitido");
-        }
+                     }
      }
      else{
         if (confirm("¿Desea iniciar sesión?")) {
@@ -1716,8 +1714,7 @@ function estaComplementamenteIncluido(cadena1,cadena2){
 }
 
 function C(...Mensajes){
-    console.log(...Mensajes);
-}
+     }
 
 function regla1Simplificacion(vector,llamadoDesdeInterfaz){
     let hiceAlgunaOperacion = false;
@@ -2024,8 +2021,7 @@ async function grupos(expresion){
         let filas = tablaKarnaught.rows;
         for(let i = 1; i < filas.length; i++){
             for(let j = 1; j < filas[0].cells.length; j++){
-                //console.log(filas[i].cells[j].innerHTML);
-                if(filas[i].cells[j].innerHTML == "X"){
+                //                 if(filas[i].cells[j].innerHTML == "X"){
                     hayX = true;
                     break;
                 }
@@ -2112,8 +2108,7 @@ async function grupos(expresion){
     }
     elemento.innerHTML = `f(${document.getElementById("karnaugh1").value}) = `;
     for(let elemento of vector) if(elemento != "") vectorFinal.push(elemento);
-    //console.log(vectorFinal)
-    elemento.innerHTML += vectorFinal.join(" + ");
+    //     elemento.innerHTML += vectorFinal.join(" + ");
     document.getElementById("pasos").appendChild(elemento);
 }
 
@@ -2152,8 +2147,7 @@ function devolverCelda(posicionBinaria){
     if(posicionBinaria.length == 3){
         fila = parseInt(posicionBinaria[0])+1;
         columna = posicionBinaria.slice(1);
-        //console.log(columna)
-        switch(columna){
+        //         switch(columna){
             case "00": columna = 1;break;
             case "01": columna = 2;break;
             case "11": columna = 3;break;
@@ -2219,8 +2213,7 @@ function tablaDeNxM(fila,columna){
                     if(td.innerText == "0") td.innerText = "1";
                     else if(td.innerText == "1") td.innerText = "X";
                     else if(td.innerText == "X") td.innerText = "0";
-                     //console.log(td.dataset.fila,td.dataset.columna)
-                }); 
+                     //                 }); 
             } 
             tr.appendChild(td);
         }
@@ -2230,8 +2223,7 @@ function tablaDeNxM(fila,columna){
 }
 
 function construirTabla(...variables){
-    //console.log("vector: ",variables);
-    if(variables == ""){
+    //     if(variables == ""){
         variables = document.getElementById("karnaugh1").value.split(",");
     }
     let cantVariables = variables.length, tabla;
@@ -2266,10 +2258,8 @@ function primerFormaCanonica(){
         for(let j = 1; j < filas[0].cells.length; j++){
             let celda = filas[i].cells[j];
             if(celda.innerHTML == "1"){
-                //console.log(i+1,j+1)
-                let posicion = filas[i].cells[0].innerHTML + filas[0].cells[j].innerHTML;
-                //console.log(posicion)
-                vector.push(pasarALetras(posicion));
+                //                 let posicion = filas[i].cells[0].innerHTML + filas[0].cells[j].innerHTML;
+                //                 vector.push(pasarALetras(posicion));
             }
         }
     }
@@ -2340,8 +2330,7 @@ function menuSimplificar(){
         menuPrincipal.style.display = "none";
         menuSimplificacion.style.display = "none";
         document.getElementById(ID.charAt(0).toLowerCase() + ID.slice(1)).style.display = "block";
-        //console.log(ID.charAt(0).toLowerCase() + ID.slice(1));
-        menuPrincipal.style.opacity = "1";
+        //         menuPrincipal.style.opacity = "1";
         menuPrincipal.style.position = "relative";
         document.querySelector(".options").style.overflow = "scroll";
         body.removeAttribute("style");
@@ -2353,8 +2342,7 @@ function menuSimplificar(){
     $hijos.forEach((hijo=>{
         ids.push(hijo.id);
     }))
-    //console.log(ids);
-    ids.forEach((id=>{
+    //     ids.forEach((id=>{
         document.getElementById(id).addEventListener('click', () =>{
             cambiarDeContenedor(id);
         })
@@ -2363,8 +2351,7 @@ function menuSimplificar(){
 
 function tablaDeVerdad(cantVariables){
     if(cantVariables == undefined) cantVariables = document.getElementById("primeraFormaCanonica1").value;
-    //console.log(cantVariables)
-    let tabla = document.createElement("table");
+    //     let tabla = document.createElement("table");
     const thead = document.createElement('thead');
     const encabezado = document.createElement('tr');
     const th = document.createElement('th');
@@ -2431,8 +2418,7 @@ function tablaASumaDeProductos(tabla){
     if(!hayX){
         for(let i = 2; i < filas.length;i++){
             let combinacion = "";
-            //console.log(filas[1].cells.length)
-            for(let j = 0; j < filas[1].cells.length - 1;j++){
+            //             for(let j = 0; j < filas[1].cells.length - 1;j++){
                 combinacion+=filas[i].cells[j].innerHTML;
             }
             if(filas[i].cells[filas[i].cells.length - 1].innerHTML == "1"){
@@ -2470,31 +2456,26 @@ function formaMasEficiente(tabla){
         tablaAux.innerHTML = tabla.innerHTML;
         while(numero.length < indices.length) numero = "0"+numero;
         let indiceIndices = 0;
-//        console.log(numero);
-        for(let i = 0; i < indices.length;i++){
+//                 for(let i = 0; i < indices.length;i++){
             tablaAux.rows[indices[i]].cells[tablaAux.rows[2].cells.length - 1].innerHTML = numero[i];
         }
         let suma = simplificarExpresion(tablaASumaDeProductos(tablaAux));
         suma = eliminarCadenasVacias(suma).join("+");
-        //console.log("suma: ",suma);
-        if(i == 0){
+        //         if(i == 0){
             sumaDeProductosActual = suma;
             tablaFinal = tablaAux;
         }
         else if(primerCadenaMasSimplificada(suma,sumaDeProductosActual)){
-            //console.log(suma, "fue superior a ",sumaDeProductosActual);
-            sumaDeProductosActual = suma;
+            //             sumaDeProductosActual = suma;
             tablaFinal = tablaAux;
         }else{
-            //console.log(suma, "no fue superior a ",sumaDeProductosActual);
-        }
+            //         }
     }
     if(!llamadoDesdeOtraFuncion){
         document.getElementById("TablaDeVerdad").innerHTML = tablaFinal.innerHTML;
     }
     tablaASumaDeProductos(tablaFinal);
-    //console.log(tablaFinal)
-    return tablaFinal;   
+    //     return tablaFinal;   
 }
 
 function primerCadenaMasSimplificada(cadena1,cadena2){
@@ -2507,18 +2488,14 @@ function primerCadenaMasSimplificada(cadena1,cadena2){
         let contadorVector1 = 0, contadorVector2 = 0;
         for(let i = 0; i < vector1.length;i++){
             //comparo termino por termino
-            //console.log("vectores: ",vector1[i],vector2[i]);
-            if(cantCaracteres(vector1[i]) < cantCaracteres(vector2[i])){
+            //             if(cantCaracteres(vector1[i]) < cantCaracteres(vector2[i])){
                 contadorVector1++;
-                //console.log("fue mejor 1")
-            }else if(cantCaracteres(vector1[i]) > cantCaracteres(vector2[i])){
+                //             }else if(cantCaracteres(vector1[i]) > cantCaracteres(vector2[i])){
                 contadorVector2++;
-                //console.log("fue mejor 2")
-            }else{
+                //             }else{
                 if(contadorVector1 > contadorVector2) contadorVector1++;
                 else contadorVector2++;
-                //console.log("Son iguales",`${(contadorVector1 > contadorVector2)? "Sumo uno al mayor que es el v1":"Sumo uno al mayor que es el v2"}`);
-            }
+                //             }
         }
         if(contadorVector1 > contadorVector2) return true;
         else return false;
@@ -2549,29 +2526,24 @@ function karnaughConX(tablaKarnaugh){
     if(tablaKarnaugh == undefined) tablaKarnaugh = document.getElementById("karnaugh");
     let filasKarnaugh = tablaKarnaugh.rows;
     let valores = [];
-    //console.log(filasKarnaugh)
-    if(filasKarnaugh.length == 5){
+    //     if(filasKarnaugh.length == 5){
         for(let j = 1; j < filasKarnaugh[0].cells.length;j++){
             valores.push(filasKarnaugh[1].cells[j].innerHTML);
         }
         intercambiarPosiciones(valores,2,3);
-        //console.log("valores",valores);
-        for(let j = 1; j < filasKarnaugh[0].cells.length;j++){
+        //         for(let j = 1; j < filasKarnaugh[0].cells.length;j++){
             valores.push(filasKarnaugh[2].cells[j].innerHTML);
         }
         intercambiarPosiciones(valores,6,7);
-        //console.log("valores",valores);
-        for(let j = 1; j < filasKarnaugh[0].cells.length;j++){
+        //         for(let j = 1; j < filasKarnaugh[0].cells.length;j++){
             valores.push(filasKarnaugh[4].cells[j].innerHTML);
         }
         intercambiarPosiciones(valores,10,11);
-        //console.log("valores",valores);
-        for(let j = 1; j < filasKarnaugh[0].cells.length;j++){
+        //         for(let j = 1; j < filasKarnaugh[0].cells.length;j++){
             valores.push(filasKarnaugh[3].cells[j].innerHTML);
         }
         intercambiarPosiciones(valores,14,15);
-        //console.log("valores",valores);
-        let cantVariables = 4
+        //         let cantVariables = 4
         let tabla = document.createElement("table");
         const thead = document.createElement('thead');
         const encabezado = document.createElement('tr');

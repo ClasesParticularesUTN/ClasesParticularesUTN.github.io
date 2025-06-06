@@ -29,7 +29,6 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
 })
 
 function enviar(urlFinal) {
-  console.log(urlFinal)
   document.querySelector("body").style.cursor = "wait";
   document.querySelector("#botonEnviar").style.cursor = "wait";
   document.querySelector(".contenedorLoader").style.display = "flex";
@@ -40,8 +39,7 @@ function enviar(urlFinal) {
           return response.json();
       })
       .then(data => {
-          console.log(data);
-          if(data.sesion){
+                     if(data.sesion){
               const personaJSON = JSON.stringify(data);
               ;
               sessionStorage.setItem('persona', personaJSON);

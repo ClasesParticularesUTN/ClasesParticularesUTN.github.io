@@ -80,11 +80,9 @@ async function enviarCorreosIntegrantes() {
         const modal = document.querySelector('.modal');
         cargarLoader();
         const url = `${URLUsuarios}?funcion=verificarCorreos&correos=${encodeURIComponent(JSON.stringify(correos))}`;
-        console.log(url);
         const response = await fetch(url);
         const data = await response.json();
         if (data.error && data.error !== false) {
-            console.log(data);
             let mensaje = calcularMensaje(data);
             let titulo = data.faltantes? 'Todos los integrantes deben estar registrados en la pagina':'Deben dinero';
             Swal.fire({

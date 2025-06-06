@@ -11,8 +11,7 @@ tds.forEach(td => {
         let dia = dataName[0]+"2";
         let celdaDia = document.querySelector(`td[data-name="${dia}"]`);
         let innerHTMLDia = celdaDia ? celdaDia.innerHTML : "";
-        console.log(innerHTMLDia, "innerHTMLDia");
-        horariosSeleccionados = eliminarElemento(horariosSeleccionados, dataName);
+                 horariosSeleccionados = eliminarElemento(horariosSeleccionados, dataName);
         if(diasConDemanda.includes(innerHTMLDia)){
           td.style.backgroundColor = 'violet';
           
@@ -23,8 +22,7 @@ tds.forEach(td => {
         else td.style.backgroundColor = 'white';
         horariosSeleccionados =  eliminarElemento(horariosSeleccionados,dataName);
       } else{
-        console.log("Valido si es amarillo",td.style.backgroundColor)
-        if(td.style.backgroundColor == 'rgb(255, 224, 102)' && !advertenciaGrupal){
+                 if(td.style.backgroundColor == 'rgb(255, 224, 102)' && !advertenciaGrupal){
           Swal.fire({
             icon: "warning",
             title: "Solo clases grupales",
@@ -43,8 +41,7 @@ tds.forEach(td => {
             advertenciaCostoExtra = true;
             });
         }
-        console.log("Valido datos");
-        if(validarHorariosSeleccionados(dataName)){
+                 if(validarHorariosSeleccionados(dataName)){
           
           if(validarFecha(dataName)){
 
@@ -53,8 +50,7 @@ tds.forEach(td => {
             }
             td.style.backgroundColor = "red";
             
-            console.log("Entre")
-            horariosSeleccionados.push(dataName);
+                         horariosSeleccionados.push(dataName);
           }else{
             Swal.fire({
               icon: "error",
@@ -70,8 +66,7 @@ tds.forEach(td => {
           });
         }
       }
-      console.log(horariosSeleccionados);
-    });
+           });
       
 });
 
@@ -90,8 +85,7 @@ function validarHorariosSeleccionados(dataName) {
 }
 
 function validarFecha(dataName){
-  console.log(dataName)
-  let celda = dataName[0];
+     let celda = dataName[0];
   celda = celda + "2";
   celda = document.querySelector(`td[data-name="${celda}"]`);
   let texto = celda.innerHTML; // "Lunes<br>12/10"

@@ -13,8 +13,7 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
         enviarCodigo(urlFinal);
     }else{
         let texto = document.querySelector("#codigoUsuario").value;
-        console.log(texto);
-        if(texto == clave){
+                 if(texto == clave){
             let formData = new FormData(this);
             let datosAEnviar = [];
             formData.forEach((valor, llave) => {
@@ -34,8 +33,7 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
   })
 
   function enviarCodigo(urlFinal) {
-    console.log(urlFinal)
-    document.querySelector("body").style.cursor = "wait";
+         document.querySelector("body").style.cursor = "wait";
     document.querySelector("#botonEnviar").style.cursor = "wait";
     document.querySelector(".contenedorLoader").style.display = "flex";
     fetch(urlFinal)
@@ -46,11 +44,9 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
         return response.json();
     })
     .then(res => {
-        console.log(res,!res.sesion);
-        // Aquí puedes manejar los datos de la respuesta
+                 // Aquí puedes manejar los datos de la respuesta
         if(res.status == false){
-            console.log("Entre aca");
-            Swal.fire({
+                         Swal.fire({
             icon: "error",
             title: "Error",
             text: "El correo no existe en la base de datos del servidor. Comuniquese con un administrador.",
@@ -71,8 +67,7 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
         }
     })
     .catch(error => {
-        console.log("Hubo un problema con la solicitud:", error);
-    })
+             })
     .finally(() => {
         document.querySelector("body").style.cursor = "default";
         
@@ -98,8 +93,7 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
 
 
 function enviar(urlFinal) {
-    console.log(urlFinal)
-    document.querySelector("body").style.cursor = "wait";
+         document.querySelector("body").style.cursor = "wait";
     document.querySelector("#botonEnviar").style.cursor = "wait";
     document.querySelector(".contenedorLoader").style.display = "flex";
     fetch(urlFinal).then(response => {
@@ -109,8 +103,7 @@ function enviar(urlFinal) {
             return response.json();
         })
         .then(data => {
-            console.log(data);
-            if(data.status){
+                         if(data.status){
                 window.location.href = "IniciarSesion.html";
             }
             else{

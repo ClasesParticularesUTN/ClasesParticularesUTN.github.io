@@ -41,7 +41,7 @@ td {
 }
 @media (max-width: 900px){
     td{
-        font-size: 70%;
+        font-size: 50%;
         padding: 5px;
         box-sizing: border-box;
         border-radius: 10%;

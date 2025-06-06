@@ -270,7 +270,6 @@
 
   async function obtenerHorariosAlumno(alumno) {
     const indice = alumnosGlobal.findIndex(a => a.correoElectronico === alumno.correoElectronico);
-    console.log("Índice del alumno en la lista:", indice);
     loader.style.display = "flex";
     try {
       // Cambia 'alumno.id' por el campo que identifique único a cada alumno

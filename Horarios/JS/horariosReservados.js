@@ -12,8 +12,7 @@ async function cargarHorarios(funcion, numeroHoja) {
             throw new Error(`Error en la solicitud: ${response.status} ${response.statusText}`);
         }
         const data = await response.json();
-        console.log(data);
-        retornar = data;
+                 retornar = data;
     } catch (err) {
         console.error("Error en fetch:", err.message);
         retornar = null;

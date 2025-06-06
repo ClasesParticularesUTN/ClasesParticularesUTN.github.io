@@ -2,9 +2,7 @@ let noEfectivo = [];
 let noTransferencia = [];
 
 async function controlDePago(){
-    console.log("Llegue hasta aca",Alumno)
-    if(Alumno != undefined && noEfectivo.includes(Alumno.correoElectronico)){
-        console.log("llegue hasta aca");
+        if(Alumno != undefined && noEfectivo.includes(Alumno.correoElectronico)){
         let botonEfectivo = document.querySelector(".efectivo");
         botonEfectivo.style.opacity = "0.2";
         let nuevoBoton = botonEfectivo.cloneNode(true);
