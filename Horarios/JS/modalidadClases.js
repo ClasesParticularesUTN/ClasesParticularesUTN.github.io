@@ -136,6 +136,7 @@ if (btnEnviar) {
         if (modalidad === 'grupal') {
             enviarCorreosIntegrantes();
         }else if (modalidad === 'individual') {
+            alert();
             if(seleccionoUnGrupal){
                 Swal.fire({
                     icon: 'error',
@@ -144,12 +145,11 @@ if (btnEnviar) {
                 });
                 return;
             }else{
-                console.log(seleccionoUnGrupal);
                 alert();
+                window.location.hash = '';
+                await asignarHorario(reservados,numeroHoja);
+                await enviarCeldasReservadas(reservados,numeroHoja);
             }
-            window.location.hash = '';
-            await asignarHorario(reservados,numeroHoja);
-            await enviarCeldasReservadas(reservados,numeroHoja);
         }
     });
 }
