@@ -1,8 +1,10 @@
 
 
 async function cargarHorarios(funcion, numeroHoja) {
+    console.log("Intento leer los horarios")
     let retornar;
     let urlInterno = URLHorarios + "?funcion=" + funcion;
+    console.log(urlInterno);
     if (funcion === "celdasOcupadas") urlInterno += "&numeroHoja=" + numeroHoja;
     else return "error, ARGUMENTO incorrecto";
     try {
