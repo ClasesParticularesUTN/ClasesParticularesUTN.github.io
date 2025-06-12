@@ -17,7 +17,7 @@
     }
 
     #horarios {
-      max-width: 600px;
+      max-width: 800px;
       margin: auto;
       border-collapse: collapse;
       width: 100%;
@@ -44,10 +44,8 @@
     }
 
     button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      font-size: 16px;
+      padding: 8px 12px;
+      font-size: 14px;
       background-color: #4CAF50;
       color: white;
       border: none;
@@ -55,21 +53,46 @@
       border-radius: 5px;
     }
 
-    button:hover {
-      background-color: #45a049;
+    button:disabled {
+      background-color: #a5d6a7;
+      cursor: wait;
+    }
+
+    .centrado {
+      display: block;
+      margin: 5px;
+    }
+
+    .spinner {
+      border: 3px solid #f3f3f3;
+      border-top: 3px solid #4CAF50;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 1s linear infinite;
+      margin: auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
   <h1>Horarios de Clases por Dar</h1>
 
-  <button onclick="cargarHorarios()">Cargar Horarios</button>
+  <div style="display: flex; justify-content: center;">
+    <button class="centrado" onclick="cargarHorarios()">Cargar Horarios</button>
+    <button class="centrado" onclick="cargarDeudores()">Cargar Deudores</button>
 
+  </div>
   <table id="horarios">
     <thead>
       <tr>
         <th>Horario</th>
         <th>Persona</th>
+        <th>Acción</th>
       </tr>
     </thead>
     <tbody id="tabla-body">
@@ -79,9 +102,10 @@
 
   <p id="mensaje"></p>
 
+  <script src="../Horarios/JS/URLS.js"></script>
   <script>
     async function cargarHorarios() {
-      const url = "https://script.google.com/macros/s/AKfycbxZ7FlfGCHXdmVTD7UFUMwVxu-Cjz1NEL_cf7021PUWEcfLTXKjU6WyFHAKouTU21wc/exec?funcion=horariosPorDar";
+      const url = "https://script.google.com/macros/s/AKfycbyiSd5At7VPT8Y3mCRGW-h94nSuzJ9o9XJhDbTXDspXvuOl5DyO6dfHVHHQbO0ckNxY/exec?funcion=horariosPorDar";
 
       const tabla = document.getElementById("tabla-body");
       const mensaje = document.getElementById("mensaje");
@@ -100,11 +124,11 @@
 
         datos.forEach(item => {
           const fila = document.createElement("tr");
+
           const celdaHorario = document.createElement("td");
           const celdaPersona = document.createElement("td");
+          const celdaBoton = document.createElement("td");
 
-          // Si estás devolviendo strings del tipo "miércoles, 28/05 15:00 Joaquin Lorincz"
-          // podés separar el horario y la persona
           const partes = item.split(" ");
           const horario = partes.slice(0, 3).join(" ");
           const persona = partes.slice(3).join(" ");
@@ -112,8 +136,15 @@
           celdaHorario.textContent = horario;
           celdaPersona.textContent = persona;
 
+          const boton = document.createElement("button");
+          boton.textContent = "Registrar Pago";
+          boton.onclick = () => RegistrarPago(horario, persona, boton);
+
+          celdaBoton.appendChild(boton);
+
           fila.appendChild(celdaHorario);
           fila.appendChild(celdaPersona);
+          fila.appendChild(celdaBoton);
           tabla.appendChild(fila);
         });
 
@@ -124,27 +155,114 @@
       }
     }
 
+    async function cargarDeudores() {
+      const url = "https://script.google.com/macros/s/AKfycbyiSd5At7VPT8Y3mCRGW-h94nSuzJ9o9XJhDbTXDspXvuOl5DyO6dfHVHHQbO0ckNxY/exec?funcion=horariosPorPagar";
+
+      const tabla = document.getElementById("tabla-body");
+      const mensaje = document.getElementById("mensaje");
+
+      tabla.innerHTML = "";
+      mensaje.textContent = "Cargando...";
+
+      try {
+        const res = await fetch(url);
+        const datos = await res.json();
+
+        if (datos.length === 0) {
+          mensaje.textContent = "No hay horarios por dar.";
+          return;
+        }
+
+        datos.forEach(item => {
+          const fila = document.createElement("tr");
+
+          const celdaHorario = document.createElement("td");
+          const celdaPersona = document.createElement("td");
+          const celdaBoton = document.createElement("td");
+
+          const partes = item.split(" ");
+          const horario = partes.slice(0, 3).join(" ");
+          const persona = partes.slice(3).join(" ");
+
+          celdaHorario.textContent = horario;
+          celdaPersona.textContent = persona;
+
+          const boton = document.createElement("button");
+          boton.textContent = "Registrar Pago";
+          boton.onclick = () => RegistrarPago(horario, persona, boton);
+
+          celdaBoton.appendChild(boton);
+
+          fila.appendChild(celdaHorario);
+          fila.appendChild(celdaPersona);
+          fila.appendChild(celdaBoton);
+          tabla.appendChild(fila);
+        });
+
+        mensaje.textContent = "";
+      } catch (error) {
+        console.error(error);
+        mensaje.textContent = "Error al obtener los horarios.";
+      }
+    }
+
+    async function RegistrarPago(horario, persona, boton) {
+      boton.disabled = true;
+      const textoOriginal = boton.textContent;
+      boton.innerHTML = '<div class="spinner"></div>';
+
+      const datos = {
+        funcion: "registrarPago",
+        horario,
+        persona,
+      };
+
+      try {
+        await fetch(URLUsuarios, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datos)
+        });
+
+        console.log("Pago registrado");
+
+        // ✅ Eliminar la fila de la tabla
+        const fila = boton.closest("tr");
+        if (fila) fila.remove();
+
+      } catch (error) {
+        console.error('Error al enviar datos:', error);
+      } finally {
+        boton.disabled = false;
+        boton.textContent = textoOriginal;
+      }
+    }
+
+
     document.getElementById("tabla-body").addEventListener("click", function(event) {
       if (event.target && event.target.nodeName === "TD" && event.target.cellIndex === 1) {
         const nombre = event.target.textContent.trim();
         const nombreCodificado = encodeURIComponent(nombre);
-
         window.location.href = `alumnos.html#${nombreCodificado}`;
       }
     });
 
-    cargarHorarios();
+    cargarHorarios
 
+    // Validación de acceso
     const nombre = JSON.parse(localStorage.getItem("Nombre"));
     const apellido = JSON.parse(localStorage.getItem("Apellido"));
 
     const esNombreValido = nombre === "Valentin";
     const esApellidoValido = apellido === "Da Silva Catela" || apellido === "Da Silva";
+
     if (!esNombreValido || !esApellidoValido) {
       sessionStorage.setItem("Admin", "");
       window.location.href = "../Horarios/IniciarSesion/IniciarSesion.html";
     }
-
   </script>
 </body>
 </html>
