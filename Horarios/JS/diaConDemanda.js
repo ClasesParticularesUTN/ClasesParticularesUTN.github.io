@@ -1,5 +1,5 @@
 let diasConDemanda = [];
-let soloGrupales = ["Miércoles<br>11/06"];
+let soloGrupales = ["Miércoles<br>18/06"];
 // --- Pintar columnas según demanda o solo grupales ---
 async function pintarColumnasPorDemanda() {
     const ths = document.querySelectorAll('.dia');
