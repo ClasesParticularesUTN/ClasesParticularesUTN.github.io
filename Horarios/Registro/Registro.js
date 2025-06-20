@@ -67,7 +67,6 @@ function validarMateria(){
     return true;
 }
 function validarContrasenia(){
-    
     var contraseña = document.getElementById("Contraseña").value;
     var Repetircontraseña = document.querySelector("#RepetiContraseña").value;
     if(contraseña !== Repetircontraseña){
@@ -86,7 +85,7 @@ function validarContrasenia(){
             text: "Elige una clave mas dificil",
           });
           contardorContraseñas++;
-          contraseñas.push(contraseña);
+          if(!contraseñas.includes(contraseña)) contraseñas.push(contraseña);
           return false;
     }else if(contraseña.length < 4){
         Swal.fire({
