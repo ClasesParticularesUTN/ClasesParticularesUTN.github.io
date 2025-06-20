@@ -18,7 +18,9 @@ tds.forEach(td => {
         } else if(soloGrupales.includes(innerHTMLDia)){
           seleccionoUnGrupal = false;
           td.style.backgroundColor = '#ffe066';
-        } 
+        } else if(consultar.includes(innerHTMLDia)){
+           td.style.backgroundColor = '#a2ff79';
+        }
         else td.style.backgroundColor = 'white';
         horariosSeleccionados =  eliminarElemento(horariosSeleccionados,dataName);
       } else{
