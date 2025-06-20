@@ -1,3 +1,36 @@
+async function autenticar() {
+  if (Alumno == null || !Alumno.sesion) {
+    console.log(Alumno)
+    Swal.fire({
+      title: "¿Qué desea hacer?",
+      showClass: {
+        popup: `
+          animate__animated
+          animate__fadeInUp
+          animate__faster
+        `
+      },
+      hideClass: {
+        popup: `
+          animate__animated
+          animate__fadeOutDown
+          animate__faster
+        `
+      },
+      showDenyButton: true,
+      confirmButtonText: "Iniciar Sesión",
+      denyButtonText: "Registrarme",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "./IniciarSesion/IniciarSesion.html";
+      } else if (result.isDenied) {
+        window.location.href = "./Registro/Registro.html";
+      }
+    });
+  }
+}
 
 document.querySelector(".login").addEventListener("click", ()=>{
     if(Alumno == null || !Alumno.sesion){

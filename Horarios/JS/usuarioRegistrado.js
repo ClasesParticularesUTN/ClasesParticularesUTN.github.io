@@ -1,11 +1,14 @@
 let Alumno;
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", async ()=>{
     if(sessionStorage.getItem('persona') !== null){
+        
         (async () => {
             await colocarDatos();
             await controlDePago();
             actualizarDatos(Alumno.correoElectronico,Alumno.contrasenia);
         })();
+    }else{
+        await autenticar();
     }
 })
 
