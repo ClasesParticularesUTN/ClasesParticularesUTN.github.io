@@ -79,7 +79,7 @@ function validarContrasenia(){
         return false;
     }
     //conso(contraseña.length);
-    if(contardorContraseñas < 1){
+    if(contardorContraseñas < 1 || contraseñas.includes(contraseña)){
         Swal.fire({
             icon: "error",
             title: "Error en contraseña",
