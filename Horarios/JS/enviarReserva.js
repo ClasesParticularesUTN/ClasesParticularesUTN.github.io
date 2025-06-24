@@ -1,6 +1,12 @@
 sinTurnosDisponibles = -1;
+let admin = 0;
+
 document.querySelector(".enviarReserva").addEventListener("click", async () => {
     reservados = horariosSeleccionados;
+    if(admin) {
+        window.location.hash = "#VentanaModal";
+        return;
+    }
     if(sinTurnosDisponibles == 0 && numeroHoja == 0){
         Swal.fire({
             icon: "error",
