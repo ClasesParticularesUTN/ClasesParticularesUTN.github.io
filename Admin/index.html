@@ -2,13 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Horarios por Dar</title>
 
   <!-- Font Awesome para iconos -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
   <style>
-    /* Reset básico */
     * {
       box-sizing: border-box;
     }
@@ -21,7 +21,6 @@
       margin: 0;
     }
 
-    /* Contenedor principal */
     .container {
       max-width: 900px;
       margin: 0 auto;
@@ -31,12 +30,12 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
 
-    /* Barra superior con icono y título */
     header {
       display: flex;
       align-items: center;
       gap: 15px;
       margin-bottom: 25px;
+      flex-wrap: wrap;
     }
 
     header a.home-link {
@@ -52,6 +51,7 @@
       font-size: 22px;
       transition: background-color 0.3s ease;
     }
+
     header a.home-link:hover {
       background: #45a049;
     }
@@ -62,11 +62,9 @@
       margin: 0;
       flex-grow: 1;
       color: #2f5d27;
-      display: flex;
-      justify-content: center;
+      text-align: center;
     }
 
-    /* Botones cargar horarios y deudores */
     .buttons {
       display: flex;
       justify-content: center;
@@ -99,13 +97,17 @@
       box-shadow: none;
     }
 
-    /* Tabla de horarios */
+    .table-container {
+      overflow-x: auto;
+    }
+
     #horarios {
       width: 100%;
       border-collapse: collapse;
       box-shadow: 0 0 15px rgba(0,0,0,0.07);
       border-radius: 8px;
       overflow: hidden;
+      min-width: 500px;
     }
 
     #horarios th, #horarios td {
@@ -127,7 +129,6 @@
       background-color: #f1f9f1;
     }
 
-    /* Botón dentro de la tabla */
     #horarios button {
       font-size: 13px;
       padding: 7px 12px;
@@ -136,7 +137,6 @@
       box-shadow: none;
     }
 
-    /* Mensaje debajo de la tabla */
     #mensaje {
       text-align: center;
       margin-top: 22px;
@@ -146,7 +146,6 @@
       min-height: 24px;
     }
 
-    /* Spinner */
     .spinner {
       border: 3px solid #f3f3f3;
       border-top: 3px solid #4CAF50;
@@ -156,26 +155,39 @@
       animation: spin 1s linear infinite;
       margin: auto;
     }
+
     @keyframes spin {
       0% { transform: rotate(0deg);}
       100% { transform: rotate(360deg);}
     }
 
-    /* Responsive para móvil */
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+
+      .container {
+        padding: 15px 20px;
+      }
+
       header {
         flex-direction: column;
-        gap: 8px;
+        align-items: center;
+        gap: 10px;
       }
 
       header h1 {
-        font-size: 1.4rem;
-        text-align: center;
+        font-size: 1.5rem;
       }
 
       .buttons {
         flex-direction: column;
         gap: 15px;
+      }
+
+      button {
+        width: 100%;
+        min-width: unset;
       }
     }
   </style>
@@ -191,22 +203,22 @@
     </header>
 
     <div class="buttons">
-      <button class="centrado" onclick="cargarHorarios()">Cargar Horarios</button>
-      <button class="centrado" onclick="cargarDeudores()">Cargar Deudores</button>
+      <button onclick="cargarHorarios()">Cargar Horarios</button>
+      <button onclick="cargarDeudores()">Cargar Deudores</button>
     </div>
 
-    <table id="horarios" aria-label="Tabla de horarios">
-      <thead>
-        <tr>
-          <th>Horario</th>
-          <th>Persona</th>
-          <th>Acción</th>
-        </tr>
-      </thead>
-      <tbody id="tabla-body">
-        <!-- Contenido dinámico -->
-      </tbody>
-    </table>
+    <div class="table-container">
+      <table id="horarios" aria-label="Tabla de horarios">
+        <thead>
+          <tr>
+            <th>Horario</th>
+            <th>Persona</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-body"></tbody>
+      </table>
+    </div>
 
     <p id="mensaje" role="alert" aria-live="polite"></p>
   </div>
@@ -218,7 +230,6 @@
       const tabla = document.getElementById("tabla-body");
       const mensaje = document.getElementById("mensaje");
 
-      // Limpiar contenido previo
       tabla.innerHTML = "";
       mensaje.textContent = "Cargando...";
 
@@ -267,7 +278,6 @@
       const tabla = document.getElementById("tabla-body");
       const mensaje = document.getElementById("mensaje");
 
-      // Limpiar contenido previo
       tabla.innerHTML = "";
       mensaje.textContent = "Cargando...";
 
