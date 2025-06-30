@@ -286,12 +286,14 @@
       if (indice < ejercicios.length - 1) {
         indice++;
         mostrarEjercicio();
-      } else {
+      } else if(indice == ejercicios.length - 1){
+        indice++;
         document.getElementById('ejercicio').textContent = "¡Has llegado al final de los ejercicios!";
         document.getElementById('pista').textContent = "";
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
       }
+      
     }
 
     function anterior() {
@@ -446,6 +448,20 @@ int main(){
             toggleEditor();
         }
     });
+    function descargarCPP() {
+      const contenido = editorInstance.getValue();
+      const blob = new Blob([contenido], { type: "text/x-c++src" });
+      const url = URL.createObjectURL(blob);
+
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = "mi_codigo.cpp";
+      document.body.appendChild(enlace);
+      enlace.click();
+      document.body.removeChild(enlace);
+      URL.revokeObjectURL(url);
+    }
+
   </script>
 </body>
 </html>
