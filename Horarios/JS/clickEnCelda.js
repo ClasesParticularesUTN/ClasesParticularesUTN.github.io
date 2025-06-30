@@ -43,16 +43,16 @@ tds.forEach(td => {
             advertenciaCostoExtra = true;
             });
         }
-                 if(validarHorariosSeleccionados(dataName)){
+                 if(validarHorariosSeleccionados(dataName) || admin){
           
-          if(validarFecha(dataName)){
+          if(validarFecha(dataName) || admin){
 
             if(td.style.backgroundColor == 'rgb(255, 224, 102)'){
               seleccionoUnGrupal = true;
             }
             td.style.backgroundColor = "red";
             
-                         horariosSeleccionados.push(dataName);
+            horariosSeleccionados.push(dataName);
           }else{
             Swal.fire({
               icon: "error",
