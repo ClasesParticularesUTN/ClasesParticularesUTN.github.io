@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ejercicios de Programación</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
+
+  <style>
+    *{
+        box-sizing: border-box;
+    }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #9face6);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    #contenedor {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      max-width: 1000px;
+      width: 100%;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    .botones {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    button {
+      padding: 0.8rem 1.4rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    pre {
+      background: #f7f9fc;
+      border-left: 5px solid #007bff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    .extra {
+      margin-top: 1.5rem;
+    }
+
+    #pista, #solucion {
+      margin-top: 1rem;
+    }
+
+    #abrir-editor {
+      position: fixed;
+      top: 20px;
+      right: 60px;
+      z-index: 1000;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      background-color: #28a745;
+    }
+
+    #abrir-editor:hover {
+      background-color: #218838;
+    }
+
+    #editor-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(20, 20, 20, 0.98);
+      display: none;
+      flex-direction: column;
+      box-sizing: border-box;
+      padding: 1rem;
+      z-index: 999;
+    }
+
+    #editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    #editor {
+      height: 100%;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .CodeMirror {
+      height: 100%;
+      border-radius: 8px;
+      font-size: 125%;
+    }
+
+    #restaurar-btn {
+      margin-left: 1rem;
+      background-color: #dc3545;
+    }
+
+    #restaurar-btn:hover {
+      background-color: #c82333;
+    }
+
+    #input-area {
+      margin-top: 1rem;
+      width: 100%;
+      resize: vertical;
+      min-height: 60px;
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: none;
+      font-family: monospace;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    #output {
+      margin-top: 1rem;
+      background-color: #1e1e1e;
+      color: #00ffcc;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: monospace;
+      white-space: pre-wrap;
+      resize: vertical;
+      overflow: auto;
+      min-height: 60px;
+    }
+
+    #cargar-ejercicios {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #333;
+      z-index: 1001;
+      padding: 0px;
+    }
+
+    #cargar-ejercicios:hover {
+      color: #007bff;
+    }
+
+    #archivo-ejercicios {
+      display: none;
+    }
+
+    #contador-ejercicio {
+      text-align: center;
+      font-weight: bold;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <!-- Botones flotantes -->
+  <button id="abrir-editor" onclick="toggleEditor()">Editor</button>
+  <button id="cargar-ejercicios" title="Cargar ejercicios 📂" onclick="document.getElementById('archivo-ejercicios').click()">📂</button>
+  <input type="file" id="archivo-ejercicios" accept=".js" />
+
+  <!-- Contenido principal -->
+  <div id="contenedor">
+    <h2 id="titulo">Ejercicios de Programación</h2>
+    <p id="contador-ejercicio">0/0</p>
+    <pre id="ejercicio">Presioná "Iniciar" para comenzar</pre>
+
+    <div class="botones">
+      <button onclick="iniciar()">Iniciar</button>
+      <button onclick="siguiente()" style="display: none;">Siguiente</button>
+      <button onclick="mostrarPista()">Mostrar pista</button>
+      <button onclick="mostrarSolucion()">Mostrar solución</button>
+    </div>
+
+    <div class="extra">
+      <div id="pista"></div>
+      <pre id="solucion" style="display: none;"><code class="language-cpp hljs" id="codigo-solucion"></code></pre>
+    </div>
+  </div>
+
+  <!-- Editor de código -->
+  <div id="editor-overlay">
+    <div id="editor-header">
+      <h2 style="color: white;">Editor de Código</h2>
+      <div>
+        <button onclick="restaurarPlantilla()" id="restaurar-btn">Restaurar plantilla</button>
+        <button onclick="ejecutarCodigo()" style="background-color:#007bff">Ejecutar (F9)</button>
+        <button onclick="toggleEditor()">Minimizar editor (F10)</button>
+      </div>
+    </div>
+    <textarea id="editor"></textarea>
+    <textarea id="input-area" placeholder="Escribí la entrada estándar aquí..."></textarea>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    let ejercicios = [];
+    let indice = -1;
+
+    document.getElementById("archivo-ejercicios").addEventListener("change", function (event) {
+      const archivo = event.target.files[0];
+      if (!archivo) return;
+
+      const lector = new FileReader();
+      lector.onload = function (e) {
+        try {
+          const contenido = e.target.result;
+          const modulo = new Function(contenido + "; return ejercicios;");
+          ejercicios = modulo();
+          console.log("Archivo de ejercicios cargado correctamente.");
+          document.querySelector('button[onclick="iniciar()"]').disabled = false;
+          document.getElementById("cargar-ejercicios").style.display = "none";
+        } catch (err) {
+          alert("Error al cargar el archivo: " + err.message);
+        }
+      };
+      lector.readAsText(archivo);
+    });
+
+    function iniciar() {
+      if (!ejercicios || ejercicios.length === 0) {
+          document.getElementById('archivo-ejercicios').click();
+          return;
+      }
+      indice = 0;
+      document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
+      document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button onclick="anterior()">Anterior</button>';
+      mostrarEjercicio();
+    }
+
+    function siguiente() {
+      if (indice < ejercicios.length - 1) {
+        indice++;
+        mostrarEjercicio();
+      } else {
+        document.getElementById('ejercicio').textContent = "¡Has llegado al final de los ejercicios!";
+        document.getElementById('pista').textContent = "";
+        document.getElementById('codigo-solucion').innerHTML = "";
+        document.getElementById('solucion').style.display = "none";
+      }
+    }
+
+    function anterior() {
+      if (indice > 0) {
+        indice--;
+        mostrarEjercicio();
+      }
+    }
+
+    function mostrarPista() {
+      if (indice >= 0 && indice < ejercicios.length) {
+        const pista = ejercicios[indice].pista;
+        document.getElementById('pista').textContent = pista && pista.trim() ? "Pista: " + pista : "Este ejercicio no tiene pista.";
+      }
+    }
+
+    function mostrarEjercicio() {
+      if (indice >= 0 && indice < ejercicios.length) {
+        const actual = ejercicios[indice];
+        document.getElementById('ejercicio').textContent = actual.enunciado;
+        document.getElementById('pista').textContent = "";
+        document.getElementById('codigo-solucion').innerHTML = "";
+        document.getElementById('solucion').style.display = "none";
+        document.getElementById('contador-ejercicio').textContent = `${indice + 1}/${ejercicios.length}`;
+      }
+    }
+
+    function mostrarSolucion() {
+      if (indice >= 0 && indice < ejercicios.length) {
+        const solucion = ejercicios[indice].solucion;
+        const codeBlock = document.getElementById('codigo-solucion');
+        const preBlock = document.getElementById('solucion');
+
+        if (solucion && solucion.trim()) {
+          codeBlock.innerHTML = hljs.highlight(solucion, { language: 'cpp' }).value;
+        } else {
+          codeBlock.textContent = "Este ejercicio no tiene solución cargada.";
+        }
+
+        preBlock.style.display = "block";
+      }
+    }
+
+    const PLANTILLA_CPP = `#include <iostream>
+using namespace std;
+
+int main(){
+
+    return 0;
+}`;
+
+    let editorInstance;
+    let editorIniciado = false;
+
+    window.onload = () => {
+      document.querySelector('button[onclick="iniciar()"]').disabled = false;
+      editorInstance = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        mode: "text/x-c++src",
+        theme: "material",
+        lineNumbers: true,
+        indentUnit: 4,
+        tabSize: 4,
+        autoCloseBrackets: true,
+        extraKeys: {
+          "Enter": function (cm) {
+            const cursor = cm.getCursor();
+            const line = cm.getLine(cursor.line);
+            const beforeCursor = line.slice(0, cursor.ch).trim();
+
+            if (beforeCursor.endsWith("{")) {
+              cm.replaceSelection("\n\n", "end");
+              cm.indentLine(cursor.line + 1);
+              cm.setCursor({ line: cursor.line + 1, ch: cm.getLine(cursor.line + 1).search(/\S|$/) });
+            } else {
+              cm.execCommand("newlineAndIndent");
+            }
+          },
+          "Ctrl-Space": "autocomplete"
+        },
+        hintOptions: {
+          hint: CodeMirror.hint.anyword
+        }
+      });
+
+      editorInstance.setSize("100%", "100%");
+    };
+
+    function toggleEditor() {
+      const overlay = document.getElementById("editor-overlay");
+      const editorBtn = document.getElementById("abrir-editor");
+      if (overlay.style.display === "flex") {
+        overlay.style.display = "none";
+        editorBtn.style.display = "inline-block";
+      } else {
+        overlay.style.display = "flex";
+        editorBtn.style.display = "none";
+        editorInstance.refresh();
+        if (!editorIniciado || editorInstance.getValue().trim() === "" || editorInstance.getValue().startsWith("// Escribí")) {
+          editorInstance.setValue(PLANTILLA_CPP);
+          editorIniciado = true;
+        }
+      }
+    }
+
+    function restaurarPlantilla() {
+      if (confirm("¿Querés borrar tu código actual y volver a la plantilla inicial?")) {
+        editorInstance.setValue(PLANTILLA_CPP);
+      }
+    }
+
+    function ejecutarCodigo() {
+      const sourceCode = editorInstance.getValue();
+      const input = document.getElementById("input-area").value;
+      const outputDiv = document.getElementById("output");
+      outputDiv.textContent = "Ejecutando...";
+
+      fetch("https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "X-RapidAPI-Key": "9ab1f75580msha763384a2aedb52p13bc1fjsn374d1e299ab9",
+          "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
+        },
+        body: JSON.stringify({
+          source_code: sourceCode,
+          language_id: 54,
+          stdin: input
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const salida = data.stdout || data.stderr || data.compile_output || "Sin salida";
+        outputDiv.textContent = salida;
+      })
+      .catch(err => {
+        outputDiv.textContent = "Error al ejecutar: " + err;
+      });
+    }
+
+    document.addEventListener("keydown", function (e) {
+        if (
+            (e.key === "F9" || e.code === "F9") &&
+            document.getElementById("editor-overlay").style.display === "flex"
+        ) {
+            e.preventDefault();
+            ejecutarCodigo();
+        }
+        if (
+            (e.key === "F10" || e.code === "F10")
+        ) {
+            e.preventDefault();
+            toggleEditor();
+        }
+    });
+  </script>
+</body>
+</html>
