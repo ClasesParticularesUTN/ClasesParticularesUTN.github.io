@@ -43,9 +43,9 @@ tds.forEach(td => {
             advertenciaCostoExtra = true;
             });
         }
-                 if(validarHorariosSeleccionados(dataName) || admin){
+                 if(validarHorariosSeleccionados(dataName) || Alumno.admin){
           
-          if(validarFecha(dataName) || admin){
+          if(validarFecha(dataName) || Alumno.admin){
 
             if(td.style.backgroundColor == 'rgb(255, 224, 102)'){
               seleccionoUnGrupal = true;

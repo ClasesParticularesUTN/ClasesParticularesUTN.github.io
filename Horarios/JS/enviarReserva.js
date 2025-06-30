@@ -3,7 +3,7 @@ let admin = 0;
 
 document.querySelector(".enviarReserva").addEventListener("click", async () => {
     reservados = horariosSeleccionados;
-    if(admin) {
+    if(Alumno.admin) {
         window.location.hash = "#VentanaModal";
         return;
     }
