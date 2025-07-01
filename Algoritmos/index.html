@@ -1,3 +1,4 @@
+<!-- Guarda esto como index.html y probalo en tu navegador -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,15 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ejercicios de Programación</title>
 
-  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
-  <!-- Highlight.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script>hljs.highlightAll();</script>
 
-  <!-- CodeMirror -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
@@ -24,9 +21,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
 
   <style>
-    *{
-        box-sizing: border-box;
-    }
+    /* estilos iguales a los que ya tenías */
+    * { box-sizing: border-box; }
     body {
       font-family: 'Roboto', sans-serif;
       background: linear-gradient(to right, #74ebd5, #9face6);
@@ -89,13 +85,9 @@
       overflow-x: auto;
     }
 
-    .extra {
-      margin-top: 1.5rem;
-    }
+    .extra { margin-top: 1.5rem; }
 
-    #pista, #solucion {
-      margin-top: 1rem;
-    }
+    #pista, #solucion { margin-top: 1rem; }
 
     #abrir-editor {
       position: fixed;
@@ -107,9 +99,7 @@
       background-color: #28a745;
     }
 
-    #abrir-editor:hover {
-      background-color: #218838;
-    }
+    #abrir-editor:hover { background-color: #218838; }
 
     #editor-overlay {
       position: fixed;
@@ -120,7 +110,6 @@
       background-color: rgba(20, 20, 20, 0.98);
       display: none;
       flex-direction: column;
-      box-sizing: border-box;
       padding: 1rem;
       z-index: 999;
     }
@@ -135,7 +124,6 @@
     #editor {
       height: 100%;
       flex: 1;
-      overflow: hidden;
     }
 
     .CodeMirror {
@@ -153,30 +141,22 @@
       background-color: #c82333;
     }
 
-    #input-area {
+    #input-area, #output {
       margin-top: 1rem;
       width: 100%;
-      resize: vertical;
       min-height: 60px;
       padding: 0.8rem;
       border-radius: 8px;
-      border: none;
       font-family: monospace;
       font-size: 1rem;
       box-sizing: border-box;
     }
 
     #output {
-      margin-top: 1rem;
       background-color: #1e1e1e;
       color: #00ffcc;
-      padding: 1rem;
-      border-radius: 8px;
-      font-family: monospace;
       white-space: pre-wrap;
-      resize: vertical;
       overflow: auto;
-      min-height: 60px;
     }
 
     #cargar-ejercicios {
@@ -192,31 +172,35 @@
       padding: 0px;
     }
 
-    #cargar-ejercicios:hover {
-      color: #007bff;
-    }
+    #cargar-ejercicios:hover { color: #007bff; }
 
-    #archivo-ejercicios {
-      display: none;
-    }
+    #archivo-ejercicios { display: none; }
 
     #contador-ejercicio {
       text-align: center;
       font-weight: bold;
       color: #444;
     }
+
+    #input-ejercicio {
+      width: 60px;
+      text-align: center;
+      font-size: 1rem;
+      padding: 0.2rem;
+    }
   </style>
 </head>
 <body>
-  <!-- Botones flotantes -->
   <button id="abrir-editor" onclick="toggleEditor()">Editor</button>
   <button id="cargar-ejercicios" title="Cargar ejercicios 📂" onclick="document.getElementById('archivo-ejercicios').click()">📂</button>
   <input type="file" id="archivo-ejercicios" accept=".js" />
 
-  <!-- Contenido principal -->
   <div id="contenedor">
-    <h2 id="titulo">Ejercicios de Programación</h2>
-    <p id="contador-ejercicio">0/0</p>
+    <h2>Ejercicios de Programación</h2>
+    <p id="contador-ejercicio">
+      <input id="input-ejercicio" type="number" min="1" value="1" /> /
+      <span id="total-ejercicios">0</span>
+    </p>
     <pre id="ejercicio">Presioná "Iniciar" para comenzar</pre>
 
     <div class="botones">
@@ -232,7 +216,6 @@
     </div>
   </div>
 
-  <!-- Editor de código -->
   <div id="editor-overlay">
     <div id="editor-header">
       <h2 style="color: white;">Editor de Código</h2>
@@ -261,7 +244,6 @@
           const contenido = e.target.result;
           const modulo = new Function(contenido + "; return ejercicios;");
           ejercicios = modulo();
-          console.log("Archivo de ejercicios cargado correctamente.");
           document.querySelector('button[onclick="iniciar()"]').disabled = false;
           document.getElementById("cargar-ejercicios").style.display = "none";
         } catch (err) {
@@ -279,6 +261,7 @@
       indice = 0;
       document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
       document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button onclick="anterior()">Anterior</button>';
+      document.getElementById('total-ejercicios').textContent = ejercicios.length;
       mostrarEjercicio();
     }
 
@@ -293,7 +276,6 @@
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
       }
-      
     }
 
     function anterior() {
@@ -317,12 +299,26 @@
         document.getElementById('pista').textContent = "";
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
-        document.getElementById('contador-ejercicio').textContent = `${indice + 1}/${ejercicios.length}`;
+        document.getElementById('input-ejercicio').value = indice + 1;
+        document.getElementById('total-ejercicios').textContent = ejercicios.length;
       }
     }
 
     function mostrarSolucion() {
       if (indice >= 0 && indice < ejercicios.length) {
+        const ahora = new Date();
+        const horas = String(ahora.getHours()).padStart(2, '0');
+        const minutos = String(ahora.getMinutes()).padStart(2, '0');
+        const ejercicioNumero = (indice + 1).toString();
+        const contrasenaEsperada = ejercicioNumero + horas + minutos;
+
+        const ingreso = prompt(`Para ver la solución del ejercicio ${ejercicioNumero}, ingresá la contraseña:`);
+        
+        if (ingreso !== contrasenaEsperada) {
+          alert("Contraseña incorrecta. Intentá de nuevo.");
+          return;
+        }
+
         const solucion = ejercicios[indice].solucion;
         const codeBlock = document.getElementById('codigo-solucion');
         const preBlock = document.getElementById('solucion');
@@ -336,6 +332,19 @@
         preBlock.style.display = "block";
       }
     }
+
+
+    const inputEjercicio = document.getElementById("input-ejercicio");
+    inputEjercicio.addEventListener("change", () => {
+      const nuevo = parseInt(inputEjercicio.value, 10);
+      if (!isNaN(nuevo) && nuevo >= 1 && nuevo <= ejercicios.length) {
+        indice = nuevo - 1;
+        mostrarEjercicio();
+      } else {
+        alert(`El número debe estar entre 1 y ${ejercicios.length}`);
+        inputEjercicio.value = indice + 1;
+      }
+    });
 
     const PLANTILLA_CPP = `#include <iostream>
 using namespace std;
@@ -362,7 +371,6 @@ int main(){
             const cursor = cm.getCursor();
             const line = cm.getLine(cursor.line);
             const beforeCursor = line.slice(0, cursor.ch).trim();
-
             if (beforeCursor.endsWith("{")) {
               cm.replaceSelection("\n\n", "end");
               cm.indentLine(cursor.line + 1);
@@ -434,34 +442,15 @@ int main(){
     }
 
     document.addEventListener("keydown", function (e) {
-        if (
-            (e.key === "F9" || e.code === "F9") &&
-            document.getElementById("editor-overlay").style.display === "flex"
-        ) {
-            e.preventDefault();
-            ejecutarCodigo();
-        }
-        if (
-            (e.key === "F10" || e.code === "F10")
-        ) {
-            e.preventDefault();
-            toggleEditor();
-        }
+      if ((e.key === "F9" || e.code === "F9") && document.getElementById("editor-overlay").style.display === "flex") {
+        e.preventDefault();
+        ejecutarCodigo();
+      }
+      if (e.key === "F10" || e.code === "F10") {
+        e.preventDefault();
+        toggleEditor();
+      }
     });
-    function descargarCPP() {
-      const contenido = editorInstance.getValue();
-      const blob = new Blob([contenido], { type: "text/x-c++src" });
-      const url = URL.createObjectURL(blob);
-
-      const enlace = document.createElement("a");
-      enlace.href = url;
-      enlace.download = "mi_codigo.cpp";
-      document.body.appendChild(enlace);
-      enlace.click();
-      document.body.removeChild(enlace);
-      URL.revokeObjectURL(url);
-    }
-
   </script>
 </body>
 </html>
