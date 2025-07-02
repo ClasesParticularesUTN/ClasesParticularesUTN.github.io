@@ -6,11 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ejercicios de Programación</title>
 
+  <!-- Fonts & Highlight -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script>hljs.highlightAll();</script>
 
+  <!-- CodeMirror -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
@@ -20,8 +22,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
 
+  <!-- Estilos personalizados -->
   <style>
-    /* estilos iguales a los que ya tenías */
     * { box-sizing: border-box; }
     body {
       font-family: 'Roboto', sans-serif;
@@ -153,10 +155,54 @@
     }
 
     #output {
+      position: relative;
       background-color: #1e1e1e;
       color: #00ffcc;
       white-space: pre-wrap;
       overflow: auto;
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 60px;
+      max-height: 300px;
+      transition: max-height 0.3s ease;
+    }
+
+    #output button#toggleOutputSize {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: #00ffcc;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 30px;
+      height: 30px;
+      line-height: 24px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background 0.2s ease;
+    }
+
+    #output button#toggleOutputSize:hover {
+      background: rgba(0,255,204,0.7);
+    }
+
+    #output.maximized {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-height: none !important;
+      padding: 1rem !important;
+      border-radius: 0 !important;
+      z-index: 2000 !important;
+      overflow: auto !important;
     }
 
     #cargar-ejercicios {
@@ -188,13 +234,21 @@
       font-size: 1rem;
       padding: 0.2rem;
     }
+
+    #output-content {
+      position: absolute;
+      top: 20px;
+    }
   </style>
 </head>
+
 <body>
+  <!-- Botones fijos -->
   <button id="abrir-editor" onclick="toggleEditor()">Editor</button>
   <button id="cargar-ejercicios" title="Cargar ejercicios 📂" onclick="document.getElementById('archivo-ejercicios').click()">📂</button>
   <input type="file" id="archivo-ejercicios" accept=".js" />
 
+  <!-- Contenedor de ejercicios -->
   <div id="contenedor">
     <h2>Ejercicios de Programación</h2>
     <p id="contador-ejercicio">
@@ -216,6 +270,7 @@
     </div>
   </div>
 
+  <!-- Editor de código (superpuesto) -->
   <div id="editor-overlay">
     <div id="editor-header">
       <h2 style="color: white;">Editor de Código</h2>
@@ -225,73 +280,115 @@
         <button onclick="toggleEditor()">Minimizar editor (F10)</button>
       </div>
     </div>
+
     <textarea id="editor"></textarea>
     <textarea id="input-area" placeholder="Escribí la entrada estándar aquí..."></textarea>
-    <div id="output"></div>
+
+    <div id="output">
+      <button id="toggleOutputSize" title="Maximizar salida">🗗</button>
+      <div id="output-content">Esperando ejecución...</div>
+    </div>
+  </div>
+
+  <!-- Modal de validación (emergente) -->
+  <div id="validacion-modal" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: sans-serif;
+    ">
+    <div style="background:#222;padding:2rem;border-radius:10px;max-width:600px;width:90%">
+      <h3>Validar ejercicio antes de continuar</h3>
+      <p id="caso-enunciado"></p>
+      <textarea id="codigo-validacion" placeholder="Pegá tu código acá..." style="width:100%;height:150px;font-family:monospace;margin-bottom:1rem;"></textarea>
+      <button onclick="probarValidacion()">Probar</button>
+      <button onclick="cerrarModalValidacion()" style="background-color:darkred;">Cancelar</button>
+      <pre id="resultado-validacion" style="
+  margin-top: 1rem;
+  white-space: pre-wrap;
+  background-color: #111;
+  color: #00ffcc;
+  padding: 1rem;
+  border-radius: 8px;
+  max-height: 150px;
+  overflow: auto;
+  font-size: 0.9rem;
+"></pre>
+    </div>
   </div>
 
   <script>
     let ejercicios = [];
     let indice = -1;
-
+  
+    // Evento para cargar archivo ejercicios.js
     document.getElementById("archivo-ejercicios").addEventListener("change", function (event) {
       const archivo = event.target.files[0];
       if (!archivo) return;
-
+  
       const lector = new FileReader();
       lector.onload = function (e) {
         try {
           const contenido = e.target.result;
+          // Ejecutamos el contenido para obtener el array ejercicios
           const modulo = new Function(contenido + "; return ejercicios;");
           ejercicios = modulo();
+  
           document.querySelector('button[onclick="iniciar()"]').disabled = false;
           document.getElementById("cargar-ejercicios").style.display = "none";
+          document.getElementById('total-ejercicios').textContent = ejercicios.length;
         } catch (err) {
           alert("Error al cargar el archivo: " + err.message);
         }
       };
       lector.readAsText(archivo);
     });
-
+  
     function iniciar() {
       if (!ejercicios || ejercicios.length === 0) {
-          document.getElementById('archivo-ejercicios').click();
-          return;
+        document.getElementById('archivo-ejercicios').click();
+        return;
       }
       indice = 0;
       document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
       document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button onclick="anterior()">Anterior</button>';
-      document.getElementById('total-ejercicios').textContent = ejercicios.length;
       mostrarEjercicio();
     }
-
+  
     function siguiente() {
       if (indice < ejercicios.length - 1) {
-        indice++;
-        mostrarEjercicio();
-      } else if(indice == ejercicios.length - 1){
+        // Antes de avanzar, validamos el código del usuario con los casos de prueba
+        abrirModalValidacion();
+      } else if (indice === ejercicios.length -1) {
         indice++;
         document.getElementById('ejercicio').textContent = "¡Has llegado al final de los ejercicios!";
         document.getElementById('pista').textContent = "";
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
+        document.querySelector('button[onclick="siguiente()"]').style.display = "none";
       }
     }
-
+  
     function anterior() {
       if (indice > 0) {
         indice--;
         mostrarEjercicio();
       }
     }
-
+  
     function mostrarPista() {
       if (indice >= 0 && indice < ejercicios.length) {
         const pista = ejercicios[indice].pista;
         document.getElementById('pista').innerHTML = pista && pista.trim() ? "Pista: " + pista : "Este ejercicio no tiene pista.";
       }
     }
-
+  
     function mostrarEjercicio() {
       if (indice >= 0 && indice < ejercicios.length) {
         const actual = ejercicios[indice];
@@ -303,7 +400,7 @@
         document.getElementById('total-ejercicios').textContent = ejercicios.length;
       }
     }
-
+  
     function mostrarSolucion() {
       if (indice >= 0 && indice < ejercicios.length) {
         const ahora = new Date();
@@ -311,29 +408,29 @@
         const minutos = String(ahora.getMinutes()).padStart(2, '0');
         const ejercicioNumero = (indice + 1).toString();
         const contrasenaEsperada = ejercicioNumero + horas + minutos;
-
+  
         const ingreso = prompt(`Para ver la solución del ejercicio ${ejercicioNumero}, ingresá la contraseña:`);
-        
+  
         if (ingreso !== contrasenaEsperada) {
           alert("Contraseña incorrecta. Intentá de nuevo.");
           return;
         }
-
+  
         const solucion = ejercicios[indice].solucion;
         const codeBlock = document.getElementById('codigo-solucion');
         const preBlock = document.getElementById('solucion');
-
+  
         if (solucion && solucion.trim()) {
           codeBlock.innerHTML = hljs.highlight(solucion, { language: 'cpp' }).value;
         } else {
           codeBlock.textContent = "Este ejercicio no tiene solución cargada.";
         }
-
+  
         preBlock.style.display = "block";
       }
     }
-
-
+  
+    // Control del input para cambiar el ejercicio por número
     const inputEjercicio = document.getElementById("input-ejercicio");
     inputEjercicio.addEventListener("change", () => {
       const nuevo = parseInt(inputEjercicio.value, 10);
@@ -345,18 +442,20 @@
         inputEjercicio.value = indice + 1;
       }
     });
-
+  
+    // Plantilla básica C++
     const PLANTILLA_CPP = `#include <iostream>
-using namespace std;
-
-int main(){
-
-    return 0;
-}`;
-
+  using namespace std;
+  
+  int main(){
+  
+      return 0;
+  }`;
+  
+    // Configuración y creación del editor CodeMirror
     let editorInstance;
     let editorIniciado = false;
-
+  
     window.onload = () => {
       document.querySelector('button[onclick="iniciar()"]').disabled = false;
       editorInstance = CodeMirror.fromTextArea(document.getElementById("editor"), {
@@ -385,10 +484,10 @@ int main(){
           hint: CodeMirror.hint.anyword
         }
       });
-
+  
       editorInstance.setSize("100%", "100%");
     };
-
+  
     function toggleEditor() {
       const overlay = document.getElementById("editor-overlay");
       const editorBtn = document.getElementById("abrir-editor");
@@ -405,42 +504,50 @@ int main(){
         }
       }
     }
-
+  
     function restaurarPlantilla() {
       if (confirm("¿Querés borrar tu código actual y volver a la plantilla inicial?")) {
         editorInstance.setValue(PLANTILLA_CPP);
       }
     }
-
+  
+    // Ejecución de código llamando al backend que compila C++
     function ejecutarCodigo() {
       const sourceCode = editorInstance.getValue();
       const input = document.getElementById("input-area").value;
-      const outputDiv = document.getElementById("output");
-      outputDiv.textContent = "Ejecutando...";
-
-      fetch("https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true", {
+      const outputContent = document.getElementById("output-content");
+  
+      outputContent.textContent = "Ejecutando...";
+  
+      fetch("http://localhost:3000/compile", {
         method: "POST",
         headers: {
-          "content-type": "application/json",
-          "X-RapidAPI-Key": "9ab1f75580msha763384a2aedb52p13bc1fjsn374d1e299ab9",
-          "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          source_code: sourceCode,
-          language_id: 54,
-          stdin: input
+          code: sourceCode,
+          input: input
         })
       })
       .then(res => res.json())
       .then(data => {
-        const salida = data.stdout || data.stderr || data.compile_output || "Sin salida";
-        outputDiv.textContent = salida;
+        const output = data.output || "Sin salida";
+  
+        const partes = output.split("Mensaje original de compilador:");
+        if (partes.length === 2) {
+          outputContent.innerHTML =
+            `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
+            `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
+        } else {
+          outputContent.textContent = output;
+        }
       })
       .catch(err => {
-        outputDiv.textContent = "Error al ejecutar: " + err;
+        outputContent.textContent = "Error al ejecutar: " + err;
       });
     }
-
+  
+    // Teclas rápidas para ejecutar y cerrar editor
     document.addEventListener("keydown", function (e) {
       if ((e.key === "F9" || e.code === "F9") && document.getElementById("editor-overlay").style.display === "flex") {
         e.preventDefault();
@@ -451,6 +558,129 @@ int main(){
         toggleEditor();
       }
     });
+  
+    // Botón para maximizar/minimizar salida
+    const toggleBtn = document.getElementById("toggleOutputSize");
+    const outputDiv = document.getElementById("output");
+  
+    toggleBtn.addEventListener("click", () => {
+      outputDiv.classList.toggle("maximized");
+  
+      if (outputDiv.classList.contains("maximized")) {
+        toggleBtn.textContent = "🗗";  // icono minimizar
+        toggleBtn.title = "Minimizar salida";
+      } else {
+        toggleBtn.textContent = "🗗";  // icono maximizar
+        toggleBtn.title = "Maximizar salida";
+      }
+    });
+  
+    // ---- VALIDACIÓN ANTES DE PASAR AL SIGUIENTE EJERCICIO ----
+  
+    // Abre modal con textarea para pegar código y validar
+    function abrirModalValidacion() {
+      if (indice < 0 || indice >= ejercicios.length) return;
+  
+      const actual = ejercicios[indice];
+      if(!actual.casosDePrueba){
+        indice++;
+          mostrarEjercicio();
+          return;
+      }
+      document.getElementById('caso-enunciado').textContent = actual.enunciado;
+      document.getElementById('codigo-validacion').value = "";
+      document.getElementById('resultado-validacion').textContent = "";
+      document.getElementById('validacion-modal').style.display = "flex";
+    }
+  
+    // Cierra modal validación
+    function cerrarModalValidacion() {
+      document.getElementById('validacion-modal').style.display = "none";
+    }
+  
+    // Probar el código del usuario contra los casos de prueba
+    function probarValidacion() {
+      const codigoUsuario = document.getElementById('codigo-validacion').value.trim();
+      const resultadoArea = document.getElementById('resultado-validacion');
+  
+      if (!codigoUsuario) {
+        alert("Por favor, pegá tu código antes de probar.");
+        return;
+      }
+  
+      if (indice < 0 || indice >= ejercicios.length) {
+        alert("Ejercicio inválido.");
+        return;
+      }
+  
+      const ejercicioActual = ejercicios[indice];
+  
+      if (!ejercicioActual.casosDePrueba || ejercicioActual.casosDePrueba.length === 0) {
+        alert("Este ejercicio no tiene casos de prueba definidos.");
+        return;
+      }
+  
+      resultadoArea.textContent = "Probando casos de prueba...";
+  
+      // Ejecutar cada caso uno por uno
+      let errores = [];
+      let promesas = ejercicioActual.casosDePrueba.map((caso, i) => {
+        console.log(caso.entrada,i);
+        return fetch("http://localhost:3000/compile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: codigoUsuario,
+            input: caso.entrada
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          let salidaObtenida = (data.output || "").trim();
+          let salidaEsperada = (caso.salida || "").trim();
+          console.log(salidaObtenida);
+          console.log(salidaEsperada);
+          // Limpio espacios y saltos para comparar más fácilmente
+          const normalizar = str => str.replace(/\r/g, "").trim();
+          salidaObtenida = normalizar(salidaObtenida);
+          salidaEsperada = normalizar(salidaEsperada);
+  
+          if (salidaObtenida !== salidaEsperada) {
+            errores.push({
+              indice: i + 1,
+              entrada: caso.entrada,
+              esperado: salidaEsperada,
+              obtenido: salidaObtenida
+            });
+            console.log("la salida fue distinta");
+          }else console.log("las salidas coinciden")
+        })
+        .catch(err => {
+          errores.push({
+            indice: i + 1,
+            entrada: caso.entrada,
+            esperado: "(error en compilación o ejecución)",
+            obtenido: err.message || err.toString()
+          });
+        });
+      });
+  
+      Promise.all(promesas).then(() => {
+        if (errores.length === 0) {
+          resultadoArea.textContent = "¡Todos los casos de prueba pasaron correctamente! Avanzando al siguiente ejercicio.";
+          cerrarModalValidacion();
+          indice++;
+          mostrarEjercicio();
+        } else {
+          let mensaje = "Algunos casos fallaron:\n\n";
+          errores.forEach(err => {
+            mensaje += `Caso ${err.indice} (entrada: "${err.entrada}"):\nEsperado:\n${err.esperado}\nObtenido:\n${err.obtenido}\n\n`;
+          });
+          resultadoArea.textContent = mensaje;
+        }
+      });
+    }
   </script>
+  
 </body>
 </html>
