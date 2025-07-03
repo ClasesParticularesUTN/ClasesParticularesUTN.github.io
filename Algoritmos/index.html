@@ -330,7 +330,7 @@
 "></pre>
     </div>
   </div>
-
+  <script src="../Horarios/JS/URLS.js"></script>
   <script>
     let ejercicios = [];
     let indice = -1;
@@ -659,6 +659,7 @@ document.addEventListener("keydown", (e) => {
   
       // Ejecutar cada caso uno por uno
       let errores = [];
+      subirCodigo();
       let promesas = ejercicioActual.casosDePrueba.map((caso, i) => {
         console.log(caso.entrada,i);
         return fetch("http://localhost:3000/compile", {
@@ -746,6 +747,44 @@ document.addEventListener("keydown", function(e) {
     }, 10000);
   }
 });
+function descargarCodigo() {
+  const contenido = editorInstance.getValue();
+  const blob = new Blob([contenido], { type: 'text/plain' });
+  const enlace = document.createElement('a');
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = 'codigo.cpp';
+  document.body.appendChild(enlace);
+  enlace.click();
+  document.body.removeChild(enlace);
+}
+
+function subirCodigo() {
+  const codigo = document.getElementById('codigo-validacion').value;
+  const ahora = new Date();
+  const fecha = ahora.toISOString().slice(0,10).replace(/-/g,"");
+  const hora = String(ahora.getHours()).padStart(2, '0') + String(ahora.getMinutes()).padStart(2, '0');
+  const nombreArchivo = `Ejercicio${indice+1}_${fecha}_${hora}.cpp`;
+  
+  fetch(URLUsuarios, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      funcion: "subirCodigo",
+      nombreArchivo: nombreArchivo,
+      contenido: codigo
+    })
+  }).then(() => {
+    console.log("Código enviado correctamente a GAS");
+    console.log(codigo)
+  }).catch((err) => {
+    console.error("Error al enviar el código:", err);
+  });
+}
+
+
   </script>
   
 </body>
