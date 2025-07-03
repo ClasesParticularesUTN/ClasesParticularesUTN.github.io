@@ -135,7 +135,6 @@
     }
 
     #restaurar-btn {
-      margin-left: 1rem;
       background-color: #dc3545;
     }
 
@@ -273,8 +272,17 @@
   <!-- Editor de código (superpuesto) -->
   <div id="editor-overlay">
     <div id="editor-header">
+      
+
       <h2 style="color: white;">Editor de Código</h2>
       <div>
+        <button id="copiar-codigo-btn" title="Copiar código" style="
+          background: none;
+          color: white;
+          font-size: 2rem;
+          cursor: pointer;
+          border: none;
+        ">📋</button>
         <button onclick="restaurarPlantilla()" id="restaurar-btn">Restaurar plantilla</button>
         <button onclick="ejecutarCodigo()" style="background-color:#007bff">Ejecutar (F9)</button>
         <button onclick="toggleEditor()">Minimizar editor (F10)</button>
@@ -591,6 +599,7 @@
       document.getElementById('codigo-validacion').value = "";
       document.getElementById('resultado-validacion').textContent = "";
       document.getElementById('validacion-modal').style.display = "flex";
+      document.getElementById('codigo-validacion').focus();
     }
   
     // Cierra modal validación
@@ -680,6 +689,21 @@
         }
       });
     }
+    // Función para copiar el contenido del editor
+document.getElementById("copiar-codigo-btn").addEventListener("click", () => {
+  const btn = document.getElementById("copiar-codigo-btn");
+  const texto = editorInstance.getValue();
+
+  navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = "✅";
+    setTimeout(() => {
+      btn.textContent = "📋";
+    }, 500);
+  }).catch(() => {
+    alert("No se pudo copiar el código.");
+  });
+});
+
   </script>
   
 </body>
