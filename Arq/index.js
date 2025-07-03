@@ -434,7 +434,7 @@ function multiplicarDosNumeros(n1,n2){
     if(sessionStorage.getItem('persona') !== null){
         let Aux = JSON.parse(sessionStorage.getItem('persona'));
         console.log("probando validacion")
-        if(aux.correo == "valedasilvacatela.vdc@gmail.com"){
+        if(Aux.correo == "valedasilvacatela.vdc@gmail.com"){
             let contenedores = document.querySelectorAll(".container");
             contenedores.forEach((elem)=>{
                 elem.style.opacity = "1";
