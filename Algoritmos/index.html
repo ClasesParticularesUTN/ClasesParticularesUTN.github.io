@@ -457,8 +457,17 @@ inputEjercicio.addEventListener("change", () => {
 });
 
 document.addEventListener("keydown", (e) => {
+  // Verifico si el editor está cerrado (display distinto de 'flex')
+  const editorOverlay = document.getElementById("editor-overlay");
+  const editorAbierto = editorOverlay.style.display === "flex";
+
+  if (editorAbierto) {
+    // Si el editor está abierto, no hago nada para estas teclas
+    return;
+  }
+
   if (e.key === "ArrowRight") {
-    e.preventDefault(); // evitar comportamiento por defecto como scroll
+    e.preventDefault();
     let val = parseInt(inputEjercicio.value, 10);
     const max = parseInt(document.getElementById("total-ejercicios").textContent, 10);
     if (!isNaN(val) && val < max) {
@@ -467,24 +476,24 @@ document.addEventListener("keydown", (e) => {
     }
   }
   if (e.key === "ArrowLeft") {
-    e.preventDefault(); // evitar comportamiento por defecto como scroll
+    e.preventDefault();
     let val = parseInt(inputEjercicio.value, 10);
-    const max = parseInt(document.getElementById("total-ejercicios").textContent, 10);
-    if (!isNaN(val) && val < max) {
+    if (!isNaN(val) && val > 1) {  // corregí aquí para que no baje de 1
       inputEjercicio.value = val - 1;
       inputEjercicio.dispatchEvent(new Event("change"));
     }
   }
 });
+
   
     // Plantilla básica C++
     const PLANTILLA_CPP = `#include <iostream>
-  using namespace std;
+using namespace std;
   
-  int main(){
-  
-      return 0;
-  }`;
+int main(){
+
+    return 0;
+}`;
   
     // Configuración y creación del editor CodeMirror
     let editorInstance;
@@ -512,7 +521,19 @@ document.addEventListener("keydown", (e) => {
               cm.execCommand("newlineAndIndent");
             }
           },
-          "Ctrl-Space": "autocomplete"
+           "Ctrl-Alt-Up": function(cm) {
+            moverLinea(cm, -1);
+          },
+          "Ctrl-Alt-Down": function(cm) {
+            moverLinea(cm, 1);
+          },
+          "Ctrl-Alt-Shift-Up": function(cm) {
+            duplicarLinea(cm, -1);
+          },
+          "Ctrl-Alt-Shift-Down": function(cm) {
+            duplicarLinea(cm, 1);
+          },
+          
         },
         hintOptions: {
           hint: CodeMirror.hint.anyword
@@ -522,22 +543,29 @@ document.addEventListener("keydown", (e) => {
       editorInstance.setSize("100%", "100%");
     };
   
-    function toggleEditor() {
-      const overlay = document.getElementById("editor-overlay");
-      const editorBtn = document.getElementById("abrir-editor");
-      if (overlay.style.display === "flex") {
-        overlay.style.display = "none";
-        editorBtn.style.display = "inline-block";
-      } else {
-        overlay.style.display = "flex";
-        editorBtn.style.display = "none";
-        editorInstance.refresh();
-        if (!editorIniciado || editorInstance.getValue().trim() === "" || editorInstance.getValue().startsWith("// Escribí")) {
-          editorInstance.setValue(PLANTILLA_CPP);
-          editorIniciado = true;
-        }
-      }
+function toggleEditor() {
+  const overlay = document.getElementById("editor-overlay");
+  const editorBtn = document.getElementById("abrir-editor");
+
+  if (overlay.style.display === "flex") {
+    overlay.style.display = "none";
+    editorBtn.style.display = "inline-block";
+  } else {
+    overlay.style.display = "flex";
+    editorBtn.style.display = "none";
+    editorInstance.refresh();
+
+    if (!editorIniciado || editorInstance.getValue().trim() === "" || editorInstance.getValue().startsWith("// Escribí")) {
+      editorInstance.setValue(PLANTILLA_CPP);
+      editorIniciado = true;
+
+      // 👉 Foco en línea 5 (índice 4), columna 0
+      editorInstance.setCursor({ line: 4, ch: 0 });
+      editorInstance.focus();
     }
+  }
+}
+
   
     function restaurarPlantilla() {
       if (confirm("¿Querés borrar tu código actual y volver a la plantilla inicial?")) {
@@ -761,9 +789,9 @@ function descargarCodigo() {
 function subirCodigo() {
   const codigo = document.getElementById('codigo-validacion').value;
   const ahora = new Date();
-  const fecha = ahora.toISOString().slice(0,10).replace(/-/g,"");
-  const hora = String(ahora.getHours()).padStart(2, '0') + String(ahora.getMinutes()).padStart(2, '0');
-  const nombreArchivo = `Ejercicio${indice+1}_${fecha}_${hora}.cpp`;
+  const fecha = ahora.toISOString().slice(0,10).replace(/-/g,"/");
+  const hora = String(ahora.getHours()).padStart(2, '0') + ":" + String(ahora.getMinutes()).padStart(2, '0');
+  const nombreArchivo = `Ejercicio${indice+1}_${hora}_${fecha}.cpp`;
   
   fetch(URLUsuarios, {
     method: "POST",
@@ -783,6 +811,73 @@ function subirCodigo() {
     console.error("Error al enviar el código:", err);
   });
 }
+
+function moverLinea(cm, direccion) {
+  console.log("estoy moviendo linea");
+  const rango = cm.listSelections();
+  cm.operation(() => {
+    rango.forEach(sel => {
+      const linea = sel.head.line;
+      const otraLinea = linea + direccion;
+      if (otraLinea < 0 || otraLinea >= cm.lineCount()) return;
+
+      const textoActual = cm.getLine(linea);
+      const textoOtra = cm.getLine(otraLinea);
+
+      cm.replaceRange(textoOtra, { line: linea, ch: 0 }, { line: linea, ch: textoActual.length });
+      cm.replaceRange(textoActual, { line: otraLinea, ch: 0 }, { line: otraLinea, ch: textoOtra.length });
+
+      cm.setCursor({ line: otraLinea, ch: sel.head.ch });
+    });
+  });
+}
+
+function duplicarLinea(cm, direccion) {
+  const cursor = cm.getCursor();
+  const line = cursor.line;
+  const textActual = cm.getLine(line);
+  const destino = direccion > 0 ? line + 1 : line;
+
+  cm.operation(() => {
+    cm.replaceRange(textActual + "\n", { line: destino, ch: 0 });
+    cm.setCursor({ line: destino, ch: cursor.ch });
+    cm.focus(); // <- mantener el foco
+  });
+}
+
+document.addEventListener("keydown", function(e) {
+  if (!editorInstance) return;
+
+  // Mover línea arriba
+  if (e.ctrlKey && e.altKey && !e.shiftKey && e.key === "ArrowUp") {
+    e.preventDefault();
+    e.stopPropagation();
+    moverLinea(editorInstance, -1);
+  }
+
+  // Mover línea abajo
+  if (e.ctrlKey && e.altKey && !e.shiftKey && e.key === "ArrowDown") {
+    e.preventDefault();
+    e.stopPropagation();
+    moverLinea(editorInstance, 1);
+  }
+
+  // Duplicar línea arriba
+  if (e.ctrlKey && e.altKey && e.shiftKey && e.key === "ArrowUp") {
+    e.preventDefault();
+    e.stopPropagation();
+    duplicarLinea(editorInstance, -1);
+  }
+
+  // Duplicar línea abajo
+  if (e.ctrlKey && e.altKey && e.shiftKey && e.key === "ArrowDown") {
+    e.preventDefault();
+    e.stopPropagation();
+    duplicarLinea(editorInstance, 1);
+  }
+});
+
+ 
 
 
   </script>
