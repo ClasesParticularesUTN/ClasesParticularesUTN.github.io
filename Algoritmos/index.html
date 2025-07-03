@@ -521,19 +521,6 @@ int main(){
               cm.execCommand("newlineAndIndent");
             }
           },
-           "Ctrl-Alt-Up": function(cm) {
-            moverLinea(cm, -1);
-          },
-          "Ctrl-Alt-Down": function(cm) {
-            moverLinea(cm, 1);
-          },
-          "Ctrl-Alt-Shift-Up": function(cm) {
-            duplicarLinea(cm, -1);
-          },
-          "Ctrl-Alt-Shift-Down": function(cm) {
-            duplicarLinea(cm, 1);
-          },
-          
         },
         hintOptions: {
           hint: CodeMirror.hint.anyword
@@ -846,40 +833,39 @@ function duplicarLinea(cm, direccion) {
 }
 
 document.addEventListener("keydown", function(e) {
-  if (!editorInstance) return;
-
-  // Mover línea arriba
-  if (e.ctrlKey && e.altKey && !e.shiftKey && e.key === "ArrowUp") {
+  //if (!editorInstance) return;
+  if (
+    (e.ctrlKey && e.altKey && e.key === "ArrowUp") ||
+    (e.altKey && e.key.toLowerCase() === "t")
+  ) {
     e.preventDefault();
     e.stopPropagation();
     moverLinea(editorInstance, -1);
   }
 
-  // Mover línea abajo
-  if (e.ctrlKey && e.altKey && !e.shiftKey && e.key === "ArrowDown") {
+  if (
+    (e.ctrlKey && e.altKey && e.key === "ArrowDown") ||
+    (e.altKey && e.key.toLowerCase() === "r")
+  )  {
     e.preventDefault();
     e.stopPropagation();
     moverLinea(editorInstance, 1);
   }
 
   // Duplicar línea arriba
-  if (e.ctrlKey && e.altKey && e.shiftKey && e.key === "ArrowUp") {
+  if (e.ctrlKey && e.shiftKey && e.key === "ArrowUp") {
     e.preventDefault();
     e.stopPropagation();
     duplicarLinea(editorInstance, -1);
   }
 
   // Duplicar línea abajo
-  if (e.ctrlKey && e.altKey && e.shiftKey && e.key === "ArrowDown") {
+  if (e.ctrlKey && e.shiftKey && e.key === "ArrowDown") {
     e.preventDefault();
     e.stopPropagation();
     duplicarLinea(editorInstance, 1);
   }
 });
-
- 
-
-
   </script>
   
 </body>
