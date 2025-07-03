@@ -213,7 +213,7 @@
       font-size: 2rem;
       cursor: pointer;
       color: #333;
-      z-index: 1001;
+      z-index: 999;
       padding: 0px;
     }
 
@@ -276,13 +276,22 @@
 
       <h2 style="color: white;">Editor de Código</h2>
       <div>
-        <button id="copiar-codigo-btn" title="Copiar código" style="
-          background: none;
-          color: white;
-          font-size: 2rem;
-          cursor: pointer;
-          border: none;
-        ">📋</button>
+        <button id="atajos-btn" title="Ver atajos de teclado" style="
+        background: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        border: none;
+      ">⌨️</button>
+
+      <button id="copiar-codigo-btn" title="Copiar código" style="
+        background: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        border: none;
+      ">📋</button>
+
         <button onclick="restaurarPlantilla()" id="restaurar-btn">Restaurar plantilla</button>
         <button onclick="ejecutarCodigo()" style="background-color:#007bff">Ejecutar (F9)</button>
         <button onclick="toggleEditor()">Minimizar editor (F10)</button>
@@ -330,6 +339,36 @@
 "></pre>
     </div>
   </div>
+  <div id="modal-atajos" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  z-index: 3000;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: sans-serif;
+">
+  <div style="background:#222;padding:2rem;border-radius:10px;max-width:600px;width:90%">
+    <h3>Atajos de teclado disponibles</h3>
+    <ul style="line-height: 1.8">
+      <li><b>F9</b>: Ejecutar código</li>
+      <li><b>F10</b>: Minimizar editor</li>
+      <li><b>F8</b>: Maximizar/Minimizar salida</li>
+      <li><b>Ctrl + Alt + ↑</b> o <b>Alt + T</b>: Mover línea arriba</li>
+      <li><b>Ctrl + Alt + ↓</b> o <b>Alt + R</b>: Mover línea abajo</li>
+      <li><b>Ctrl + Shift + ↑</b> o <b>Alt + V</b>: Duplicar línea arriba</li>
+      <li><b>Ctrl + Shift + ↓</b> o <b>Alt + C</b>: Duplicar línea abajo</li>
+      
+    </ul>
+    <div style="text-align: right;">
+      <button onclick="document.getElementById('modal-atajos').style.display='none'" style="margin-top:1rem;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
   <script src="../Horarios/JS/URLS.js"></script>
   <script>
     let ejercicios = [];
@@ -606,6 +645,11 @@ function toggleEditor() {
         e.preventDefault();
         toggleEditor();
       }
+      if ((e.key === "F8" || e.code === "F8") && document.getElementById("editor-overlay").style.display === "flex") {
+        e.preventDefault();
+        document.getElementById("toggleOutputSize").click();
+      }
+      
     });
   
     // Botón para maximizar/minimizar salida
@@ -853,19 +897,26 @@ document.addEventListener("keydown", function(e) {
   }
 
   // Duplicar línea arriba
-  if (e.ctrlKey && e.shiftKey && e.key === "ArrowUp") {
+  if ((e.ctrlKey && e.shiftKey && e.key === "ArrowUp") || e.altKey && e.key.toLowerCase() === "v") {
     e.preventDefault();
     e.stopPropagation();
     duplicarLinea(editorInstance, -1);
   }
 
   // Duplicar línea abajo
-  if (e.ctrlKey && e.shiftKey && e.key === "ArrowDown") {
+  if ((e.ctrlKey && e.shiftKey && e.key === "ArrowDown") || e.altKey && e.key.toLowerCase() === "c") {
     e.preventDefault();
     e.stopPropagation();
     duplicarLinea(editorInstance, 1);
   }
 });
+
+document.getElementById("atajos-btn").addEventListener("click", () => {
+  document.getElementById("modal-atajos").style.display = "flex";
+});
+
+
+
   </script>
   
 </body>
