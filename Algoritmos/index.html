@@ -440,16 +440,42 @@
   
     // Control del input para cambiar el ejercicio por número
     const inputEjercicio = document.getElementById("input-ejercicio");
-    inputEjercicio.addEventListener("change", () => {
-      const nuevo = parseInt(inputEjercicio.value, 10);
-      if (!isNaN(nuevo) && nuevo >= 1 && nuevo <= ejercicios.length) {
-        indice = nuevo - 1;
-        mostrarEjercicio();
-      } else {
-        alert(`El número debe estar entre 1 y ${ejercicios.length}`);
-        inputEjercicio.value = indice + 1;
-      }
-    });
+
+inputEjercicio.addEventListener("change", () => {
+  const nuevo = parseInt(inputEjercicio.value, 10);
+  if(!admin){
+    alert("Solo el profesor puede adelantar ejercicios");
+    return ;
+  }
+  if (!isNaN(nuevo) && nuevo >= 1 && nuevo <= ejercicios.length) {
+    indice = nuevo - 1;
+    mostrarEjercicio();
+  } else {
+    alert(`El número debe estar entre 1 y ${ejercicios.length}`);
+    inputEjercicio.value = indice + 1;
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowRight") {
+    e.preventDefault(); // evitar comportamiento por defecto como scroll
+    let val = parseInt(inputEjercicio.value, 10);
+    const max = parseInt(document.getElementById("total-ejercicios").textContent, 10);
+    if (!isNaN(val) && val < max) {
+      inputEjercicio.value = val + 1;
+      inputEjercicio.dispatchEvent(new Event("change"));
+    }
+  }
+  if (e.key === "ArrowLeft") {
+    e.preventDefault(); // evitar comportamiento por defecto como scroll
+    let val = parseInt(inputEjercicio.value, 10);
+    const max = parseInt(document.getElementById("total-ejercicios").textContent, 10);
+    if (!isNaN(val) && val < max) {
+      inputEjercicio.value = val - 1;
+      inputEjercicio.dispatchEvent(new Event("change"));
+    }
+  }
+});
   
     // Plantilla básica C++
     const PLANTILLA_CPP = `#include <iostream>
@@ -704,6 +730,22 @@ document.getElementById("copiar-codigo-btn").addEventListener("click", () => {
   });
 });
 
+let admin = false; // Cambiar a true para habilitar modo admin
+
+document.addEventListener("keydown", function(e) {
+  const ahora = new Date();
+  const minutos = ahora.getMinutes();
+  const ultimaCifra = minutos % 10;
+  // Solo si se presiona Ctrl + [última cifra de los minutos]
+  if (e.altKey && !isNaN(e.key) && Number(e.key) === ultimaCifra) {
+    admin = true;
+    console.log("Modo admin activado por 10 segundos.");
+    setTimeout(() => {
+      admin = false;
+      console.log("Modo admin desactivado.");
+    }, 10000);
+  }
+});
   </script>
   
 </body>
