@@ -619,11 +619,11 @@ function toggleEditor() {
   const totalEntradasUsuario = entradasUsuario.length;
 
   // 3. Validar
-  if (totalEntradasEsperadas > 0 && totalEntradasUsuario !== totalEntradasEsperadas) {
-    alert(`Este código requiere ${totalEntradasEsperadas} entradas y proporcionaste ${totalEntradasUsuario}.\nPor favor, revisá el área de entrada.`);
-    outputContent.textContent = "⛔ Error: cantidad incorrecta de entradas.";
-    return;
-  }
+ if (totalEntradasEsperadas > 0 && totalEntradasUsuario !== totalEntradasEsperadas) {
+  alert(`⚠️ Advertencia: el código espera ${totalEntradasEsperadas} entradas, pero se ingresaron ${totalEntradasUsuario}.
+Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejecutará igual.`);
+}
+
 
   // Mostrar mensaje de ejecución
   outputContent.textContent = "Ejecutando...";
