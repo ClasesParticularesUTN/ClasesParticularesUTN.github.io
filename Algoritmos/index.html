@@ -601,39 +601,59 @@ function toggleEditor() {
   
     // Ejecución de código llamando al backend que compila C++
     function ejecutarCodigo() {
-      const sourceCode = editorInstance.getValue();
-      const input = document.getElementById("input-area").value;
-      const outputContent = document.getElementById("output-content");
-  
-      outputContent.textContent = "Ejecutando...";
-  
-      fetch("http://localhost:3000/compile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          code: sourceCode,
-          input: input
-        })
-      })
-      .then(res => res.json())
-      .then(data => {
-        const output = data.output || "Sin salida";
-  
-        const partes = output.split("Mensaje original de compilador:");
-        if (partes.length === 2) {
-          outputContent.innerHTML =
-            `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
-            `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
-        } else {
-          outputContent.textContent = output;
-        }
-      })
-      .catch(err => {
-        outputContent.textContent = "Error al ejecutar: " + err;
-      });
+  const sourceCode = editorInstance.getValue();
+  const input = document.getElementById("input-area").value;
+  const outputContent = document.getElementById("output-content");
+
+  // 1. Contar cantidad de variables que esperan ser ingresadas (por cin)
+  const cinRegex = /cin\s*>>([^;]+)/g;
+  let totalEntradasEsperadas = 0;
+  let match;
+  while ((match = cinRegex.exec(sourceCode)) !== null) {
+    const variables = match[1].split(">>").map(v => v.trim()).filter(Boolean);
+    totalEntradasEsperadas += variables.length;
+  }
+
+  // 2. Contar entradas proporcionadas por el usuario
+  const entradasUsuario = input.trim().split(/\s+/).filter(e => e.length > 0);
+  const totalEntradasUsuario = entradasUsuario.length;
+
+  // 3. Validar
+  if (totalEntradasEsperadas > 0 && totalEntradasUsuario !== totalEntradasEsperadas) {
+    alert(`Este código requiere ${totalEntradasEsperadas} entradas y proporcionaste ${totalEntradasUsuario}.\nPor favor, revisá el área de entrada.`);
+    outputContent.textContent = "⛔ Error: cantidad incorrecta de entradas.";
+    return;
+  }
+
+  // Mostrar mensaje de ejecución
+  outputContent.textContent = "Ejecutando...";
+
+  fetch("http://localhost:3000/compile", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      code: sourceCode,
+      input: input
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const output = data.output || "Sin salida";
+
+    const partes = output.split("Mensaje original de compilador:");
+    if (partes.length === 2) {
+      outputContent.innerHTML =
+        `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
+        `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
+    } else {
+      outputContent.textContent = output;
     }
+  })
+  .catch(err => {
+    outputContent.textContent = "Error al ejecutar: " + err;
+  });
+}
+
   
     // Teclas rápidas para ejecutar y cerrar editor
     document.addEventListener("keydown", function (e) {
