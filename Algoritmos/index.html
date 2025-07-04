@@ -572,10 +572,22 @@ int main(){
 function toggleEditor() {
   const overlay = document.getElementById("editor-overlay");
   const editorBtn = document.getElementById("abrir-editor");
+  const inputArea = document.getElementById("input-area");
 
   if (overlay.style.display === "flex") {
+    // 💾 Guardar foco antes de minimizar
+    if (document.activeElement === editorInstance.getInputField()) {
+      focoAnterior = "editor";
+      posicionCursorEditor = editorInstance.getCursor();
+    } else if (document.activeElement === inputArea) {
+      focoAnterior = "input";
+    } else {
+      focoAnterior = null;
+    }
+
     overlay.style.display = "none";
     editorBtn.style.display = "inline-block";
+
   } else {
     overlay.style.display = "flex";
     editorBtn.style.display = "none";
@@ -584,11 +596,19 @@ function toggleEditor() {
     if (!editorIniciado || editorInstance.getValue().trim() === "" || editorInstance.getValue().startsWith("// Escribí")) {
       editorInstance.setValue(PLANTILLA_CPP);
       editorIniciado = true;
-
-      // 👉 Foco en línea 5 (índice 4), columna 0
       editorInstance.setCursor({ line: 4, ch: 0 });
-      editorInstance.focus();
+    } else if (focoAnterior === "editor" && posicionCursorEditor) {
+      editorInstance.setCursor(posicionCursorEditor);
     }
+
+    // Restaurar foco al volver a abrir
+    if (focoAnterior === "editor") {
+      editorInstance.focus();
+    } else if (focoAnterior === "input") {
+      inputArea.focus();
+    }
+
+    focoAnterior = null;
   }
 }
 
@@ -940,6 +960,8 @@ document.getElementById("atajos-btn").addEventListener("click", () => {
   document.getElementById("modal-atajos").style.display = "flex";
 });
 
+let focoAnterior = null;
+let posicionCursorEditor = null;
 
 
   </script>
