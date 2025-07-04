@@ -818,12 +818,17 @@ function descargarCodigo() {
 }
 
 function subirCodigo() {
+  //Subir codigo con el enunciado
   const codigo = document.getElementById('codigo-validacion').value;
   const ahora = new Date();
   const fecha = ahora.toISOString().slice(0,10).replace(/-/g,"/");
   const hora = String(ahora.getHours()).padStart(2, '0') + ":" + String(ahora.getMinutes()).padStart(2, '0');
   const nombreArchivo = `Ejercicio${indice+1}_${hora}_${fecha}.cpp`;
-  
+
+  // 👇 Obtenemos el enunciado actual y lo agregamos arriba del código
+  const enunciado = ejercicios[indice]?.enunciado || "";
+  const contenidoConEnunciado = `// EJERCICIO ${indice + 1}:\n// ${enunciado.replace(/\n/g, '\n// ')}\n\n${codigo}`;
+
   fetch(URLUsuarios, {
     method: "POST",
     mode: "no-cors",
@@ -833,11 +838,11 @@ function subirCodigo() {
     body: JSON.stringify({
       funcion: "subirCodigo",
       nombreArchivo: nombreArchivo,
-      contenido: codigo
+      contenido: contenidoConEnunciado
     })
   }).then(() => {
     console.log("Código enviado correctamente a GAS");
-    console.log(codigo)
+    console.log(contenidoConEnunciado);
   }).catch((err) => {
     console.error("Error al enviar el código:", err);
   });
