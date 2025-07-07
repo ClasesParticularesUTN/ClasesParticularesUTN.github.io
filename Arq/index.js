@@ -433,8 +433,8 @@ function multiplicarDosNumeros(n1,n2){
 (function activar(){
     if(sessionStorage.getItem('persona') !== null){
         let Aux = JSON.parse(sessionStorage.getItem('persona'));
-        console.log("probando validacion")
-        if(Aux.correo == "valedasilvacatela.vdc@gmail.com"){
+        console.log("probando validacion", Aux)
+        if(Aux.correoElectronico == "valedasilvacatela.vdc@gmail.com"){
             let contenedores = document.querySelectorAll(".container");
             contenedores.forEach((elem)=>{
                 elem.style.opacity = "1";
