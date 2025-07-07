@@ -661,21 +661,13 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
     const output = data.output || "Sin salida";
 
     const partes = output.split("Mensaje original de compilador:");
-if (partes.length === 2) {
-  outputContent.innerHTML =
-    `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
-    `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
-
-      // 👇 Maximizar salida automáticamente
-      const outputDiv = document.getElementById("output");
-      if (!outputDiv.classList.contains("maximized")) {
-        outputDiv.classList.add("maximized");
-        document.getElementById("toggleOutputSize").title = "Minimizar salida";
-      }
-  } else {
-    outputContent.textContent = output;
-  }
-
+    if (partes.length === 2) {
+      outputContent.innerHTML =
+        `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
+        `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
+    } else {
+      outputContent.textContent = output;
+    }
   })
   .catch(err => {
     outputContent.textContent = "Error al ejecutar: " + err;
