@@ -733,9 +733,11 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
       
         if (pegadoAutomatico && navigator.clipboard) {
             navigator.clipboard.readText().then(texto => {
-            if (texto.trim().startsWith("#include")) {
-              areaCodigo.value = texto;
-            }
+              if (texto.trim().startsWith("#include")) {
+                areaCodigo.value = texto;
+              }else{
+                areaCodigo.focus();
+              }
             }).catch(err => {
             console.warn("No se pudo acceder al portapapeles:", err);
             });
