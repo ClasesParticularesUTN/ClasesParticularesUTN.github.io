@@ -405,6 +405,7 @@
       document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
       document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button onclick="anterior()">Anterior</button>';
        if (confirm("¿Querés pegar automáticamente tu código al abrir la validacion?")) {
+        navigator.clipboard.readText().catch(() => {});
         pegadoAutomatico = true;
         
       } else {
@@ -728,7 +729,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
           return;
         }
       
-        document.getElementById('caso-enunciado').textContent = actual.enunciado;
+        //document.getElementById('caso-enunciado').textContent = actual.enunciado;
       
         const areaCodigo = document.getElementById('codigo-validacion');
         areaCodigo.value = "";
@@ -863,7 +864,8 @@ document.addEventListener("keydown", function(e) {
   const minutos = ahora.getMinutes();
   const ultimaCifra = minutos % 10;
   // Solo si se presiona Ctrl + [última cifra de los minutos]
-  if (e.altKey && !isNaN(e.key) && Number(e.key) === ultimaCifra) {
+  
+  if ((e.altKey || (e.altKey && e.shiftKey)) && !isNaN(e.key) && Number(e.key) === ultimaCifra) {
     admin = true;
     console.log("Modo admin activado por 10 segundos.");
     setTimeout(() => {
