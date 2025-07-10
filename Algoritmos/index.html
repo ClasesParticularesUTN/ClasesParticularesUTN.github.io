@@ -732,11 +732,13 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
         areaCodigo.value = "";
       
         if (pegadoAutomatico && navigator.clipboard) {
-          navigator.clipboard.readText().then(texto => {
-            areaCodigo.value = texto;
-          }).catch(err => {
+            navigator.clipboard.readText().then(texto => {
+            if (texto.trim().startsWith("#include")) {
+              areaCodigo.value = texto;
+            }
+            }).catch(err => {
             console.warn("No se pudo acceder al portapapeles:", err);
-          });
+            });
         }
       
         document.getElementById('resultado-validacion').textContent = "";
