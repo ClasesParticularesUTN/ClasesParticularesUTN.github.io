@@ -739,11 +739,13 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
             }).catch(err => {
             console.warn("No se pudo acceder al portapapeles:", err);
             });
+        }else{
+          areaCodigo.focus();
         }
       
         document.getElementById('resultado-validacion').textContent = "";
         document.getElementById('validacion-modal').style.display = "flex";
-        areaCodigo.focus();
+        
   }
 
   
