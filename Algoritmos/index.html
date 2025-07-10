@@ -620,7 +620,9 @@ function toggleEditor() {
   
     function restaurarPlantilla() {
       if (confirm("¿Querés borrar tu código actual y volver a la plantilla inicial?")) {
-        editorInstance.setValue(PLANTILLA_CPP);
+      editorInstance.setValue(PLANTILLA_CPP);
+      document.getElementById("input-area").value = "";
+      document.getElementById("output-content").textContent = "Esperando ejecución...";
       }
     }
   
