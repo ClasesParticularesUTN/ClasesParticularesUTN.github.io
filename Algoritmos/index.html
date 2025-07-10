@@ -255,7 +255,6 @@
       <span id="total-ejercicios">0</span>
     </p>
     <pre id="ejercicio">Presioná "Iniciar" para comenzar</pre>
-
     <div class="botones">
       <button onclick="iniciar()">Iniciar</button>
       <button onclick="siguiente()" style="display: none;">Siguiente</button>
@@ -405,6 +404,12 @@
       indice = 0;
       document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
       document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button onclick="anterior()">Anterior</button>';
+       if (confirm("¿Querés pegar automáticamente tu código al abrir la validacion?")) {
+        pegadoAutomatico = true;
+        
+      } else {
+        pegadoAutomatico = false;
+      }
       mostrarEjercicio();
     }
   
@@ -709,23 +714,36 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
     });
   
     // ---- VALIDACIÓN ANTES DE PASAR AL SIGUIENTE EJERCICIO ----
-  
+    let pegadoAutomatico = false;
     // Abre modal con textarea para pegar código y validar
     function abrirModalValidacion() {
-      if (indice < 0 || indice >= ejercicios.length) return;
-  
-      const actual = ejercicios[indice];
-      if(!actual.casosDePrueba){
-        indice++;
+        if (indice < 0 || indice >= ejercicios.length) return;
+
+        const actual = ejercicios[indice];
+        if (!actual.casosDePrueba) {
+          indice++;
           mostrarEjercicio();
           return;
-      }
-      document.getElementById('caso-enunciado').textContent = actual.enunciado;
-      document.getElementById('codigo-validacion').value = "";
-      document.getElementById('resultado-validacion').textContent = "";
-      document.getElementById('validacion-modal').style.display = "flex";
-      document.getElementById('codigo-validacion').focus();
-    }
+        }
+      
+        document.getElementById('caso-enunciado').textContent = actual.enunciado;
+      
+        const areaCodigo = document.getElementById('codigo-validacion');
+        areaCodigo.value = "";
+      
+        if (pegadoAutomatico && navigator.clipboard) {
+          navigator.clipboard.readText().then(texto => {
+            areaCodigo.value = texto;
+          }).catch(err => {
+            console.warn("No se pudo acceder al portapapeles:", err);
+          });
+        }
+      
+        document.getElementById('resultado-validacion').textContent = "";
+        document.getElementById('validacion-modal').style.display = "flex";
+        areaCodigo.focus();
+  }
+
   
     // Cierra modal validación
     function cerrarModalValidacion() {
