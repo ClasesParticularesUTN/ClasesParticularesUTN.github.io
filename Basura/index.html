@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Agregar esto dentro del <head>, antes del </head> -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <title>Registro Basura - Calendario</title>
   <style>
@@ -182,6 +184,10 @@
         color: red;
         font-weight: bold;
     }
+    .swal2-container {
+  backdrop-filter: blur(6px);
+  background-color: rgba(0, 0, 0, 0.4) !important;
+}
 
   </style>
 </head>
@@ -190,7 +196,7 @@
 <!-- Pantalla 1: Calendario -->
 <div class="pantalla">
   <div class="cabecera">
-    <h2>Calendario del mes actual</h2>
+    <h2>Registro Mensual Sacadas de Basura</h2>
   </div>
   <div class="contenido-flex" id="loader-container">
     <div id="loader">
@@ -328,6 +334,36 @@ celda.innerHTML = `${numeroHTML}<div class="etiqueta">${quien ? quien : ''}</div
   }
 
   obtenerRegistros();
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!sessionStorage.getItem("nombreUsuario")) {
+      Swal.fire({
+        title: '¿Quién sos?',
+        input: 'select',
+        inputLabel: 'Seleccioná tu nombre',
+        inputOptions: {
+          'Valentín': 'Valentín',
+          'Joaquin': 'Joaquin',
+          'Claudia': 'Claudia',
+          'Javier': 'Javier'
+        },
+        inputPlaceholder: 'Seleccioná tu nombre',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        confirmButtonText: 'Guardar',
+        inputValidator: (value) => {
+          if (!value) {
+            return 'Tenés que elegir un nombre';
+          }
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const nombre = result.value;
+          sessionStorage.setItem("nombreUsuario", nombre);
+          
+        }
+      });
+    }
+  });
 </script>
 
 </body>
