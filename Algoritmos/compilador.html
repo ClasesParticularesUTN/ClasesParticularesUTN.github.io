@@ -833,6 +833,10 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
         if (errores.length === 0) {
           resultadoArea.textContent = "¡Todos los casos de prueba pasaron correctamente! Avanzando al siguiente ejercicio.";
           cerrarModalValidacion();
+          const overlay = document.getElementById("editor-overlay");
+          if (overlay.style.display === "flex") {
+            toggleEditor();
+          }
           indice++;
           mostrarEjercicio();
         } else {
@@ -1000,6 +1004,35 @@ document.addEventListener("keydown", function(e) {
   }
 });
 
+document.addEventListener("keydown", function(e) {
+  if (e.key === "F7" || e.code === "F7") {
+    e.preventDefault();
+
+    // 1. Solo si el editor está abierto
+    const overlay = document.getElementById("editor-overlay");
+    if (overlay.style.display === "flex") {
+
+      // 3. Esperar un pequeño tiempo para que el editor se cierre antes de abrir el modal
+      
+        // 4. Maximizar el modal de validación
+        abrirModalValidacion();
+
+        // 5. Pegar automáticamente el código del editor
+        const codigo = editorInstance.getValue();
+        const areaValidacion = document.getElementById("codigo-validacion");
+
+        if (codigo && codigo.trim()) {
+          areaValidacion.value = codigo;
+        }
+
+        const btnProbar = document.querySelector("#validacion-modal button");
+          if (btnProbar) {
+            btnProbar.click();
+          }
+      
+    }
+  }
+});
 
   </script>
   
