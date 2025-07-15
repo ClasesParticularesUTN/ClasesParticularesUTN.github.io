@@ -1,0 +1,1007 @@
+<!-- Guarda esto como index.html y probalo en tu navegador -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ejercicios de Programación</title>
+
+  <!-- Fonts & Highlight -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
+
+  <!-- Estilos personalizados -->
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #9face6);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    #contenedor {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      max-width: 1000px;
+      width: 100%;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    .botones {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    button {
+      padding: 0.8rem 1.4rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    pre {
+      background: #f7f9fc;
+      border-left: 5px solid #007bff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    .extra { margin-top: 1.5rem; }
+
+    #pista, #solucion { margin-top: 1rem; }
+
+    #abrir-editor {
+      position: fixed;
+      top: 20px;
+      right: 60px;
+      z-index: 1000;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      background-color: #28a745;
+    }
+
+    #abrir-editor:hover { background-color: #218838; }
+
+    #editor-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(20, 20, 20, 0.98);
+      display: none;
+      flex-direction: column;
+      padding: 1rem;
+      z-index: 999;
+    }
+
+    #editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    #editor {
+      height: 100%;
+      flex: 1;
+    }
+
+    .CodeMirror {
+      height: 100%;
+      border-radius: 8px;
+      font-size: 125%;
+    }
+
+    #restaurar-btn {
+      background-color: #dc3545;
+    }
+
+    #restaurar-btn:hover {
+      background-color: #c82333;
+    }
+
+    #input-area, #output {
+      margin-top: 1rem;
+      width: 100%;
+      min-height: 60px;
+      padding: 0.8rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    #output {
+      position: relative;
+      background-color: #1e1e1e;
+      color: #00ffcc;
+      white-space: pre-wrap;
+      overflow: auto;
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 60px;
+      max-height: 300px;
+      transition: max-height 0.3s ease;
+    }
+
+    #output button#toggleOutputSize {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: #00ffcc;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 30px;
+      height: 30px;
+      line-height: 24px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background 0.2s ease;
+    }
+
+    #output button#toggleOutputSize:hover {
+      background: rgba(0,255,204,0.7);
+    }
+
+    #output.maximized {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-height: none !important;
+      padding: 1rem !important;
+      border-radius: 0 !important;
+      z-index: 2000 !important;
+      overflow: auto !important;
+    }
+
+    #cargar-ejercicios {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #333;
+      z-index: 999;
+      padding: 0px;
+    }
+
+    #cargar-ejercicios:hover { color: #007bff; }
+
+    #archivo-ejercicios { display: none; }
+
+    #contador-ejercicio {
+      text-align: center;
+      font-weight: bold;
+      color: #444;
+    }
+
+    #input-ejercicio {
+      width: 60px;
+      text-align: center;
+      font-size: 1rem;
+      padding: 0.2rem;
+    }
+
+    #output-content {
+      position: absolute;
+      top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Botones fijos -->
+  <button id="abrir-editor" onclick="toggleEditor()">Editor</button>
+  <button id="cargar-ejercicios" title="Cargar ejercicios 📂" onclick="document.getElementById('archivo-ejercicios').click()">📂</button>
+  <input type="file" id="archivo-ejercicios" accept=".js" />
+
+  <!-- Contenedor de ejercicios -->
+  <div id="contenedor">
+    <h2>Ejercicios de Programación</h2>
+    <p id="contador-ejercicio">
+      <input id="input-ejercicio" type="number" min="1" value="1" /> /
+      <span id="total-ejercicios">0</span>
+    </p>
+    <pre id="ejercicio">Presioná "Iniciar" para comenzar</pre>
+    <div class="botones">
+      <button onclick="iniciar()">Iniciar</button>
+      <button onclick="siguiente()" style="display: none;">Siguiente</button>
+      <button onclick="mostrarPista()">Mostrar pista</button>
+      <button onclick="mostrarSolucion()">Mostrar solución</button>
+    </div>
+
+    <div class="extra">
+      <div id="pista"></div>
+      <pre id="solucion" style="display: none;"><code class="language-cpp hljs" id="codigo-solucion"></code></pre>
+    </div>
+  </div>
+
+  <!-- Editor de código (superpuesto) -->
+  <div id="editor-overlay">
+    <div id="editor-header">
+      
+
+      <h2 style="color: white;">Editor de Código</h2>
+      <div>
+        <button id="atajos-btn" title="Ver atajos de teclado" style="
+        background: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        border: none;
+      ">⌨️</button>
+
+      <button id="copiar-codigo-btn" title="Copiar código" style="
+        background: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        border: none;
+      ">📋</button>
+
+        <button onclick="restaurarPlantilla()" id="restaurar-btn">Restaurar plantilla</button>
+        <button onclick="ejecutarCodigo()" style="background-color:#007bff">Ejecutar (F9)</button>
+        <button onclick="toggleEditor()">Minimizar editor (F10)</button>
+      </div>
+    </div>
+
+    <textarea id="editor"></textarea>
+    <textarea id="input-area" placeholder="Escribí la entrada estándar aquí..."></textarea>
+
+    <div id="output">
+      <button id="toggleOutputSize" title="Maximizar salida">🗗</button>
+      <div id="output-content">Esperando ejecución...</div>
+    </div>
+  </div>
+
+  <!-- Modal de validación (emergente) -->
+  <div id="validacion-modal" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: sans-serif;
+    ">
+    <div style="background:#222;padding:2rem;border-radius:10px;max-width:600px;width:90%">
+      <h3>Validar ejercicio antes de continuar</h3>
+      <p id="caso-enunciado"></p>
+      <textarea id="codigo-validacion" placeholder="Pegá tu código acá..." style="padding:10px;width:100%;height:150px;font-family:monospace;margin-bottom:1rem;"></textarea>
+      <button onclick="probarValidacion()">Probar</button>
+      <button onclick="cerrarModalValidacion()" style="background-color:darkred;">Cancelar</button>
+      <pre id="resultado-validacion" style="
+  margin-top: 1rem;
+  white-space: pre-wrap;
+  background-color: #111;
+  color: #00ffcc;
+  padding: 1rem;
+  border-radius: 8px;
+  max-height: 150px;
+  overflow: auto;
+  font-size: 0.9rem;
+"></pre>
+    </div>
+  </div>
+  <div id="modal-atajos" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  z-index: 3000;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: sans-serif;
+">
+  <div style="background:#222;padding:2rem;border-radius:10px;max-width:600px;width:90%">
+    <h3>Atajos de teclado disponibles</h3>
+    <ul style="line-height: 1.8">
+      <li><b>F9</b>: Ejecutar código</li>
+      <li><b>F10</b>: Minimizar editor</li>
+      <li><b>F8</b>: Maximizar/Minimizar salida</li>
+      <li><b>Ctrl + Alt + ↑</b> o <b>Alt + T</b>: Mover línea arriba</li>
+      <li><b>Ctrl + Alt + ↓</b> o <b>Alt + R</b>: Mover línea abajo</li>
+      <li><b>Ctrl + Shift + ↑</b> o <b>Alt + V</b>: Duplicar línea arriba</li>
+      <li><b>Ctrl + Shift + ↓</b> o <b>Alt + C</b>: Duplicar línea abajo</li>
+      
+    </ul>
+    <div style="text-align: right;">
+      <button onclick="document.getElementById('modal-atajos').style.display='none'" style="margin-top:1rem;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+  <script src="../Horarios/JS/URLS.js"></script>
+  <script>
+    let ejercicios = [];
+    let indice = -1;
+  
+    // Evento para cargar archivo ejercicios.js
+    document.getElementById("archivo-ejercicios").addEventListener("change", function (event) {
+      const archivo = event.target.files[0];
+      if (!archivo) return;
+  
+      const lector = new FileReader();
+      lector.onload = function (e) {
+        try {
+          const contenido = e.target.result;
+          // Ejecutamos el contenido para obtener el array ejercicios
+          const modulo = new Function(contenido + "; return ejercicios;");
+          ejercicios = modulo();
+  
+          document.querySelector('button[onclick="iniciar()"]').disabled = false;
+          document.getElementById("cargar-ejercicios").style.display = "none";
+          document.getElementById('total-ejercicios').textContent = ejercicios.length;
+        } catch (err) {
+          alert("Error al cargar el archivo: " + err.message);
+        }
+      };
+      lector.readAsText(archivo);
+    });
+  
+    function iniciar() {
+      if (!ejercicios || ejercicios.length === 0) {
+        document.getElementById('archivo-ejercicios').click();
+        return;
+      }
+      indice = 0;
+      document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
+      document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button onclick="anterior()">Anterior</button>';
+       if (confirm("¿Querés pegar automáticamente tu código al abrir la validacion?")) {
+        navigator.clipboard.readText().catch(() => {});
+        pegadoAutomatico = true;
+        
+      } else {
+        pegadoAutomatico = false;
+      }
+      mostrarEjercicio();
+    }
+  
+    function siguiente() {
+      if (indice < ejercicios.length - 1) {
+        // Antes de avanzar, validamos el código del usuario con los casos de prueba
+        abrirModalValidacion();
+      } else if (indice === ejercicios.length -1) {
+        indice++;
+        document.getElementById('ejercicio').textContent = "¡Has llegado al final de los ejercicios!";
+        document.getElementById('pista').textContent = "";
+        document.getElementById('codigo-solucion').innerHTML = "";
+        document.getElementById('solucion').style.display = "none";
+        document.querySelector('button[onclick="siguiente()"]').style.display = "none";
+      }
+    }
+  
+    function anterior() {
+      if (indice > 0) {
+        indice--;
+        mostrarEjercicio();
+      }
+    }
+  
+    function mostrarPista() {
+      if (indice >= 0 && indice < ejercicios.length) {
+        const pista = ejercicios[indice].pista;
+        document.getElementById('pista').innerHTML = pista && pista.trim() ? "Pista: " + pista : "Este ejercicio no tiene pista.";
+      }
+    }
+  
+    function mostrarEjercicio() {
+      if (indice >= 0 && indice < ejercicios.length) {
+        const actual = ejercicios[indice];
+        document.getElementById('ejercicio').textContent = actual.enunciado;
+        document.getElementById('pista').textContent = "";
+        document.getElementById('codigo-solucion').innerHTML = "";
+        document.getElementById('solucion').style.display = "none";
+        document.getElementById('input-ejercicio').value = indice + 1;
+        document.getElementById('total-ejercicios').textContent = ejercicios.length;
+      }
+    }
+  
+    function mostrarSolucion() {
+      if (indice >= 0 && indice < ejercicios.length) {
+        const ahora = new Date();
+        const horas = String(ahora.getHours()).padStart(2, '0');
+        const minutos = String(ahora.getMinutes()).padStart(2, '0');
+        const ejercicioNumero = (indice + 1).toString();
+        const contrasenaEsperada = ejercicioNumero + horas + minutos;
+  
+        const ingreso = prompt(`Para ver la solución del ejercicio ${ejercicioNumero}, ingresá la contraseña:`);
+  
+        if (ingreso !== contrasenaEsperada) {
+          alert("Contraseña incorrecta. Intentá de nuevo.");
+          return;
+        }
+  
+        const solucion = ejercicios[indice].solucion;
+        const codeBlock = document.getElementById('codigo-solucion');
+        const preBlock = document.getElementById('solucion');
+  
+        if (solucion && solucion.trim()) {
+          codeBlock.innerHTML = hljs.highlight(solucion, { language: 'cpp' }).value;
+        } else {
+          codeBlock.textContent = "Este ejercicio no tiene solución cargada.";
+        }
+  
+        preBlock.style.display = "block";
+      }
+    }
+  
+    // Control del input para cambiar el ejercicio por número
+    const inputEjercicio = document.getElementById("input-ejercicio");
+
+inputEjercicio.addEventListener("change", () => {
+  const nuevo = parseInt(inputEjercicio.value, 10);
+  if(!admin){
+    alert("Solo el profesor puede adelantar ejercicios");
+    return ;
+  }
+  if (!isNaN(nuevo) && nuevo >= 1 && nuevo <= ejercicios.length) {
+    indice = nuevo - 1;
+    mostrarEjercicio();
+  } else {
+    alert(`El número debe estar entre 1 y ${ejercicios.length}`);
+    inputEjercicio.value = indice + 1;
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  // Verifico si el editor está cerrado (display distinto de 'flex')
+  const editorOverlay = document.getElementById("editor-overlay");
+  const editorAbierto = editorOverlay.style.display === "flex";
+
+  if (editorAbierto) {
+    // Si el editor está abierto, no hago nada para estas teclas
+    return;
+  }
+
+  if (e.key === "ArrowRight") {
+    e.preventDefault();
+    let val = parseInt(inputEjercicio.value, 10);
+    const max = parseInt(document.getElementById("total-ejercicios").textContent, 10);
+    if (!isNaN(val) && val < max) {
+      inputEjercicio.value = val + 1;
+      inputEjercicio.dispatchEvent(new Event("change"));
+    }
+  }
+  if (e.key === "ArrowLeft") {
+    e.preventDefault();
+    let val = parseInt(inputEjercicio.value, 10);
+    if (!isNaN(val) && val > 1) {  // corregí aquí para que no baje de 1
+      inputEjercicio.value = val - 1;
+      inputEjercicio.dispatchEvent(new Event("change"));
+    }
+  }
+});
+
+  
+    // Plantilla básica C++
+    const PLANTILLA_CPP = `#include <iostream>
+using namespace std;
+  
+int main(){
+
+    return 0;
+}`;
+  
+    // Configuración y creación del editor CodeMirror
+    let editorInstance;
+    let editorIniciado = false;
+  
+    window.onload = () => {
+      document.querySelector('button[onclick="iniciar()"]').disabled = false;
+      editorInstance = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        mode: "text/x-c++src",
+        theme: "material",
+        lineNumbers: true,
+        indentUnit: 4,
+        tabSize: 4,
+        autoCloseBrackets: true,
+        extraKeys: {
+          "Enter": function (cm) {
+            const cursor = cm.getCursor();
+            const line = cm.getLine(cursor.line);
+            const beforeCursor = line.slice(0, cursor.ch).trim();
+            if (beforeCursor.endsWith("{")) {
+              cm.replaceSelection("\n\n", "end");
+              cm.indentLine(cursor.line + 1);
+              cm.setCursor({ line: cursor.line + 1, ch: cm.getLine(cursor.line + 1).search(/\S|$/) });
+            } else {
+              cm.execCommand("newlineAndIndent");
+            }
+          },
+        },
+        hintOptions: {
+          hint: CodeMirror.hint.anyword
+        }
+      });
+  
+      editorInstance.setSize("100%", "100%");
+    };
+  
+function toggleEditor() {
+  const overlay = document.getElementById("editor-overlay");
+  const editorBtn = document.getElementById("abrir-editor");
+  const inputArea = document.getElementById("input-area");
+
+  if (overlay.style.display === "flex") {
+    // 💾 Guardar foco antes de minimizar
+    if (document.activeElement === editorInstance.getInputField()) {
+      focoAnterior = "editor";
+      posicionCursorEditor = editorInstance.getCursor();
+    } else if (document.activeElement === inputArea) {
+      focoAnterior = "input";
+    } else {
+      focoAnterior = null;
+    }
+
+    overlay.style.display = "none";
+    editorBtn.style.display = "inline-block";
+
+  } else {
+    overlay.style.display = "flex";
+    editorBtn.style.display = "none";
+    editorInstance.refresh();
+
+    if (!editorIniciado || editorInstance.getValue().trim() === "" || editorInstance.getValue().startsWith("// Escribí")) {
+      editorInstance.setValue(PLANTILLA_CPP);
+      editorIniciado = true;
+      editorInstance.setCursor({ line: 4, ch: 0 });
+    } else if (focoAnterior === "editor" && posicionCursorEditor) {
+      editorInstance.setCursor(posicionCursorEditor);
+    }
+
+    // Restaurar foco al volver a abrir
+    if (focoAnterior === "editor") {
+      editorInstance.focus();
+    } else if (focoAnterior === "input") {
+      inputArea.focus();
+    }
+
+    focoAnterior = null;
+  }
+}
+
+  
+    function restaurarPlantilla() {
+      if (confirm("¿Querés borrar tu código actual y volver a la plantilla inicial?")) {
+      editorInstance.setValue(PLANTILLA_CPP);
+      document.getElementById("input-area").value = "";
+      document.getElementById("output-content").textContent = "Esperando ejecución...";
+      }
+    }
+  
+    // Ejecución de código llamando al backend que compila C++
+    function ejecutarCodigo() {
+  const sourceCode = editorInstance.getValue();
+  const input = document.getElementById("input-area").value;
+  const outputContent = document.getElementById("output-content");
+
+  // 1. Contar cantidad de variables que esperan ser ingresadas (por cin)
+  const cinRegex = /cin\s*>>([^;]+)/g;
+  let totalEntradasEsperadas = 0;
+  let match;
+  while ((match = cinRegex.exec(sourceCode)) !== null) {
+    const variables = match[1].split(">>").map(v => v.trim()).filter(Boolean);
+    totalEntradasEsperadas += variables.length;
+  }
+
+  // 2. Contar entradas proporcionadas por el usuario
+  const entradasUsuario = input.trim().split(/\s+/).filter(e => e.length > 0);
+  const totalEntradasUsuario = entradasUsuario.length;
+
+  // 3. Validar
+ if (totalEntradasEsperadas > 0 && totalEntradasUsuario !== totalEntradasEsperadas) {
+  alert(`⚠️ Advertencia: el código espera ${totalEntradasEsperadas} entradas, pero se ingresaron ${totalEntradasUsuario}.
+Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejecutará igual.`);
+}
+
+
+  // Mostrar mensaje de ejecución
+  outputContent.textContent = "Ejecutando...";
+
+  fetch("http://localhost:3000/compile", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      code: sourceCode,
+      input: input
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    const output = data.output || "Sin salida";
+
+    const partes = output.split("Mensaje original de compilador:");
+    if (partes.length === 2) {
+      outputContent.innerHTML =
+        `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
+        `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
+    } else {
+      outputContent.textContent = output;
+    }
+  })
+  .catch(err => {
+    outputContent.textContent = "Error al ejecutar: " + err;
+  });
+}
+
+  
+    // Teclas rápidas para ejecutar y cerrar editor
+    document.addEventListener("keydown", function (e) {
+      if ((e.key === "F9" || e.code === "F9") && document.getElementById("editor-overlay").style.display === "flex") {
+        e.preventDefault();
+        ejecutarCodigo();
+      }
+      if (e.key === "F10" || e.code === "F10") {
+        e.preventDefault();
+        toggleEditor();
+      }
+      if ((e.key === "F8" || e.code === "F8") && document.getElementById("editor-overlay").style.display === "flex") {
+        e.preventDefault();
+        document.getElementById("toggleOutputSize").click();
+      }
+      
+    });
+  
+    // Botón para maximizar/minimizar salida
+    const toggleBtn = document.getElementById("toggleOutputSize");
+    const outputDiv = document.getElementById("output");
+  
+    toggleBtn.addEventListener("click", () => {
+      outputDiv.classList.toggle("maximized");
+  
+      if (outputDiv.classList.contains("maximized")) {
+        toggleBtn.textContent = "🗗";  // icono minimizar
+        toggleBtn.title = "Minimizar salida";
+      } else {
+        toggleBtn.textContent = "🗗";  // icono maximizar
+        toggleBtn.title = "Maximizar salida";
+      }
+    });
+  
+    // ---- VALIDACIÓN ANTES DE PASAR AL SIGUIENTE EJERCICIO ----
+    let pegadoAutomatico = false;
+    // Abre modal con textarea para pegar código y validar
+    function abrirModalValidacion() {
+        if (indice < 0 || indice >= ejercicios.length) return;
+
+        const actual = ejercicios[indice];
+        if (!actual.casosDePrueba) {
+          indice++;
+          mostrarEjercicio();
+          return;
+        }
+      
+        //document.getElementById('caso-enunciado').textContent = actual.enunciado;
+      
+        const areaCodigo = document.getElementById('codigo-validacion');
+        areaCodigo.value = "";
+      
+        if (pegadoAutomatico && navigator.clipboard) {
+            navigator.clipboard.readText().then(texto => {
+              if (texto.trim().startsWith("#include")) {
+                areaCodigo.value = texto;
+              }else{
+                areaCodigo.focus();
+              }
+            }).catch(err => {
+            console.warn("No se pudo acceder al portapapeles:", err);
+            });
+        }else{
+          areaCodigo.focus();
+        }
+      
+        document.getElementById('resultado-validacion').textContent = "";
+        document.getElementById('validacion-modal').style.display = "flex";
+        
+  }
+
+  
+    // Cierra modal validación
+    function cerrarModalValidacion() {
+      document.getElementById('validacion-modal').style.display = "none";
+    }
+  
+    // Probar el código del usuario contra los casos de prueba
+    function probarValidacion() {
+      const codigoUsuario = document.getElementById('codigo-validacion').value.trim();
+      const resultadoArea = document.getElementById('resultado-validacion');
+  
+      if (!codigoUsuario) {
+        alert("Por favor, pegá tu código antes de probar.");
+        return;
+      }
+  
+      if (indice < 0 || indice >= ejercicios.length) {
+        alert("Ejercicio inválido.");
+        return;
+      }
+  
+      const ejercicioActual = ejercicios[indice];
+  
+      if (!ejercicioActual.casosDePrueba || ejercicioActual.casosDePrueba.length === 0) {
+        alert("Este ejercicio no tiene casos de prueba definidos.");
+        return;
+      }
+  
+      resultadoArea.textContent = "Probando casos de prueba...";
+  
+      // Ejecutar cada caso uno por uno
+      let errores = [];
+      subirCodigo();
+      let promesas = ejercicioActual.casosDePrueba.map((caso, i) => {
+        console.log(caso.entrada,i);
+        return fetch("http://localhost:3000/compile", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: codigoUsuario,
+            input: caso.entrada
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          let salidaObtenida = (data.output || "").trim();
+          let salidaEsperada = (caso.salida || "").trim();
+          console.log(salidaObtenida);
+          console.log(salidaEsperada);
+          // Limpio espacios y saltos para comparar más fácilmente
+          const normalizar = str => str.replace(/\r/g, "").trim();
+          salidaObtenida = normalizar(salidaObtenida);
+          salidaEsperada = normalizar(salidaEsperada);
+  
+          if (salidaObtenida !== salidaEsperada) {
+            errores.push({
+              indice: i + 1,
+              entrada: caso.entrada,
+              esperado: salidaEsperada,
+              obtenido: salidaObtenida
+            });
+            console.log("la salida fue distinta");
+          }else console.log("las salidas coinciden")
+        })
+        .catch(err => {
+          errores.push({
+            indice: i + 1,
+            entrada: caso.entrada,
+            esperado: "(error en compilación o ejecución)",
+            obtenido: err.message || err.toString()
+          });
+        });
+      });
+  
+      Promise.all(promesas).then(() => {
+        // VALIDAR PALABRAS CLAVE
+
+        if (errores.length === 0) {
+          resultadoArea.textContent = "¡Todos los casos de prueba pasaron correctamente! Avanzando al siguiente ejercicio.";
+          cerrarModalValidacion();
+          indice++;
+          mostrarEjercicio();
+        } else {
+          let mensaje = "Algunos casos fallaron:\n\n";
+          errores.forEach(err => {
+            mensaje += `Caso ${err.indice} (entrada: "${err.entrada}"):\nEsperado:\n${err.esperado}\nObtenido:\n${err.obtenido}\n\n`;
+          });
+          resultadoArea.textContent = mensaje;
+        }
+      });
+    }
+    // Función para copiar el contenido del editor
+document.getElementById("copiar-codigo-btn").addEventListener("click", () => {
+  const btn = document.getElementById("copiar-codigo-btn");
+  const texto = editorInstance.getValue();
+
+  navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = "✅";
+    setTimeout(() => {
+      btn.textContent = "📋";
+    }, 500);
+  }).catch(() => {
+    alert("No se pudo copiar el código.");
+  });
+});
+
+let admin = false; // Cambiar a true para habilitar modo admin
+
+document.addEventListener("keydown", function(e) {
+  const ahora = new Date();
+  const minutos = ahora.getMinutes();
+  const ultimaCifra = minutos % 10;
+  // Solo si se presiona Ctrl + [última cifra de los minutos]
+  
+  if ((e.altKey || (e.altKey && e.shiftKey)) && !isNaN(e.key) && Number(e.key) === ultimaCifra) {
+    admin = true;
+    console.log("Modo admin activado por 10 segundos.");
+    setTimeout(() => {
+      admin = false;
+      console.log("Modo admin desactivado.");
+    }, 10000);
+  }
+});
+function descargarCodigo() {
+  const contenido = editorInstance.getValue();
+  const blob = new Blob([contenido], { type: 'text/plain' });
+  const enlace = document.createElement('a');
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = 'codigo.cpp';
+  document.body.appendChild(enlace);
+  enlace.click();
+  document.body.removeChild(enlace);
+}
+
+function subirCodigo() {
+  //Subir codigo con el enunciado
+  const codigo = document.getElementById('codigo-validacion').value;
+  const ahora = new Date();
+  const fecha = ahora.toISOString().slice(0,10).replace(/-/g,"/");
+  const hora = String(ahora.getHours()).padStart(2, '0') + ":" + String(ahora.getMinutes()).padStart(2, '0');
+  const nombreArchivo = `Ejercicio${indice+1}_${hora}_${fecha}.cpp`;
+
+  // 👇 Obtenemos el enunciado actual y lo agregamos arriba del código
+  const enunciado = ejercicios[indice]?.enunciado || "";
+  const contenidoConEnunciado = `// EJERCICIO ${indice + 1}:\n// ${enunciado.replace(/\n/g, '\n// ')}\n\n${codigo}`;
+
+  fetch(URLUsuarios, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      funcion: "subirCodigo",
+      nombreArchivo: nombreArchivo,
+      contenido: contenidoConEnunciado
+    })
+  }).then(() => {
+    console.log("Código enviado correctamente a GAS");
+    console.log(contenidoConEnunciado);
+  }).catch((err) => {
+    console.error("Error al enviar el código:", err);
+  });
+}
+
+function moverLinea(cm, direccion) {
+  console.log("estoy moviendo linea");
+  const rango = cm.listSelections();
+  cm.operation(() => {
+    rango.forEach(sel => {
+      const linea = sel.head.line;
+      const otraLinea = linea + direccion;
+      if (otraLinea < 0 || otraLinea >= cm.lineCount()) return;
+
+      const textoActual = cm.getLine(linea);
+      const textoOtra = cm.getLine(otraLinea);
+
+      cm.replaceRange(textoOtra, { line: linea, ch: 0 }, { line: linea, ch: textoActual.length });
+      cm.replaceRange(textoActual, { line: otraLinea, ch: 0 }, { line: otraLinea, ch: textoOtra.length });
+
+      cm.setCursor({ line: otraLinea, ch: sel.head.ch });
+    });
+  });
+}
+
+function duplicarLinea(cm, direccion) {
+  const cursor = cm.getCursor();
+  const line = cursor.line;
+  const textActual = cm.getLine(line);
+  const destino = direccion > 0 ? line + 1 : line;
+
+  cm.operation(() => {
+    cm.replaceRange(textActual + "\n", { line: destino, ch: 0 });
+    cm.setCursor({ line: destino, ch: cursor.ch });
+    cm.focus(); // <- mantener el foco
+  });
+}
+
+document.addEventListener("keydown", function(e) {
+  //if (!editorInstance) return;
+  if (
+    (e.ctrlKey && e.altKey && e.key === "ArrowUp") ||
+    (e.altKey && e.key.toLowerCase() === "t")
+  ) {
+    e.preventDefault();
+    e.stopPropagation();
+    moverLinea(editorInstance, -1);
+  }
+
+  if (
+    (e.ctrlKey && e.altKey && e.key === "ArrowDown") ||
+    (e.altKey && e.key.toLowerCase() === "r")
+  )  {
+    e.preventDefault();
+    e.stopPropagation();
+    moverLinea(editorInstance, 1);
+  }
+
+  // Duplicar línea arriba
+  if ((e.ctrlKey && e.shiftKey && e.key === "ArrowUp") || e.altKey && e.key.toLowerCase() === "v") {
+    e.preventDefault();
+    e.stopPropagation();
+    duplicarLinea(editorInstance, -1);
+  }
+
+  // Duplicar línea abajo
+  if ((e.ctrlKey && e.shiftKey && e.key === "ArrowDown") || e.altKey && e.key.toLowerCase() === "c") {
+    e.preventDefault();
+    e.stopPropagation();
+    duplicarLinea(editorInstance, 1);
+  }
+});
+
+document.getElementById("atajos-btn").addEventListener("click", () => {
+  document.getElementById("modal-atajos").style.display = "flex";
+});
+
+let focoAnterior = null;
+let posicionCursorEditor = null;
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "F11" || e.code === "F11") {
+    e.preventDefault();
+    // No hacemos nada, simplemente evitamos el comportamiento por defecto
+  }
+});
+
+
+  </script>
+  
+</body>
+</html>

@@ -137,6 +137,7 @@
                 document.getElementById("loading").style.display = "none";
                 
                 if (data.status) {
+                    console.log(data.listaArchivos);
                     mostrarArchivos(data.listaArchivos);
                 } else {
                     document.getElementById("archivo-lista").innerHTML = `<li>${data.error}</li>`;
