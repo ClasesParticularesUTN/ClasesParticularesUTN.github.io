@@ -353,9 +353,11 @@
   <div style="background:#222;padding:2rem;border-radius:10px;max-width:600px;width:90%">
     <h3>Atajos de teclado disponibles</h3>
     <ul style="line-height: 1.8">
+      <li><b>F6</b>: Generar Prototipos</li>
+      <li><b>F7</b>: Enviar prueba de validacion</li>
+      <li><b>F8</b>: Maximizar/Minimizar Salida</li>
       <li><b>F9</b>: Ejecutar código</li>
       <li><b>F10</b>: Minimizar editor</li>
-      <li><b>F8</b>: Maximizar/Minimizar salida</li>
       <li><b>Ctrl + Alt + ↑</b> o <b>Alt + T</b>: Mover línea arriba</li>
       <li><b>Ctrl + Alt + ↓</b> o <b>Alt + R</b>: Mover línea abajo</li>
       <li><b>Ctrl + Shift + ↑</b> o <b>Alt + V</b>: Duplicar línea arriba</li>
@@ -1032,7 +1034,77 @@ document.addEventListener("keydown", function(e) {
       
     }
   }
+  if (event.key === 'F6') {
+    event.preventDefault(); // Evita que el navegador use F6 para otra cosa
+
+    const codigo = editorInstance.getValue(); // Obtené el código del editor
+    const nuevoCodigo = agregarPrototiposCpp(codigo); // Agregá prototipos
+    editorInstance.setValue(nuevoCodigo); // Reemplazá el código actual
+  }
 });
+
+function agregarPrototiposCpp(codigo) {
+  const lineas = codigo.split('\n');
+  const regexFuncion = /^(\w[\w\s:*&<>]*?)\s+(\w+)\s*\(([^)]*)\)\s*{/;
+  const funciones = [];
+  let indiceMain = -1;
+
+  // Buscar el índice donde comienza el main
+  for (let i = 0; i < lineas.length; i++) {
+    if (/int\s+main\s*\(/.test(lineas[i])) {
+      indiceMain = i;
+      break;
+    }
+  }
+
+  if (indiceMain === -1) {
+    alert("No se encontró la función main().");
+    return codigo;
+  }
+
+  // Buscar definiciones de funciones fuera del main
+  for (let i = 0; i < lineas.length; i++) {
+    const linea = lineas[i].trim();
+    const match = linea.match(regexFuncion);
+    if (match) {
+      const tipoRetorno = match[1].trim();
+      const nombreFuncion = match[2].trim();
+      const parametros = match[3].trim();
+
+      if (nombreFuncion === 'main') continue;
+
+      const tiposParams = parametros
+        ? parametros
+            .split(',')
+            .map(p => {
+              const partes = p.trim().split(/\s+/);
+              return partes.length > 1 ? partes.slice(0, -1).join(' ') : partes[0];
+            })
+            .join(', ')
+        : '';
+
+      funciones.push(`${tipoRetorno} ${nombreFuncion}(${tiposParams});`);
+    }
+  }
+
+  // Evitar duplicados si ya están los prototipos en el código
+  const codigoAntesMain = lineas.slice(0, indiceMain).join('\n');
+  const prototiposFinales = funciones.filter(p => !codigoAntesMain.includes(p));
+
+  if (prototiposFinales.length > 0) {
+    const nuevasLineas = [
+      ...lineas.slice(0, indiceMain),
+      ...prototiposFinales,
+      '', // salto de línea entre prototipos y main
+      ...lineas.slice(indiceMain)
+    ];
+    return nuevasLineas.join('\n');
+  }
+
+  return codigo;
+}
+
+
 
   </script>
   
