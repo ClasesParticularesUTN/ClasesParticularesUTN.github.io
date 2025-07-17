@@ -19,11 +19,24 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+
+  <!-- CodeMirror Addons: matchbrackets para resaltar corchetes -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
 
   <!-- Estilos personalizados -->
   <style>
+    /* Estilo personalizado para corchetes resaltados en CodeMirror */
+    .CodeMirror-matchingbracket {
+      background: #ffe066d5 !important;
+      color: violet !important;
+      /* font-weight: bold; */
+      /* border-radius: 2px; */
+      /* box-shadow: 0 0 2px 1px #ffd700; */
+      padding: 0 2px;
+      transition: background 0.2s;
+    }
     * { box-sizing: border-box; }
     body {
       font-family: 'Roboto', sans-serif;
@@ -555,15 +568,36 @@ int main(){
         indentUnit: 4,
         tabSize: 4,
         autoCloseBrackets: true,
+        matchBrackets: true, // Habilita el resaltado de corchetes
         extraKeys: {
           "Enter": function (cm) {
             const cursor = cm.getCursor();
             const line = cm.getLine(cursor.line);
             const beforeCursor = line.slice(0, cursor.ch).trim();
-            if (beforeCursor.endsWith("{")) {
-              cm.replaceSelection("\n\n", "end");
-              cm.indentLine(cursor.line + 1);
-              cm.setCursor({ line: cursor.line + 1, ch: cm.getLine(cursor.line + 1).search(/\S|$/) });
+            // Si termina en {, [ o (
+            if (/[\{\[\(]$/.test(beforeCursor)) {
+              // Insertar salto de línea, tabular, y cerrar el bloque si corresponde
+              const closeChar =
+                beforeCursor.endsWith("{") ? "}" :
+                beforeCursor.endsWith("[") ? "]" :
+                beforeCursor.endsWith("(") ? ")" : "";
+
+              if (closeChar && line.slice(cursor.ch).trim().startsWith(closeChar)) {
+                // Si ya está el cierre, solo salto de línea y tabulación
+                cm.replaceSelection("\n\n", "end");
+                cm.indentLine(cursor.line + 1);
+                cm.setCursor({ line: cursor.line + 1, ch: cm.getLine(cursor.line + 1).search(/\S|$/) });
+              } else if (closeChar) {
+                // Si no está el cierre, lo agregamos
+                cm.replaceSelection(`\n\n${closeChar}` , "end");
+                cm.indentLine(cursor.line + 1);
+                cm.indentLine(cursor.line + 2);
+                cm.setCursor({ line: cursor.line + 1, ch: cm.getLine(cursor.line + 1).search(/\S|$/) });
+              } else {
+                cm.replaceSelection("\n\n", "end");
+                cm.indentLine(cursor.line + 1);
+                cm.setCursor({ line: cursor.line + 1, ch: cm.getLine(cursor.line + 1).search(/\S|$/) });
+              }
             } else {
               cm.execCommand("newlineAndIndent");
             }
