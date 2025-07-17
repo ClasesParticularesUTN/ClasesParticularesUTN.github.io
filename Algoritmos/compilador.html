@@ -17,8 +17,30 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+
+  <!-- Addons para funcionalidades avanzadas -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+  <!-- 1. Plegado de código -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/brace-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/comment-fold.min.js"></script>
+  <!-- 3. Resaltado de ocurrencias -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/match-highlighter.min.js"></script>
+  <!-- 4. Autocompletado inteligente (ya tienes anyword, agrego show-hint y hint c-like) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/clang-hint.min.js"></script>
+  <!-- 13. Linter básico (lint y show lint) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.js"></script>
+  <!-- 16. Edición en múltiples selecciones -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/mark-selection.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/selection-pointer.min.js"></script>
 
   <!-- CodeMirror Addons: matchbrackets para resaltar corchetes -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
@@ -28,16 +50,14 @@
   <!-- Estilos personalizados -->
   <style>
     /* Estilo personalizado para corchetes resaltados en CodeMirror */
-    .CodeMirror-matchingbracket {
-      background: #ffe066d5 !important;
-      color: violet !important;
-      /* font-weight: bold; */
-      /* border-radius: 2px; */
-      /* box-shadow: 0 0 2px 1px #ffd700; */
-      padding: 0 2px;
-      transition: background 0.2s;
-    }
+    
     * { box-sizing: border-box; }
+    /* Fondo personalizado para la línea activa de CodeMirror */
+    .CodeMirror-activeline-background {
+      background: rgba(128, 128, 128, 0.705) !important; /* azul claro, puedes cambiarlo si prefieres otro color */
+      opacity: 0.1 !important;
+    }
+
     body {
       font-family: 'Roboto', sans-serif;
       background: linear-gradient(to right, #74ebd5, #9face6);
@@ -251,6 +271,22 @@
       position: absolute;
       top: 20px;
     }
+
+    
+    .cm-matchhighlight {
+  background-color: rgba(0, 217, 255, 0.4); /* amarillo suave */
+  color:#111 !important
+}
+
+.CodeMirror-matchingbracket {
+      /* background: #ffe066b6 !important; */
+      color: violet !important;
+      /* font-weight: bold; */
+      border-radius: 2px;
+      box-shadow: 0 0 2px 1px #ffd700;
+      /* padding: 0 1px; */
+      transition: background 0.2s;
+    }
   </style>
 </head>
 
@@ -366,6 +402,7 @@
   <div style="background:#222;padding:2rem;border-radius:10px;max-width:600px;width:90%">
     <h3>Atajos de teclado disponibles</h3>
     <ul style="line-height: 1.8">
+      <li><b>F4</b>: Restaurar plantilla inicial</li>
       <li><b>F6</b>: Generar Prototipos</li>
       <li><b>F7</b>: Enviar prueba de validacion</li>
       <li><b>F8</b>: Maximizar/Minimizar Salida</li>
@@ -375,7 +412,7 @@
       <li><b>Ctrl + Alt + ↓</b> o <b>Alt + R</b>: Mover línea abajo</li>
       <li><b>Ctrl + Shift + ↑</b> o <b>Alt + V</b>: Duplicar línea arriba</li>
       <li><b>Ctrl + Shift + ↓</b> o <b>Alt + C</b>: Duplicar línea abajo</li>
-      
+      <li><b>Ctrl + D</b>: Seleccionar varias lineas en simultaneoasd (multi-cursor)</li>
     </ul>
     <div style="text-align: right;">
       <button onclick="document.getElementById('modal-atajos').style.display='none'" style="margin-top:1rem;">Cerrar</button>
@@ -561,6 +598,39 @@ int main(){
   
     window.onload = () => {
       document.querySelector('button[onclick="iniciar()"]').disabled = false;
+      // Restaurar estado del editor y texto si corresponde
+      const editorWasOpen = localStorage.getItem('editorAbierto') === 'true';
+      const editorText = localStorage.getItem('editorTexto') || '';
+      // Palabras clave de C++ para autocompletado
+      const cppKeywords = [
+        "if", "else", "while", "for", "do", "switch", "case", "break", "continue", "return", "struct", "class", "public", "private", "protected", "void", "int", "float", "double", "char", "bool", "true", "false", "namespace", "using", "include", "cout", "cin", "endl", "const", "static", "virtual", "override", "template", "typename", "try", "catch", "throw", "new", "delete", "this", "operator", "friend", "enum", "typedef", "sizeof", "main"
+      ];
+
+      // Hint personalizado que combina anyword y palabras clave
+      function cppHint(cm) {
+        const cursor = cm.getCursor();
+        const token = cm.getTokenAt(cursor);
+        const start = token.start;
+        const end = cursor.ch;
+        const currentWord = token.string.slice(0, end - start);
+        let list = [];
+        // Sugerencias de palabras clave
+        if (currentWord.length > 0) {
+          list = cppKeywords.filter(k => k.startsWith(currentWord));
+        } else {
+          list = cppKeywords.slice();
+        }
+        // Sugerencias de anyword
+        const anyword = CodeMirror.hint.anyword(cm) || {list:[]};
+        // Unir y filtrar duplicados
+        const all = [...new Set([...list, ...anyword.list])];
+        return {
+          list: all,
+          from: CodeMirror.Pos(cursor.line, start),
+          to: CodeMirror.Pos(cursor.line, end)
+        };
+      }
+
       editorInstance = CodeMirror.fromTextArea(document.getElementById("editor"), {
         mode: "text/x-c++src",
         theme: "material",
@@ -569,13 +639,63 @@ int main(){
         tabSize: 4,
         autoCloseBrackets: true,
         matchBrackets: true, // Habilita el resaltado de corchetes
+        styleActiveLine: true, // Resalta la línea activa
+        foldGutter: true, // Plegado de código
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        lint: true, // Linter básico (solo sintaxis, no errores de compilación C++)
+        highlightSelectionMatches: true, // Activar resaltado simple
         extraKeys: {
+          "Shift-Space": "autocomplete", // Autocompletado manual (ahora Shift+Espacio)
+          // Selección múltiple tipo VS Code mejorada
+          "Ctrl-D": function(cm) {
+            let selections = cm.listSelections();
+            let lastSel = selections[selections.length - 1];
+            let selText = cm.getRange(lastSel.anchor, lastSel.head);
+            let isEmpty = selText.length === 0;
+            let word = selText;
+            let from = lastSel.anchor, to = lastSel.head;
+            // Si no hay selección, selecciona la palabra bajo el cursor
+            if (isEmpty) {
+              let cursor = lastSel.head;
+              let line = cm.getLine(cursor.line);
+              // Busca la palabra bajo el cursor
+              let start = cursor.ch, end = cursor.ch;
+              while (start > 0 && /\w/.test(line.charAt(start - 1))) start--;
+              while (end < line.length && /\w/.test(line.charAt(end))) end++;
+              if (start === end) return; // No hay palabra
+              from = {line: cursor.line, ch: start};
+              to = {line: cursor.line, ch: end};
+              word = line.slice(start, end);
+              // Selecciona la palabra bajo el cursor
+              cm.replaceSelection(word, "around");
+              // Actualiza la selección
+              selections = cm.listSelections();
+              lastSel = selections[selections.length - 1];
+            }
+            // Buscar la siguiente ocurrencia de la palabra
+            let searchCursor = cm.getSearchCursor(word, lastSel.head);
+            // Evita seleccionar ocurrencias ya seleccionadas
+            let found = false;
+            while (searchCursor.findNext()) {
+              let alreadySelected = selections.some(sel =>
+                CodeMirror.cmpPos(sel.anchor, searchCursor.from()) === 0 &&
+                CodeMirror.cmpPos(sel.head, searchCursor.to()) === 0
+              );
+              if (!alreadySelected) {
+                cm.addSelection(searchCursor.from(), searchCursor.to());
+                found = true;
+                break;
+              }
+            }
+            // Si no encuentra más, no hace nada
+          },
+          "Alt-Click": function(cm) { cm.addSelection(cm.getCursor()); }, // Selección múltiple con Alt+Click
           "Enter": function (cm) {
             const cursor = cm.getCursor();
             const line = cm.getLine(cursor.line);
             const beforeCursor = line.slice(0, cursor.ch).trim();
             // Si termina en {, [ o (
-            if (/[\{\[\(]$/.test(beforeCursor)) {
+            if (/[{\[\(]$/.test(beforeCursor)) {
               // Insertar salto de línea, tabular, y cerrar el bloque si corresponde
               const closeChar =
                 beforeCursor.endsWith("{") ? "}" :
@@ -603,12 +723,34 @@ int main(){
             }
           },
         },
+
         hintOptions: {
-          hint: CodeMirror.hint.anyword
+          hint: cppHint
         }
       });
-  
+
+
+      // Personalizamos el resaltado de ocurrencias para palabras completas
+      //editorInstance.setOption("highlightSelectionMatches", {showToken: /\w/, annotateScrollbar: true, wordsOnly: true});
       editorInstance.setSize("100%", "100%");
+
+      // Restaurar texto si había guardado
+      if (editorText) {
+        editorInstance.setValue(editorText);
+        editorIniciado = true;
+      }
+
+      // Si el editor estaba abierto antes de recargar, abrirlo
+      if (editorWasOpen) {
+        setTimeout(() => {
+          toggleEditor();
+        }, 100); // Espera breve para asegurar que el editor esté inicializado
+      }
+
+      // Guardar automáticamente el texto y estado del editor en cada cambio
+      editorInstance.on('change', function() {
+        localStorage.setItem('editorTexto', editorInstance.getValue());
+      });
     };
   
 function toggleEditor() {
@@ -629,6 +771,7 @@ function toggleEditor() {
 
     overlay.style.display = "none";
     editorBtn.style.display = "inline-block";
+    localStorage.setItem('editorAbierto', 'false');
 
   } else {
     overlay.style.display = "flex";
@@ -651,6 +794,7 @@ function toggleEditor() {
     }
 
     focoAnterior = null;
+    localStorage.setItem('editorAbierto', 'true');
   }
 }
 
@@ -719,7 +863,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
 }
 
   
-    // Teclas rápidas para ejecutar y cerrar editor
+    // Teclas rápidas para ejecutar, cerrar editor y restaurar plantilla
     document.addEventListener("keydown", function (e) {
       if ((e.key === "F9" || e.code === "F9") && document.getElementById("editor-overlay").style.display === "flex") {
         e.preventDefault();
@@ -733,7 +877,11 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
         e.preventDefault();
         document.getElementById("toggleOutputSize").click();
       }
-      
+      // F4: Restaurar plantilla si el editor está abierto
+      if ((e.key === "F4" || e.code === "F4") && document.getElementById("editor-overlay").style.display === "flex") {
+        e.preventDefault();
+        restaurarPlantilla();
+      }
     });
   
     // Botón para maximizar/minimizar salida
