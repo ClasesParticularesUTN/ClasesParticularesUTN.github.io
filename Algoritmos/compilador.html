@@ -294,6 +294,16 @@
 </head>
 
 <body>
+  <!-- Loader Spinner -->
+  <div id="loader-spinner" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:3000;justify-content:center;align-items:center;">
+    <div style="border: 8px solid #f3f3f3; border-top: 8px solid #007bff; border-radius: 50%; width: 70px; height: 70px; animation: spin 1s linear infinite;"></div>
+  </div>
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
   <!-- Botones fijos -->
   <button id="abrir-editor" onclick="toggleEditor()">Editor</button>
   <button id="cargar-ejercicios" title="Cargar ejercicios 📂" onclick="document.getElementById('archivo-ejercicios').click()">📂</button>
@@ -441,19 +451,22 @@
   // Intentar cargar ejercicios.js desde servidor localhost
   function cargarEjerciciosDesdeServidor() {
     return new Promise((resolve, reject) => {
+      const loader = document.getElementById("loader-spinner");
+      if (loader) loader.style.display = "flex";
       const script = document.createElement("script");
       script.src = "http://localhost:3000/ejercicios/ejercicios.js";
       script.async = true;
 
       script.onload = () => {
+        if (loader) loader.style.display = "none";
         console.log("Ejercicios cargados desde servidor");
         if (btnIniciar) btnIniciar.click();
         resolve();
       };
 
       script.onerror = () => {
+        if (loader) loader.style.display = "none";
         console.warn("No se pudo cargar ejercicios.js desde servidor, habilitando carga manual");
-        alert("No se pudo cargar ejercicios.js desde servidor, habilitando carga manual");
         reject();
       };
 
