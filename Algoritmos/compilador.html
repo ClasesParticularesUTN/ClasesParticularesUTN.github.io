@@ -47,6 +47,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
 
+
+
+
   <!-- Estilos personalizados -->
   <style>
     /* Estilo personalizado para corchetes resaltados en CodeMirror */
@@ -422,24 +425,69 @@
 
   <script src="../Horarios/JS/URLS.js"></script>
   <script>
-    let ejercicios = [];
-    let indice = -1;
+    // Variables globales
+  //let ejercicios = [];
+  let indice = -1;
   
-    // Evento para cargar archivo ejercicios.js
-    document.getElementById("archivo-ejercicios").addEventListener("change", function (event) {
+  // Referencias DOM
+  const inputArchivo = document.getElementById("archivo-ejercicios");
+  const contenedorCargaManual = document.getElementById("cargar-ejercicios");
+  const btnIniciar = document.querySelector('button[onclick="iniciar()"]');
+
+  // Inicialmente oculto input file y contenedor manual
+  if(inputArchivo) inputArchivo.style.display = "none";
+  if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
+
+  // Intentar cargar ejercicios.js desde servidor localhost
+  function cargarEjerciciosDesdeServidor() {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = "http://localhost:3000/ejercicios/ejercicios.js";
+      script.async = true;
+
+      script.onload = () => {
+        console.log("Ejercicios cargados desde servidor");
+        if (btnIniciar) btnIniciar.click();
+        resolve();
+      };
+
+      script.onerror = () => {
+        console.warn("No se pudo cargar ejercicios.js desde servidor, habilitando carga manual");
+        alert("No se pudo cargar ejercicios.js desde servidor, habilitando carga manual");
+        reject();
+      };
+
+      document.head.appendChild(script);
+    });
+  }
+
+  cargarEjerciciosDesdeServidor()
+    .then(() => {
+      if(inputArchivo) inputArchivo.style.display = "none";
+      if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
+      if(btnIniciar) btnIniciar.disabled = false;
+    })
+    .catch(() => {
+      if(inputArchivo) inputArchivo.style.display = "none";
+      if(contenedorCargaManual) contenedorCargaManual.style.display = "block";
+    });
+
+  // Carga manual desde archivo seleccionado
+  if(inputArchivo) {
+    inputArchivo.addEventListener("change", function (event) {
       const archivo = event.target.files[0];
       if (!archivo) return;
-  
+
       const lector = new FileReader();
       lector.onload = function (e) {
         try {
           const contenido = e.target.result;
-          // Ejecutamos el contenido para obtener el array ejercicios
+          // Ejecutamos contenido para obtener array ejercicios
           const modulo = new Function(contenido + "; return ejercicios;");
           ejercicios = modulo();
-  
-          document.querySelector('button[onclick="iniciar()"]').disabled = false;
-          document.getElementById("cargar-ejercicios").style.display = "none";
+
+          if(btnIniciar) btnIniciar.disabled = false;
+          if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
           document.getElementById('total-ejercicios').textContent = ejercicios.length;
         } catch (err) {
           alert("Error al cargar el archivo: " + err.message);
@@ -447,9 +495,11 @@
       };
       lector.readAsText(archivo);
     });
+  }
+
   
     function iniciar() {
-      if (!ejercicios || ejercicios.length === 0) {
+      if (typeof ejercicios == "undefined" || ejercicios.length === 0) {
         document.getElementById('archivo-ejercicios').click();
         return;
       }
@@ -597,7 +647,6 @@ int main(){
     let editorIniciado = false;
   
     window.onload = () => {
-      document.querySelector('button[onclick="iniciar()"]').disabled = false;
       // Restaurar estado del editor y texto si corresponde
       const editorWasOpen = localStorage.getItem('editorAbierto') === 'true';
       const editorText = localStorage.getItem('editorTexto') || '';
