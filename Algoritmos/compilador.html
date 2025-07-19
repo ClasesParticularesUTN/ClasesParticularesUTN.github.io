@@ -291,6 +291,14 @@
       /* padding: 0 1px; */
       transition: background 0.2s;
     }
+    .editor-maximizado {
+  flex: 1 !important;
+}
+
+.editor-oculto {
+  display: none !important;
+}
+
   </style>
 </head>
 
@@ -338,6 +346,14 @@
 
       <h2 style="color: white;">Editor de Código</h2>
       <div>
+        <button id="maximizarSoloEditor" title="Maximizar solo el editor" style="
+  background: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  border: none;
+">🗖</button>
+
         <button id="atajos-btn" title="Ver atajos de teclado" style="
         background: none;
         color: white;
@@ -1352,6 +1368,38 @@ function agregarPrototiposCpp(codigo) {
   return codigo;
 }
 
+const btnMaximizarSoloEditor = document.getElementById("maximizarSoloEditor");
+const editorTextArea = document.getElementById("editor");
+const inputArea = document.getElementById("input-area");
+const outputArea = document.getElementById("output");
+
+let editorSoloMax = false;
+
+btnMaximizarSoloEditor.addEventListener("click", () => {
+  editorSoloMax = !editorSoloMax;
+
+  if (editorSoloMax) {
+    editorTextArea.classList.add("editor-maximizado");
+    inputArea.classList.add("editor-oculto");
+    outputArea.classList.add("editor-oculto");
+    btnMaximizarSoloEditor.textContent = "🗗";
+    btnMaximizarSoloEditor.title = "Restaurar vista completa";
+  } else {
+    editorTextArea.classList.remove("editor-maximizado");
+    inputArea.classList.remove("editor-oculto");
+    outputArea.classList.remove("editor-oculto");
+    btnMaximizarSoloEditor.textContent = "🗖";
+    btnMaximizarSoloEditor.title = "Maximizar solo el editor";
+  }
+
+  editorInstance.refresh(); // redibuja el editor
+});
+document.addEventListener("keydown", function(e) {
+  if (e.key === "F3") {
+    e.preventDefault();
+    btnMaximizarSoloEditor.click();
+  }
+});
 
 
   </script>
