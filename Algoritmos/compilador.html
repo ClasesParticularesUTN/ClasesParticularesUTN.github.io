@@ -342,38 +342,28 @@
   <!-- Editor de código (superpuesto) -->
   <div id="editor-overlay">
     <div id="editor-header">
-      
-
       <h2 style="color: white;">Editor de Código</h2>
       <div>
-        <button id="maximizarSoloEditor" title="Maximizar solo el editor" style="
-  background: none;
-  color: white;
-  font-size: 2rem;
-  cursor: pointer;
-  border: none;
-">🗖</button>
-
-        <button id="atajos-btn" title="Ver atajos de teclado" style="
-        background: none;
-        color: white;
-        font-size: 2rem;
-        cursor: pointer;
-        border: none;
-      ">⌨️</button>
-
-      <button id="copiar-codigo-btn" title="Copiar código" style="
-        background: none;
-        color: white;
-        font-size: 2rem;
-        cursor: pointer;
-        border: none;
-      ">📋</button>
-
+        <button id="maximizarSoloEditor" title="Maximizar solo el editor" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">🗖</button>
+        <button id="atajos-btn" title="Ver atajos de teclado" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">⌨️</button>
+        <button id="copiar-codigo-btn" title="Copiar código" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">📋</button>
+        <button id="crear-funcion-btn" title="Crear función" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">ƒ</button>
         <button onclick="restaurarPlantilla()" id="restaurar-btn">Restaurar plantilla</button>
         <button onclick="ejecutarCodigo()" style="background-color:#007bff">Ejecutar (F9)</button>
         <button onclick="toggleEditor()">Minimizar editor (F10)</button>
       </div>
+  <!-- Formulario para crear función C++ -->
+  <div id="formulario-funcion" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#222;padding:2rem;border-radius:10px;z-index:4000;color:white;min-width:300px;">
+    <h3>Crear función C++</h3>
+    <label>Tipo de retorno:<br><input id="tipo-retorno" type="text" value="" style="width:100%;margin-bottom:8px;"></label><br>
+    <label>Nombre:<br><input id="nombre-funcion" type="text" style="width:100%;margin-bottom:8px;"></label><br>
+    <label>Parámetros (ej: int x, float y):<br><input id="parametros-funcion" type="text" style="width:100%;margin-bottom:8px;"></label><br>
+    <label>¿Agregar comentario arriba?<br><input id="comentario-funcion" type="text" style="width:100%;margin-bottom:8px;" placeholder="Ejemplo: Calcula el área"></label><br>
+    <div style="margin-top:1rem;text-align:right;">
+      <button id="insertar-funcion-btn" style="background-color:#007bff;color:white;padding:0.5rem 1rem;border:none;border-radius:5px;">Insertar</button>
+      <button id="cancelar-funcion-btn" style="background-color:darkred;color:white;padding:0.5rem 1rem;border:none;border-radius:5px;margin-left:8px;">Cancelar</button>
+    </div>
+  </div>
     </div>
 
     <textarea id="editor"></textarea>
@@ -431,7 +421,9 @@
 ">
   <div style="background:#222;padding:2rem;border-radius:10px;max-width:600px;width:90%">
     <h3>Atajos de teclado disponibles</h3>
-    <ul style="line-height: 1.8">
+    <ul style="line-height: 1.8; overflow: auto;">
+      <li><b>F2</b>: Generar una funcion</li>
+      <li><b>F3</b>: Mazimizar/Minimizar editor de codigo</li>
       <li><b>F4</b>: Restaurar plantilla inicial</li>
       <li><b>F6</b>: Generar Prototipos</li>
       <li><b>F7</b>: Enviar prueba de validacion</li>
@@ -833,6 +825,71 @@ int main(){
       editorInstance.on('change', function() {
         sessionStorage.setItem('editorTexto', editorInstance.getValue());
       });
+      // Botón para abrir el formulario de función
+      document.getElementById('crear-funcion-btn').addEventListener('click', function() {
+        document.getElementById('formulario-funcion').style.display = 'block';
+        document.getElementById('tipo-retorno').focus();
+        // Permitir Enter para insertar función desde cualquier input
+        const form = document.getElementById('formulario-funcion');
+        if (!form._enterListenerAdded) {
+          form.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              document.getElementById('insertar-funcion-btn').click();
+            }
+          });
+          form._enterListenerAdded = true;
+        }
+      });
+
+      // Cancelar formulario
+      document.getElementById('cancelar-funcion-btn').addEventListener('click', function() {
+        document.getElementById('formulario-funcion').style.display = 'none';
+      });
+
+      // Insertar función en el editor
+      document.getElementById('insertar-funcion-btn').addEventListener('click', function() {
+  const tipo = document.getElementById('tipo-retorno').value.trim() || 'int';
+  const nombre = document.getElementById('nombre-funcion').value.trim() || 'miFuncion';
+  const params = document.getElementById('parametros-funcion').value.trim();
+  const comentario = document.getElementById('comentario-funcion').value.trim();
+  let funcion = '';
+  if (comentario) {
+    funcion += `// ${comentario}\n`;
+  }
+  funcion += `${tipo} ${nombre}(${params}) {\n    \n}\n\n`;
+
+  const cursorPos = editorInstance.getCursor();
+  editorInstance.replaceRange(funcion, cursorPos);
+
+  const lineas = funcion.split('\n');
+  let offsetLinea = 0;
+  for (let i = 0; i < lineas.length; i++) {
+    if (lineas[i].trim() === '' && i > 0 && lineas[i-1].includes('{')) {
+      offsetLinea = i;
+      break;
+    }
+  }
+
+  editorInstance.setCursor({
+    line: cursorPos.line + offsetLinea,
+    ch: 4
+  });
+
+  document.getElementById('formulario-funcion').style.display = 'none';
+
+  // ✅ Copiar el nombre de la función
+  navigator.clipboard.writeText(nombre).then(() => {
+    console.log("Nombre de la función copiado al portapapeles:", nombre);
+  }).catch(err => {
+    console.warn("No se pudo copiar el nombre al portapapeles:", err);
+  });
+
+  setTimeout(() => {
+    editorInstance.focus();
+  }, 50);
+});
+
     };
   
 function toggleEditor() {
@@ -1398,6 +1455,12 @@ document.addEventListener("keydown", function(e) {
   if (e.key === "F3") {
     e.preventDefault();
     btnMaximizarSoloEditor.click();
+  }else if(e.key == "F2"){
+    document.getElementById('crear-funcion-btn').click();
+  }else if(e.key == "Escape" &&  document.getElementById('formulario-funcion').style.display == 'block'){
+     document.getElementById('cancelar-funcion-btn').click();
+  }else if(e.key == "Escape" && document.getElementById("modal-atajos").style.display == "flex"){
+    document.getElementById('modal-atajos').style.display='none';
   }
 });
 
