@@ -47,6 +47,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
 
+  
 
 
 
@@ -454,7 +455,7 @@
       const loader = document.getElementById("loader-spinner");
       if (loader) loader.style.display = "flex";
       const script = document.createElement("script");
-      script.src = "http://localhost:3000/ejercicios/ejercicios.js";
+      script.src = "http://localhost:3001/ejercicios.js";
       script.async = true;
 
       script.onload = () => {
@@ -603,6 +604,7 @@
 
 inputEjercicio.addEventListener("change", () => {
   const nuevo = parseInt(inputEjercicio.value, 10);
+  
   if(!admin){
     alert("Solo el profesor puede adelantar ejercicios");
     return ;
@@ -612,7 +614,7 @@ inputEjercicio.addEventListener("change", () => {
     mostrarEjercicio();
   } else {
     alert(`El número debe estar entre 1 y ${ejercicios.length}`);
-    inputEjercicio.value = indice + 1;
+    ///inputEjercicio.value = indice + 1;
   }
 });
 
@@ -621,13 +623,15 @@ document.addEventListener("keydown", (e) => {
   const editorOverlay = document.getElementById("editor-overlay");
   const editorAbierto = editorOverlay.style.display === "flex";
 
-  if (editorAbierto) {
-    // Si el editor está abierto, no hago nada para estas teclas
+  if (editorAbierto || document.getElementById("validacion-modal").style.display === "flex") {
+    // Si el editor o el modal de validación están abiertos, no hago nada para estas teclas
     return;
   }
 
   if (e.key === "ArrowRight") {
+    
     e.preventDefault();
+    // console.log("Clickeo flecha derecha")
     let val = parseInt(inputEjercicio.value, 10);
     const max = parseInt(document.getElementById("total-ejercicios").textContent, 10);
     if (!isNaN(val) && val < max) {
