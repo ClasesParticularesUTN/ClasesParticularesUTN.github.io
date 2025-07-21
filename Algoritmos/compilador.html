@@ -835,6 +835,7 @@ int main(){
           form.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
               e.preventDefault();
+              reiniciarFormularioFuncion();
               document.getElementById('insertar-funcion-btn').click();
             }
           });
@@ -1463,6 +1464,14 @@ document.addEventListener("keydown", function(e) {
     document.getElementById('modal-atajos').style.display='none';
   }
 });
+
+
+    function reiniciarFormularioFuncion() {
+  document.getElementById('nombre-funcion').value = '';
+  document.getElementById('tipo-retorno').value = '';
+  document.getElementById('parametros-funcion').value = '';
+  document.getElementById('codigo-funcion').value = '';
+}
 
 
   </script>
