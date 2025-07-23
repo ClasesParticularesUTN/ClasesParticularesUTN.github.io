@@ -675,6 +675,11 @@ int main(){
       // Restaurar estado del editor y texto si corresponde
       const editorWasOpen = localStorage.getItem('editorAbierto') === 'true';
       const editorText = localStorage.getItem('editorTexto') || '';
+      const guardadoTimestamp = parseInt(localStorage.getItem('editorGuardadoHora'), 10);
+      const ahora = Date.now();
+      const unaHoraMs = 60 * 60 * 1000;
+      const dentroDeUnaHora = guardadoTimestamp && (ahora - guardadoTimestamp < unaHoraMs);
+
       // Palabras clave de C++ para autocompletado
       const cppKeywords = [
         "if", "else", "while", "for", "do", "switch", "case", "break", "continue", "return", "struct", "class", "public", "private", "protected", "void", "int", "float", "double", "char", "bool", "true", "false", "namespace", "using", "include", "cout", "cin", "endl", "const", "static", "virtual", "override", "template", "typename", "try", "catch", "throw", "new", "delete", "this", "operator", "friend", "enum", "typedef", "sizeof", "main"
@@ -808,23 +813,25 @@ int main(){
       //editorInstance.setOption("highlightSelectionMatches", {showToken: /\w/, annotateScrollbar: true, wordsOnly: true});
       editorInstance.setSize("100%", "100%");
 
-      // Restaurar texto si había guardado
-      if (editorText) {
-        editorInstance.setValue(editorText);
-        editorIniciado = true;
-      }
+     // Restaurar texto si fue guardado hace menos de una hora
+if (editorText && dentroDeUnaHora) {
+  editorInstance.setValue(editorText);
+  editorIniciado = true;
+}
 
-      // Si el editor estaba abierto antes de recargar, abrirlo
-      if (editorWasOpen) {
-        setTimeout(() => {
-          toggleEditor();
-        }, 100); // Espera breve para asegurar que el editor esté inicializado
-      }
+// Si el editor estaba abierto y fue dentro de la hora, lo abrimos
+if (editorWasOpen && dentroDeUnaHora) {
+  setTimeout(() => {
+    toggleEditor();
+  }, 100); // Espera breve para asegurar que el editor esté inicializado
+}
 
       // Guardar automáticamente el texto y estado del editor en cada cambio
       editorInstance.on('change', function() {
         localStorage.setItem('editorTexto', editorInstance.getValue());
+        localStorage.setItem('editorGuardadoHora', Date.now()); // guarda la hora en milisegundos
       });
+
       // Botón para abrir el formulario de función
       document.getElementById('crear-funcion-btn').addEventListener('click', function() {
         document.getElementById('formulario-funcion').style.display = 'block';
