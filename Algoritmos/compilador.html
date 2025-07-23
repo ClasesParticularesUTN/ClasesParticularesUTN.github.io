@@ -673,8 +673,8 @@ int main(){
   
     window.onload = () => {
       // Restaurar estado del editor y texto si corresponde
-      const editorWasOpen = sessionStorage.getItem('editorAbierto') === 'true';
-      const editorText = sessionStorage.getItem('editorTexto') || '';
+      const editorWasOpen = localStorage.getItem('editorAbierto') === 'true';
+      const editorText = localStorage.getItem('editorTexto') || '';
       // Palabras clave de C++ para autocompletado
       const cppKeywords = [
         "if", "else", "while", "for", "do", "switch", "case", "break", "continue", "return", "struct", "class", "public", "private", "protected", "void", "int", "float", "double", "char", "bool", "true", "false", "namespace", "using", "include", "cout", "cin", "endl", "const", "static", "virtual", "override", "template", "typename", "try", "catch", "throw", "new", "delete", "this", "operator", "friend", "enum", "typedef", "sizeof", "main"
@@ -823,7 +823,7 @@ int main(){
 
       // Guardar automáticamente el texto y estado del editor en cada cambio
       editorInstance.on('change', function() {
-        sessionStorage.setItem('editorTexto', editorInstance.getValue());
+        localStorage.setItem('editorTexto', editorInstance.getValue());
       });
       // Botón para abrir el formulario de función
       document.getElementById('crear-funcion-btn').addEventListener('click', function() {
@@ -911,7 +911,7 @@ function toggleEditor() {
 
     overlay.style.display = "none";
     editorBtn.style.display = "inline-block";
-    sessionStorage.setItem('editorAbierto', 'false');
+    localStorage.setItem('editorAbierto', 'false');
 
   } else {
     overlay.style.display = "flex";
@@ -934,7 +934,7 @@ function toggleEditor() {
     }
 
     focoAnterior = null;
-    sessionStorage.setItem('editorAbierto', 'true');
+    localStorage.setItem('editorAbierto', 'true');
   }
 }
 
