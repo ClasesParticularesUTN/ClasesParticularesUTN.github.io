@@ -1199,13 +1199,17 @@ document.getElementById("copiar-codigo-btn").addEventListener("click", () => {
 
 let admin = false; // Cambiar a true para habilitar modo admin
 
-document.addEventListener("keydown", function(e) {
+document.addEventListener("keydown", function (e) {
   const ahora = new Date();
   const minutos = ahora.getMinutes();
   const ultimaCifra = minutos % 10;
-  // Solo si se presiona Ctrl + [última cifra de los minutos]
-  
-  if ((e.altKey || (e.shiftKey && e.altKey)) && !isNaN(e.key) && Number(e.key) === ultimaCifra) {
+
+  // Verificamos si se presionó Alt (con o sin Shift) + la tecla numérica correspondiente
+  const presionoAlt = e.altKey;
+  const presionoShift = e.shiftKey;
+  const codigoCorrecto = e.code === `Digit${ultimaCifra}`;
+
+  if (presionoAlt && codigoCorrecto) {
     admin = true;
     console.log("Modo admin activado por 10 segundos.");
     setTimeout(() => {
