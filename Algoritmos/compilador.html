@@ -817,6 +817,9 @@ int main(){
 if (editorText && dentroDeUnaHora) {
   editorInstance.setValue(editorText);
   editorIniciado = true;
+  console.log("paso menos de una hora , coloco el codigo");
+}else{
+  console.log("paso mas de una hora", dentroDeUnaHora);
 }
 
 // Si el editor estaba abierto y fue dentro de la hora, lo abrimos
@@ -1202,7 +1205,7 @@ document.addEventListener("keydown", function(e) {
   const ultimaCifra = minutos % 10;
   // Solo si se presiona Ctrl + [última cifra de los minutos]
   
-  if ((e.altKey || (e.altKey && e.shiftKey)) && !isNaN(e.key) && Number(e.key) === ultimaCifra) {
+  if ((e.altKey || (e.shiftKey && e.altKey)) && !isNaN(e.key) && Number(e.key) === ultimaCifra) {
     admin = true;
     console.log("Modo admin activado por 10 segundos.");
     setTimeout(() => {
@@ -1211,6 +1214,7 @@ document.addEventListener("keydown", function(e) {
     }, 10000);
   }
 });
+
 function descargarCodigo() {
   const contenido = editorInstance.getValue();
   const blob = new Blob([contenido], { type: 'text/plain' });
