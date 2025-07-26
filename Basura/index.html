@@ -230,7 +230,7 @@
 </div>
 
 <script>
-  const scriptURL = "https://script.google.com/macros/s/AKfycbwWux0yFiouO3KU8OH8PCedfJAV4qZsg1J3FGqCyTj9SzlZ4DgwFFOt2eXxG-rNGYrz/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbzhS7IBvm8wFAXdRrZw0G1Tx35n99y9WO97YxKDVwPiqAtx3pn5Bjr06gavEmZ7sS6k/exec";
   let todosLosRegistros = [];
   let tipoSeleccionado = "Basura";
 
@@ -289,11 +289,11 @@
 
     calendario.classList.add('visible');
   }
-
+  let enviarCorreos = true;
   function registrar(nombre) {
     const fecha = new Date().toISOString().slice(0, 10);
     const tipo = tipoSeleccionado;
-    const payload = { accion: "registrar", nombre, fecha, tipo };
+    const payload = { accion: "registrar", nombre, fecha, tipo , enviarCorreos};
 
     const loader = document.getElementById('loader');
     const calendario = document.getElementById('calendario');
@@ -417,6 +417,12 @@ function guardarNuevoTipo() {
   // Crear calendario vacío para el nuevo tipo
   filtrarPorTipo();
 }
+
+document.addEventListener('keydown', function(e) {
+  if (e.altKey && e.key.toLowerCase() === 'e') {
+    enviarCorreos = false;
+  }
+});
 
 </script>
 
