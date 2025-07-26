@@ -3,10 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Agregar esto dentro del <head>, antes del </head> -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <title>Registro Basura - Calendario</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <title>Registro General de Tareas</title>
   <style>
     html, body {
       margin: 0;
@@ -15,9 +13,7 @@
       scroll-behavior: smooth;
     }
 
-    *{
-        box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     .pantalla {
       height: 100vh;
@@ -26,32 +22,28 @@
     }
 
     .cabecera {
-    padding: 20px;
-    text-align: center;
-    flex-shrink: 0;
-    height: 15vh;
-    max-height: 15vh;
-    overflow: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+      padding: 20px;
+      text-align: center;
+      flex-shrink: 0;
+      height: 15vh;
+      max-height: 15vh;
+      overflow: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
     .cabecera h2 {
-        margin: 0;
-        /* max-height: 50%; */
-        /* height: 50%; */
-        font-size: 150%;
+      margin: 0;
+      font-size: 150%;
     }
 
     .contenido-flex {
       flex: 1;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       padding: 20px;
-      box-sizing: border-box;
-      width: 100%;
       position: relative;
     }
 
@@ -74,6 +66,12 @@
 
     @keyframes spin {
       to { transform: rotate(360deg); }
+    }
+
+    #tipoSelect {
+      font-size: 16px;
+      margin-bottom: 15px;
+      padding: 5px 10px;
     }
 
     #calendario {
@@ -112,7 +110,7 @@
       color: #2f4f13;
     }
 
-    .ocupado-hermano {
+    .ocupado-joaquin {
       background-color: #4a89dc;
       color: white;
     }
@@ -129,10 +127,8 @@
     .pantalla-botones {
       height: 100vh;
       padding: 20px;
-      box-sizing: border-box;
       display: flex;
       flex-direction: column;
-      /* justify-content: center; */
       align-items: center;
       text-align: center;
     }
@@ -177,28 +173,28 @@
       background-color: #a0d468;
     }
 
-    .color-hermano {
+    .color-joaquin {
       background-color: #4a89dc;
     }
-    .hoy {
-        color: red;
-        font-weight: bold;
-    }
-    .swal2-container {
-  backdrop-filter: blur(6px);
-  background-color: rgba(0, 0, 0, 0.4) !important;
-}
 
+    .hoy {
+      color: red;
+      font-weight: bold;
+    }
+
+    .swal2-container {
+      backdrop-filter: blur(6px);
+      background-color: rgba(0, 0, 0, 0.4) !important;
+    }
   </style>
 </head>
 <body>
 
-<!-- Pantalla 1: Calendario -->
 <div class="pantalla">
   <div class="cabecera">
-    <h2>Registro Mensual Sacadas de Basura</h2>
+    <h2>Registro General de Tareas</h2>
   </div>
-  <div class="contenido-flex" id="loader-container">
+  <div class="contenido-flex">
     <div id="loader">
       <div class="spinner"></div>
       <div>Cargando...</div>
@@ -207,9 +203,8 @@
   </div>
 </div>
 
-<!-- Pantalla 2: Botones -->
 <div class="pantalla-botones">
-  <h1>Registrar Sacada de Basura</h1>
+  <h1>Registrar Tarea</h1>
   <div class="botones">
     <button onclick="registrar('Valentín')">Valentín</button>
     <button onclick="registrar('Joaquin')">Joaquin</button>
@@ -217,13 +212,19 @@
   <div id="resultado"></div>
   <div id="leyenda">
     <div><span class="color-cuadro color-valentin"></span> Valentín</div>
-    <div><span class="color-cuadro color-hermano"></span> Joaquin</div>
+    <div><span class="color-cuadro color-joaquin"></span> Joaquin</div>
     <div><span class="color-cuadro" style="background:#eee; border:1px solid #ccc;"></span> Sin registro</div>
   </div>
+  <div style="text-align:center; margin:50px">
+      <label for="tipoSelect">Tipo:</label>
+      <select id="tipoSelect" onchange="filtrarPorTipo()"></select>
+    </div>
 </div>
 
 <script>
-  const scriptURL = "https://script.google.com/macros/s/AKfycbzf73Uc2xKzFe8BQ4ZkqlHAqxL6mt6OZHtOZIPMLhTWOoIvI5GRhRCQYN9Ozs1DtRwU/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbwWux0yFiouO3KU8OH8PCedfJAV4qZsg1J3FGqCyTj9SzlZ4DgwFFOt2eXxG-rNGYrz/exec";
+  let todosLosRegistros = [];
+  let tipoSeleccionado = "Basura";
 
   function crearCalendario(registros) {
     const calendario = document.getElementById('calendario');
@@ -266,16 +267,15 @@
       if (quien === 'Valentín') {
         celda.classList.add('ocupado-valentin');
       } else if (quien === 'Joaquin') {
-        celda.classList.add('ocupado-hermano');
+        celda.classList.add('ocupado-joaquin');
       } else {
         celda.classList.add('sin-registro');
       }
 
       const fechaActual = new Date();
-const esHoy = (fechaActual.toDateString() === new Date(anio, mes, dia).toDateString());
-
-const numeroHTML = `<div${esHoy ? ' class="hoy"' : ''}>${dia}</div>`;
-celda.innerHTML = `${numeroHTML}<div class="etiqueta">${quien ? quien : ''}</div>`;
+      const esHoy = (fechaActual.toDateString() === new Date(anio, mes, dia).toDateString());
+      const numeroHTML = `<div${esHoy ? ' class="hoy"' : ''}>${dia}</div>`;
+      celda.innerHTML = `${numeroHTML}<div class="etiqueta">${quien ? quien : ''}</div>`;
       calendario.appendChild(celda);
     }
 
@@ -284,32 +284,25 @@ celda.innerHTML = `${numeroHTML}<div class="etiqueta">${quien ? quien : ''}</div
 
   function registrar(nombre) {
     const fecha = new Date().toISOString().slice(0, 10);
-    const payload = { accion: "registrar", nombre, fecha };
+    const tipo = tipoSeleccionado;
+    const payload = { accion: "registrar", nombre, fecha, tipo };
 
     const loader = document.getElementById('loader');
     const calendario = document.getElementById('calendario');
     loader.style.display = 'flex';
     calendario.classList.remove('visible');
     calendario.style.display = 'none';
-    window.scrollTo({
-        top: 0,
-        left: 0,
-        behavior: 'smooth'
-    });
+
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
 
     fetch(scriptURL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
-    }).then(()=>{
-        obtenerRegistros();
-    });
+    }).then(() => obtenerRegistros());
 
-    document.getElementById('resultado').innerText = `Registrado (sin confirmar): ${nombre} el ${fecha}`;
-    
+    document.getElementById('resultado').innerText = `Registrado (sin confirmar): ${nombre} - ${tipo} - ${fecha}`;
   }
 
   function obtenerRegistros() {
@@ -322,7 +315,19 @@ celda.innerHTML = `${numeroHTML}<div class="etiqueta">${quien ? quien : ''}</div
     fetch(`${scriptURL}?accion=leer`)
       .then(res => res.json())
       .then(registros => {
-        crearCalendario(registros);
+        todosLosRegistros = registros;
+        const tiposUnicos = [...new Set(registros.map(r => r.tipo))];
+        console.log(tiposUnicos)
+        const select = document.getElementById("tipoSelect");
+        select.innerHTML = "";
+        tiposUnicos.forEach(tipo => {
+          const opt = document.createElement("option");
+          opt.value = tipo;
+          opt.textContent = tipo;
+          if (tipo === tipoSeleccionado) opt.selected = true;
+          select.appendChild(opt);
+        });
+        filtrarPorTipo();
       })
       .catch(() => {
         calendario.innerHTML = '<p style="text-align:center;">No se pudo cargar el historial.</p>';
@@ -333,7 +338,13 @@ celda.innerHTML = `${numeroHTML}<div class="etiqueta">${quien ? quien : ''}</div
       });
   }
 
-  obtenerRegistros();
+  function filtrarPorTipo() {
+    const select = document.getElementById("tipoSelect");
+    tipoSeleccionado = select.value;
+    const filtrados = todosLosRegistros.filter(r => r.tipo === tipoSeleccionado);
+    crearCalendario(filtrados);
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     if (!sessionStorage.getItem("nombreUsuario")) {
       Swal.fire({
@@ -351,18 +362,16 @@ celda.innerHTML = `${numeroHTML}<div class="etiqueta">${quien ? quien : ''}</div
         allowEscapeKey: false,
         confirmButtonText: 'Guardar',
         inputValidator: (value) => {
-          if (!value) {
-            return 'Tenés que elegir un nombre';
-          }
+          if (!value) return 'Tenés que elegir un nombre';
         }
       }).then((result) => {
         if (result.isConfirmed) {
-          const nombre = result.value;
-          sessionStorage.setItem("nombreUsuario", nombre);
-          
+          sessionStorage.setItem("nombreUsuario", result.value);
         }
       });
     }
+
+    obtenerRegistros();
   });
 </script>
 
