@@ -1000,6 +1000,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
 
     const partes = output.split("Mensaje original de compilador:");
     if (partes.length === 2) {
+      document.getElementById("toggleOutputSize").click();
       outputContent.innerHTML =
         `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
         `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
