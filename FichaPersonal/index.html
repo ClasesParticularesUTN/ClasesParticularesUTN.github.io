@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Ficha del Alumno</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     /* Loader Spinner */
     #loaderSpinner {
@@ -149,6 +150,10 @@
     table.reservas tbody tr td {
       border: none;
     }
+    .verMas{
+        display: none;
+        
+    }
     /* Responsive */
     @media (max-width: 520px) {
       .info-cards {
@@ -160,7 +165,20 @@
       table.reservas th, table.reservas td {
         padding: 10px 8px;
       }
+      .ocultar{
+        display: none;
+      }
+      .verMas{
+        display: block;
+        color: #0077cc;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+      .value{
+        font-size: 80%;
+      }
     }
+    
   </style>
 </head>
 <body>
@@ -170,19 +188,28 @@
     <div id="error"></div>
 
     <section class="info-cards">
-      <div class="card"><div class="icon">👤</div><div class="label">Nombre</div><div class="value" id="nombre"></div></div>
-      <div class="card"><div class="icon">👥</div><div class="label">Apellido</div><div class="value" id="apellido"></div></div>
-      <div class="card"><div class="icon">✉️</div><div class="label">Correo electrónico</div><div class="value" id="correoElectronico"></div></div>
-      <div class="card"><div class="icon">📞</div><div class="label">Teléfono</div><div class="value" id="telefono"></div></div>
-      <div class="card"><div class="icon">📅</div><div class="label">Año Ingreso</div><div class="value" id="anioIngreso"></div></div>
-      <div class="card"><div class="icon">📚</div><div class="label">Materia</div><div class="value" id="materia"></div></div>
-      <div class="card"><div class="icon">📝</div><div class="label">Estado en la materia</div><div class="value" id="estadoEnLaMateria"></div></div>
-      <div class="card"><div class="icon">💬</div><div class="label">Comentario</div><div class="value" id="comentario"></div></div>
+      <div class="card"><div class="icon">👤</div><div class="label">Nombre</div><div class="value ocultar" id="nombre"></div><div class="verMas" data-target="nombre">Ver más</div></div>
+      <div class="card"><div class="icon">👥</div><div class="label">Apellido</div><div class="value ocultar" id="apellido"></div><div class="verMas" data-target="apellido">Ver más</div></div>
+      <div class="card"><div class="icon">✉️</div><div class="label">Correo electrónico</div><div class="value ocultar" id="correoElectronico"></div><div class="verMas" data-target="correoElectronico">Ver más</div></div>
+      <div class="card"><div class="icon">📞</div><div class="label">Teléfono</div><div class="value ocultar" id="telefono"></div><div class="verMas" data-target="telefono">Ver más</div></div>
+      <div class="card"><div class="icon">📅</div><div class="label">Año Ingreso</div><div class="value ocultar" id="anioIngreso"></div><div class="verMas" data-target="anioIngreso">Ver más</div></div>
+      <div class="card"><div class="icon">📚</div><div class="label">Materia</div><div class="value ocultar" id="materia"></div><div class="verMas" data-target="materia">Ver más</div></div>
+      <div class="card"><div class="icon">📝</div><div class="label">Estado en la materia</div><div class="value ocultar" id="estadoEnLaMateria"></div><div class="verMas" data-target="estadoEnLaMateria">Ver más</div></div>
+      <div class="card"><div class="icon">💬</div><div class="label">Comentario</div><div class="value ocultar" id="comentario"></div><div class="verMas" data-target="comentario">Ver más</div></div>
       <div class="card"><div class="icon">⏰</div><div class="label">Horas a favor</div><div class="value" id="horasAFavor"></div></div>
       <div class="card"><div class="icon">💳</div><div class="label">Fecha de pago</div><div class="value" id="fechaDePago"></div></div>
       <div class="card"><div class="icon">💰</div><div class="label">Dinero que debe</div><div class="value" id="dineroQueDebe"></div></div>
       <div class="card"><div class="icon">🎁</div><div class="label">Pack</div><div class="value" id="pack"></div></div>
     </section>
+
+    <!-- Modal para mostrar info en móvil -->
+    <div id="modalInfo" style="display:none; position:fixed; z-index:3000; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.35); align-items:center; justify-content:center;">
+      <div style="background:white; border-radius:12px; max-width:90vw; padding:48px 20px 28px 20px; box-shadow:0 4px 24px rgba(0,0,0,0.18); text-align:center; position:relative;">
+        <button id="cerrarModalInfo" style="position:absolute; top:8px; right:12px; background:none; border:none; font-size:1.7rem; cursor:pointer; color:#0077cc;">&times;</button>
+        <div id="modalInfoLabel" style="font-weight:600; color:#0077cc; font-size:1.1rem; margin-bottom:10px;"></div>
+        <div id="modalInfoValue" style="font-size:1.1rem; color:#222;"></div>
+      </div>
+    </div>
 
     <h2>Horarios Reservados</h2>
     <table class="reservas" aria-label="Tabla de horarios reservados">
@@ -200,13 +227,47 @@
     </table>
     
   </main>
-<div id="scrollToBottomBtn" style="position: fixed; bottom: 24px; right: 24px; font-size: 3rem; z-index: 1000; border-radius: 50%; padding: 10px 14px; cursor: pointer; transform: rotate(270deg);">🔚</div>
+<div id="scrollToBottomBtn" 
+     style="position: fixed; bottom: 24px; right: 24px; font-size: 3rem; z-index: 1000; border-radius: 50%; padding: 10px 14px; cursor: pointer; transform: rotate(270deg); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation;" 
+     tabindex="0" aria-label="Ir al final" role="button"
+     oncontextmenu="return false;"
+     draggable="false"
+     >🔚</div>
 <script src="../Horarios/JS/URLS.js"></script>
 <script>
     // Botón para ir al final de la página
-    document.getElementById("scrollToBottomBtn").onclick = function() {
-        window.scrollTo({ top: document.body.scrollHeight});
+    const scrollBtn = document.getElementById("scrollToBottomBtn");
+    scrollBtn.onclick = function(e) {
+        e.preventDefault();
+        window.scrollTo({ top: document.body.scrollHeight });
     };
+    // Prevenir selección y acciones contextuales en móviles
+    scrollBtn.addEventListener('mousedown', e => e.preventDefault());
+    scrollBtn.addEventListener('selectstart', e => e.preventDefault());
+    scrollBtn.addEventListener('dragstart', e => e.preventDefault());
+    scrollBtn.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Modal para mostrar info de la card en móvil
+    const modal = document.getElementById('modalInfo');
+    const modalLabel = document.getElementById('modalInfoLabel');
+    const modalValue = document.getElementById('modalInfoValue');
+    const cerrarModal = document.getElementById('cerrarModalInfo');
+    cerrarModal.onclick = () => { modal.style.display = 'none'; };
+    // Cerrar modal al tocar fuera del contenido
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) modal.style.display = 'none';
+    });
+    // Asignar eventos a los botones "Ver más"
+    document.querySelectorAll('.verMas').forEach(btn => {
+      btn.onclick = function() {
+        const targetId = btn.getAttribute('data-target');
+        const label = btn.parentElement.querySelector('.label').textContent;
+        const value = document.getElementById(targetId).textContent;
+        modalLabel.textContent = label;
+        modalValue.textContent = value;
+        modal.style.display = 'flex';
+      };
+    });
 
     // Mostrar loader y ocultar main al inicio
     const loader = document.getElementById("loaderSpinner");
@@ -252,6 +313,16 @@
             document.getElementById("dineroQueDebe").textContent = data.dineroQueDebe || "0";
             document.getElementById("pack").textContent = data.pack || "No pagó pack";
 
+            if(parseInt(document.getElementById("dineroQueDebe").textContent) > 0) {
+                document.getElementById("dineroQueDebe").style.color = "red";
+                document.getElementById("dineroQueDebe").textContent = "$"+document.getElementById("dineroQueDebe").textContent;
+                Swal.fire({
+                    icon: 'warning',
+                    title: '¡Atención!',
+                    text: 'Recuerde que debe dinero.',
+                    confirmButtonText: 'Entendido'
+                });
+            }
             // Reservas
             const tbody = document.getElementById("reservasBody");
             tbody.innerHTML = ""; // limpiar por si había algo antes
@@ -259,22 +330,22 @@
             (data.reservas || []).forEach(r => {
                 const fila = document.createElement("tr");
                 fila.innerHTML = `
-                    <td>${r.fechaRealizado}</td>
-                    <td>${r.fechaReservado}</td>
-                    <td>${r.estado}</td>
+                    <td style="font-size:80%;text-align:center">${r.fechaRealizado}</td>
+                    <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>
+                    <td style="font-size:80%;text-align:center">${r.estado}</td>
                     <td style="text-align:center">${r.cantHoras}</td>
                 `;
                 tbody.appendChild(fila);
-                if (r.celdas && typeof r.celdas === "string") {
-                    const celdasTd = fila.querySelector("td:last-child");
-                    if (r.celdas.toLowerCase().includes("debe")) {
+                if (r.estado && typeof r.estado === "string") {
+                    const celdasTd = fila.children[fila.children.length - 2];
+                    if (r.estado.toLowerCase().includes("debe")) {
                         celdasTd.style.backgroundColor = "#ffd6d6";
                         
-                    } else if (r.celdas.toLowerCase().includes("pago")) {
+                    } else if (r.estado.toLowerCase().includes("pago")) {
                         celdasTd.style.backgroundColor = "#2e7d32";
                         celdasTd.style.color = "#fff";
                         
-                    } else if (r.celdas.toLowerCase().includes("pack")) {
+                    } else if (r.estado.toLowerCase().includes("pack")) {
                         celdasTd.style.backgroundColor = "#d0f5e8";
                         
                     }
@@ -294,6 +365,8 @@
             loader.style.display = "none";
             main.style.display = "block";
         });
+
+
 </script>
 </body>
 </html>
