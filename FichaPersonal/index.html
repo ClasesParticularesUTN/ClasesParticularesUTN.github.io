@@ -177,6 +177,10 @@
       .value{
         font-size: 80%;
       }
+      .listadoreservas{
+        font-size:80%;
+        text-align:center;
+      }
     }
     
   </style>
@@ -277,8 +281,15 @@
 
     // Obtener parámetros de la URL
     const params = new URLSearchParams(window.location.search);
-    const nombre = JSON.parse(localStorage.getItem("Nombre")) || "";
-    const apellido = JSON.parse(localStorage.getItem("Apellido")) || "";
+    let nombre = params.get("nombre");
+    let apellido = params.get("apellido");
+    if (!nombre) {
+      nombre = JSON.parse(localStorage.getItem("Nombre")) || "";
+      console.log("no hubo parametros")
+    }
+    if (!apellido) {
+      apellido = JSON.parse(localStorage.getItem("Apellido")) || "";
+    }
 
     if(nombre == "" || apellido == ""){
         window.location = '/Horarios/IniciarSesion/IniciarSesion.html';
@@ -330,10 +341,10 @@
             (data.reservas || []).forEach(r => {
                 const fila = document.createElement("tr");
                 fila.innerHTML = `
-                    <td style="font-size:80%;text-align:center">${r.fechaRealizado}</td>
-                    <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>
-                    <td style="font-size:80%;text-align:center">${r.estado}</td>
-                    <td style="text-align:center">${r.cantHoras}</td>
+                    <td class="listadoReservas">${r.fechaRealizado}</td>
+                    <td class="listadoReservas">${r.fechaReservado}</td>
+                    <td class="listadoReservas">${r.estado}</td>
+                    <td class="listadoReservas">${r.cantHoras}</td>
                 `;
                 tbody.appendChild(fila);
                 if (r.estado && typeof r.estado === "string") {
