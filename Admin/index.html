@@ -226,13 +226,13 @@
   <script src="../Horarios/JS/URLS.js"></script>
   <script>
     async function cargarHorarios() {
-      const url = "https://script.google.com/macros/s/AKfycbyiSd5At7VPT8Y3mCRGW-h94nSuzJ9o9XJhDbTXDspXvuOl5DyO6dfHVHHQbO0ckNxY/exec?funcion=horariosPorDar";
+      let url = URLUsuarios + "?funcion=horariosPorDar";
       const tabla = document.getElementById("tabla-body");
       const mensaje = document.getElementById("mensaje");
 
       tabla.innerHTML = "";
       mensaje.textContent = "Cargando...";
-
+      console.log(url)
       try {
         const res = await fetch(url);
         const datos = await res.json();
@@ -241,7 +241,7 @@
           mensaje.textContent = "No hay horarios por dar.";
           return;
         }
-
+        console.log(datos)
         datos.forEach(item => {
           const fila = document.createElement("tr");
           const celdaHorario = document.createElement("td");
@@ -274,13 +274,14 @@
     }
 
     async function cargarDeudores() {
-      const url = "https://script.google.com/macros/s/AKfycbyiSd5At7VPT8Y3mCRGW-h94nSuzJ9o9XJhDbTXDspXvuOl5DyO6dfHVHHQbO0ckNxY/exec?funcion=horariosPorPagar";
+      let url = URLUsuarios + "?funcion=horariosPorPagar";
       const tabla = document.getElementById("tabla-body");
       const mensaje = document.getElementById("mensaje");
 
       tabla.innerHTML = "";
       mensaje.textContent = "Cargando...";
-
+      console.log("Horarios por pagar: ");
+      console.log(url);
       try {
         const res = await fetch(url);
         const datos = await res.json();
