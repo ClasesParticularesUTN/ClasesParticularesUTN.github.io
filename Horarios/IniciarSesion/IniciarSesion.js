@@ -76,13 +76,14 @@ document.querySelectorAll('input').forEach(input => {
   input.setAttribute('autocomplete', 'off');
 });
 
-// Disparar click en el botón IniciarSesion al presionar Enter en cualquier parte de la página
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') {
-    const btn = document.getElementById('botonEnviar');
-    if (btn) {
-      btn.click();
+// Al presionar Enter en cualquier parte de la página, simula un click en el botón de iniciar sesión
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    const boton = document.querySelector('#botonEnviar');
+    if (boton) {
+      boton.click();
     }
   }
 });
+// 
 
