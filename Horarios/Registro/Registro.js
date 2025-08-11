@@ -207,3 +207,4 @@ function completar(){
     document.getElementById("input_26").value = "Recursando";
     document.getElementById("input_27").value = "Prueba";       
 }
+
