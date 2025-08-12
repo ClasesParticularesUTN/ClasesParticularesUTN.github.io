@@ -53,6 +53,7 @@ async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
         funcion: "reservarHorario",
         celdas: horariosSeleccionados,
         numeroHoja: numeroDeHoja,
+        nombre: Alumno.nombre
     };
     
     
