@@ -1,3 +1,4 @@
+let prohibirRegistro = false;
 async function autenticar() {
   if (Alumno == null || !Alumno.sesion) {
     
@@ -29,7 +30,7 @@ async function autenticar() {
       } else if (result.isDenied) {
         const hoy = new Date();
         const fechaLimite = new Date(hoy.getFullYear(), 7, 17); // Mes 7 = agosto (0-indexed)
-        if (hoy < fechaLimite) {
+        if (prohibirRegistro && hoy < fechaLimite) {
           Swal.fire({
             icon: "warning",
             title: "No hay más espacio para reservas hasta el 25 de agosto. Consulte por Whatsapp",
