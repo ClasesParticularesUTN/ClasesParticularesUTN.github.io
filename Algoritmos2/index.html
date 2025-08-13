@@ -962,8 +962,6 @@ function toggleEditor() {
   const sourceCode = editorInstance.getValue();
   const input = document.getElementById("input-area").value;
   const outputContent = document.getElementById("output-content");
-  const outputDiv = document.getElementById("output");
-  const toggleBtn = document.getElementById("toggleOutputSize");
 
   // 1. Contar cantidad de variables que esperan ser ingresadas (por cin)
   const cinRegex = /cin\s*>>([^;]+)/g;
@@ -979,10 +977,11 @@ function toggleEditor() {
   const totalEntradasUsuario = entradasUsuario.length;
 
   // 3. Validar
-  if (totalEntradasEsperadas > 0 && totalEntradasUsuario !== totalEntradasEsperadas) {
-    alert(`⚠️ Advertencia: el código espera ${totalEntradasEsperadas} entradas, pero se ingresaron ${totalEntradasUsuario}.
+ if (totalEntradasEsperadas > 0 && totalEntradasUsuario !== totalEntradasEsperadas) {
+  alert(`⚠️ Advertencia: el código espera ${totalEntradasEsperadas} entradas, pero se ingresaron ${totalEntradasUsuario}.
 Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejecutará igual.`);
-  }
+}
+
 
   // Mostrar mensaje de ejecución
   outputContent.textContent = "Ejecutando...";
@@ -998,30 +997,18 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
   .then(res => res.json())
   .then(data => {
     const output = data.output || "Sin salida";
+
     const partes = output.split("Mensaje original de compilador:");
     if (partes.length === 2) {
-      // Si hay mensaje del compilador, maximiza la salida
-      outputDiv.classList.add("maximized");
-      toggleBtn.textContent = "🗗";
-      toggleBtn.title = "Minimizar salida";
+      document.getElementById("toggleOutputSize").click();
       outputContent.innerHTML =
         `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
         `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
-    } else if (/error|Error|compilador|compilation/i.test(output)) {
-      // Si detecta la palabra error, también maximiza
-      outputDiv.classList.add("maximized");
-      toggleBtn.textContent = "🗗";
-      toggleBtn.title = "Minimizar salida";
-      outputContent.textContent = output;
     } else {
-      // Salida normal
       outputContent.textContent = output;
     }
   })
   .catch(err => {
-    outputDiv.classList.add("maximized");
-    toggleBtn.textContent = "🗗";
-    toggleBtn.title = "Minimizar salida";
     outputContent.textContent = "Error al ejecutar: " + err;
   });
 }
