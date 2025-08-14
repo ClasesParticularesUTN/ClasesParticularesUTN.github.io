@@ -1,7 +1,18 @@
 let prohibirRegistro = false;
+let sinHorarios = true;
 async function autenticar() {
   if (Alumno == null || !Alumno.sesion) {
-    
+    if (sinHorarios && !admin) {
+      await Swal.fire({
+      icon: "warning",
+      title: "¡Atención!",
+      text: "Casi no hay horarios disponibles. Comuníquese por Whatsapp para consultar.",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      });
+      window.location.href = "../";
+      return;
+    }
     
     Swal.fire({
       title: "¿Qué desea hacer?",
