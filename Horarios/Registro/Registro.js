@@ -86,7 +86,8 @@ function validarContrasenia(){
             text: "Elige una clave mas dificil",
           });
           contardorContraseñas++;
-          if(contraseñas.includes(contraseña))contraseñas.push(contraseña);
+          if(!contraseñas.includes(contraseña)) contraseñas.push(contraseña);
+          console.log(contraseñas);
           return false;
     }else if(contraseña.length < 4){
         Swal.fire({
@@ -182,6 +183,8 @@ function enviar(datos){
           body: JSON.stringify(datos)
       }).then(function(response) {
           //conso(response);
+
+          console.log(datos);
           document.querySelector(".loader").style.display = "none";
           document.querySelector(".contenedorLouder").style.zIndex = "-100";
           document.querySelector("form").style.opacity = "1";
@@ -208,3 +211,16 @@ function completar(){
     document.getElementById("input_27").value = "Prueba";       
 }
 
+function completarFormularioEjemplo() {
+    document.getElementById("first_20").value = "Juan";
+    document.getElementById("last_20").value = "Pérez";
+    document.getElementById("input_4").value = "juan.perez@example.com";
+    document.getElementById("Contraseña").value = "segura456";
+    document.getElementById("RepetiContraseña").value = "segura456";
+    document.getElementById("input_22_area").value = "011";
+    document.getElementById("input_22_phone").value = "12345678";
+    document.getElementById("input_24").value = "2024";
+    document.getElementById("input_84_0").checked = true;
+    document.getElementById("input_26").value = "Regular";
+    document.getElementById("input_27").value = "Comentario de prueba";
+}
