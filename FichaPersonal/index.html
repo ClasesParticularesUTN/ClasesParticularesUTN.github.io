@@ -360,6 +360,7 @@
                 `;
                 tbody.appendChild(fila);
                 if (r.estado && typeof r.estado === "string") {
+
                     const celdasTd = fila.children[fila.children.length - 2];
                     if (r.estado.toLowerCase().includes("debe")) {
                         celdasTd.style.backgroundColor = "#ffd6d6";
@@ -372,6 +373,10 @@
                         celdasTd.style.backgroundColor = "#d0f5e8";
                         
                     }
+                    if (r.estado == "Ext. Pack") {
+                        celdasTd.style.backgroundColor = "#ffcc80";
+                    }
+                    
                     celdasTd.style.borderRadius = "10%";
                     
                 }
