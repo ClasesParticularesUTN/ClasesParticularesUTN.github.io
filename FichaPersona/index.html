@@ -202,8 +202,9 @@
       <div class="card"><div class="icon">💬</div><div class="label">Comentario</div><div class="value ocultar" id="comentario"></div><div class="verMas" data-target="comentario">Ver más</div></div>
       <div class="card"><div class="icon">⏰</div><div class="label">Horas a favor</div><div class="value" id="horasAFavor"></div></div>
       <div class="card"><div class="icon">💳</div><div class="label">Fecha de pago</div><div class="value" id="fechaDePago"></div></div>
-      <div class="card"><div class="icon">💰</div><div class="label">Dinero que debe</div><div class="value" id="dineroQueDebe"></div></div>
-      <div class="card"><div class="icon">🎁</div><div class="label">Pack</div><div class="value" id="pack"></div></div>
+  <div class="card"><div class="icon">💰</div><div class="label">Dinero que debe</div><div class="value" id="dineroQueDebe"></div></div>
+  <div class="card" id="cardDineroTotal" style="display:none;"><div class="icon">💵</div><div class="label">Dinero total</div><div class="value" id="dineroTotal"></div></div>
+  <div class="card"><div class="icon">🎁</div><div class="label">Pack</div><div class="value" id="pack"></div></div>
     </section>
 
     <!-- Modal para mostrar info en móvil -->
@@ -322,8 +323,18 @@
             document.getElementById("comentario").textContent = data.comentario || "";
             document.getElementById("horasAFavor").textContent = data.horasAFavor || "Sin horas a favor";
             document.getElementById("fechaDePago").textContent = data.fechaDePago || "No pagó pack";
-            document.getElementById("dineroQueDebe").textContent = data.dineroQueDebe || "0";
-            document.getElementById("pack").textContent = data.pack || "No pagó pack";
+
+      document.getElementById("dineroQueDebe").textContent = data.dineroQueDebe || "0";
+      document.getElementById("pack").textContent = data.pack || "No pagó pack";
+      // Dinero total solo si existe
+      if (typeof data.dineroTotal !== 'undefined' && data.dineroTotal !== null) {
+        const dineroTotalElem = document.getElementById("dineroTotal");
+        dineroTotalElem.textContent = "$" + data.dineroTotal;
+        dineroTotalElem.style.color = "#2e7d32";
+        document.getElementById("cardDineroTotal").style.display = "flex";
+      } else {
+        document.getElementById("cardDineroTotal").style.display = "none";
+      }
 
             if(parseInt(document.getElementById("dineroQueDebe").textContent) > 0) {
                 document.getElementById("dineroQueDebe").style.color = "red";
