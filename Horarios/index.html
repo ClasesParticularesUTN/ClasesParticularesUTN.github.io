@@ -38,9 +38,11 @@
         <div class="loaderSencillo"></div>
     </div>
         <div class="menu animate__animated">
+            
             <p class="usuarioClasesAFAvor">Cantida de horas a Favor: </p>
             <p class="usuarioClasesAFAvor numero">0</p>
             <hr style="border: 0.1px solid white; width: 100%; padding: 0;">
+            <button id="verFichaCompleta" style="margin: 4px 0 8px 0; padding: 4px 12px; background: #e3f2fd; color: #0077cc; border: none; border-radius: 6px; font-size: 0.95rem; cursor: pointer; width: auto; float: right;">Ver ficha completa</button>
             <p class="usuarioDatos usuarioNombre">Nombre Completo: </p>
             <p class="usuarioDatos usuarioCorreo">Correo Electronico: </p>
             <p class="usuarioDatos usuarioTelefono">Telefono: </p>
@@ -205,5 +207,16 @@
   <script src="JS/modalidadClases.js "></script>
   <script src="JS/Avisos.js"></script>
   <script src="JS/AbrirMenu.js"></script>
+  <script>
+    // Redirigir al hacer click en 'Ver ficha completa'
+    document.addEventListener('DOMContentLoaded', function() {
+      const btnFicha = document.getElementById('verFichaCompleta');
+      if (btnFicha) {
+        btnFicha.onclick = function() {
+          window.location.href = '/FichaPersonal';
+        };
+      }
+    });
+  </script>
 </body>
 </html>
