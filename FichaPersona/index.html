@@ -301,6 +301,7 @@
     fetch(url)
         .then(res => res.json())
         .then(data => {
+            console.log(data);
             const errorDiv = document.getElementById("error");
             if (data.error) {
                 errorDiv.textContent = data.error;
