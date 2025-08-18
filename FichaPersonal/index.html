@@ -220,10 +220,9 @@
     <table class="reservas" aria-label="Tabla de horarios reservados">
       <thead>
         <tr>
-          <th>Fecha Realizado</th>
-          <th>Fecha Reservado</th>
-          <th>Estado</th>
-          <th style="text-align: center;">Cant Horas</th>
+          <th style="text-align:center;">Fecha Reservado</th>
+          <th style="text-align:center;">Estado</th>
+          <th style="text-align:center;">Cant Horas</th>
         </tr>
       </thead>
       <tbody id="reservasBody">
@@ -353,14 +352,12 @@
             (data.reservas || []).forEach(r => {
                 const fila = document.createElement("tr");
                 fila.innerHTML = `
-                    <td class="listadoReservas">${r.fechaRealizado}</td>
-                    <td class="listadoReservas">${r.fechaReservado}</td>
-                    <td class="listadoReservas">${r.estado}</td>
-                    <td class="listadoReservas">${r.cantHoras}</td>
+                    <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>
+                    <td style="font-size:80%;text-align:center">${r.estado}</td>
+                    <td style="text-align:center">${r.cantHoras}</td>
                 `;
                 tbody.appendChild(fila);
                 if (r.estado && typeof r.estado === "string") {
-
                     const celdasTd = fila.children[fila.children.length - 2];
                     if (r.estado.toLowerCase().includes("debe")) {
                         celdasTd.style.backgroundColor = "#ffd6d6";
@@ -373,10 +370,6 @@
                         celdasTd.style.backgroundColor = "#d0f5e8";
                         
                     }
-                    if (r.estado == "Ext. Pack") {
-                        celdasTd.style.backgroundColor = "#ffcc80";
-                    }
-                    
                     celdasTd.style.borderRadius = "10%";
                     
                 }
