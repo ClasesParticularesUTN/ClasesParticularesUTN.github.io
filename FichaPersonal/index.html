@@ -286,16 +286,36 @@
     const params = new URLSearchParams(window.location.search);
     let nombre = params.get("nombre");
     let apellido = params.get("apellido");
+    const personaSession = sessionStorage.getItem("persona");
+    console.log(personaSession)
     if (!nombre) {
-      nombre = JSON.parse(localStorage.getItem("Nombre")) || "";
-      console.log("no hubo parametros")
+      console.log("No hay nombre");
+      if (personaSession) {
+        try {
+          const personaObj = JSON.parse(personaSession);
+          if (personaObj && personaObj.nombre) {
+            nombre = personaObj.nombre;
+          }
+        } catch (e) {
+          console.warn("No se pudo parsear persona de sessionStorage");
+        }
+      }else{
+          window.localtion = '/Horarios/IniciarSesion/IniciarSesion.html';
+      }
     }
     if (!apellido) {
-      apellido = JSON.parse(localStorage.getItem("Apellido")) || "";
-    }
-
-    if(nombre == "" || apellido == ""){
-        window.location = '/Horarios/IniciarSesion/IniciarSesion.html';
+      if (personaSession) {
+        try {
+          const personaObj = JSON.parse(personaSession);
+          if (personaObj && personaObj.apellido) {
+            apellido = personaObj.apellido;
+          }
+        } catch (e) {
+          console.warn("No se pudo parsear persona de sessionStorage");
+        }
+      }else{
+          window.location = '/Horarios/IniciarSesion/IniciarSesion.html';
+      }
     }
 
     const url = URLUsuarios +
