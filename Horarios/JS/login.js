@@ -6,7 +6,7 @@ async function autenticar() {
       await Swal.fire({
       icon: "warning",
       title: "¡Atención!",
-      text: "Casi no hay horarios disponibles. Comuníquese por Whatsapp para consultar.",
+      text: "No hay mas horarios disponibles hasta septimbre. Cualquier consulta, comunicarse por whatsapp",
       allowOutsideClick: false,
       allowEscapeKey: false,
       });
