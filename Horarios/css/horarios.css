@@ -9,7 +9,6 @@ table {
   width: 100%;
   border-collapse: separate; /* Cambiado de 'collapse' a 'separate' */
   border-spacing: 10px; /* Espacio de 10px entre las celdas */
-  height: 85dvh;
   background-color: #9b4922;
 }
 .primero{

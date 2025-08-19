@@ -181,6 +181,9 @@
         font-size:80%;
         text-align:center;
       }
+      td{
+        text-align: center;
+      }
     }
     
   </style>
@@ -202,8 +205,9 @@
       <div class="card"><div class="icon">💬</div><div class="label">Comentario</div><div class="value ocultar" id="comentario"></div><div class="verMas" data-target="comentario">Ver más</div></div>
       <div class="card"><div class="icon">⏰</div><div class="label">Horas a favor</div><div class="value" id="horasAFavor"></div></div>
       <div class="card"><div class="icon">💳</div><div class="label">Fecha de pago</div><div class="value" id="fechaDePago"></div></div>
-      <div class="card"><div class="icon">💰</div><div class="label">Dinero que debe</div><div class="value" id="dineroQueDebe"></div></div>
-      <div class="card"><div class="icon">🎁</div><div class="label">Pack</div><div class="value" id="pack"></div></div>
+  <div class="card"><div class="icon">💰</div><div class="label">Dinero que debe</div><div class="value" id="dineroQueDebe"></div></div>
+  <div class="card" id="cardDineroTotal" style="display:none;"><div class="icon">💵</div><div class="label">Dinero total</div><div class="value" id="dineroTotal"></div></div>
+  <div class="card"><div class="icon">🎁</div><div class="label">Pack</div><div class="value" id="pack"></div></div>
     </section>
 
     <!-- Modal para mostrar info en móvil -->
@@ -219,10 +223,9 @@
     <table class="reservas" aria-label="Tabla de horarios reservados">
       <thead>
         <tr>
-          <th>Fecha Realizado</th>
-          <th>Fecha Reservado</th>
-          <th>Estado</th>
-          <th style="text-align: center;">Cant Horas</th>
+          <th style="text-align:center;">Fecha Reservado</th>
+          <th style="text-align:center;">Estado</th>
+          <th style="text-align:center;">Cant. Horas</th>
         </tr>
       </thead>
       <tbody id="reservasBody">
@@ -283,16 +286,36 @@
     const params = new URLSearchParams(window.location.search);
     let nombre = params.get("nombre");
     let apellido = params.get("apellido");
+    const personaSession = sessionStorage.getItem("persona");
+    console.log(personaSession)
     if (!nombre) {
-      nombre = JSON.parse(localStorage.getItem("Nombre")) || "";
-      console.log("no hubo parametros")
+      console.log("No hay nombre");
+      if (personaSession) {
+        try {
+          const personaObj = JSON.parse(personaSession);
+          if (personaObj && personaObj.nombre) {
+            nombre = personaObj.nombre;
+          }
+        } catch (e) {
+          console.warn("No se pudo parsear persona de sessionStorage");
+        }
+      }else{
+          window.localtion = '/Horarios/IniciarSesion/IniciarSesion.html';
+      }
     }
     if (!apellido) {
-      apellido = JSON.parse(localStorage.getItem("Apellido")) || "";
-    }
-
-    if(nombre == "" || apellido == ""){
-        window.location = '/Horarios/IniciarSesion/IniciarSesion.html';
+      if (personaSession) {
+        try {
+          const personaObj = JSON.parse(personaSession);
+          if (personaObj && personaObj.apellido) {
+            apellido = personaObj.apellido;
+          }
+        } catch (e) {
+          console.warn("No se pudo parsear persona de sessionStorage");
+        }
+      }else{
+          window.location = '/Horarios/IniciarSesion/IniciarSesion.html';
+      }
     }
 
     const url = URLUsuarios +
@@ -301,6 +324,7 @@
     fetch(url)
         .then(res => res.json())
         .then(data => {
+            console.log(data);
             const errorDiv = document.getElementById("error");
             if (data.error) {
                 errorDiv.textContent = data.error;
@@ -321,8 +345,18 @@
             document.getElementById("comentario").textContent = data.comentario || "";
             document.getElementById("horasAFavor").textContent = data.horasAFavor || "Sin horas a favor";
             document.getElementById("fechaDePago").textContent = data.fechaDePago || "No pagó pack";
-            document.getElementById("dineroQueDebe").textContent = data.dineroQueDebe || "0";
-            document.getElementById("pack").textContent = data.pack || "No pagó pack";
+
+      document.getElementById("dineroQueDebe").textContent = data.dineroQueDebe || "0";
+      document.getElementById("pack").textContent = data.pack || "No pagó pack";
+      // Dinero total solo si existe
+      if (typeof data.dineroTotal !== 'undefined' && data.dineroTotal !== null) {
+        const dineroTotalElem = document.getElementById("dineroTotal");
+        dineroTotalElem.textContent = "$" + data.dineroTotal;
+        dineroTotalElem.style.color = "#2e7d32";
+        document.getElementById("cardDineroTotal").style.display = "flex";
+      } else {
+        document.getElementById("cardDineroTotal").style.display = "none";
+      }
 
             if(parseInt(document.getElementById("dineroQueDebe").textContent) > 0) {
                 document.getElementById("dineroQueDebe").style.color = "red";
@@ -341,10 +375,9 @@
             (data.reservas || []).forEach(r => {
                 const fila = document.createElement("tr");
                 fila.innerHTML = `
-                    <td class="listadoReservas">${r.fechaRealizado}</td>
-                    <td class="listadoReservas">${r.fechaReservado}</td>
-                    <td class="listadoReservas">${r.estado}</td>
-                    <td class="listadoReservas">${r.cantHoras}</td>
+                    <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>
+                    <td style="font-size:80%;text-align:center">${r.estado}</td>
+                    <td style="text-align:center">${r.cantHoras}</td>
                 `;
                 tbody.appendChild(fila);
                 if (r.estado && typeof r.estado === "string") {
@@ -359,6 +392,9 @@
                     } else if (r.estado.toLowerCase().includes("pack")) {
                         celdasTd.style.backgroundColor = "#d0f5e8";
                         
+                    }
+                    if(r.estado == "Ext. Pack"){
+                        celdasTd.style.backgroundColor = "#ffb74d";
                     }
                     celdasTd.style.borderRadius = "10%";
                     
