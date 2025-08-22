@@ -1,5 +1,5 @@
 let prohibirRegistro = false;
-let sinHorarios = true;
+let sinHorarios = false;
 async function autenticar() {
   if (Alumno == null || !Alumno.sesion) {
     if (sinHorarios && !admin) {

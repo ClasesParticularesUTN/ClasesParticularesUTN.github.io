@@ -6,8 +6,8 @@ document.querySelector(".enviarReserva").addEventListener("click", async () => {
     if(Alumno.admin) {
         window.location.hash = "#VentanaModal";
         return;
-    }
-    if(sinTurnosDisponibles == 0 && numeroHoja == 0){
+    }else{
+        if(sinTurnosDisponibles == 0 && numeroHoja == 0){
         Swal.fire({
             icon: "error",
             title: "Error",
@@ -45,6 +45,8 @@ document.querySelector(".enviarReserva").addEventListener("click", async () => {
     else {
         window.location.hash = "#VentanaModal";
     }
+    }
+    
 });
 
 async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
