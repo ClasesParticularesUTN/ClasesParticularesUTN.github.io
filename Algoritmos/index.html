@@ -681,6 +681,11 @@ int main(){
     return 0;
 }
 
+
+
+
+
+
 void cargarAleatorio(int v[], int TL, int maximo){
     int minimo = maximo / 10; // ejemplo: si maximo = 100 → minimo = 10
     
@@ -723,16 +728,56 @@ void mostrarVector(int v[], int TL) {
         const end = cursor.ch;
         const currentWord = token.string.slice(0, end - start);
         let list = [];
+
         // Sugerencias de palabras clave
         if (currentWord.length > 0) {
           list = cppKeywords.filter(k => k.startsWith(currentWord));
         } else {
           list = cppKeywords.slice();
         }
+
         // Sugerencias de anyword
         const anyword = CodeMirror.hint.anyword(cm) || {list:[]};
         // Unir y filtrar duplicados
-        const all = [...new Set([...list, ...anyword.list])];
+        let all = [...new Set([...list, ...anyword.list])];
+
+        // Snippet especial para coutcin
+        if (currentWord === "coutcin") {
+          all = [
+            {
+              text: 'cout<<"$0";  cin>>$1;',
+              displayText: 'cout<<"$0";  cin>>$1;',
+              hint: function(cm, data, completion) {
+                cm.replaceRange('cout<<"";  cin>>;',
+                  {line: cursor.line, ch: start},
+                  {line: cursor.line, ch: end}
+                );
+                // Colocar el cursor dentro de las comillas
+                cm.setCursor({line: cursor.line, ch: start + 7});
+              }
+            },
+            ...all.filter(x => x !== "coutcin")
+          ];
+        } else if (currentWord === "cout") {
+          all = [
+            {
+              text: 'cout<<""<<endl;',
+              displayText: 'cout<<""<<endl;',
+              hint: function(cm, data, completion) {
+                // Insertar el snippet
+                cm.replaceRange('cout<<""<<endl;',
+                  {line: cursor.line, ch: start},
+                  {line: cursor.line, ch: end}
+                );
+                // Colocar el cursor dentro de las comillas
+                const pos = {line: cursor.line, ch: start + 7};
+                cm.setCursor(pos);
+              }
+            },
+            ...all.filter(x => x !== "cout")
+          ];
+        }
+
         return {
           list: all,
           from: CodeMirror.Pos(cursor.line, start),
@@ -1383,7 +1428,7 @@ let posicionCursorEditor = null;
 document.addEventListener("keydown", function(e) {
   if (e.key === "F11" || e.code === "F11") {
     e.preventDefault();
-    usarPlantillaVector = true;
+    usarPlantillaVector = !usarPlantillaVector;
   }
 });
 
@@ -1427,6 +1472,7 @@ document.addEventListener("keydown", function(e) {
 function agregarPrototiposCpp(codigo) {
   const lineas = codigo.split('\n');
   const regexFuncion = /^(\w[\w\s:*&<>]*?)\s+(\w+)\s*\(([^)]*)\)\s*{/;
+  const regexPrototipo = /^(\w[\w\s:*&<>]*?)\s+(\w+)\s*\(([^)]*)\)\s*;/;
   const funciones = [];
   let indiceMain = -1;
 
@@ -1458,8 +1504,20 @@ function agregarPrototiposCpp(codigo) {
         ? parametros
             .split(',')
             .map(p => {
-              const partes = p.trim().split(/\s+/);
-              return partes.length > 1 ? partes.slice(0, -1).join(' ') : partes[0];
+              // Ejemplo: "int v[]", "float x", "char nombre[20]"
+              let partes = p.trim().split(/\s+/);
+              let tipo = partes.slice(0, -1).join(' ');
+              let nombre = partes[partes.length - 1] || '';
+              // Si el nombre termina con [] o [algo], agregarlo al tipo
+              let arrayMatch = nombre.match(/(\[.*\])/);
+              if (arrayMatch) {
+                tipo += arrayMatch[1];
+              }
+              // Si solo hay un elemento, puede ser "int[]" o "int"
+              if (partes.length === 1) {
+                tipo = partes[0];
+              }
+              return tipo;
             })
             .join(', ')
         : '';
@@ -1468,17 +1526,46 @@ function agregarPrototiposCpp(codigo) {
     }
   }
 
-  // Evitar duplicados si ya están los prototipos en el código
-  const codigoAntesMain = lineas.slice(0, indiceMain).join('\n');
-  const prototiposFinales = funciones.filter(p => !codigoAntesMain.includes(p));
+  // Obtener todos los prototipos ya presentes antes del main (normalizados)
+  function normalizarPrototipo(str) {
+    return str.replace(/\s+/g, '').replace(/;$/, '');
+  }
+  const prototiposExistentes = new Set();
+  for (let i = 0; i < indiceMain; i++) {
+    const linea = lineas[i].trim();
+    if (regexPrototipo.test(linea)) {
+      prototiposExistentes.add(normalizarPrototipo(linea));
+    }
+  }
+
+  // Filtrar solo los prototipos que no están presentes (comparando normalizados)
+  const prototiposFinales = funciones.filter(p => !prototiposExistentes.has(normalizarPrototipo(p)));
 
   if (prototiposFinales.length > 0) {
-    const nuevasLineas = [
-      ...lineas.slice(0, indiceMain),
-      ...prototiposFinales,
-      '', // salto de línea entre prototipos y main
-      ...lineas.slice(indiceMain)
-    ];
+    // Buscar el último prototipo antes del main
+    let ultimaLineaPrototipo = -1;
+    for (let i = 0; i < indiceMain; i++) {
+      if (regexPrototipo.test(lineas[i].trim())) {
+        ultimaLineaPrototipo = i;
+      }
+    }
+    let nuevasLineas;
+    if (ultimaLineaPrototipo >= 0) {
+      // Insertar los nuevos prototipos justo después del último prototipo
+      nuevasLineas = [
+        ...lineas.slice(0, ultimaLineaPrototipo + 1),
+        ...prototiposFinales,
+        ...lineas.slice(ultimaLineaPrototipo + 1)
+      ];
+    } else {
+      // Si no hay prototipos, insertarlos antes del main y dejar una línea en blanco
+      nuevasLineas = [
+        ...lineas.slice(0, indiceMain),
+        ...prototiposFinales,
+        '',
+        ...lineas.slice(indiceMain)
+      ];
+    }
     return nuevasLineas.join('\n');
   }
 
