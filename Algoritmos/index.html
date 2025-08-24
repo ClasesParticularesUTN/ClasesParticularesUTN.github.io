@@ -657,6 +657,7 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+let usarPlantillaVector = false;
   
     // Plantilla básica C++
     const PLANTILLA_CPP = `#include <iostream>
@@ -665,6 +666,35 @@ using namespace std;
 int main(){
 
     return 0;
+}`;
+
+const PLANTILLA_VECTOR = `#include <iostream>
+#include <ctime>
+#define TF 100
+using namespace std;
+
+void mostrarVector(int [], int);
+void cargarAleatorio(int[], int, int = 100);
+
+int main(){
+    
+    return 0;
+}
+
+void cargarAleatorio(int v[], int TL, int maximo){
+    int minimo = maximo / 10; // ejemplo: si maximo = 100 → minimo = 10
+    
+    for(int i = 0; i < TL; i++){
+        v[i] = minimo + rand() % (maximo - minimo);
+    }
+}
+
+void mostrarVector(int v[], int TL) {
+    cout<<"[ ";
+    for(int i = 0; i < TL; i++) {
+        cout << v[i] << " ";
+    }
+    cout << "]"<<endl;
 }`;
   
     // Configuración y creación del editor CodeMirror
@@ -951,7 +981,7 @@ function toggleEditor() {
   
     function restaurarPlantilla() {
       if (confirm("¿Querés borrar tu código actual y volver a la plantilla inicial?")) {
-      editorInstance.setValue(PLANTILLA_CPP);
+      editorInstance.setValue((usarPlantillaVector)?PLANTILLA_VECTOR:PLANTILLA_CPP);
       document.getElementById("input-area").value = "";
       document.getElementById("output-content").textContent = "Esperando ejecución...";
       }
@@ -1353,7 +1383,7 @@ let posicionCursorEditor = null;
 document.addEventListener("keydown", function(e) {
   if (e.key === "F11" || e.code === "F11") {
     e.preventDefault();
-    // No hacemos nada, simplemente evitamos el comportamiento por defecto
+    usarPlantillaVector = true;
   }
 });
 
