@@ -292,12 +292,42 @@
       transition: background 0.2s;
     }
     .editor-maximizado {
-  flex: 1 !important;
-}
+      flex: 1 !important;
+    }
 
-.editor-oculto {
-  display: none !important;
-}
+    .editor-oculto {
+      display: none !important;
+    }
+
+    /* Modo pantalla completa para el editor */
+    .fullscreen-editor {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 99999 !important;
+      background: #222 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+    }
+    .fullscreen-editor #editor-header {
+      display: none !important;
+    }
+    .fullscreen-editor #editor {
+      height: 100vh !important;
+      min-height: 100vh !important;
+      max-height: 100vh !important;
+      width: 100vw !important;
+      border-radius: 0 !important;
+    }
+    .fullscreen-editor #input-area,
+    .fullscreen-editor #output {
+      display: none !important;
+    }
 
   </style>
 </head>
@@ -799,7 +829,7 @@ void mostrarVector(int v[], int TL) {
         lineNumbers: true,
         indentUnit: 4,
         tabSize: 4,
-        autoCloseBrackets: true,
+    autoCloseBrackets: true,
         matchBrackets: true, // Habilita el resaltado de corchetes
         styleActiveLine: true, // Resalta la línea activa
         foldGutter: true, // Plegado de código
@@ -852,38 +882,7 @@ void mostrarVector(int v[], int TL) {
             // Si no encuentra más, no hace nada
           },
           "Alt-Click": function(cm) { cm.addSelection(cm.getCursor()); }, // Selección múltiple con Alt+Click
-          "Enter": function (cm) {
-            const cursor = cm.getCursor();
-            const line = cm.getLine(cursor.line);
-            const beforeCursor = line.slice(0, cursor.ch).trim();
-            // Si termina en {, [ o (
-            if (/[{\[\(]$/.test(beforeCursor)) {
-              // Insertar salto de línea, tabular, y cerrar el bloque si corresponde
-              const closeChar =
-                beforeCursor.endsWith("{") ? "}" :
-                beforeCursor.endsWith("[") ? "]" :
-                beforeCursor.endsWith("(") ? ")" : "";
-
-              if (closeChar && line.slice(cursor.ch).trim().startsWith(closeChar)) {
-                // Si ya está el cierre, solo salto de línea y tabulación
-                cm.replaceSelection("\n\n", "end");
-                cm.indentLine(cursor.line + 1);
-                cm.setCursor({ line: cursor.line + 1, ch: cm.getLine(cursor.line + 1).search(/\S|$/) });
-              } else if (closeChar) {
-                // Si no está el cierre, lo agregamos
-                cm.replaceSelection(`\n\n${closeChar}` , "end");
-                cm.indentLine(cursor.line + 1);
-                cm.indentLine(cursor.line + 2);
-                cm.setCursor({ line: cursor.line + 1, ch: cm.getLine(cursor.line + 1).search(/\S|$/) });
-              } else {
-                cm.replaceSelection("\n\n", "end");
-                cm.indentLine(cursor.line + 1);
-                cm.setCursor({ line: cursor.line + 1, ch: cm.getLine(cursor.line + 1).search(/\S|$/) });
-              }
-            } else {
-              cm.execCommand("newlineAndIndent");
-            }
-          },
+          // "Enter": función eliminada para evitar el autocompletado de llaves
         },
 
         hintOptions: {
@@ -1589,21 +1588,16 @@ let editorSoloMax = false;
 
 btnMaximizarSoloEditor.addEventListener("click", () => {
   editorSoloMax = !editorSoloMax;
-
+  const overlay = document.getElementById("editor-overlay");
   if (editorSoloMax) {
-    editorTextArea.classList.add("editor-maximizado");
-    inputArea.classList.add("editor-oculto");
-    outputArea.classList.add("editor-oculto");
+    overlay.classList.add("fullscreen-editor");
     btnMaximizarSoloEditor.textContent = "🗗";
     btnMaximizarSoloEditor.title = "Restaurar vista completa";
   } else {
-    editorTextArea.classList.remove("editor-maximizado");
-    inputArea.classList.remove("editor-oculto");
-    outputArea.classList.remove("editor-oculto");
+    overlay.classList.remove("fullscreen-editor");
     btnMaximizarSoloEditor.textContent = "🗖";
     btnMaximizarSoloEditor.title = "Maximizar solo el editor";
   }
-
   editorInstance.refresh(); // redibuja el editor
 });
 document.addEventListener("keydown", function(e) {
