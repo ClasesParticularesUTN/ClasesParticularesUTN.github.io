@@ -53,6 +53,22 @@
 
   <!-- Estilos personalizados -->
   <style>
+    #resultado-validacion{
+      max-height: 150px;
+    }
+    #resultado-validacion.maximizado {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      background: white;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      max-height: 100dvh;
+    }
     /* Estilo personalizado para corchetes resaltados en CodeMirror */
     
     * { box-sizing: border-box; }
@@ -434,10 +450,11 @@
   color: #00ffcc;
   padding: 1rem;
   border-radius: 8px;
-  max-height: 150px;
   overflow: auto;
   font-size: 0.9rem;
-"></pre>
+">
+<button id="toggleOutputSize" title="Maximizar salida">🗗</button>
+</pre>
     </div>
   </div>
   <div id="modal-atajos" style="
@@ -1179,6 +1196,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
         }
       
         document.getElementById('resultado-validacion').textContent = "";
+        
         document.getElementById('validacion-modal').style.display = "flex";
         
   }
@@ -1275,6 +1293,17 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
             mensaje += `Caso ${err.indice} (entrada: "${err.entrada}"):\nEsperado:\n${err.esperado}\nObtenido:\n${err.obtenido}\n\n`;
           });
           resultadoArea.textContent = mensaje;
+          console.log("Estoy aca")
+          let event = new KeyboardEvent("keydown", {
+  key: "F8",
+  code: "F8",
+  keyCode: 119,
+  which: 119,
+  bubbles: true,
+  cancelable: true
+});
+
+document.dispatchEvent(event);
         }
       });
     }
@@ -1622,6 +1651,16 @@ document.addEventListener("keydown", function(e) {
 }
 
 
+  </script>  
+  <script>
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'F8') {
+        const resultado = document.getElementById('resultado-validacion');
+        if (resultado) {
+          resultado.classList.toggle('maximizado');
+        }
+      }
+    });
   </script>
   <script>
 
