@@ -393,8 +393,11 @@
         <button id="maximizarSoloEditor" title="Maximizar solo el editor" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">🗖</button>
         <button id="atajos-btn" title="Ver atajos de teclado" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">⌨️</button>
         <button id="copiar-codigo-btn" title="Copiar código" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">📋</button>
-        <button id="crear-funcion-btn" title="Crear función" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">ƒ</button>
-        <button onclick="restaurarPlantilla()" id="restaurar-btn">Restaurar plantilla</button>
+        
+        <button id="crear-funcion-btn" title="Crear función" style="display:none; background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">\</button>
+        
+        <button id="crear-funcion-btn2" title="Validar Codigo" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;" onclick="modalValidarCodigo()"><img src="auditoria.png" style="width: 35px; height: 35px; margin: 0; transform: translateY(5px);" alt=""></button>
+        <button onclick="restaurarPlantilla()" id="restaurar-btn">Restaurar plantilla(F4)</button>
         <button onclick="ejecutarCodigo()" style="background-color:#007bff">Ejecutar (F9)</button>
         <button onclick="toggleEditor()">Minimizar editor (F10)</button>
       </div>
@@ -952,6 +955,7 @@ if (editorWasOpen && dentroDeUnaHora) {
         }
       });
 
+
       // Cancelar formulario
       document.getElementById('cancelar-funcion-btn').addEventListener('click', function() {
         document.getElementById('formulario-funcion').style.display = 'none';
@@ -1457,11 +1461,8 @@ document.addEventListener("keydown", function(e) {
   }
 });
 
-document.addEventListener("keydown", function(e) {
-  if (e.key === "F7" || e.code === "F7") {
-    e.preventDefault();
 
-    // 1. Solo si el editor está abierto
+function modalValidarCodigo() {
     const overlay = document.getElementById("editor-overlay");
     if (overlay.style.display === "flex") {
 
@@ -1484,6 +1485,11 @@ document.addEventListener("keydown", function(e) {
           }
       
     }
+}
+document.addEventListener("keydown", function(e) {
+  if (e.key === "F7" || e.code === "F7") {
+    e.preventDefault();
+    modalValidarCodigo();
   }
   if (event.key === 'F6') {
     event.preventDefault(); // Evita que el navegador use F6 para otra cosa
