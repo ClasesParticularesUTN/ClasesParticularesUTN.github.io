@@ -369,6 +369,9 @@
     <textarea id="editor"></textarea>
     <textarea id="input-area" placeholder="Escribí la entrada estándar aquí..."></textarea>
 
+    <!-- Menú de autocompletado personalizado -->
+    <div id="autocomplete-menu" style="display:none;position:absolute;z-index:5000;background:white;border:1px solid #007bff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-family:monospace;font-size:1rem;max-height:200px;overflow-y:auto;"></div>
+
     <div id="output">
       <button id="toggleOutputSize" title="Maximizar salida">🗗</button>
       <div id="output-content">Esperando ejecución...</div>
@@ -483,16 +486,21 @@
     });
   }
 
-  cargarEjerciciosDesdeServidor()
-    .then(() => {
-      if(inputArchivo) inputArchivo.style.display = "none";
-      if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
-      if(btnIniciar) btnIniciar.disabled = false;
-    })
-    .catch(() => {
-      if(inputArchivo) inputArchivo.style.display = "none";
-      if(contenedorCargaManual) contenedorCargaManual.style.display = "block";
-    });
+  if (confirm("¿Intentar cargar los ejercicios automáticamente desde el servidor?")) {
+    cargarEjerciciosDesdeServidor()
+      .then(() => {
+        if(inputArchivo) inputArchivo.style.display = "none";
+        if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
+        if(btnIniciar) btnIniciar.disabled = false;
+      })
+      .catch(() => {
+        if(inputArchivo) inputArchivo.style.display = "none";
+        if(contenedorCargaManual) contenedorCargaManual.style.display = "block";
+      });
+  } else {
+    if(inputArchivo) inputArchivo.style.display = "none";
+    if(contenedorCargaManual) contenedorCargaManual.style.display = "block";
+  }
 
   // Carga manual desde archivo seleccionado
   if(inputArchivo) {
@@ -1621,6 +1629,150 @@ document.addEventListener("keydown", function(e) {
 
 
   </script>
-  
+  <script>
+
+  // --- Autocompletado personalizado Shift+Espacio ---
+  function inicializarAutocompletadoPersonalizado() {
+    let autocompleteMenu = document.getElementById('autocomplete-menu');
+    let autocompleteOptions = [];
+    let autocompleteIndex = 0;
+    let navegandoConShiftEspacio = false;
+
+    function getWordsFromEditor() {
+      const text = editorInstance.getValue();
+      const words = Array.from(new Set(text.match(/\b\w{2,}\b/g)));
+      return words || [];
+    }
+
+    function showAutocompleteMenu(options, coords) {
+      autocompleteMenu.innerHTML = '';
+      options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.textContent = opt;
+        div.style.padding = '4px 12px';
+        div.style.cursor = 'pointer';
+        div.style.background = (i === autocompleteIndex) ? '#e3f2fd' : 'white';
+        div.onclick = () => selectAutocomplete(i);
+        autocompleteMenu.appendChild(div);
+      });
+      autocompleteMenu.style.display = 'block';
+      autocompleteMenu.style.left = coords.left + 'px';
+      autocompleteMenu.style.top = coords.top + 'px';
+      autocompleteMenu.style.minWidth = '120px';
+    }
+
+    function hideAutocompleteMenu() {
+      autocompleteMenu.style.display = 'none';
+      autocompleteOptions = [];
+    }
+
+    function selectAutocomplete(idx) {
+      if (!autocompleteOptions.length) return;
+      const word = autocompleteOptions[idx];
+      const doc = editorInstance.getDoc();
+      const cursor = doc.getCursor();
+      const line = doc.getLine(cursor.line);
+      const before = line.slice(0, cursor.ch);
+      const match = before.match(/(\w+)$/);
+      if (match) {
+        const start = { line: cursor.line, ch: cursor.ch - match[1].length };
+        doc.replaceRange(word, start, cursor);
+      } else {
+        doc.replaceRange(word, cursor);
+      }
+      hideAutocompleteMenu();
+      editorInstance.focus();
+    }
+
+    // Detectar Shift+Espacio en el editor
+    editorInstance.on('keydown', function(cm, e) {
+      // Shift+Espacio: mostrar menú o navegar entre opciones
+      if (e.shiftKey && e.code === 'Space') {
+        e.preventDefault();
+        const doc = cm.getDoc();
+        const cursor = doc.getCursor();
+        const line = doc.getLine(cursor.line);
+        const before = line.slice(0, cursor.ch);
+        const match = before.match(/(\w+)$/);
+        let prefix = match ? match[1] : '';
+        let words = getWordsFromEditor().filter(w => w.startsWith(prefix) && w !== prefix);
+        if (words.length === 0) {
+          hideAutocompleteMenu();
+          navegandoConShiftEspacio = false;
+          return;
+        }
+        if (words.length === 1) {
+          autocompleteOptions = words;
+          autocompleteIndex = 0;
+          autocompleteMenu.style.display = 'none'; // No mostrar menú
+          selectAutocomplete(0); // Autocompletar inmediatamente
+          navegandoConShiftEspacio = false;
+          return;
+        }
+        // Si ya está el menú abierto y estamos navegando, avanzar a la siguiente opción SOLO si mantengo Shift
+        if (autocompleteMenu.style.display === 'block' && navegandoConShiftEspacio) {
+          autocompleteIndex = (autocompleteIndex + 1) % autocompleteOptions.length;
+          showAutocompleteMenu(autocompleteOptions, autocompleteMenu.getBoundingClientRect());
+        } else {
+          autocompleteOptions = words;
+          autocompleteIndex = 0;
+          const coords = cm.cursorCoords(cursor, 'page');
+          showAutocompleteMenu(words, coords);
+          navegandoConShiftEspacio = true;
+        }
+      } else if (autocompleteMenu.style.display === 'block') {
+        // Navegación con flechas y Enter
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          autocompleteIndex = (autocompleteIndex + 1) % autocompleteOptions.length;
+          showAutocompleteMenu(autocompleteOptions, autocompleteMenu.getBoundingClientRect());
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          autocompleteIndex = (autocompleteIndex - 1 + autocompleteOptions.length) % autocompleteOptions.length;
+          showAutocompleteMenu(autocompleteOptions, autocompleteMenu.getBoundingClientRect());
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          selectAutocomplete(autocompleteIndex);
+          navegandoConShiftEspacio = false;
+        } else if (e.key === 'Escape') {
+          hideAutocompleteMenu();
+          navegandoConShiftEspacio = false;
+        }
+      }
+    });
+
+    // Detectar cuando se suelta Shift+Espacio para autocompletar con la opción seleccionada
+    editorInstance.on('keyup', function(cm, e) {
+      // Al soltar Shift, autocompletar si corresponde (una o varias opciones)
+      if (navegandoConShiftEspacio && e.key === 'Shift') {
+        selectAutocomplete(autocompleteIndex);
+        navegandoConShiftEspacio = false;
+      }
+    });
+
+    document.addEventListener('mousedown', function(e) {
+      if (autocompleteMenu.style.display === 'block' && !autocompleteMenu.contains(e.target)) {
+        hideAutocompleteMenu();
+      }
+    });
+  }
+
+  // Esperar a que editorInstance esté definido
+  if (typeof editorInstance !== 'undefined' && editorInstance) {
+    inicializarAutocompletadoPersonalizado();
+  } else {
+    // Si el editor se inicializa de forma asíncrona, observar hasta que esté disponible
+    let intentos = 0;
+    const intervalo = setInterval(() => {
+      if (typeof editorInstance !== 'undefined' && editorInstance) {
+        clearInterval(intervalo);
+        inicializarAutocompletadoPersonalizado();
+      } else if (++intentos > 50) {
+        clearInterval(intervalo);
+        console.warn('No se pudo inicializar el autocompletado personalizado: editorInstance no está disponible.');
+      }
+    }, 100);
+  }
+  </script>  
 </body>
 </html>
