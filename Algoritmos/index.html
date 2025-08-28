@@ -1290,20 +1290,9 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
         } else {
           let mensaje = "Algunos casos fallaron:\n\n";
           errores.forEach(err => {
-            mensaje += `Caso ${err.indice} (entrada: "${err.entrada}"):\nEsperado:\n${err.esperado}\nObtenido:\n${err.obtenido}\n\n`;
+            mensaje += `<span style="color:orange">Caso ${err.indice} (entrada: "${err.entrada}"):\nEsperado:</span>\n${err.esperado}\n<span style="color:white">Obtenido:</span>\n${err.obtenido}\n\n`;
           });
-          resultadoArea.textContent = mensaje;
-          console.log("Estoy aca")
-          let event = new KeyboardEvent("keydown", {
-  key: "F8",
-  code: "F8",
-  keyCode: 119,
-  which: 119,
-  bubbles: true,
-  cancelable: true
-});
-
-document.dispatchEvent(event);
+          resultadoArea.innerHTML = mensaje;
         }
       });
     }
