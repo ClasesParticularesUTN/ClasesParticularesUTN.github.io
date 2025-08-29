@@ -555,35 +555,64 @@
   // Carga manual desde archivo seleccionado
   if(inputArchivo) {
     inputArchivo.addEventListener("change", function (event) {
+      console.log("Ejecute Change")
       const archivo = event.target.files[0];
       if (!archivo) return;
 
       const lector = new FileReader();
       lector.onload = function (e) {
-        try {
-          const contenido = e.target.result;
-          // Ejecutamos contenido para obtener array ejercicios
-          const modulo = new Function(contenido + "; return ejercicios;");
-          ejercicios = modulo();
+          try {
+            const contenido = e.target.result;
+            // Ejecutamos contenido para obtener array ejercicios
+            const modulo = new Function(contenido + "; return ejercicios;");
+            ejercicios = modulo();
 
-          if(btnIniciar) btnIniciar.disabled = false;
-          if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
-          document.getElementById('total-ejercicios').textContent = ejercicios.length;
-        } catch (err) {
-          alert("Error al cargar el archivo: " + err.message);
-        }
+            if(btnIniciar) btnIniciar.disabled = false;
+            if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
+            document.getElementById('total-ejercicios').textContent = ejercicios.length;
+
+            // ✅ Guardar en localStorage el contenido del archivo para restaurar después
+            localStorage.setItem("archivoEjercicios", contenido);
+
+          } catch (err) {
+            alert("Error al cargar el archivo: " + err.message);
+          }
       };
+
       lector.readAsText(archivo);
     });
   }
 
-  
+  // --- Restaurar ejercicios guardados si existen ---
+window.addEventListener("DOMContentLoaded", async () => {
+  const guardado = localStorage.getItem("archivoEjercicios");
+  if (guardado) {
+    try {
+      const modulo = new Function(guardado + "; return ejercicios;");
+      ejercicios = modulo();
+
+      if(btnIniciar) btnIniciar.disabled = false;
+      if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
+      document.getElementById('total-ejercicios').textContent = ejercicios.length;
+      console.log("✅ Ejercicios restaurados desde localStorage");
+      await iniciar();
+      indice = parseInt(sessionStorage.getItem("indice"));
+      mostrarEjercicio();
+    } catch (err) {
+      console.error("❌ Error al restaurar ejercicios guardados:", err);
+      localStorage.removeItem("archivoEjercicios"); // Limpio si está corrupto
+    }
+
+  }
+});
+
     function iniciar() {
+      
       if (typeof ejercicios == "undefined" || ejercicios.length === 0) {
         document.getElementById('archivo-ejercicios').click();
         return;
       }
-      indice = 0;
+      indice = sessionStorage.getItem("indice")? parseInt(sessionStorage.getItem("indice")) : 0;
       document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
       document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button onclick="anterior()">Anterior</button>';
        if (confirm("¿Querés pegar automáticamente tu código al abrir la validacion?")) {
@@ -593,6 +622,7 @@
       } else {
         pegadoAutomatico = false;
       }
+      
       mostrarEjercicio();
     }
   
@@ -633,6 +663,7 @@
         document.getElementById('solucion').style.display = "none";
         document.getElementById('input-ejercicio').value = indice + 1;
         document.getElementById('total-ejercicios').textContent = ejercicios.length;
+        sessionStorage.setItem("indice", indice);
       }
     }
   
@@ -1006,10 +1037,12 @@ if (editorWasOpen && dentroDeUnaHora) {
 
     };
   
+let editorMaximizado = false;
 function toggleEditor() {
   const overlay = document.getElementById("editor-overlay");
   const editorBtn = document.getElementById("abrir-editor");
   const inputArea = document.getElementById("input-area");
+  const output = document.getElementById("output");
 
   if (overlay.style.display === "flex") {
     // 💾 Guardar foco antes de minimizar
@@ -1021,13 +1054,16 @@ function toggleEditor() {
     } else {
       focoAnterior = null;
     }
-
+    console.log("Llegue hasta aca")
+    if(overlay.classList.contains("fullscreen-editor")) overlay.classList.remove("fullscreen-editor");
+    if(output.classList.contains("maximized"))output.classList.remove("maximized");
     overlay.style.display = "none";
     editorBtn.style.display = "inline-block";
     localStorage.setItem('editorAbierto', 'false');
 
   } else {
     overlay.style.display = "flex";
+    if(editorMaximizado) overlay.classList.add("fullscreen-editor");
     editorBtn.style.display = "none";
     editorInstance.refresh();
 
@@ -1629,6 +1665,7 @@ document.addEventListener("keydown", function(e) {
   if (e.key === "F3") {
     e.preventDefault();
     btnMaximizarSoloEditor.click();
+    editorMaximizado = !editorMaximizado;
   }else if(e.key == "F2"){
     document.getElementById('crear-funcion-btn').click();
   }else if(e.key == "Escape" &&  document.getElementById('formulario-funcion').style.display == 'block'){
