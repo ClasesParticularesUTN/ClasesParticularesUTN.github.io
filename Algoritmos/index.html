@@ -572,7 +572,7 @@
             document.getElementById('total-ejercicios').textContent = ejercicios.length;
 
             // ✅ Guardar en localStorage el contenido del archivo para restaurar después
-            localStorage.setItem("archivoEjercicios", contenido);
+            sessionStorage.setItem("archivoEjercicios", contenido);
 
           } catch (err) {
             alert("Error al cargar el archivo: " + err.message);
@@ -585,7 +585,7 @@
 
   // --- Restaurar ejercicios guardados si existen ---
 window.addEventListener("DOMContentLoaded", async () => {
-  const guardado = localStorage.getItem("archivoEjercicios");
+  const guardado = sessionStorage.getItem("archivoEjercicios");
   if (guardado) {
     try {
       const modulo = new Function(guardado + "; return ejercicios;");
@@ -600,7 +600,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       mostrarEjercicio();
     } catch (err) {
       console.error("❌ Error al restaurar ejercicios guardados:", err);
-      localStorage.removeItem("archivoEjercicios"); // Limpio si está corrupto
+      sessionStorage.removeItem("archivoEjercicios"); // Limpio si está corrupto
     }
 
   }
