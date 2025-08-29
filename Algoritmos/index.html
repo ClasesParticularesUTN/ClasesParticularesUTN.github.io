@@ -1670,7 +1670,24 @@ document.addEventListener("keydown", function(e) {
     function getWordsFromEditor() {
       const text = editorInstance.getValue();
       const words = Array.from(new Set(text.match(/\b\w{2,}\b/g)));
-      return words || [];
+      
+      // Lista de palabras clave de C++ que queremos ignorar
+      const cppKeywords = [
+        "if", "else", "while", "for", "do", "switch", "case", "break", "continue", "return", 
+        "struct", "class", "public", "private", "protected", "void", "int", "float", "double", 
+        "char", "bool", "true", "false", "namespace", "using", "include", "cout", "cin", "endl", 
+        "const", "static", "virtual", "override", "template", "typename", "try", "catch", "throw", 
+        "new", "delete", "this", "operator", "friend", "enum", "typedef", "sizeof", "main",
+        "auto", "register", "extern", "mutable", "inline", "explicit", "volatile", "signed", 
+        "unsigned", "short", "long", "default", "goto", "union", "inline", "noexcept", "nullptr",
+        "override", "final", "decltype", "constexpr", "alignas", "alignof", "char16_t", "char32_t",
+        "thread_local", "static_assert", "typeid", "typename", "concept", "requires", "co_await",
+        "co_return", "co_yield", "import", "module", "export", "iostream", "std"
+      ];
+      
+      // Filtrar las palabras clave de C++
+      const filteredWords = words.filter(word => !cppKeywords.includes(word));
+      return filteredWords || [];
     }
 
     function showAutocompleteMenu(options, coords) {
