@@ -1094,7 +1094,9 @@ function toggleEditor() {
       document.getElementById("output-content").textContent = "Esperando ejecución...";
       }
     }
-  
+    let URLLocal = 'http://localhost:3000/compile';
+    let URLTablet = 'http://190.190.169.141:3000/compile';
+    let URL = URLLocal;
     // Ejecución de código llamando al backend que compila C++
     function ejecutarCodigo() {
   const sourceCode = editorInstance.getValue();
@@ -1124,8 +1126,8 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
 
   // Mostrar mensaje de ejecución
   outputContent.textContent = "Ejecutando...";
-
-  fetch("http://localhost:3000/compile", {
+  
+  fetch(URLLocal, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -1275,7 +1277,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
       subirCodigo();
       let promesas = ejercicioActual.casosDePrueba.map((caso, i) => {
         console.log(caso.entrada,i);
-        return fetch("http://localhost:3000/compile", {
+        return fetch(URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
