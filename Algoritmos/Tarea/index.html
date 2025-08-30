@@ -1148,13 +1148,13 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
   outputContent.textContent = "Ejecutando...";
 
   fetch("http://190.190.169.141:3000", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      code: sourceCode,
-      input: input
-    })
-  })
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: sourceCode,
+            input: input
+          })
+        })
   .then(res => res.json())
   .then(data => {
     const output = data.output || "Sin salida";
