@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cliente C++ Compile</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:24px;max-width:900px}
+  h1{margin:0 0 12px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  textarea, input, button{width:100%;padding:10px;font-family:ui-monospace,Consolas,monospace}
+  textarea{min-height:220px}
+  pre{background:#111;color:#eee;padding:12px;overflow:auto;min-height:140px}
+  small{opacity:.7}
+</style>
+</head>
+<body>
+<h1>Compilar y ejecutar C++ (API /compile)</h1>
+<p><small>Tip: si abrís este archivo como <code>file://</code> igual funciona porque el server tiene CORS habilitado.</small></p>
+
+<label>URL del servidor:
+  <input id="url" value="http://192.168.0.44:3000">
+</label>
+
+<div class="row">
+  <div>
+    <label>Código C++</label>
+    <textarea id="code">#include &lt;bits/stdc++.h&gt;
+using namespace std;
+int main(){ 
+  int x; 
+  if(!(cin>>x)) return 0; 
+  cout &lt;&lt; (x*2) &lt;&lt; "\n"; 
+}</textarea>
+  </div>
+  <div>
+    <label>Entrada (stdin)</label>
+    <textarea id="input">21</textarea>
+  </div>
+</div>
+
+<p>
+  <button id="run">Compilar &amp; Ejecutar</button>
+</p>
+
+<h3>Salida</h3>
+<pre id="out">(salida aquí)</pre>
+
+<script>
+const out = document.getElementById('out');
+document.getElementById('run').onclick = async () => {
+  const SERVER_URL = document.getElementById('url').value.trim().replace(/\/+$/,'');
+  const code  = document.getElementById('code').value;
+  const input = document.getElementById('input').value;
+
+  out.textContent = 'Compilando...';
+  try {
+    const r = await fetch(SERVER_URL + '/compile', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ code, input })
+    });
+    const data = await r.json();
+    out.textContent = data.output ?? '(sin salida)';
+  } catch (e) {
+    out.textContent = 'Error de red: ' + e.message + 
+      '\n¿La URL es correcta? ¿El puerto está abierto?';
+  }
+};
+</script>
+</body>
+</html>
