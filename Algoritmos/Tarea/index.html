@@ -1297,7 +1297,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
       
       let promesas = ejercicioActual.casosDePrueba.map((caso, i) => {
         //console.log(caso.entrada,i);
-        return fetch("http://localhost:3000/compile", {
+        return fetch("http://190.190.169.141:3000", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
