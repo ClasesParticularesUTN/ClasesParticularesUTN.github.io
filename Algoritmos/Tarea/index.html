@@ -1147,7 +1147,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
   // Mostrar mensaje de ejecución
   outputContent.textContent = "Ejecutando...";
 
-  fetch("http://162.120.185.247:3000/compile", {
+  fetch("http://162.120.185.247:3000", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
