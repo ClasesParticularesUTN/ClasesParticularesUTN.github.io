@@ -514,7 +514,7 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwMSIKjjO4DWghTQpbkG5t8TuQ2M-hw-7niKy7JdH2hI-uKvDQ67-mCFZjGpTcvnxhv/exec";
+const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzwHVpAWWFCuSqjkDKNqLabW8_YzrQ7tZs2v_XCUmowKE_cAQ9x_Fvm-5g4b35HpmuB/exec";
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/IniciarSesion/IniciarSesion.html";
    console.log("No ha iniciado sesion")
@@ -726,13 +726,21 @@ window.addEventListener("DOMContentLoaded", async () => {
     // Control del input para cambiar el ejercicio por número
     const inputEjercicio = document.getElementById("input-ejercicio");
 
+
+let valorAnterior = "";
+
+  inputEjercicio.addEventListener("focus", () => {
+    valorAnterior = inputEjercicio.value;
+  });
 inputEjercicio.addEventListener("change", () => {
   
   const nuevo = parseInt(inputEjercicio.value, 10);
   
   if(!admin){
     alert("Solo el profesor puede adelantar ejercicios");
-    document.getElementById('input-ejercicio').value = document.getElementById('input-ejercicio').value - 1;
+    let valor = document.getElementById('input-ejercicio').value;
+    if(valor > valorAnterior)  document.getElementById('input-ejercicio').value = valor - 1;
+    else document.getElementById('input-ejercicio').value = parseInt(valor) + 1;
     return ;
   }
   if (!isNaN(nuevo) && nuevo >= 1 && nuevo <= ejercicios.length) {
