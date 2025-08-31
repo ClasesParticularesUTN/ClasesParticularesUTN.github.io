@@ -367,7 +367,7 @@
 
   <!-- Contenedor de ejercicios -->
   <div id="contenedor">
-    <h2>Ejercicios de Programación</h2>
+    <h2 id="titulo">Ejercicios de Programación</h2>
     <p id="contador-ejercicio">
       <input id="input-ejercicio" type="number" min="1" value="1" /> /
       <span id="total-ejercicios">0</span>
@@ -514,7 +514,7 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwc0xPoA9QQxP-XeKV6Ru94ua2UJZy80iJzRR6npiWb-T40iYU8lTn-MlqagjnQ7eK7/exec";
+const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwMSIKjjO4DWghTQpbkG5t8TuQ2M-hw-7niKy7JdH2hI-uKvDQ67-mCFZjGpTcvnxhv/exec";
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/IniciarSesion/IniciarSesion.html";
    console.log("No ha iniciado sesion")
@@ -548,6 +548,7 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
         }
         // Asignás el array que te manda GAS a tu variable global
         ejercicios = obj.tarea;
+        document.getElementById("titulo").innerHTML = obj.titulo;
         sessionStorage.setItem("indice", obj.indice);
 
         if (loader) loader.style.display = "none";
