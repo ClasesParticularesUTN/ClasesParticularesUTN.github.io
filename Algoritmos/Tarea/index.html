@@ -497,6 +497,8 @@
 </div>
 
   <script>
+    const COMPILER_API = "https://api.clasesparticularesutn.com.ar:8443/compile";
+
     // Variables globales
   let ejercicios = [];
   let indice = -1;
@@ -1147,7 +1149,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
   // Mostrar mensaje de ejecución
   outputContent.textContent = "Ejecutando...";
 
-  fetch("http://190.190.169.141:3000/compile", {
+  fetch(COMPILER_API, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1297,7 +1299,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
       
       let promesas = ejercicioActual.casosDePrueba.map((caso, i) => {
         //console.log(caso.entrada,i);
-        return fetch("http://190.190.169.141:3000/compile", {
+        return fetch(COMPILER_API, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
