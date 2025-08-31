@@ -661,9 +661,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   
     function anterior() {
-      if (indice > 0) {
+      if (indice > 0 && admin) {
         indice--;
         mostrarEjercicio();
+      }else{
+        alert("Solo el profesor puede volver para atras en los ejercicios");
       }
     }
   
@@ -725,10 +727,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     const inputEjercicio = document.getElementById("input-ejercicio");
 
 inputEjercicio.addEventListener("change", () => {
+  
   const nuevo = parseInt(inputEjercicio.value, 10);
   
   if(!admin){
     alert("Solo el profesor puede adelantar ejercicios");
+    document.getElementById('input-ejercicio').value = document.getElementById('input-ejercicio').value - 1;
     return ;
   }
   if (!isNaN(nuevo) && nuevo >= 1 && nuevo <= ejercicios.length) {
@@ -751,7 +755,7 @@ document.addEventListener("keydown", (e) => {
   }
 
   if (e.key === "ArrowRight") {
-    
+    if(!admin) return;
     e.preventDefault();
     let val = parseInt(inputEjercicio.value, 10);
     const max = parseInt(document.getElementById("total-ejercicios").textContent, 10);
@@ -761,6 +765,7 @@ document.addEventListener("keydown", (e) => {
     }
   }
   if (e.key === "ArrowLeft") {
+    if(!admin) return;
     e.preventDefault();
     let val = parseInt(inputEjercicio.value, 10);
     if (!isNaN(val) && val > 1) {  // corregí aquí para que no baje de 1
