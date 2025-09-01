@@ -639,7 +639,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       }
       indice = sessionStorage.getItem("indice")? parseInt(sessionStorage.getItem("indice")) : 0;
       document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
-      document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button onclick="anterior()">Anterior</button>';
+      document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button style="background-color: #F7421E" onclick="noMeSale()">No me sale, me rindo!</button>';
        navigator.clipboard.readText().catch(() => {});
        pegadoAutomatico = true;
       
@@ -659,14 +659,55 @@ window.addEventListener("DOMContentLoaded", async () => {
         document.querySelector('button[onclick="siguiente()"]').style.display = "none";
       }
     }
+
+    const mensajes = [
+        "¿Rendirte? Eso sí que no te va a enseñar nada 🤔. ¡Intentalo otra vez!",
+        "Si te rendís ahora, nunca vas a saber qué tan cerca estabas de lograrlo 🚀",
+        "Recordá: rendirse es el único error que realmente te frena ❌",
+        "Estás a punto de rendirte… pero ¿sabías que los mejores programadores se equivocaron mil veces antes de lograrlo? 💻",
+        "Rendirse es fácil, mejorar no… ¿cuál de los dos caminos querés elegir? 😉",
+        "Si dejás este ejercicio ahora, le estás regalando la victoria al problema en vez de ganar vos 💪",
+        "No te olvides: cada vez que te rendís, perdés una chance de crecer como programador 🌱",
+        "La próxima vez que pienses en rendirte, acordate de por qué empezaste 💡",
+        "Rendirse es una decisión, seguir intentando también. ¿Cuál elegís? 🔥",
+        "¿Te vas a rendir tan rápido? El código no muerde 😏"
+      ];
   
-    function anterior() {
-      if (indice > 0 && admin) {
-        indice--;
-        mostrarEjercicio();
-      }else{
-        alert("Solo el profesor puede volver para atras en los ejercicios");
-      }
+    function noMeSale() {
+        const mensajes = [
+        "¿Rendirte? Eso no te va a enseñar nada 🤔. Recordá que también tenés un botón de pistas.",
+        "Si te rendís ahora, nunca vas a saber qué tan cerca estabas 🚀. ¡Probá con una pista antes!",
+        "El único error real es rendirse ❌. Dale una mirada al botón de pistas 😉",
+        "Estás a punto de rendirte… pero los grandes programadores primero usan todas las pistas antes de dejarlo 💡",
+        "Rendirse es fácil, pero mejorar no. Tenés un botón de pistas que puede ayudarte 🔥",
+        "Si dejás este ejercicio ahora, le estás regalando la victoria al problema 💻. ¿Ya revisaste las pistas?",
+        "No olvides: cada vez que te rendís, perdés una chance de crecer 🌱. ¡Mirá las pistas primero!",
+        "Rendirse es una decisión. Usar pistas también. ¿Cuál elegís? 😉"
+      ];
+
+      // Elegir mensaje aleatorio
+      const mensaje = mensajes[Math.floor(Math.random() * mensajes.length)];
+
+      // Mostrar con SweetAlert2
+      Swal.fire({
+        title: "¡Ey, espera!",
+        text: mensaje,
+        icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: "Seguir intentando 💻",
+        denyButtonText: "Ir al siguiente ➡️",
+        confirmButtonColor: "#3085d6",
+        denyButtonColor: "#d33"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire("¡Eso es!", "Dale otra oportunidad 💪", "success");
+        } else if (result.isDenied) {
+          Swal.fire("Ok 👌", "Pasemos al siguiente ejercicio", "info");
+          indice++;
+          mostrarEjercicio();
+        }
+      });
+
     }
   
     function mostrarPista() {
