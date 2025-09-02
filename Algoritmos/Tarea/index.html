@@ -549,6 +549,7 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
         // Asignás el array que te manda GAS a tu variable global
         ejercicios = obj.tarea;
         document.getElementById("titulo").innerHTML = obj.titulo;
+        totalEjercicios = obj.totalEjercicios;
         sessionStorage.setItem("indice", obj.indice);
 
         if (loader) loader.style.display = "none";
@@ -716,7 +717,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         document.getElementById('pista').innerHTML = pista && pista.trim() ? "Pista: " + pista : "Este ejercicio no tiene pista.";
       }
     }
-  
+    let  totalEjercicios = 0;
     function mostrarEjercicio() {
       if (indice >= 0 && indice < ejercicios.length) {
         const actual = ejercicios[indice];
@@ -725,10 +726,10 @@ window.addEventListener("DOMContentLoaded", async () => {
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
         document.getElementById('input-ejercicio').value = indice + 1;
-        document.getElementById('total-ejercicios').textContent = ejercicios.length;
+        document.getElementById('total-ejercicios').textContent = totalEjercicios;
         sessionStorage.setItem("indice", indice);
       }else if(indice == ejercicios.length){
-         document.getElementById('ejercicio').textContent = "Fin de esta guia de ejercicios, recargue la pagina y si tiene otra guia cargada podra seguir haciendo ejercicios";
+         document.getElementById('ejercicio').textContent = "Fin de esta guia de ejercicios" + document.getElementById("titulo").innerHTML + ", recargue la pagina y si tiene otra guia cargada podra seguir haciendo ejercicios";
         document.getElementById('pista').textContent = "";
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
