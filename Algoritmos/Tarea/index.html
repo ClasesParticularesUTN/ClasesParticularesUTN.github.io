@@ -371,6 +371,9 @@
     <p id="contador-ejercicio">
       <input id="input-ejercicio" type="number" min="1" value="1" /> /
       <span id="total-ejercicios">0</span>
+      <br>
+      <br>
+      <span  style="margin: 50px;" id="cantiddad-ejercicios">Total Ejercicios = </span>
     </p>
     <pre id="ejercicio">Presioná "Iniciar" para comenzar</pre>
     <div class="botones">
@@ -514,7 +517,7 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwX2es2WH1sOMEmXhHPhwr1CIG4LPsqpFKERO0xSm9TsAjJ6WO6_cyZxlLv-pgJK4KV/exec";
+const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxnyzp_4Etnsg0iKP0So3AwveMvWkC2Ld6G3l8XIZGNaQOiZ6cpreH1oORdecOvzCZK/exec";
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/IniciarSesion/IniciarSesion.html";
    console.log("No ha iniciado sesion")
@@ -546,10 +549,11 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
             confirmButtonText: 'Entendido'
           });
         }
+        console.log(obj);
         // Asignás el array que te manda GAS a tu variable global
         ejercicios = obj.tarea;
         document.getElementById("titulo").innerHTML = obj.titulo;
-        totalEjercicios = obj.totalEjercicios;
+        document.getElementById("cantiddad-ejercicios").innerHTML += obj.totalEjercicios;
         sessionStorage.setItem("indice", obj.indice);
 
         if (loader) loader.style.display = "none";
@@ -726,7 +730,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
         document.getElementById('input-ejercicio').value = indice + 1;
-        document.getElementById('total-ejercicios').textContent = totalEjercicios;
+        document.getElementById('total-ejercicios').textContent = `${ejercicios.length+1}`;
         sessionStorage.setItem("indice", indice);
       }else if(indice == ejercicios.length){
          document.getElementById('ejercicio').textContent = "Fin de esta guia de ejercicios" + document.getElementById("titulo").innerHTML + ", recargue la pagina y si tiene otra guia cargada podra seguir haciendo ejercicios";

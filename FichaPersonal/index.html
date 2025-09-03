@@ -219,7 +219,7 @@
       </div>
     </div>
 
-    <h2>Horarios Reservados</h2>
+    <h2>Horarios Adeudados o Futuros</h2>
     <table class="reservas" aria-label="Tabla de horarios reservados">
       <thead>
         <tr>
@@ -373,31 +373,33 @@
             tbody.innerHTML = ""; // limpiar por si había algo antes
 
             (data.reservas || []).forEach(r => {
-                const fila = document.createElement("tr");
-                fila.innerHTML = `
-                    <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>
-                    <td style="font-size:80%;text-align:center">${r.estado}</td>
-                    <td style="text-align:center">${r.cantHoras}</td>
-                `;
-                tbody.appendChild(fila);
-                if (r.estado && typeof r.estado === "string") {
-                    const celdasTd = fila.children[fila.children.length - 2];
-                    if (r.estado.toLowerCase().includes("debe")) {
-                        celdasTd.style.backgroundColor = "#ffd6d6";
-                        
-                    } else if (r.estado.toLowerCase().includes("pago")) {
-                        celdasTd.style.backgroundColor = "#2e7d32";
-                        celdasTd.style.color = "#fff";
-                        
-                    } else if (r.estado.toLowerCase().includes("pack")) {
-                        celdasTd.style.backgroundColor = "#d0f5e8";
-                        
-                    }
-                    if(r.estado == "Ext. Pack"){
-                        celdasTd.style.backgroundColor = "#ffb74d";
-                    }
-                    celdasTd.style.borderRadius = "10%";
-                    
+                if(r.estado.toLowerCase() == "debe"){
+                  const fila = document.createElement("tr");
+                  fila.innerHTML = `
+                      <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>
+                      <td style="font-size:80%;text-align:center">${r.estado}</td>
+                      <td style="text-align:center">${r.cantHoras}</td>
+                  `;
+                  tbody.appendChild(fila);
+                  if (r.estado && typeof r.estado === "string") {
+                      const celdasTd = fila.children[fila.children.length - 2];
+                      if (r.estado.toLowerCase().includes("debe")) {
+                          celdasTd.style.backgroundColor = "#ffd6d6";
+                          
+                      } else if (r.estado.toLowerCase().includes("pago")) {
+                          celdasTd.style.backgroundColor = "#2e7d32";
+                          celdasTd.style.color = "#fff";
+                          
+                      } else if (r.estado.toLowerCase().includes("pack")) {
+                          celdasTd.style.backgroundColor = "#d0f5e8";
+                          
+                      }
+                      if(r.estado == "Ext. Pack"){
+                          celdasTd.style.backgroundColor = "#ffb74d";
+                      }
+                      celdasTd.style.borderRadius = "10%";
+                      
+                  }
                 }
             });
             // Ocultar loader y mostrar main
