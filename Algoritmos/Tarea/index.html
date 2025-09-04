@@ -730,7 +730,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
         document.getElementById('input-ejercicio').value = indice + 1;
-        document.getElementById('total-ejercicios').textContent = `${ejercicios.length+1}`;
+        document.getElementById('total-ejercicios').textContent = `${ejercicios.length-1}`;
         sessionStorage.setItem("indice", indice);
       }else if(indice == ejercicios.length){
          document.getElementById('ejercicio').textContent = "Fin de esta guia de ejercicios" + document.getElementById("titulo").innerHTML + ", recargue la pagina y si tiene otra guia cargada podra seguir haciendo ejercicios";
