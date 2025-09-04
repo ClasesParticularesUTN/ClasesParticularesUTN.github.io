@@ -554,7 +554,7 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
         ejercicios = obj.tarea;
         document.getElementById("titulo").innerHTML = obj.titulo;
         document.getElementById("cantiddad-ejercicios").innerHTML += obj.totalEjercicios;
-        sessionStorage.setItem("indice", obj.indice);
+        if(obj.indice < ejercicios.length) sessionStorage.setItem("indice", obj.indice);
 
         if (loader) loader.style.display = "none";
         if (typeof btnIniciar !== "undefined" && btnIniciar) btnIniciar.click();
@@ -601,7 +601,7 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
             if(btnIniciar) btnIniciar.disabled = false;
             if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
             document.getElementById('total-ejercicios').textContent = ejercicios.length;
-
+            console.log("Cantidad de ejercicios = ", ejercicios.length)
             // ✅ Guardar en localStorage el contenido del archivo para restaurar después
             sessionStorage.setItem("archivoEjercicios", contenido);
 
