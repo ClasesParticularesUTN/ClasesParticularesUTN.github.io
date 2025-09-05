@@ -3,85 +3,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Materias</title>
+    <title>Materias - Clases Particulares UTN</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <body>
-    <div class="section">
-        <div class="titulo text-container">
-            <h2>¿Qué enseño?</h2>
-            <p>En esta sección, podrás descubrir las materias que imparto, cada una diseñada para enriquecer el aprendizaje y fomentar el desarrollo integral de mis estudiantes. Desde asignaturas académicas hasta habilidades prácticas, cada materia está enfocada en brindar un conocimiento sólido y relevante.</p>
-            <a href="#materias" class="btn">Ver Materias</a>
-        </div>
-    </div>
-    <div id="materias" class="section">
-        <div class="text-container algoritmos">
-            <h2 class="tituloMateria">Algoritmos y Estructuras de Datos</h2>
-            <div class="image-container">
-                <img src="algoritmos.jpg" alt="Algoritmos y Estructuras de Datos">
+    <!-- Header con navegación -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Clases Particulares UTN</span>
             </div>
-            <p class="centrar">En nuestras Clases de Algoritmos y Estructuras de Datos, te prepararás de manera integral para los desafíos académicos de la facultad. A lo largo del curso, profundizaremos en conceptos clave como la complejidad algorítmica, estructuras de selección, repetición, recursividad, así como pilas, colas y árboles, asegurando que desarrolles un entendimiento sólido y aplicable</p>
-        </div>
-    </div>
-    <div class="section">
-        <div class="text-container arquitectura">
-            <h2 class="tituloMateria">Arquitectura de Computadoras</h2>
-            <div class="image-container">
-                <img src="arquitectura.jpg" alt="Arquitectura de Computadoras">
+            <a href="../index.html" class="nav-link">
+                <i class="fas fa-home"></i>
+                <span>Inicio</span>
+            </a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">¿Qué enseño?</h1>
+                <p class="hero-description">
+                    Descubre las materias que imparto, diseñadas para enriquecer tu aprendizaje y fomentar tu desarrollo integral. 
+                    Desde fundamentos teóricos hasta aplicaciones prácticas, cada materia está enfocada en brindar conocimiento sólido y relevante.
+                </p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">Materias</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Práctico</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">24/7</span>
+                        <span class="stat-label">Soporte</span>
+                    </div>
+                </div>
             </div>
-            <p class="centrar">Esta materia de Electrónica se enfoca en los fundamentos de los sistemas numéricos y el código binario, esenciales para entender la lógica digital. A través de clases teóricas y prácticas, exploraremos los sistemas lógicos combinacionales y secuenciales, proporcionando a los estudiantes las herramientas necesarias para diseñar y analizar circuitos electrónicos</p>
-        </div>
-    </div>
-    <div class="section">
-        <div class="text-container sintaxis">
-            <h2 class="tituloMateria">Sintaxis y Semántica de los Lenguajes</h2>
-            <div class="image-container">
-                <img class="" src="sintaxis.jpg" alt="Sintaxis y Semántica de los Lenguajes">
+            <div class="hero-visual">
+                <div class="floating-card">
+                    <i class="fas fa-code"></i>
+                    <span>Programación</span>
+                </div>
+                <div class="floating-card">
+                    <i class="fas fa-microchip"></i>
+                    <span>Electrónica</span>
+                </div>
+                <div class="floating-card">
+                    <i class="fas fa-brain"></i>
+                    <span>Teoría</span>
+                </div>
             </div>
-            <p class="centrar">La materia de Sintaxis y Semántica de los Lenguajes se adentra en los fundamentos teóricos que rigen la estructura y el significado de los lenguajes formales. A través del estudio de autómatas finitos, expresiones regulares y semántica, se exploran las jerarquías de Chomsky y otros conceptos clave que permiten comprender cómo se construyen y analizan los lenguajes. Esta asignatura es esencial para quienes estén interesados en la teoría de la computación, el desarrollo de lenguajes de programación y la construcción de compiladores.</p>
         </div>
-    </div>
-    <div class="section">
-        <div class="text-container paradigmas">
-            <h2 class="tituloMateria">Paradigmas de Programación</h2>
-            <div class="image-container">
-                <img class="proximamente" src="paradigmas.jpg" alt="Paradigmas de Programación">
-                <p>PROXIMAMENTE</p>
+    </section>
+
+    <!-- Materias Grid -->
+    <section class="materias-section">
+        <div class="container">
+            <div class="materias-grid">
+                <!-- Algoritmos -->
+                <div class="materia-card" data-aos="fade-up">
+                    <div class="materia-header">
+                        <div class="materia-icon">
+                            <i class="fas fa-code-branch"></i>
+                        </div>
+                        <h3 class="materia-title">Algoritmos y Estructuras de Datos</h3>
+                        <div class="materia-badge">Activo</div>
+                    </div>
+                    <div class="materia-image">
+                        <img src="algoritmos.jpg" alt="Algoritmos y Estructuras de Datos">
+                        <div class="materia-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="materia-content">
+                        <p class="materia-description">
+                            Prepárate integralmente para los desafíos académicos de la facultad. Profundizaremos en complejidad algorítmica, 
+                            estructuras de selección, repetición, recursividad, pilas, colas y árboles.
+                        </p>
+                        <div class="materia-features">
+                            <span class="feature-tag">Complejidad</span>
+                            <span class="feature-tag">Recursividad</span>
+                            <span class="feature-tag">Estructuras</span>
+                        </div>
+                        <button class="btn-primary" onclick="openModal('modal-algoritmos')">
+                            <i class="fas fa-book-open"></i>
+                            Ver Contenido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Arquitectura -->
+                <div class="materia-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="materia-header">
+                        <div class="materia-icon">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                        <h3 class="materia-title">Arquitectura de Computadoras</h3>
+                        <div class="materia-badge">Activo</div>
+                    </div>
+                    <div class="materia-image">
+                        <img src="arquitectura.jpg" alt="Arquitectura de Computadoras">
+                        <div class="materia-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="materia-content">
+                        <p class="materia-description">
+                            Fundamentos de sistemas numéricos y código binario. Exploraremos sistemas lógicos combinacionales y secuenciales 
+                            para diseñar y analizar circuitos electrónicos.
+                        </p>
+                        <div class="materia-features">
+                            <span class="feature-tag">Sistemas</span>
+                            <span class="feature-tag">Lógica</span>
+                            <span class="feature-tag">Circuitos</span>
+                        </div>
+                        <button class="btn-primary" onclick="openModal('modal-arquitectura')">
+                            <i class="fas fa-book-open"></i>
+                            Ver Contenido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sintaxis -->
+                <div class="materia-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="materia-header">
+                        <div class="materia-icon">
+                            <i class="fas fa-language"></i>
+                        </div>
+                        <h3 class="materia-title">Sintaxis y Semántica de Lenguajes</h3>
+                        <div class="materia-badge">Activo</div>
+                    </div>
+                    <div class="materia-image">
+                        <img src="sintaxis.jpg" alt="Sintaxis y Semántica de Lenguajes">
+                        <div class="materia-overlay">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="materia-content">
+                        <p class="materia-description">
+                            Fundamentos teóricos de lenguajes formales. Estudiaremos autómatas finitos, expresiones regulares, 
+                            semántica y las jerarquías de Chomsky.
+                        </p>
+                        <div class="materia-features">
+                            <span class="feature-tag">Autómatas</span>
+                            <span class="feature-tag">Teoría</span>
+                            <span class="feature-tag">Compiladores</span>
+                        </div>
+                        <button class="btn-primary" onclick="openModal('modal-sintaxis')">
+                            <i class="fas fa-book-open"></i>
+                            Ver Contenido
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Paradigmas -->
+                <div class="materia-card coming-soon" data-aos="fade-up" data-aos-delay="300">
+                    <div class="materia-header">
+                        <div class="materia-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h3 class="materia-title">Paradigmas de Programación</h3>
+                        <div class="materia-badge coming-soon-badge">Próximamente</div>
+                    </div>
+                    <div class="materia-image">
+                        <img src="paradigmas.jpg" alt="Paradigmas de Programación">
+                        <div class="materia-overlay coming-soon-overlay">
+                            <div class="coming-soon-content">
+                                <i class="fas fa-clock"></i>
+                                <span>Próximamente</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="materia-content">
+                        <p class="materia-description">
+                            Exploraremos tres paradigmas clave: lógico, orientado a objetos y funcional. 
+                            Cada uno con sus principios fundamentales y aplicaciones prácticas.
+                        </p>
+                        <div class="materia-features">
+                            <span class="feature-tag">Lógico</span>
+                            <span class="feature-tag">Orientado a Objetos</span>
+                            <span class="feature-tag">Funcional</span>
+                        </div>
+                        <button class="btn-primary" onclick="openModal('modal-paradigmas')">
+                            <i class="fas fa-book-open"></i>
+                            Ver Contenido
+                        </button>
+                    </div>
+                </div>
             </div>
-            <p class="centrar">La asignatura explora tres paradigmas clave: el paradigma lógico, que se centra en el uso de la lógica formal para resolver problemas; el paradigma de objetos, que organiza el código en torno a "objetos" que combinan datos y comportamiento; y el paradigma funcional, que promueve el uso de funciones puras y evita el estado mutable</p>
+        </div>
+    </section>
+
+    <!-- Modales para cada materia -->
+    
+    <!-- Modal Algoritmos -->
+    <div id="modal-algoritmos" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-code-branch"></i> Algoritmos y Estructuras de Datos</h2>
+                <button class="modal-close" onclick="closeModal('modal-algoritmos')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="plan-estudio">
+                    <h3>Plan de Estudio</h3>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 1: Fundamentos</h4>
+                        <ul>
+                            <li>Introducción a algoritmos</li>
+                            <li>Complejidad temporal y espacial</li>
+                            <li>Análisis de algoritmos</li>
+                        </ul>
+                    </div>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 2: Estructuras Básicas</h4>
+                        <ul>
+                            <li>Arrays y listas</li>
+                            <li>Pilas y colas</li>
+                            <li>Recursividad</li>
+                        </ul>
+                    </div>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 3: Estructuras Avanzadas</h4>
+                        <ul>
+                            <li>Árboles binarios</li>
+                            <li>Grafos</li>
+                            <li>Algoritmos de ordenamiento</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="window.open('../Horarios/index.html', '_blank')">
+                    <i class="fas fa-calendar-alt"></i>
+                    Reservar Clase
+                </button>
+            </div>
         </div>
     </div>
+
+    <!-- Modal Arquitectura -->
+    <div id="modal-arquitectura" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-microchip"></i> Arquitectura de Computadoras</h2>
+                <button class="modal-close" onclick="closeModal('modal-arquitectura')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="plan-estudio">
+                    <h3>Plan de Estudio</h3>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 1: Sistemas Numéricos</h4>
+                        <ul>
+                            <li>Sistema binario, octal y hexadecimal</li>
+                            <li>Conversiones entre sistemas</li>
+                            <li>Operaciones aritméticas</li>
+                        </ul>
+                    </div>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 2: Lógica Digital</h4>
+                        <ul>
+                            <li>Álgebra de Boole</li>
+                            <li>Compuertas lógicas</li>
+                            <li>Circuitos combinacionales</li>
+                        </ul>
+                    </div>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 3: Circuitos Secuenciales</h4>
+                        <ul>
+                            <li>Flip-flops</li>
+                            <li>Contadores y registros</li>
+                            <li>Memorias</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="window.open('../Horarios/index.html', '_blank')">
+                    <i class="fas fa-calendar-alt"></i>
+                    Reservar Clase
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Sintaxis -->
+    <div id="modal-sintaxis" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-language"></i> Sintaxis y Semántica de Lenguajes</h2>
+                <button class="modal-close" onclick="closeModal('modal-sintaxis')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="plan-estudio">
+                    <h3>Plan de Estudio</h3>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 1: Teoría de Lenguajes</h4>
+                        <ul>
+                            <li>Alfabetos y cadenas</li>
+                            <li>Lenguajes formales</li>
+                            <li>Gramáticas</li>
+                        </ul>
+                    </div>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 2: Autómatas</h4>
+                        <ul>
+                            <li>Autómatas finitos determinísticos</li>
+                            <li>Autómatas finitos no determinísticos</li>
+                            <li>Expresiones regulares</li>
+                        </ul>
+                    </div>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 3: Jerarquía de Chomsky</h4>
+                        <ul>
+                            <li>Gramáticas regulares</li>
+                            <li>Gramáticas libres de contexto</li>
+                            <li>Análisis sintáctico</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" onclick="window.open('../Horarios/index.html', '_blank')">
+                    <i class="fas fa-calendar-alt"></i>
+                    Reservar Clase
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Paradigmas -->
+    <div id="modal-paradigmas" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-cogs"></i> Paradigmas de Programación</h2>
+                <button class="modal-close" onclick="closeModal('modal-paradigmas')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="plan-estudio">
+                    <h3>Plan de Estudio</h3>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 1: Paradigma Lógico</h4>
+                        <ul>
+                            <li>Programación en Prolog</li>
+                            <li>Reglas y hechos</li>
+                            <li>Resolución de problemas lógicos</li>
+                        </ul>
+                    </div>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 2: Paradigma Orientado a Objetos</h4>
+                        <ul>
+                            <li>Clases y objetos</li>
+                            <li>Herencia y polimorfismo</li>
+                            <li>Encapsulamiento</li>
+                        </ul>
+                    </div>
+                    <div class="modulo">
+                        <h4><i class="fas fa-play-circle"></i> Módulo 3: Paradigma Funcional</h4>
+                        <ul>
+                            <li>Funciones puras</li>
+                            <li>Inmutabilidad</li>
+                            <li>Programación en Haskell</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" disabled>
+                    <i class="fas fa-bell"></i>
+                    Próximamente
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>¿Listo para comenzar tu aprendizaje?</h2>
+                <p>Únete a mis clases y transforma tu comprensión de estas materias fundamentales</p>
+                <div class="cta-buttons">
+                    <a href="../Horarios/index.html" class="btn-primary">
+                        <i class="fas fa-calendar-alt"></i>
+                        Reservar Clase
+                    </a>
+                    <a href="../Precios/index.html" class="btn-outline">
+                        <i class="fas fa-dollar-sign"></i>
+                        Ver Precios
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Clases Particulares UTN</span>
+                </div>
+                <div class="footer-links">
+                    <a href="../index.html">Inicio</a>
+                    <a href="../Materias/index.html">Materias</a>
+                    <a href="../Precios/index.html">Precios</a>
+                    <a href="../Horarios/index.html">Horarios</a>
+                    <a href="../Ubicacion/index.html">Ubicación</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Clases Particulares UTN. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        function agruparEnContenedor(materia) {
-            contenedorPadre = document.querySelector(`.${materia}`);
-                const h2 = document.querySelector(`.${materia} .tituloMateria`);
-                const imageContainer = document.querySelector(`.${materia} .image-container`);
-                const parrafo = document.querySelector(`.${materia} .centrar`);
-                const nuevoDiv = document.createElement('div');
-                nuevoDiv.className = "container";
-                nuevoDiv.appendChild(imageContainer);
-                nuevoDiv.appendChild(parrafo);
-                contenedorPadre.innerHTML = '';
-            if (window.innerWidth > 900) {
-                contenedorPadre.appendChild(h2);
-                contenedorPadre.appendChild(nuevoDiv);
-            }else{
-                contenedorPadre.appendChild(h2);
-                contenedorPadre.appendChild(imageContainer);
-                contenedorPadre.appendChild(parrafo);
-            }
+        // Inicializar AOS (Animate On Scroll)
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Efectos de hover en las tarjetas
+        document.querySelectorAll('.materia-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Botones de acción
+        document.querySelectorAll('.btn-primary').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Aquí puedes agregar la lógica para cada materia
+                const materiaTitle = this.closest('.materia-card').querySelector('.materia-title').textContent;
+                console.log(`Accediendo a: ${materiaTitle}`);
+            });
+        });
+
+        // Funciones para los modales
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Animación de entrada
+            modal.style.opacity = '0';
+            modal.style.transform = 'scale(0.8)';
+            
+            setTimeout(() => {
+                modal.style.opacity = '1';
+                modal.style.transform = 'scale(1)';
+            }, 10);
         }
 
-// Ejecutar al cargar la página y al redimensionar la ventana
-window.addEventListener('load', agruparEnContenedor("algoritmos"));
-window.addEventListener('load', agruparEnContenedor("arquitectura"));
-window.addEventListener('load', agruparEnContenedor("sintaxis"));
-window.addEventListener('load', agruparEnContenedor("paradigmas"));
-window.addEventListener('resize', agruparEnContenedor("algoritmos"));
-window.addEventListener('resize', agruparEnContenedor("arquitectura"));
-window.addEventListener('resize', agruparEnContenedor("sintaxis"));
-window.addEventListener('resize', agruparEnContenedor("paradigmas"));
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            
+            // Animación de salida
+            modal.style.opacity = '0';
+            modal.style.transform = 'scale(0.8)';
+            
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 200);
+        }
 
+        // Cerrar modal al hacer clic fuera del contenido
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                const modalId = event.target.id;
+                closeModal(modalId);
+            }
+        });
+
+        // Cerrar modal con la tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const openModal = document.querySelector('.modal[style*="display: flex"]');
+                if (openModal) {
+                    closeModal(openModal.id);
+                }
+            }
+        });
     </script>
 </body>
 </html>
