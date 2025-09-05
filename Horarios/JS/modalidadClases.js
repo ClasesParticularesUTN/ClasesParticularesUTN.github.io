@@ -70,7 +70,7 @@ function actualizarInformacionPrecios() {
     
     const precioInfo = calcularPrecio();
     
-    if (precioInfo && Alumno.horasAFavor == 0) {
+    if (precioInfo && Alumno.horasAFavor <= 0) {
         precioContainer.style.display = 'block';
         
         // Mostrar solo el total de forma simple
