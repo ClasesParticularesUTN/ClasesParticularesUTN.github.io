@@ -705,7 +705,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         confirmButtonColor: "#3085d6",
         denyButtonColor: "#d33"
       }).then((result) => {
-          if (result.isDenied) {
+          if (result.isDenied && !(titulo().esAvanzado)) {
             Swal.fire({
               title: "Confirmación",
               text: "Para continuar, ingresá la contraseña (solicitela al profesor):",
@@ -719,18 +719,26 @@ window.addEventListener("DOMContentLoaded", async () => {
               confirmButtonText: "Aceptar",
               cancelButtonText: "Cancelar",
               preConfirm: (value) => {
-                if (!titulo.esAvanzado && value.toString() !== pasarEjercicio.toString()) {
+                if (value.toString() !== pasarEjercicio.toString()) {
                   //console.log(value)
                   Swal.showValidationMessage("Contraseña incorrecta.");
                   
                   return false;
                 }
-                  cambiarContrasenia();
+
+                  ejercicioTerminado();
+                cambiarContrasenia();
                   indice++;
-                  mostrarEjercicio();
+                  mostrarEjercicio();  
                 
               }
             });
+          }else if(result.isDenied && (titulo().esAvanzado)){
+                
+                  ejercicioTerminado();  
+                cambiarContrasenia();
+                  indice++;
+                  mostrarEjercicio();
           }
       });
 
@@ -1981,7 +1989,7 @@ document.addEventListener("keydown", function(e) {
 
 function ejercicioTerminado() {
     return new Promise(async (resolve, reject) => {
-let URL = GAS_WEBAPP_URL + `?funcion=ejercicioTerminado&nombre=${encodeURIComponent(nombre)}&apellido=${encodeURIComponent(apellido)}&indice=${indice}&finalizado=${indice+1 == ejercicios.length}`;
+    let URL = GAS_WEBAPP_URL + `?funcion=ejercicioTerminado&nombre=${encodeURIComponent(nombre)}&apellido=${encodeURIComponent(apellido)}&indice=${indice}&finalizado=${indice+1 == ejercicios.length}`;
       try {
         const res = await fetch(URL);
         if (!res.ok) {
@@ -2007,7 +2015,7 @@ let URL = GAS_WEBAPP_URL + `?funcion=ejercicioTerminado&nombre=${encodeURICompon
 
   function cambiarContrasenia() {
     return new Promise(async (resolve, reject) => {
-      let URL = GAS_WEBAPP_URL + `?funcion=cambiarContrasenia&nombre=${nombre}&apellido=${apellido}`;
+      let URL = GAS_WEBAPP_URL + `?funcion=cambiarContrasenia&nombre=${nombre}&apellido=${apellido}&titulo=${document.getElementById("titulo").innerHTML}&indice=${indice}`;
       //console.log(URL);
       try {
         const res = await fetch(URL);
@@ -2057,6 +2065,20 @@ let URL = GAS_WEBAPP_URL + `?funcion=ejercicioTerminado&nombre=${encodeURICompon
       esVectoresAvanzado: titulo === "Ejercicios Vectores Avanzados Iterativos"
     };
   }
+  function cerrarSesion() {
+    // Elimina los datos de sesión del usuario
+    localStorage.removeItem("Nombre");
+    localStorage.removeItem("Apellido");
+    sessionStorage.clear();
+    // Redirige al usuario a la página de inicio de sesión
+    window.location.href = "/Horarios/IniciarSesion/IniciarSesion.html";
+  }
+  document.addEventListener("keydown", function(e) {
+    if (e.altKey && (e.key === "s" || e.key === "S")) {
+      e.preventDefault();
+      cerrarSesion();
+    }
+  });
   </script>  
 </body>
 </html>
