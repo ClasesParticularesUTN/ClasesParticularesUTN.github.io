@@ -59,7 +59,7 @@ function calcularPrecio() {
     
     return null;
 }
-
+let  precioInfo;
 function actualizarInformacionPrecios() {
     const precioContainer = document.getElementById('precio-container');
     const precioTotalSimple = document.getElementById('precio-total-simple');
@@ -68,7 +68,7 @@ function actualizarInformacionPrecios() {
     
     if (!precioContainer || !precioTotalSimple || !precioDetalleCompleto || !verDetalleBtn) return;
     
-    const precioInfo = calcularPrecio();
+    precioInfo = calcularPrecio();
     
     if (precioInfo && Alumno.horasAFavor <= 0) {
         precioContainer.style.display = 'block';

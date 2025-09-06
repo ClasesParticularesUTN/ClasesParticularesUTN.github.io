@@ -92,18 +92,24 @@
       body {
         padding: 10px;
       }
+
       form {
         padding: 20px 10px;
         max-width: 100%;
       }
-      h1, h2 {
+
+      h1,
+      h2 {
         font-size: 1.2em;
       }
-      .custom-file-label, button {
+
+      .custom-file-label,
+      button {
         width: 100%;
         font-size: 1em;
         padding: 12px 0;
       }
+
       #file-name {
         font-size: 0.95em;
       }
@@ -130,16 +136,27 @@
   </form>
 
   <!-- Loader Spinner -->
-  <div id="loader" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:9999;justify-content:center;align-items:center;">
-    <div style="border:8px solid #f3f3f3;border-top:8px solid #007bff;border-radius:50%;width:70px;height:70px;animation:spin 1s linear infinite;"></div>
+  <div id="loader"
+    style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:9999;justify-content:center;align-items:center;">
+    <div
+      style="border:8px solid #f3f3f3;border-top:8px solid #007bff;border-radius:50%;width:70px;height:70px;animation:spin 1s linear infinite;">
+    </div>
   </div>
 
   <style>
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
-    #loader { display: flex; }
+
+    #loader {
+      display: flex;
+    }
   </style>
   <script src="/Horarios/JS/URLS.js"></script>
   <script>
@@ -149,6 +166,7 @@
     const ref = params.get("ref");
     const correo = params.get("correo");
     const fecha = params.get("fecha");
+    const precio = params.get("precio");
     console.log(correo, ref, fecha)
     $("#fecha").innerHTML = fecha;
     if (ref) {
