@@ -780,10 +780,11 @@ window.addEventListener("DOMContentLoaded", async () => {
         const ejercicioNumero = (indice + 1).toString();
         const contrasenaEsperada = ejercicioNumero + horas + minutos;
   
-        const ingreso = prompt(`Para ver la solución del ejercicio ${ejercicioNumero}, ingresá la contraseña:`);
+        const ingreso = prompt(`Solicitar la contraseña al profesor: `);
   
-        if (ingreso !== contrasenaEsperada) {
+        if (ingreso.toString() !== pasarEjercicio.toString()) {
           alert("Contraseña incorrecta. Intentá de nuevo.");
+          cambiarContrasenia();
           return;
         }
   
