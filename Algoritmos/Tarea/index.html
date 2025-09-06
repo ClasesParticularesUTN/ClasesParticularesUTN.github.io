@@ -500,7 +500,7 @@
 </div>
 
   <script>
-    const COMPILER_API = "https://api.clasesparticularesutn.com.ar:8443/compile";
+    let COMPILER_API = "https://api.clasesparticularesutn.com.ar:8443/compile";
 
     // Variables globales
   let ejercicios = [];
@@ -517,7 +517,7 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyWFlTNkrU8NzpWaqzoBJ1Mz9nFUvMoWGhBB3ihoeHte0M02DIfPlhf6-q22vip1MIp/exec";
+const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxbQ50mz5ri-9Kb37bsKj3DqZI4nm_nrQmmGWnQ6OG2TFmyPRwvZj2lqxgMiv_qQxgb/exec";
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/IniciarSesion/IniciarSesion.html";
    //console.log("No ha iniciado sesion")
