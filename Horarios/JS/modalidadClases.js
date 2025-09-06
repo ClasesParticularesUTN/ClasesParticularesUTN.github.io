@@ -11,6 +11,108 @@ function mostrarCampos() {
     } else {
         grupoContainer.style.display = 'none';
     }
+    
+    // Actualizar información de precios
+    actualizarInformacionPrecios();
+}
+
+function calcularPrecio() {
+    const modalidad = document.querySelector('input[name="modalidad"]:checked');
+    const cantidadHoras = horariosSeleccionados.length;
+    const numIntegrantes = parseInt(document.getElementById('num-integrantes').value) || 1;
+    
+    if (!modalidad || cantidadHoras === 0) {
+        return null;
+    }
+    
+    let precioPorHora;
+    let total;
+    
+    if (modalidad.value === 'individual') {
+        // Individual: $5000 por 1 hora, $4500 por más de 1 hora
+        precioPorHora = cantidadHoras === 1 ? 5000 : 4500;
+        total = precioPorHora * cantidadHoras;
+        
+        return {
+            modalidad: 'individual',
+            cantidadHoras: cantidadHoras,
+            precioPorHora: precioPorHora,
+            total: total,
+            descripcion: cantidadHoras === 1 ? 
+                `1 hora: $${precioPorHora}` : 
+                `${cantidadHoras} horas: $${precioPorHora} por hora`
+        };
+    } else if (modalidad.value === 'grupal') {
+        // Grupal: $3000 por hora por persona
+        precioPorHora = 3000;
+        total = precioPorHora * cantidadHoras * numIntegrantes;
+        
+        return {
+            modalidad: 'grupal',
+            cantidadHoras: cantidadHoras,
+            numIntegrantes: numIntegrantes,
+            precioPorHora: precioPorHora,
+            total: total,
+            descripcion: `${cantidadHoras} horas × ${numIntegrantes} personas × $${precioPorHora} = $${total}`
+        };
+    }
+    
+    return null;
+}
+
+function actualizarInformacionPrecios() {
+    const precioContainer = document.getElementById('precio-container');
+    const precioTotalSimple = document.getElementById('precio-total-simple');
+    const precioDetalleCompleto = document.getElementById('precio-detalle-completo');
+    const verDetalleBtn = document.getElementById('ver-detalle-btn');
+    
+    if (!precioContainer || !precioTotalSimple || !precioDetalleCompleto || !verDetalleBtn) return;
+    
+    const precioInfo = calcularPrecio();
+    
+    if (precioInfo && Alumno.horasAFavor <= 0) {
+        precioContainer.style.display = 'block';
+        
+        // Mostrar solo el total de forma simple
+        precioTotalSimple.innerHTML = `Total: $${precioInfo.total}`;
+        
+        // Preparar el detalle completo (oculto por defecto)
+        let detalleHtml = `<div class="precio-resumen">`;
+        detalleHtml += `<p><strong>Modalidad:</strong> ${precioInfo.modalidad === 'individual' ? 'Individual' : 'Grupal'}</p>`;
+        detalleHtml += `<p><strong>Horas seleccionadas:</strong> ${precioInfo.cantidadHoras}</p>`;
+        
+        if (precioInfo.modalidad === 'grupal') {
+            detalleHtml += `<p><strong>Integrantes:</strong> ${precioInfo.numIntegrantes}</p>`;
+        }
+        
+        detalleHtml += `<p><strong>Precio por hora:</strong> $${precioInfo.precioPorHora}</p>`;
+        detalleHtml += `<p><strong>Detalle:</strong> ${precioInfo.descripcion}</p>`;
+        detalleHtml += `<p class="precio-total"><strong>Total: $${precioInfo.total}</strong></p>`;
+        detalleHtml += `</div>`;
+        
+        precioDetalleCompleto.innerHTML = detalleHtml;
+        
+        // Ocultar el detalle por defecto
+        precioDetalleCompleto.style.display = 'none';
+        verDetalleBtn.textContent = 'Ver detalle';
+    } else {
+        precioContainer.style.display = 'none';
+    }
+}
+
+function toggleDetallePrecio() {
+    const precioDetalleCompleto = document.getElementById('precio-detalle-completo');
+    const verDetalleBtn = document.getElementById('ver-detalle-btn');
+    
+    if (!precioDetalleCompleto || !verDetalleBtn) return;
+    
+    if (precioDetalleCompleto.style.display === 'none') {
+        precioDetalleCompleto.style.display = 'block';
+        verDetalleBtn.textContent = 'Ocultar detalle';
+    } else {
+        precioDetalleCompleto.style.display = 'none';
+        verDetalleBtn.textContent = 'Ver detalle';
+    }
 }
 
 function generarCampos() {
@@ -32,6 +134,9 @@ function generarCampos() {
         integrantesDiv.appendChild(input);
         integrantesDiv.appendChild(document.createElement('br'));
     }
+    
+    // Actualizar información de precios cuando cambie el número de integrantes
+    actualizarInformacionPrecios();
 }
 
 // Función para enviar los correos al backend
@@ -172,8 +277,42 @@ if (btnCerrar) {
 
         const modalidadRadios = document.querySelectorAll('input[name="modalidad"]');
         modalidadRadios.forEach(radio => radio.checked = false);
+        
+        // Oculta la información de precios
+        const precioContainer = document.getElementById('precio-container');
+        const precioDetalleCompleto = document.getElementById('precio-detalle-completo');
+        const verDetalleBtn = document.getElementById('ver-detalle-btn');
+        
+        if (precioContainer) {
+            precioContainer.style.display = 'none';
+        }
+        if (precioDetalleCompleto) {
+            precioDetalleCompleto.style.display = 'none';
+        }
+        if (verDetalleBtn) {
+            verDetalleBtn.textContent = 'Ver detalle';
+        }
     });
 }
+
+// Actualizar precios cuando se abre la ventana modal
+window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#VentanaModal') {
+        // Pequeño delay para asegurar que el modal esté completamente visible
+        setTimeout(() => {
+            actualizarInformacionPrecios();
+        }, 100);
+    }
+});
+
+// También actualizar cuando se carga la página si ya está en la ventana modal
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash === '#VentanaModal') {
+        setTimeout(() => {
+            actualizarInformacionPrecios();
+        }, 100);
+    }
+});
 
 function cargarLoader() {
         // Selecciona el modal
@@ -259,3 +398,4 @@ document.addEventListener('keydown', function(e) {
             btnEnviar.click();
         }
     });
+
