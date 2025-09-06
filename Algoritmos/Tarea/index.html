@@ -517,7 +517,7 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzRcGjU9s-BH3YURecftpkJFvfb4wvZhwAAPoj7NeN8nJ8M0oVWz8Nc-_82jG7HINTN/exec";
+const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwv-wtDnA6G4oxFMpPL1rgy4q1muNZeEXzpwGOlPrxlJH71UhtAlryGbpbd7IYvZ1xK/exec";
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/IniciarSesion/IniciarSesion.html";
    console.log("No ha iniciado sesion")
@@ -725,7 +725,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     function mostrarEjercicio() {
       if (indice >= 0 && indice < ejercicios.length) {
         const actual = ejercicios[indice];
-        document.getElementById('ejercicio').textContent = actual.enunciado;
+        document.getElementById('ejercicio').innerHTML = actual.enunciado;
         document.getElementById('pista').textContent = "";
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
