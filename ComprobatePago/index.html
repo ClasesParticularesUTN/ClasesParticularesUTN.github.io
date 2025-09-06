@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Clase Particular</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px;
+    }
+    h1 { 
+      color: #333; 
+      margin-bottom: 10px; 
+    }
+    h2 { 
+      color: #666; 
+      margin-bottom: 40px; 
+    }
+    form {
+      background: #fff;
+      padding: 40px 50px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+    }
+    p {
+      margin-bottom: 25px;
+      font-size: 16px;
+      color: #444;
+    }
+    /* Ocultar input original */
+    input[type="file"] {
+      display: none;
+    }
+    /* Botón personalizado */
+    .custom-file-label {
+      background: #007bff;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    .custom-file-label:hover {
+      background: #0056b3;
+    }
+    /* Texto del archivo seleccionado */
+    #file-name {
+      margin: 20px 0;
+      font-size: 15px;
+      color: #555;
+      font-style: italic;
+    }
+    button {
+      margin-top: 30px;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #1e7e34;
+    }
+  </style>
+</head>
+<body>
+  <h1>Clase Particular</h1>
+  <h2>Miércoles, 25/10 10:00</h2>
+  
+  <form id="uploadForm" action="/subir" method="post" enctype="multipart/form-data">
+    <p>Subí tu comprobante de pago (imagen o PDF):</p>
+
+    <!-- Botón estilizado para el input -->
+    <label for="comprobante" class="custom-file-label">📎 Seleccionar archivo</label>
+    <input type="file" id="comprobante" name="comprobante" accept=".pdf, image/*" required>
+    <div id="file-name">Ningún archivo seleccionado</div>
+
+    <!-- Campo oculto para referencia -->
+    <input type="hidden" name="referencia" id="referencia">
+
+    <button type="submit">Enviar</button>
+  </form>
+
+  <script>
+    // Extraer referencia de la URL
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get("ref");
+    if(ref){
+      document.getElementById("referencia").value = ref;
+    }
+
+    // Mostrar nombre del archivo seleccionado
+    const fileInput = document.getElementById("comprobante");
+    const fileName = document.getElementById("file-name");
+    fileInput.addEventListener("change", () => {
+      if (fileInput.files.length > 0) {
+        fileName.textContent = "📄 " + fileInput.files[0].name;
+      } else {
+        fileName.textContent = "Ningún archivo seleccionado";
+      }
+    });
+  </script>
+</body>
+</html>
