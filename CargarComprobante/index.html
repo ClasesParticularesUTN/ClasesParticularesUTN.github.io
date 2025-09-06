@@ -1,9 +1,10 @@
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Agregado -->
   <title>Clase Particular</title>
   <style>
     body {
@@ -32,6 +33,8 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       text-align: center;
       max-width: 400px;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     p {
@@ -82,6 +85,28 @@
 
     button:hover {
       background: #1e7e34;
+    }
+
+    /* --- RESPONSIVE --- */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      form {
+        padding: 20px 10px;
+        max-width: 100%;
+      }
+      h1, h2 {
+        font-size: 1.2em;
+      }
+      .custom-file-label, button {
+        width: 100%;
+        font-size: 1em;
+        padding: 12px 0;
+      }
+      #file-name {
+        font-size: 0.95em;
+      }
     }
   </style>
 </head>
