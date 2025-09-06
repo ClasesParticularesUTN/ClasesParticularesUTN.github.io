@@ -719,7 +719,7 @@ window.addEventListener("DOMContentLoaded", async () => {
               confirmButtonText: "Aceptar",
               cancelButtonText: "Cancelar",
               preConfirm: (value) => {
-                if (value.toString() !== pasarEjercicio.toString()) {
+                if (!titulo.esAvanzado && value.toString() !== pasarEjercicio.toString()) {
                   //console.log(value)
                   Swal.showValidationMessage("Contraseña incorrecta.");
                   
@@ -2042,6 +2042,20 @@ let URL = GAS_WEBAPP_URL + `?funcion=ejercicioTerminado&nombre=${encodeURICompon
 
   function cambiarURL() {
      COMPILER_API = 'http://localhost:3000/compile';
+  }
+
+  function titulo() {
+    const titulo = document.getElementById("titulo").innerHTML.trim();
+    return {
+      esBasico: titulo === "Ejercicios Basicos",
+      esBasicoMedio: titulo === "Ejercicios Basico-Medio",
+      esIntermedio: titulo === "Ejercicios Intermedio",
+      esAvanzado: titulo === "Ejercicios Avanzados",
+      esRecursivoBasico: titulo === "Ejercicios Recursivos Basicos",
+      esRecursivoAvanzado: titulo === "Ejercicios Recursivos Avanzados",
+      esVectoresBasico: titulo === "Ejercicios Vectores Basicos Iterativos",
+      esVectoresAvanzado: titulo === "Ejercicios Vectores Avanzados Iterativos"
+    };
   }
   </script>  
 </body>
