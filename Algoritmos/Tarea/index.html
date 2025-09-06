@@ -517,10 +517,10 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw-CLoyZRPM9PWNeD9BTt-jPD0kedD08NfuV_aDxmOtYZUXq6-RLGIACKBfauqX-dJQ/exec";
+const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzzi-caMainXxB1UGXwLIEMYr_0DhgpM_tjG0RiWiqE7ZGUwYYG2QVeZoiZcCxJX9mX/exec";
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/IniciarSesion/IniciarSesion.html";
-   console.log("No ha iniciado sesion")
+   //console.log("No ha iniciado sesion")
 }
 
 let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(localStorage.getItem("Apellido"));
@@ -537,7 +537,7 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
         }
 
         const obj = await res.json();
-        console.log("objeto retorno", obj);
+        //console.log("objeto retorno", obj);
         if (!obj) {
           throw new Error("La respuesta no contiene 'tarea' como array");
         }
@@ -549,11 +549,12 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
             confirmButtonText: 'Entendido'
           });
         }
-        console.log(obj);
+        //console.log(obj);
         // Asignás el array que te manda GAS a tu variable global
         ejercicios = obj.tarea;
         document.getElementById("titulo").innerHTML = obj.titulo;
         document.getElementById("cantiddad-ejercicios").innerHTML += obj.totalEjercicios;
+        pasarEjercicio = obj.pasarEjercicio;
         if(obj.indice < ejercicios.length) sessionStorage.setItem("indice", obj.indice);
 
         if (loader) loader.style.display = "none";
@@ -677,7 +678,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         "Rendirse es una decisión, seguir intentando también. ¿Cuál elegís? 🔥",
         "¿Te vas a rendir tan rápido? El código no muerde 😏"
       ];
-  
+    let pasarEjercicio;
     function noMeSale() {
         const mensajes = [
         "¿Rendirte? Eso no te va a enseñar nada 🤔. Recordá que también tenés un botón de pistas.",
@@ -704,13 +705,33 @@ window.addEventListener("DOMContentLoaded", async () => {
         confirmButtonColor: "#3085d6",
         denyButtonColor: "#d33"
       }).then((result) => {
-        if (result.isConfirmed) {
-          Swal.fire("¡Eso es!", "Dale otra oportunidad 💪", "success");
-        } else if (result.isDenied) {
-          Swal.fire("Ok 👌", "Pasemos al siguiente ejercicio", "info");
-          indice++;
-          mostrarEjercicio();
-        }
+          if (result.isDenied) {
+            Swal.fire({
+              title: "Confirmación",
+              text: "Para continuar, ingresá la contraseña (solicitela al profesor):",
+              input: "text",
+              inputPlaceholder: "Contraseña",
+              inputAttributes: {
+                autocapitalize: "off",
+                autocorrect: "off"
+              },
+              showCancelButton: true,
+              confirmButtonText: "Aceptar",
+              cancelButtonText: "Cancelar",
+              preConfirm: (value) => {
+                if (value.toString() !== pasarEjercicio.toString()) {
+                  //console.log(value)
+                  Swal.showValidationMessage("Contraseña incorrecta.");
+                  
+                  return false;
+                }
+                  cambiarContrasenia();
+                  indice++;
+                  mostrarEjercicio();
+                
+              }
+            });
+          }
       });
 
     }
@@ -1980,6 +2001,41 @@ let URL = GAS_WEBAPP_URL + `?funcion=ejercicioTerminado&nombre=${encodeURICompon
         console.warn("No se pudo cargar ejercicios desde GAS:", err.message);
         reject(err);
       }
+
+    });
+  }
+
+  function cambiarContrasenia() {
+    return new Promise(async (resolve, reject) => {
+      let URL = GAS_WEBAPP_URL + `?funcion=cambiarContrasenia&nombre=${nombre}&apellido=${apellido}`;
+      //console.log(URL);
+      try {
+        const res = await fetch(URL);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} al pedir ejercicios`);
+        }
+
+        const obj = await res.json();
+        //console.log("objeto retorno", obj);
+        if (!obj) {
+          throw new Error("La respuesta no contiene 'tarea' como array");
+        }
+        if(obj.resultado === false){
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No tenes ninguna tarea cargada',
+            confirmButtonText: 'Entendido'
+          });
+        }
+        //console.log(obj);
+        // Asignás el array que te manda GAS a tu variable global
+        pasarEjercicio = obj;
+        resolve();
+      } catch (err) {
+        console.warn("No se pudo cargar ejercicios desde GAS:", err.message);
+        reject(err);
+      } 
 
     });
   }
