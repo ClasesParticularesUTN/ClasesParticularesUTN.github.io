@@ -1,5 +1,7 @@
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Clase Particular</title>
@@ -12,31 +14,37 @@
       align-items: center;
       padding: 50px;
     }
-    h1 { 
-      color: #333; 
-      margin-bottom: 10px; 
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
     }
-    h2 { 
-      color: #666; 
-      margin-bottom: 40px; 
+
+    h2 {
+      color: #666;
+      margin-bottom: 40px;
     }
+
     form {
       background: #fff;
       padding: 40px 50px;
       border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       text-align: center;
       max-width: 400px;
     }
+
     p {
       margin-bottom: 25px;
       font-size: 16px;
       color: #444;
     }
+
     /* Ocultar input original */
     input[type="file"] {
       display: none;
     }
+
     /* Botón personalizado */
     .custom-file-label {
       background: #007bff;
@@ -48,9 +56,11 @@
       display: inline-block;
       margin-bottom: 20px;
     }
+
     .custom-file-label:hover {
       background: #0056b3;
     }
+
     /* Texto del archivo seleccionado */
     #file-name {
       margin: 20px 0;
@@ -58,6 +68,7 @@
       color: #555;
       font-style: italic;
     }
+
     button {
       margin-top: 30px;
       background: #28a745;
@@ -68,15 +79,17 @@
       cursor: pointer;
       font-size: 16px;
     }
+
     button:hover {
       background: #1e7e34;
     }
   </style>
 </head>
+
 <body>
   <h1>Clase Particular</h1>
-  <h2>Miércoles, 25/10 10:00</h2>
-  
+  <h2 id="fecha">Miércoles, 25/10 10:00</h2>
+
   <form id="uploadForm" action="/subir" method="post" enctype="multipart/form-data">
     <p>Subí tu comprobante de pago (imagen o PDF):</p>
 
@@ -91,11 +104,29 @@
     <button type="submit">Enviar</button>
   </form>
 
+  <!-- Loader Spinner -->
+  <div id="loader" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:9999;justify-content:center;align-items:center;">
+    <div style="border:8px solid #f3f3f3;border-top:8px solid #007bff;border-radius:50%;width:70px;height:70px;animation:spin 1s linear infinite;"></div>
+  </div>
+
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #loader { display: flex; }
+  </style>
+  <script src="/Horarios/JS/URLS.js"></script>
   <script>
+    let $ = (id) => document.querySelector(id);
     // Extraer referencia de la URL
     const params = new URLSearchParams(window.location.search);
     const ref = params.get("ref");
-    if(ref){
+    const correo = params.get("correo");
+    const fecha = params.get("fecha");
+    console.log(correo, ref, fecha)
+    $("#fecha").innerHTML = fecha;
+    if (ref) {
       document.getElementById("referencia").value = ref;
     }
 
@@ -109,6 +140,52 @@
         fileName.textContent = "Ningún archivo seleccionado";
       }
     });
+
+    async function RegistrarPago(correo, referencia) {
+      const datos = {
+        funcion: "registrarPagoAutomatico",
+        correo,
+        referencia,
+      };
+
+      try {
+        await fetch(URLUsuarios, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(datos)
+        });
+
+        console.log("Pago registrado");
+        Swal.fire({
+          icon: 'success',
+          title: '¡Pago registrado!',
+          text: 'Tu comprobante fue enviado correctamente.',
+          confirmButtonText: 'Aceptar'
+        }).then(() => {
+          window.location.href = "/";
+        });
+
+      } catch (error) {
+        console.error('Error al enviar datos:', error);
+      } finally {
+        document.getElementById("loader").style.display = "none";
+      }
+    }
+
+    document.getElementById("uploadForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      document.getElementById("loader").style.display = "flex";
+      if (correo && ref) {
+        RegistrarPago(correo, ref);
+      } else {
+        alert("Faltan argumentos para poder procesar el pago");
+        document.getElementById("loader").style.display = "none";
+      }
+    });
   </script>
 </body>
+
 </html>

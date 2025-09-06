@@ -102,6 +102,8 @@ async function asignarHorario(celdas, numeroDeHoja,integrantes = []) {
         document.querySelector(".botones").style.display = "none";
         document.querySelector(".containerLoader").style.display = "flex";
     }
+    if(integrantes.length == 0) integrantes.push(Alumno.correoElectronico);
+    
     
     await fetch(URLUsuarios, {
         method: 'POST',
