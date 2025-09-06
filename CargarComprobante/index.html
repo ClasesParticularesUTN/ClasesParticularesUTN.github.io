@@ -120,6 +120,7 @@
 <body>
   <h1>Cargar Comprobante asdClase Particular</h1>
   <h2 id="fecha">Miércoles, 25/10 10:00</h2>
+  <h2 id="precio-clase"></h2>
 
   <form id="uploadForm" action="/subir" method="post" enctype="multipart/form-data">
     <p>Subí tu comprobante de pago (imagen o PDF):</p>
@@ -161,17 +162,20 @@
   <script src="/Horarios/JS/URLS.js"></script>
   <script>
     let $ = (id) => document.querySelector(id);
-    // Extraer referencia de la URL
-    const params = new URLSearchParams(window.location.search);
-    const ref = params.get("ref");
-    const correo = params.get("correo");
-    const fecha = params.get("fecha");
-    const precio = params.get("precio");
-    console.log(correo, ref, fecha)
-    $("#fecha").innerHTML = fecha;
-    if (ref) {
-      document.getElementById("referencia").value = ref;
-    }
+  // Extraer referencia de la URL
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get("ref");
+  const correo = params.get("correo");
+  const fecha = params.get("fecha");
+  const precio = params.get("precio");
+  console.log(correo, ref, fecha)
+  $("#fecha").innerHTML = fecha;
+  if (precio) {
+    $("#precio-clase").innerHTML = "Precio: $" + precio;
+  }
+  if (ref) {
+    document.getElementById("referencia").value = ref;
+  }
 
     // Mostrar nombre del archivo seleccionado
     const fileInput = document.getElementById("comprobante");
