@@ -88,6 +88,7 @@ let metodoDePago = "";
 
 async function asignarHorario(celdas, numeroDeHoja,integrantes = []) {
     if (numeroDeHoja == undefined) numeroDeHoja = 0;
+    if(integrantes.length == 0) integrantes.push(Alumno.correoElectronico);
     let datos = {
         persona: Alumno,
         funcion: "asignarHorario",
@@ -95,16 +96,14 @@ async function asignarHorario(celdas, numeroDeHoja,integrantes = []) {
         numeroHoja: numeroDeHoja,
         metodoDePago: metodoDePago,
         integrantes: integrantes,
-        precio:precioInfo.total
-        
+        precio:(precioInfo.total)/integrantes.length,
     };
     console.log(datos)
-    if (!integrantes || integrantes.length === 0) {
+    if (!integrantes || integrantes.length === 1) {
         document.querySelector("table").style.display = "none";
         document.querySelector(".botones").style.display = "none";
         document.querySelector(".containerLoader").style.display = "flex";
     }
-    if(integrantes.length == 0) integrantes.push(Alumno.correoElectronico);
     
     
     await fetch(URLUsuarios, {
