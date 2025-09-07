@@ -95,9 +95,10 @@ async function asignarHorario(celdas, numeroDeHoja,integrantes = []) {
         numeroHoja: numeroDeHoja,
         metodoDePago: metodoDePago,
         integrantes: integrantes,
-        precio:precioInfo
+        precio:precioInfo.total
+        
     };
-    
+    console.log(datos)
     if (!integrantes || integrantes.length === 0) {
         document.querySelector("table").style.display = "none";
         document.querySelector(".botones").style.display = "none";
