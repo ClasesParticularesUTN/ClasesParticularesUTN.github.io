@@ -19,11 +19,13 @@
     h1 {
       color: #333;
       margin-bottom: 10px;
+      text-align: center;
     }
 
     h2 {
       color: #666;
       margin-bottom: 40px;
+
     }
 
     form {
@@ -72,6 +74,51 @@
       font-style: italic;
     }
 
+    /* CBU styles */
+    .cbu-container {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      /* gap: 16px; */
+      background: #f1f5f9;
+      padding: 18px 16px;
+      border-radius: 10px;
+      /* margin: 28px 0 24px 0; */
+      box-sizing: border-box;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .cbu-text {
+      font-family: monospace;
+      color: #111;
+      font-weight: 600;
+      font-size: 16px;
+      word-break: break-all;
+      white-space: pre-line;
+      flex: 1 1 220px;
+      min-width: 0;
+    }
+
+    .copy-btn {
+      background: #007bff;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .copy-btn:hover {
+      background: #0056b3;
+    }
+
+    form > *:not(:last-child) {
+      margin-bottom: 18px;
+    }
+
     button {
       margin-top: 30px;
       background: #28a745;
@@ -118,11 +165,17 @@
 </head>
 
 <body>
-  <h1>Cargar Comprobante asdClase Particular</h1>
+  <h1>Cargar Comprobante Clase Particular</h1>
   <h2 id="fecha">Miércoles, 25/10 10:00</h2>
   <h2 id="precio-clase"></h2>
 
   <form id="uploadForm" action="/subir" method="post" enctype="multipart/form-data">
+    <!-- Mostrar CBU y botón de copia -->
+    <div class="cbu-container" role="group" aria-label="CBU de transferencia">
+      <div class="cbu-text" id="cbu-text">CBU: 0000003100094744875484</div>
+      <button type="button" class="copy-btn" id="copy-cbu">Copiar CBU</button>
+    </div>
+
     <p>Subí tu comprobante de pago (imagen o PDF):</p>
 
     <!-- Botón estilizado para el input -->
@@ -158,16 +211,28 @@
     #loader {
       display: flex;
     }
+    #fecha{
+      margin-bottom: 0;
+    }
   </style>
   <script src="/Horarios/JS/URLS.js"></script>
   <script>
     let $ = (id) => document.querySelector(id);
   // Extraer referencia de la URL
   const params = new URLSearchParams(window.location.search);
-  const ref = params.get("ref");
-  const correo = params.get("correo");
-  const fecha = params.get("fecha");
-  const precio = params.get("precio");
+  let ref = params.get("ref");
+  let correo = params.get("correo");
+  let fecha = params.get("fecha");
+  let precio = params.get("precio");
+
+  // Si no hay argumentos, usar valores por defecto
+  if (!ref && !correo && !fecha && !precio) {
+    ref = "zZRTvEEiMr";
+    fecha = "miércoles, 10/09 17:00";
+    correo = "valedasilvacatela.vdc@gmail.com";
+    precio = "6000";
+  }
+
   console.log(correo, ref, fecha)
   $("#fecha").innerHTML = fecha;
   if (precio) {
@@ -221,6 +286,45 @@
         document.getElementById("loader").style.display = "none";
       }
     }
+
+    // Funcionalidad para copiar el CBU al portapapeles
+    (function(){
+      const CBU = "0000003100094744875484";
+      const cbuTextEl = document.getElementById('cbu-text');
+      if (cbuTextEl) cbuTextEl.textContent = "CBU: " + CBU;
+
+      const copyBtn = document.getElementById('copy-cbu');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', async () => {
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(CBU);
+            } else {
+              const ta = document.createElement('textarea');
+              ta.value = CBU;
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand('copy');
+              document.body.removeChild(ta);
+            }
+
+            Swal.fire({
+              icon: 'success',
+              title: 'Copiado',
+              text: 'CBU copiado al portapapeles',
+              timer: 1400,
+              showConfirmButton: false
+            });
+          } catch (err) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo copiar el CBU'
+            });
+          }
+        });
+      }
+    })();
 
     document.getElementById("uploadForm").addEventListener("submit", function (e) {
       e.preventDefault();
