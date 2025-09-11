@@ -1,8 +1,11 @@
 let prohibirRegistro = false;
 let sinHorarios = false;
+let nombresBloqueados = ["Pia"];
+let apellidosBloqueados = ["Rolando"];
 async function autenticar() {
+  
   if (Alumno == null || !Alumno.sesion) {
-    if (sinHorarios && !admin) {
+    if (sinHorarios){
       await Swal.fire({
       icon: "warning",
       title: "¡Atención!",
@@ -148,4 +151,16 @@ document.querySelector(".loginMovil").addEventListener("click", ()=>{
 function cerrarSesion(){
     sessionStorage.removeItem('persona');
     location.reload();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    bloqueados();
+});
+
+function bloqueados() {
+  if((nombresBloqueados.includes(JSON.parse(localStorage.getItem("Nombre")))) && (apellidosBloqueados.includes(JSON.parse(localStorage.getItem("Apellido"))))){
+    document.querySelectorAll('.horario').forEach(celda => {
+      celda.style.background = 'transparent';
+    });
+  }
 }

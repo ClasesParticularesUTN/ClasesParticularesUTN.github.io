@@ -20,6 +20,7 @@ botonSiguiente.addEventListener("click",async ()=>{
         horariosSeleccionados = [];
         numeroHoja  = 0;
     }
+    bloqueados();
 })
 
 async function despintarCeldas() {

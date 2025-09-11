@@ -1,89 +1,120 @@
-class Productos {
-    constructor(nombre, precio) {
+let indice = 0;
+class Producto {
+    constructor(nombre, precio, cantidad) {
         this.nombre = nombre;
         this.precio = precio;
+        this.cantidad = cantidad;
+        this.total = null;
     }
-    
-    setNombre(nombre) {
-        this.nombre = nombre;
+    calcularTotal(){
+        this.total = precio * cantidad;
     }
-
-    setPrecio(precio) {
-        this.precio = precio;
-    }
-
     getNombre() {
         return this.nombre;
     }
-
+    getTotal(){
+        this.calcularTotal();
+        return this.total;
+    }
     getPrecio() {
         return this.precio;
     }
+    setPrecio(nuevoPrecio) {
+        this.precio = nuevoPrecio;
+    }
+
+    getCantidad() {
+        return this.cantidad;
+    }
+    setCantidad(nuevaCantidad) {
+        this.cantidad = nuevaCantidad;
+    }
 
 
 }
-
 
 class Carrito {
     constructor() {
-        this.Productos = [];
+        this.productos = [];
+        this.total = 0;
     }
     agregarProducto(producto){
-        this.Productos.push(producto);
+        this.productos.push(producto);
     }
-    mostrarProductos(){
-        cout("Productos del carrito: ")
-        this.Productos.forEach((producto)=>{
-            cout(producto.getNombre() + "$" + producto.getPrecio());
+    calcularTotal(){
+        this.productos.forEach((producto)=>{
+            this.total += producto.getTotal();
         })
     }
-}
+    getTotal(){
+        return this.total;
+    }
 
-class Cliente {
-    constructor(nombre, apellido, idCliente) {
+    getProductos(){
+        let listado = [];
+        this.productos.forEach((producto)=>{
+            listado.push({
+                nombre: producto.getNombre(),
+                precio: producto.getPrecio()
+            })
+        })
+        return listado;
+    }
+}   
+
+class Cliente{
+    constructor(nombre, apellido){
         this.nombre = nombre;
         this.apellido = apellido;
-        this.idCliente = idCliente;
+        this.idCliente = indice+1;
         this.carrito = new Carrito;
     }
-
-    getNombre() {
+    getNombre(){
         return this.nombre;
     }
-
-    setNombre(nombre){
-        this.nombre = nombre;
+    setNombre(nuevoNombre){
+        this.nombre = nuevoNombre;
     }
-    
     agregarProducto(producto){
         this.carrito.agregarProducto(producto);
     }
-    
-    mostrarProductos(){
-        this.carrito.mostrarProductos();
+    devolverCarrito(){
+        return this.carrito.getProductos(); 
+    }
+
+}
+
+
+class Negocio{
+    constructor(nombre){
+        this.nombre = nombre;
+    }
+    mostrarCarrito(cliente){
+        let listadoProductos = cliente.devolverCarrito(); 
+        listadoProductos.forEach(producto => {
+            document.body.innerHTML += `<p>Nombre: ${producto.nombre}, Precio: ${producto.precio}</p>`;
+        });
     }
 }
 
 
-let producto1 = new Productos("Manzana", 100);
-let producto2 = new Productos("Banana", 80);
-let producto3 = new Productos("Leche", 150);
-let producto4 = new Productos("Pan", 120);
+//Playground
+let verduleria = new Negocio("Santa Rita");
+let cliente1 = new Cliente("Sofia", "Maciel");
+let producto1 = new Producto("Manzana", 100, 3);
+let producto2 = new Producto("Banana", 80, 5);
+let producto3 = new Producto("Naranja", 120, 2);
+let producto4 = new Producto("Pera", 90, 4);
 
 
-let Persona1 = new Cliente("Valentin", "Da Silva", "47593");
-
-Persona1.setNombre("Sofia");
-Persona1.agregarProducto(producto1);
-Persona1.agregarProducto(producto1);
-Persona1.agregarProducto(producto2);
+cout(cliente1.getNombre());
+cliente1.agregarProducto(producto1);
+cliente1.agregarProducto(producto3);
 
 function cout(mensaje) {
-    let p = document.createElement('p');
-    p.textContent = mensaje;
-    document.body.appendChild(p);
+    document.body.innerHTML += `<p>${mensaje}</p>`;
 }
 
-document.querySelector(".carrito").addEventListener("click", ()=>{
-    Persona1.mostrarProductos();
-})
+document.querySelector(".carrito").onclick = function() {
+    verduleria.mostrarCarrito(cliente1);
+};

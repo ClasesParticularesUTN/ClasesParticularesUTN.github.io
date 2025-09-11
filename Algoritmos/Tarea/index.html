@@ -345,7 +345,12 @@
     .fullscreen-editor #output {
       display: none !important;
     }
-
+/* Estilo cuando está deshabilitado */
+    button:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
   </style>
 </head>
 
@@ -448,7 +453,7 @@
       <h3>Validar ejercicio antes de continuar</h3>
       <p id="caso-enunciado"></p>
       <textarea id="codigo-validacion" placeholder="Pegá tu código acá..." style="padding:10px;width:100%;height:150px;font-family:monospace;margin-bottom:1rem;"></textarea>
-      <button onclick="probarValidacion()">Probar</button>
+      <button id="probar" onclick="probarValidacion()">Probar</button>
       <button onclick="cerrarModalValidacion()" style="background-color:darkred;">Cancelar</button>
       <pre id="resultado-validacion" style="
   margin-top: 1rem;
@@ -1365,6 +1370,8 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
   
     // Probar el código del usuario contra los casos de prueba
     function probarValidacion() {
+      console.log("entro a validacion");
+      document.getElementById("probar").disabled = true;
       const codigoUsuario = document.getElementById('codigo-validacion').value.trim();
       const resultadoArea = document.getElementById('resultado-validacion');
   
@@ -1402,6 +1409,8 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
         })
         .then(res => res.json())
         .then(data => {
+      document.getElementById("probar").disabled = false;
+
           let salidaObtenida = (data.output || "").trim();
           let salidaEsperada = (caso.salida || "").trim();
           //console.log(salidaObtenida);
@@ -1422,6 +1431,8 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
           }else console.log("las salidas coinciden")
         })
         .catch(err => {
+                document.getElementById("probar").disabled = false;
+
           errores.push({
             indice: i + 1,
             entrada: caso.entrada,
@@ -1623,6 +1634,7 @@ document.addEventListener("keydown", function(e) {
 
 
 function modalValidarCodigo() {
+
     const overlay = document.getElementById("editor-overlay");
     if (overlay.style.display === "flex") {
 
