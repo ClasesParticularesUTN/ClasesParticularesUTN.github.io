@@ -1,120 +1,104 @@
-let indice = 0;
 class Producto {
     constructor(nombre, precio, cantidad) {
         this.nombre = nombre;
         this.precio = precio;
         this.cantidad = cantidad;
-        this.total = null;
-    }
-    calcularTotal(){
-        this.total = precio * cantidad;
     }
     getNombre() {
         return this.nombre;
     }
-    getTotal(){
-        this.calcularTotal();
-        return this.total;
+    setNombre(nombre) {
+        this.nombre = nombre;
     }
     getPrecio() {
         return this.precio;
     }
-    setPrecio(nuevoPrecio) {
-        this.precio = nuevoPrecio;
+    setPrecio(precio) {
+        this.precio = precio;
     }
-
     getCantidad() {
         return this.cantidad;
     }
-    setCantidad(nuevaCantidad) {
-        this.cantidad = nuevaCantidad;
+    setCantidad(cantidad) {
+        this.cantidad = cantidad;
     }
-
-
 }
 
 class Carrito {
     constructor() {
         this.productos = [];
-        this.total = 0;
     }
+
     agregarProducto(producto){
         this.productos.push(producto);
     }
-    calcularTotal(){
-        this.productos.forEach((producto)=>{
-            this.total += producto.getTotal();
-        })
-    }
-    getTotal(){
-        return this.total;
-    }
 
-    getProductos(){
-        let listado = [];
+    devolverProducto(){
+        let lista = [];
         this.productos.forEach((producto)=>{
-            listado.push({
+            lista.push({
                 nombre: producto.getNombre(),
-                precio: producto.getPrecio()
+                cantidad: producto.getCantidad()
             })
         })
-        return listado;
+        return lista;
     }
-}   
 
-class Cliente{
-    constructor(nombre, apellido){
+}
+
+class Cliente {
+    constructor(nombre, apellido) {
         this.nombre = nombre;
         this.apellido = apellido;
-        this.idCliente = indice+1;
         this.carrito = new Carrito;
     }
     getNombre(){
         return this.nombre;
     }
-    setNombre(nuevoNombre){
-        this.nombre = nuevoNombre;
+    setNombre(nombre){
+        this.nombre = nombre; 
+    }
+    getCarrito(){
+        return this.carrito.devolverProducto();
     }
     agregarProducto(producto){
-        this.carrito.agregarProducto(producto);
+        this.carrito.agregarProducto(producto)
     }
-    devolverCarrito(){
-        return this.carrito.getProductos(); 
-    }
-
 }
 
-
-class Negocio{
-    constructor(nombre){
+class Negocio {
+    constructor(nombre) {
         this.nombre = nombre;
     }
     mostrarCarrito(cliente){
-        let listadoProductos = cliente.devolverCarrito(); 
-        listadoProductos.forEach(producto => {
-            document.body.innerHTML += `<p>Nombre: ${producto.nombre}, Precio: ${producto.precio}</p>`;
+        let lista = cliente.getCarrito();
+        lista.forEach(item => {
+            document.body.innerHTML += `<p>Nombre: ${item.nombre}, Cantidad: ${item.cantidad}</p>`;
         });
     }
 }
 
 
-//Playground
-let verduleria = new Negocio("Santa Rita");
-let cliente1 = new Cliente("Sofia", "Maciel");
-let producto1 = new Producto("Manzana", 100, 3);
-let producto2 = new Producto("Banana", 80, 5);
-let producto3 = new Producto("Naranja", 120, 2);
-let producto4 = new Producto("Pera", 90, 4);
-
-
-cout(cliente1.getNombre());
+//PlayGround
+let Verduleria = new Negocio("Santa Rita");
+let producto1 = new Producto("Manzana", 100, 5);
+let producto2 = new Producto("Banana", 80, 3);
+let producto3 = new Producto("Naranja", 90, 4);
+let cliente1 = new Cliente ("Sofia", "Maciel");
+let nombre = cliente1.getNombre();4
+TranscriptShow(nombre);
 cliente1.agregarProducto(producto1);
-cliente1.agregarProducto(producto3);
+cliente1.agregarProducto(producto2);
 
-function cout(mensaje) {
-    document.body.innerHTML += `<p>${mensaje}</p>`;
+document.querySelector(".carrito").addEventListener("click",()=>{
+    Verduleria.mostrarCarrito(cliente1);
+
+})
+
+
+
+function TranscriptShow(mensjae) {
+    document.body.innerHTML += `<p>${mensjae}</p>`;
 }
 
-document.querySelector(".carrito").onclick = function() {
-    verduleria.mostrarCarrito(cliente1);
-};
+//PlayGround
