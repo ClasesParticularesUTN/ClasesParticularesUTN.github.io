@@ -1267,22 +1267,26 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
       outputContent.innerHTML =
         `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
         `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
+        console.log(1);
     } else if (/error|Error|compilador|compilation/i.test(output)) {
       // Si detecta la palabra error, también maximiza
       outputDiv.classList.add("maximized");
       toggleBtn.textContent = "🗗";
       toggleBtn.title = "Minimizar salida";
       outputContent.textContent = output;
+      console.log(2);
     } else {
       // Salida normal
       outputContent.textContent = output;
+      console.log(3)
     }
   })
   .catch(err => {
     outputDiv.classList.add("maximized");
     toggleBtn.textContent = "🗗";
     toggleBtn.title = "Minimizar salida";
-    outputContent.textContent = "Error al ejecutar: " + err;
+    outputContent.textContent = "Error al ejecutar: " + "El servidor esta caído, comuniquese con el profesor.";
+    console.log(4);
   });
 }
 
