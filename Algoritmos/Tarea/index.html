@@ -522,7 +522,8 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-let GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzF5_9WOeJAFcRLEgU0KNJ8ib4_eW3LNMFh--WO0PfngSIa1g8mFE7P9bBcHldQbW6K/exec";
+let GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbybdIpTOmL9LRWwpOzpIoKb2JGCdq30phzMB_kb_H8ofywUBb4j5PVS29PcMZiDCRbU/exec";
+
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/Login/Login.html";
    //console.log("No ha iniciado sesion")
@@ -729,13 +730,14 @@ window.addEventListener("DOMContentLoaded", async () => {
                   Swal.showValidationMessage("Contraseña incorrecta.");
                   
                   return false;
-                }
+                }else{
 
                   ejercicioTerminado();
-                cambiarContrasenia();
+                  cambiarContrasenia();
                   indice++;
                   mostrarEjercicio();  
                 
+                }
               }
             });
           }else if(result.isDenied && (titulo().esAvanzado)){
