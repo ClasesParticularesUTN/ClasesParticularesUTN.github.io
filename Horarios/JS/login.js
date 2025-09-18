@@ -40,7 +40,7 @@ async function autenticar() {
       allowEscapeKey: false,
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.href = "./IniciarSesion/IniciarSesion.html";
+        window.location.href = "./Login/IniciarSesion.html";
       } else if (result.isDenied) {
         const hoy = new Date();
         const fechaLimite = new Date(hoy.getFullYear(), 7, 17); // Mes 7 = agosto (0-indexed)
@@ -84,7 +84,7 @@ document.querySelector(".login").addEventListener("click", ()=>{
               denyButtonText: `Registrarme`
           }).then((result) => {
             if (result.isConfirmed) {
-              window.location.href = "./IniciarSesion/IniciarSesion.html"
+              window.location.href = "./Login/IniciarSesion.html"
             } else if (result.isDenied) {
               window.location.href = "./Registro/Registro.html"
             }
@@ -128,7 +128,7 @@ document.querySelector(".loginMovil").addEventListener("click", ()=>{
           denyButtonText: `Registrarme`
       }).then((result) => {
         if (result.isConfirmed) {
-          window.location.href = "./IniciarSesion/IniciarSesion.html"
+          window.location.href = "./Login/IniciarSesion.html"
         } else if (result.isDenied) {
           window.location.href = "./Registro/Registro.html"
         }

@@ -192,7 +192,7 @@ function enviar(datos){
             icon: "success",
             title: "Registro exitoso",
             confirmButtonText: 'OK'
-          }).then(()=>window.location.href = "../IniciarSesion/IniciarSesion.html");
+          }).then(()=>window.location.href = "../Login/IniciarSesion.html");
       }).catch(function(error) {
           console.error('Error al enviar datos:', error);
       });
