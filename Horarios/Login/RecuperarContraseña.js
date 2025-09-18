@@ -104,7 +104,7 @@ function enviar(urlFinal) {
         })
         .then(data => {
                          if(data.status){
-                window.location.href = "IniciarSesion.html";
+                window.location.href = "Login.html";
             }
             else{
                 Swal.fire({

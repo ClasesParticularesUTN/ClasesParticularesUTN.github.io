@@ -524,7 +524,7 @@
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
 let GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycby5zBAQ3i_HwYJbCsUv2nABvCUnDt9XcgzMSaLUW8eCfMIV8ElorElqQxZWjE--yick/exec";
 if(localStorage.getItem("Nombre") == undefined){
-   window.location = "/Horarios/Login/IniciarSesion.html";
+   window.location = "/Horarios/Login/Login.html";
    //console.log("No ha iniciado sesion")
 }
 let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(localStorage.getItem("Apellido"));
@@ -2088,7 +2088,7 @@ function ejercicioTerminado() {
     localStorage.removeItem("Apellido");
     sessionStorage.clear();
     // Redirige al usuario a la página de inicio de sesión
-    window.location.href = "/Horarios/Login/IniciarSesion.html";
+    window.location.href = "/Horarios/Login/Login.html";
   }
   document.addEventListener("keydown", function(e) {
     if (e.altKey && (e.key === "s" || e.key === "S")) {
