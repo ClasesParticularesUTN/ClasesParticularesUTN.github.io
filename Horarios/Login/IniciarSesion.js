@@ -45,7 +45,7 @@ function enviar(urlFinal) {
               sessionStorage.setItem('persona', personaJSON);
               localStorage.setItem('Nombre', JSON.stringify(data.nombre));
               localStorage.setItem('Apellido', JSON.stringify(data.apellido));
-              if (document.referrer !== "" && document.referrer != "https://clasesparticularesutn.com.ar/Horarios/Registro/Registro.html" && document.referrer != "http://127.0.0.1:5501/Horarios/IniciarSesion/IniciarSesion.html") {
+              if (document.referrer !== "" && document.referrer != "https://clasesparticularesutn.com.ar/Horarios/Registro/Registro.html" && document.referrer != "http://127.0.0.1:5501/Horarios/Login/IniciarSesion.html") {
                 window.location.href = document.referrer;
               } else {
                 // Redirigir a una página por defecto si no hay "anterior"
