@@ -217,9 +217,10 @@ async function enviarCorreosIntegrantes() {
             }else{
                 alert("No se encontró el mensaje de carga.");
             }
-            await asignarHorario(reservados,numeroHoja,correos);
-            mensajeLoader.textContent = 'Reservando celdas en grilla...';
-            await enviarCeldasReservadas(reservados,numeroHoja);
+            if(Alumno.fechaPago != "NULL" && Alumno.clasesAFavor <= 0 && JSON.parse(localStorage.getItem("fechaPago")) != Alumno.fechaPago){
+                
+            }else {
+                }
         }
     } catch (err) {
         
@@ -247,9 +248,33 @@ if (btnEnviar) {
                 });
                 return;
             }else{
-                window.location.hash = '';
-                await asignarHorario(reservados,numeroHoja);
+                if(Alumno.fechaPago != "NULL" && Alumno.horasAFavor <= 0 && localStorage.getItem("fechaPago") != Alumno.fechaPago){
+                    e.preventDefault();
+                    localStorage.setItem("fechaPago",Alumno.fechaPago);
+                    Swal.fire({
+                    title: 'Atención',
+                    text: 'Su pack de clases ya se gastó. Puede renovarlo o pagar cada clase individualmente. Recuerde revisar la sección de precios.',
+                    icon: 'warning',
+                    showDenyButton: true,
+                    confirmButtonText: 'Aceptar',
+                    denyButtonText: 'Ir a Precios',
+                    allowOutsideClick: false,
+                    focusConfirm: true
+                }).then(async (result) => {
+                    if (result.isDenied) {
+                        // Redirige a la ruta /Precios
+                        window.location.href = '/Precios';
+                    }else{
+                        
+                    }
+                    
+                });
+            }else{
+                await asignarHorario(reservados,numeroHoja,correos);
+                mensajeLoader.textContent = 'Reservando celdas en grilla...';
                 await enviarCeldasReservadas(reservados,numeroHoja);
+            }
+                
             }
         }
     });
