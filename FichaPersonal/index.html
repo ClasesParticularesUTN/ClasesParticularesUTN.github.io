@@ -373,7 +373,7 @@
             tbody.innerHTML = ""; // limpiar por si había algo antes
 
             (data.reservas || []).forEach(r => {
-                if(r.estado.toLowerCase() == "debe"){
+                if(r.estado.toLowerCase() == "debe" || r.estado.toLowerCase() == "pack"){
                   const fila = document.createElement("tr");
                   fila.innerHTML = `
                       <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>
