@@ -321,6 +321,7 @@
     const url = URLUsuarios +
                             `?funcion=devolverFicha&nombre=${encodeURIComponent(nombre)}&apellido=${encodeURIComponent(apellido)}`;
     console.log(url)
+    let Alumno;
     fetch(url)
         .then(res => res.json())
         .then(data => {
@@ -335,6 +336,7 @@
             }
             errorDiv.style.display = "none";
             // Datos personales
+            Alumno = data;
             document.getElementById("nombre").textContent = data.nombre || "";
             document.getElementById("apellido").textContent = data.apellido || "";
             document.getElementById("correoElectronico").textContent = data.correoElectronico || "";
@@ -373,7 +375,7 @@
             tbody.innerHTML = ""; // limpiar por si había algo antes
 
             (data.reservas || []).forEach(r => {
-                if(r.estado.toLowerCase() == "debe" || r.estado.toLowerCase() == "pack"){
+                if(r.estado.toLowerCase() == "debe" || (Alumno.fechaPago != "NULL" && r.estado.toLowerCase() == "pack")){
                   const fila = document.createElement("tr");
                   fila.innerHTML = `
                       <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>

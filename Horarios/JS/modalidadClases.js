@@ -269,11 +269,9 @@ if (btnEnviar) {
                     
                 });
             }else{
-                await asignarHorario(reservados,numeroHoja,correos);
-                mensajeLoader.textContent = 'Reservando celdas en grilla...';
+                 window.location.hash = '';
+                await asignarHorario(reservados,numeroHoja);
                 await enviarCeldasReservadas(reservados,numeroHoja);
-            }
-                
             }
         }
     });
