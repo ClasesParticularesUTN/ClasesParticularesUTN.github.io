@@ -274,6 +274,7 @@ if (btnEnviar) {
                 await enviarCeldasReservadas(reservados,numeroHoja);
             }
         }
+    }
     });
 }
 
