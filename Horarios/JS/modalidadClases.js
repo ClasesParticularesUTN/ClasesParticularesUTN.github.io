@@ -249,7 +249,6 @@ if (btnEnviar) {
                 return;
             }else{
                 if(Alumno.fechaPago != "NULL" && Alumno.horasAFavor <= 0 && localStorage.getItem("fechaPago") != Alumno.fechaPago){
-                    e.preventDefault();
                     localStorage.setItem("fechaPago",Alumno.fechaPago);
                     Swal.fire({
                     title: 'Atención',
