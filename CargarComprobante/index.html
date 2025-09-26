@@ -272,6 +272,7 @@
         });
 
         console.log("Pago registrado");
+        localStorage.setItem(ref, ref);
         Swal.fire({
           icon: 'success',
           title: '¡Pago registrado!',
@@ -337,6 +338,16 @@
         document.getElementById("loader").style.display = "none";
       }
     });
+    document.addEventListener("DOMContentLoaded", ()=>{
+      if(ref == localStorage.getItem(ref)){
+        Swal.fire({
+                icon: 'warning',
+                title: 'Atención',
+                text: 'Este pago ya está registrado como pago',
+                confirmButtonText: 'Aceptar'
+              });        
+      }
+    })
   </script>
 </body>
 
