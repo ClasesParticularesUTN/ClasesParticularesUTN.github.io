@@ -522,7 +522,7 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-let GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx3X2cyLv_IyIamb4D_GuFr3qQr_6_Fh0kwC56x3QQZjjqdXO2xXcX2iCJ8Ji3rUK3Y/exec";
+let GAS_WEBAPP_URL ="https://script.google.com/macros/s/AKfycbyDCSagNG0dmdz7oPqa5a5sM9Guy2S-deXJ4b3viGa63cY4uRLxImXWxGrrvPt4lvti/exec";
 
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/Login/Login.html";
@@ -2098,6 +2098,54 @@ function ejercicioTerminado() {
       cerrarSesion();
     }
   });
+  let tiempoInactividad;
+    let cuentaRegresiva;
+    const limite = 10 * 60 * 1000; // 10 minutos
+    const segundosAviso = 30; // cuenta regresiva en segundos
+
+    function reiniciarContador() {
+      clearTimeout(tiempoInactividad);
+      clearInterval(cuentaRegresiva);
+      tiempoInactividad = setTimeout(mostrarAviso, limite);
+    }
+
+    function mostrarAviso() {
+      let segundosRestantes = segundosAviso;
+
+      Swal.fire({
+        title: 'Inactividad detectada',
+        html: `La página se reiniciará en <b>${segundosRestantes}</b> segundos...`,
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar reinicio',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          const content = Swal.getHtmlContainer().querySelector('b');
+          cuentaRegresiva = setInterval(() => {
+            segundosRestantes--;
+            content.textContent = segundosRestantes;
+            if (segundosRestantes <= 0) {
+              clearInterval(cuentaRegresiva);
+              Swal.close();
+              location.reload(); // reinicia la página
+            }
+          }, 1000);
+        }
+      }).then((result) => {
+        clearInterval(cuentaRegresiva);
+        if (!result.isConfirmed) {
+          reiniciarContador(); // si cancela, vuelve a empezar el contador
+        }
+      });
+    }
+
+    // Eventos que reinician el contador
+    window.onload = reiniciarContador;
+    document.onmousemove = reiniciarContador;
+    document.onkeypress = reiniciarContador;
+    document.onclick = reiniciarContador;
+    document.onscroll = reiniciarContador;
   </script>  
 </body>
 </html>
