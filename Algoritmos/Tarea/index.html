@@ -2098,22 +2098,24 @@ function ejercicioTerminado() {
       cerrarSesion();
     }
   });
+
+  
       let tiempoInactividad;
     const limite = 5 * 60 * 1000; // 10 minutos en milisegundos
 
-    function reiniciarContador() {
-      clearTimeout(tiempoInactividad);
+window.addEventListener("load", reiniciarPag);
+document.addEventListener("mousemove", reiniciarPag);
+document.addEventListener("keypress", reiniciarPag);
+document.addEventListener("click", reiniciarPag);
+document.addEventListener("scroll", reiniciarPag);
+
+
+  function reiniciarPag() {
+    //clearTimeout(tiempoInactividad);
       tiempoInactividad = setTimeout(() => {
         location.reload(); // reinicia la página
       }, limite);
-    }
-
-    // Eventos que cuentan como actividad
-    window.onload = reiniciarContador;
-    document.onmousemove = reiniciarContador;
-    document.onkeypress = reiniciarContador;
-    document.onclick = reiniciarContador;
-    document.onscroll = reiniciarContador;
+  }
 
   </script>  
 </body>
