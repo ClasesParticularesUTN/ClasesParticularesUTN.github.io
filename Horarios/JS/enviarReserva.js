@@ -105,7 +105,7 @@ async function asignarHorario(celdas, numeroDeHoja,integrantes = []) {
         document.querySelector(".containerLoader").style.display = "flex";
     }
     
-    
+    console.log("Llega hasta aca")
     await fetch(URLUsuarios, {
         method: 'POST',
         mode: 'no-cors',

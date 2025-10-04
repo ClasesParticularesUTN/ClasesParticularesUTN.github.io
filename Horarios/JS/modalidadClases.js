@@ -211,16 +211,16 @@ async function enviarCorreosIntegrantes() {
             // Muestra nuevamente los campos del modal
             
         } else {
-            const mensajeLoader = document.querySelector('.loader-mensaje');
+             const mensajeLoader = document.querySelector('.loader-mensaje');
             if (mensajeLoader) {
                 mensajeLoader.textContent = 'Asignando horario...';
             }else{
                 alert("No se encontró el mensaje de carga.");
             }
-            if(Alumno.fechaPago != "NULL" && Alumno.clasesAFavor <= 0 && JSON.parse(localStorage.getItem("fechaPago")) != Alumno.fechaPago){
-                
-            }else {
-                }
+            await asignarHorario(reservados,numeroHoja,correos);
+            mensajeLoader.textContent = 'Reservando celdas en grilla...';
+            await enviarCeldasReservadas(reservados,numeroHoja);
+            
         }
     } catch (err) {
         
@@ -238,6 +238,8 @@ if (btnEnviar) {
     btnEnviar.addEventListener('click', async ()=>{
         const modalidad = document.querySelector('input[name="modalidad"]:checked').value;
         if (modalidad === 'grupal') {
+                            console.log("llegue hasta aca 2")
+
             enviarCorreosIntegrantes();
         }else if (modalidad === 'individual') {
             if(seleccionoUnGrupal){
