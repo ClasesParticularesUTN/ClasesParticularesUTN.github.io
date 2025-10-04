@@ -2098,25 +2098,21 @@ function ejercicioTerminado() {
       cerrarSesion();
     }
   });
+    let contador = 1;
 
-  
-      let tiempoInactividad;
-    const limite = 10 * 60 * 1000; // 10 minutos en milisegundos
+    function imprimirMensaje() {
+      console.log(contador);
+      contador+=10;
+      if(contador => 100) location.reload();
+    }
 
-window.addEventListener("load", reiniciarPag);
-document.addEventListener("mousemove", reiniciarPag);
-document.addEventListener("keypress", reiniciarPag);
-document.addEventListener("click", reiniciarPag);
-document.addEventListener("scroll", reiniciarPag);
+    // Guardamos el ID del intervalo
+    let intervalo = setInterval(imprimirMensaje, 10000);
 
-
-  function reiniciarPag() {
-    //clearTimeout(tiempoInactividad);
-      tiempoInactividad = setTimeout(() => {
-        location.reload(); // reinicia la página
-      }, limite);
-  }
-
+    // Función para detener el intervalo
+    function detenerMensajes() {
+      contador = 0;
+    }
   </script>  
 </body>
 </html>
