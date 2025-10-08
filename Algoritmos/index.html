@@ -346,6 +346,36 @@
     }
 
   </style>
+  <style>
+/* Scrollbar general (para todo el documento) */
+::-webkit-scrollbar {
+  width: 6px;              /* ancho de la barra vertical */
+  height: 6px;             /* alto de la barra horizontal */
+}
+
+/* Fondo de la barra (canal) */
+::-webkit-scrollbar-track {
+  background: transparent; /* o un color sutil tipo #f1f1f1 */
+}
+
+/* La parte que se mueve (thumb) */
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.3); /* gris suave y semitransparente */
+  border-radius: 10px;
+}
+
+/* Hover sobre el thumb */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.5);
+}
+
+/* Firefox (usa pseudo-clase distinta) */
+* {
+  scrollbar-width: thin;              /* más delgado */
+  scrollbar-color: rgba(100, 100, 100, 0.3) transparent;
+}
+</style>
+
 </head>
 
 <body>
