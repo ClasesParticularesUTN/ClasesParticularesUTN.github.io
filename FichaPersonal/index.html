@@ -187,6 +187,58 @@
     }
     
   </style>
+  <style>
+    /* Estilos para los botones grandes iniciales */
+    .large-filtro-container{
+      display:flex;
+      gap:12px;
+      width:100%;
+    }
+    .large-filtro-btn{
+      flex:1 1 0;
+      padding:18px 12px;
+      border-radius:10px;
+      border:2px solid rgba(0,119,204,0.12);
+      background: linear-gradient(180deg,#fbfdff 0%, #ffffff 100%);
+      color:#004a8a;
+      font-weight:700;
+      font-size:1.05rem;
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease, color .12s ease, box-shadow .12s ease;
+      box-shadow: 0 6px 18px rgba(3,55,102,0.04);
+    }
+    .large-filtro-btn:hover{ transform: translateY(-3px); }
+    .large-filtro-btn.active{ background:#0077cc; color:#fff; }
+
+    .large-filtro-title{
+      font-size:1.05rem;
+      color:#223;
+      font-weight:700;
+      margin-bottom:8px;
+      text-align:left;
+    }
+
+    /* Estilos para los botones pequeños (barra superior) */
+    .filtro-btn{
+      padding:6px 12px;
+      border-radius:8px;
+      border:1px solid #b9d8f6;
+      background:transparent;
+      color:#0077cc;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .filtro-btn.active{
+      background:#0077cc;
+      color:#fff;
+      box-shadow:0 6px 18px rgba(0,119,204,0.12);
+    }
+
+    @media (max-width:520px){
+      .large-filtro-btn{ padding:12px 8px; font-size:0.95rem; }
+      .large-filtro-container{ flex-direction:column; }
+    }
+  </style>
 </head>
 <body>
   <div id="loaderSpinner"><div class="lds-dual-ring"></div></div>
@@ -219,8 +271,27 @@
       </div>
     </div>
 
-    <h2>Horarios Adeudados o Futuros</h2>
-    <table class="reservas" aria-label="Tabla de horarios reservados">
+    <!-- Contenedor inicial con 3 botones grandes que ocupan todo el ancho -->
+    <div id="largeFiltroContainer" style="margin-bottom:12px;">
+      <div class="large-filtro-title">Elige qué tipo de horarios quieres filtrar</div>
+      <div class="large-filtro-container">
+        <button class="large-filtro-btn" data-filter="Debe">Debe</button>
+        <button class="large-filtro-btn" data-filter="Pago">Pago</button>
+        <button class="large-filtro-btn" data-filter="Pack">Pack</button>
+      </div>
+    </div>
+
+    <div style="display:flex; align-items:center; gap:12px; justify-content:space-between; flex-wrap:wrap; margin-bottom:6px;">
+      <h2 id="reservasTitle" style="display:none;">Horarios Adeudados o Futuros</h2>
+      <div id="filtroReservas" style="display:none; gap:8px; align-items:center;">
+        <span style="font-weight:600; margin-right:6px; color:#555;">Filtrar:</span>
+        <button class="filtro-btn" data-filter="Debe">Debe</button>
+        <button class="filtro-btn" data-filter="Pago">Pago</button>
+        <button class="filtro-btn" data-filter="Pack">Pack</button>
+      </div>
+    </div>
+
+    <table class="reservas" aria-label="Tabla de horarios reservados" style="display:none;">
       <thead>
         <tr>
           <th style="text-align:center;">Fecha Reservado</th>
@@ -370,40 +441,101 @@
                     confirmButtonText: 'Entendido'
                 });
             }
-            // Reservas
+            // Reservas - ahora renderizamos según filtro seleccionado
             const tbody = document.getElementById("reservasBody");
             tbody.innerHTML = ""; // limpiar por si había algo antes
 
-            (data.reservas || []).forEach(r => {
-                if(r.estado.toLowerCase() == "debe" || (Alumno.fechaPago != "NULL" && r.estado.toLowerCase() == "pack")){
-                  const fila = document.createElement("tr");
-                  fila.innerHTML = `
-                      <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>
-                      <td style="font-size:80%;text-align:center">${r.estado}</td>
-                      <td style="text-align:center">${r.cantHoras}</td>
-                  `;
-                  tbody.appendChild(fila);
-                  if (r.estado && typeof r.estado === "string") {
-                      const celdasTd = fila.children[fila.children.length - 2];
-                      if (r.estado.toLowerCase().includes("debe")) {
-                          celdasTd.style.backgroundColor = "#ffd6d6";
-                          
-                      } else if (r.estado.toLowerCase().includes("pago")) {
-                          celdasTd.style.backgroundColor = "#2e7d32";
-                          celdasTd.style.color = "#fff";
-                          
-                      } else if (r.estado.toLowerCase().includes("pack")) {
-                          celdasTd.style.backgroundColor = "#d0f5e8";
-                          
-                      }
-                      if(r.estado == "Ext. Pack"){
-                          celdasTd.style.backgroundColor = "#ffb74d";
-                      }
-                      celdasTd.style.borderRadius = "10%";
-                      
-                  }
+            // Control de filtro: valores posibles: 'Pago', 'Debe', 'Pack'
+            let currentFilter = null; // inicialmente nada seleccionado
+
+            const filtros = document.querySelectorAll('.filtro-btn');
+            const largeFiltros = document.querySelectorAll('.large-filtro-btn');
+
+            // Función auxiliar para marcar active en ambos sets
+            function markActive(filter){
+              filtros.forEach(x => { if (x.dataset.filter === filter) x.classList.add('active'); else x.classList.remove('active'); });
+              largeFiltros.forEach(x => { if (x.dataset.filter === filter) x.classList.add('active'); else x.classList.remove('active'); });
+            }
+
+            filtros.forEach(b => {
+              b.addEventListener('click', () => {
+                // Si no hay selección previa (p. ej. user usó botones pequeños), mostramos la UI completa
+                if (!currentFilter) {
+                  showTablaYBarra();
                 }
+                currentFilter = b.dataset.filter;
+                markActive(currentFilter);
+                document.getElementById('reservasTitle').textContent = `Horarios - ${currentFilter}`;
+                renderReservas();
+              });
             });
+
+            largeFiltros.forEach(b => {
+              b.addEventListener('click', () => {
+                // Ocultar el contenedor grande y mostrar la tabla + barra pequeña
+                currentFilter = b.dataset.filter;
+                markActive(currentFilter);
+                showTablaYBarra();
+                document.getElementById('reservasTitle').textContent = `Horarios - ${currentFilter}`;
+                renderReservas();
+              });
+            });
+
+            function renderReservas(){
+              tbody.innerHTML = '';
+              (Alumno.reservas || []).forEach(r => {
+                const estadoRaw = (r.estado || '').toLowerCase();
+                let categoria = 'Pago';
+                if (estadoRaw.includes('debe')) categoria = 'Debe';
+                else if (estadoRaw.includes('pack')) categoria = 'Pack';
+                else if (estadoRaw.includes('pago') || estadoRaw.includes('pag')) categoria = 'Pago';
+
+                if (categoria !== currentFilter) return; // no coincide con el filtro
+
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                  <td style="font-size:80%;text-align:center">${r.fechaReservado}</td>
+                  <td style="font-size:80%;text-align:center">${r.estado}</td>
+                  <td style="text-align:center">${r.cantHoras}</td>
+                `;
+                tbody.appendChild(fila);
+
+                // Aplicar estilo al <td> de estado (segunda celda)
+                if (r.estado && typeof r.estado === 'string') {
+                  const estadoTd = fila.children[1];
+                  if (estadoRaw.includes('debe')) {
+                    estadoTd.style.backgroundColor = '#ffd6d6';
+                    estadoTd.style.color = '#000';
+                  } else if (estadoRaw.includes('pago') || estadoRaw.includes('pag')) {
+                    estadoTd.style.backgroundColor = '#2e7d32';
+                    estadoTd.style.color = '#fff';
+                  } else if (estadoRaw.includes('pack')) {
+                    estadoTd.style.backgroundColor = '#d0f5e8';
+                    estadoTd.style.color = '#000';
+                  }
+                  if (r.estado === 'Ext. Pack') {
+                    estadoTd.style.backgroundColor = '#ffb74d';
+                  }
+                  estadoTd.style.borderRadius = '10%';
+                }
+              });
+            }
+
+            function showTablaYBarra(){
+              // ocultar botones grandes
+              const largeContainer = document.getElementById('largeFiltroContainer');
+              if (largeContainer) largeContainer.style.display = 'none';
+              // mostrar titulo, barra pequeña y tabla
+              const title = document.getElementById('reservasTitle');
+              const tabla = document.querySelector('table.reservas');
+              const barra = document.getElementById('filtroReservas');
+              if (title) title.style.display = 'block';
+              if (barra) barra.style.display = 'flex';
+              if (tabla) tabla.style.display = 'table';
+            }
+
+            // No mostrar nada hasta que el usuario elija: currentFilter === null
+            // Si quieres seleccionar por defecto, cambiar currentFilter y llamar a showTablaYBarra() y renderReservas().
             // Ocultar loader y mostrar main
             loader.style.display = "none";
             main.style.display = "block";
