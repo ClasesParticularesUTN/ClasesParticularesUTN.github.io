@@ -2128,21 +2128,16 @@ function ejercicioTerminado() {
       cerrarSesion();
     }
    });
-  //   let contador = 1;
+   let contador = 1;
 
-  //   function imprimirMensaje() {
-  //     console.log(contador);
-  //     contador+=10;
-  //     if(contador => 100) location.reload();
-  //   }
-
-  //   // Guardamos el ID del intervalo
-  //   let intervalo = setInterval(imprimirMensaje, 10000);
-
-  //   // Función para detener el intervalo
-  //   function detenerMensajes() {
-  //     contador = 0;
-  //   }
+   setInterval(()=>{
+    console.log(contador++);
+    if(contador > 60) location.reload();
+   }, 1000);
+   
+  document.addEventListener('keydown', function() {
+      contador = 0;
+  });
   </script>  
 </body>
 </html>
