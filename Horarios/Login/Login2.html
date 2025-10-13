@@ -143,6 +143,10 @@
         padding: 12px 0;
       }
     }
+    /* Loader overlay */
+    .contenedorLoader{display:none;position:fixed;inset:0;justify-content:center;align-items:center;background:rgba(0,0,0,0.45);z-index:9999}
+    .contenedorLoader .loader{width:72px;height:72px;border-radius:50%;border:8px solid rgba(255,255,255,0.15);border-top-color:#4DB8FF;animation:spin 1s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
@@ -156,42 +160,23 @@
         <label>Correo Electrónico: <span class="required">*</span></label>
         <input type="email" placeholder="example@gmail.com">
       </div>
-      <div class="form-group" style="">
+  <div class="form-group">
         <label>Contraseña: <span class="required">*</span></label>
         <section style="position: relative;">
-            <input id="contraFondo" style="position: absolute;" type="text" placeholder="********">
-            <input id="contraFrente" style="position: absolute; background-color: red; opacity: 0;" type="password" placeholder="********">
+            <input id="contraFondo" style="position: absolute;" type="text" placeholder="">
         </section>
         <a href="#" class="forgot">Recuperar Contraseña</a>
       </div>
-      <button type="submit" class="btn">INICIAR SESION</button>
+      <button id="botonEnviar" type="submit" class="btn">INICIAR SESION</button>
     </form>
   </div>
-  <script>
-    let contador = 0;
-    document.getElementById("contraFrente").addEventListener("input",()=>{
-        
-        if (document.getElementById("contraFrente").value.length <= contador) {
-          document.getElementById("contraFondo").value = document.getElementById("contraFondo").value.slice(0,-1);
-          contador--;
-        }else{
-          document.getElementById("contraFondo").value += "*";
-          contador++;
-        }
-    })
-    document.getElementById("contraFrente").addEventListener("focus", ()=>{
-      document.getElementById("contraFondo").style.boxShadow = "0 0 0 3px #4DB8FF, 0 2px 8px rgba(0,0,0,0.2)";
-      console.log("Hice focus")
-    })
-    document.getElementById("contraFrente").addEventListener("click", ()=>{
-      document.getElementById("contraFondo").style.boxShadow = "0 0 0 3px #4DB8FF, 0 2px 8px rgba(0,0,0,0.2)";
-      console.log("Hice focus")
-    })
-
-    document.getElementById("contraFrente").addEventListener("blur", ()=>{
-      document.getElementById("contraFondo").style.boxShadow = "none";
-    })
-
-  </script>
+  <!-- Loader global -->
+  <div class="contenedorLoader" aria-hidden="true">
+    <div class="loader" role="status" aria-label="Cargando"></div>
+  </div>
+  <!-- SweetAlert2 (para mostrar mensajes bonitos) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../JS/URLS.js"></script>
+  <script src="IniciarSesion.js"></script>
 </body>
 </html>

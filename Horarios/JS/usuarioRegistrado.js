@@ -1,7 +1,23 @@
 let Alumno;
 document.addEventListener("DOMContentLoaded", async ()=>{
+    // Primero: intentar restaurar sesión desde almacenamiento persistente (localStorage) si existe y no expiró
+    try {
+        const persist = localStorage.getItem('personaPersistente');
+        if (persist) {
+            const parsed = JSON.parse(persist);
+            if (parsed && parsed.expiresAt && Date.now() < parsed.expiresAt && parsed.persona) {
+                // Restaurar en sessionStorage para mantener flujo existente
+                sessionStorage.setItem('persona', JSON.stringify(parsed.persona));
+            } else {
+                // Si expiró, eliminar
+                localStorage.removeItem('personaPersistente');
+            }
+        }
+    } catch (e) {
+        console.warn('Error leyendo personaPersistente:', e);
+    }
+
     if(sessionStorage.getItem('persona') !== null){
-        
         (async () => {
             await colocarDatos();
             await controlDePago();

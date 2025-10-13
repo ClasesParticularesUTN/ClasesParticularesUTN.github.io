@@ -149,8 +149,9 @@ document.querySelector(".loginMovil").addEventListener("click", ()=>{
 })
 
 function cerrarSesion(){
-    sessionStorage.removeItem('persona');
-    location.reload();
+  sessionStorage.removeItem('persona');
+  try { localStorage.removeItem('personaPersistente'); } catch(e) { /* ignore */ }
+  location.reload();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
