@@ -114,10 +114,13 @@
     }
 
     /* 🔹 Ajustes para móviles */
-    @media (max-width: 480px) {
+    @media (max-width: 600px) {
       .login-container { padding: 18px; }
       .form-group { margin-bottom: 0.9rem; }
       .btn { padding: 12px 0; }
+      body {
+        overflow: hidden;
+      }
     }
     /* Loader overlay */
   .contenedorLoader{display:none;position:fixed;inset:0;justify-content:center;align-items:center;background:rgba(0,0,0,0.45);z-index:9999}
@@ -137,11 +140,9 @@
         <input type="email" placeholder="example@gmail.com">
       </div>
   <div class="form-group">
-        <label>Contraseña: <span class="required">*</span></label>
-        <section style="position: relative;">
-            <input id="contraFondo" style="position: absolute;" type="text" placeholder="">
-        </section>
-        <a href="#" class="forgot">Recuperar Contraseña</a>
+        <label for="contraFondo">Contraseña: <span class="required">*</span></label>
+        <input id="contraFondo" name="password" type="password" placeholder="Contraseña">
+        <a href="RecuperarContraseña.html" class="forgot">Recuperar Contraseña</a>
       </div>
       <button id="botonEnviar" type="submit" class="btn">INICIAR SESION</button>
     </form>
