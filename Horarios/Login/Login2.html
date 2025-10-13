@@ -4,6 +4,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Login</title>
     <style>
     * {
@@ -24,36 +25,37 @@
 
     .login-container {
       background: rgba(0, 0, 0, 0.7);
-      padding: 40px;
+      padding: clamp(18px, 4vw, 40px);
       border-radius: 8px;
       text-align: center;
-      width: 400px;
+      width: min(420px, 92%);
+      max-width: 420px;
       color: white;
     }
 
     .logo {
-      width: 250px;
-      height: 250px;
-      margin: 0 auto 20px;
+      width: clamp(72px, 28vw, 250px);
+      height: clamp(72px, 28vw, 250px);
+      margin: 0 auto 1.25rem;
       border-radius: 50%;
       background: url(/Horarios/assets/fotos/logo.png) no-repeat center center;
       background-size: cover;
     }
 
     h2 {
-      margin-bottom: 10px;
-      font-size: 24px;
+      margin-bottom: 0.5rem;
+      font-size: clamp(18px, 3.6vw, 24px);
     }
 
     p {
-      margin-bottom: 25px;
-      font-size: 14px;
+      margin-bottom: 1rem;
+      font-size: clamp(13px, 2.4vw, 14px);
       color: #ddd;
     }
 
     .form-group {
       text-align: left;
-      margin-bottom: 20px;
+      margin-bottom: 1rem;
     }
 
     label {
@@ -64,13 +66,14 @@
 
     input {
       width: 100%;
-      padding: 12px;
+      padding: 12px 14px;
       border: none;
-      border-radius: 4px;
+      border-radius: 6px;
       font-size: 14px;
+      line-height: 1.2;
     }
 
-    input[type="email"], input[type="password"] {
+    input[type="email"], input[type="password"], input[type="text"] {
       background: #fff;
       color: #000;
     }
@@ -94,15 +97,16 @@
 
     .btn {
       display: inline-block;
-      margin-top: 20px;
+      margin-top: 1rem;
       padding: 14px 0;
       width: 100%;
       background: #4DB8FF;
       border: none;
-      border-radius: 4px;
+      border-radius: 8px;
       color: white;
-      font-size: 16px;
+      font-size: clamp(15px, 3.6vw, 16px);
       cursor: pointer;
+      touch-action: manipulation;
     }
 
     .btn:hover {
@@ -110,42 +114,14 @@
     }
 
     /* 🔹 Ajustes para móviles */
-    @media (max-width: 600px) {
-      .login-container {
-        width: 90%;
-        padding: 25px;
-      }
-
-      .logo {
-        width: 90px;
-        height: 90px;
-      }
-
-      h2 {
-        font-size: 20px;
-      }
-
-      p {
-        font-size: 13px;
-      }
-
-      label {
-        font-size: 13px;
-      }
-
-      input {
-        font-size: 15px;
-        padding: 10px;
-      }
-
-      .btn {
-        font-size: 15px;
-        padding: 12px 0;
-      }
+    @media (max-width: 480px) {
+      .login-container { padding: 18px; }
+      .form-group { margin-bottom: 0.9rem; }
+      .btn { padding: 12px 0; }
     }
     /* Loader overlay */
-    .contenedorLoader{display:none;position:fixed;inset:0;justify-content:center;align-items:center;background:rgba(0,0,0,0.45);z-index:9999}
-    .contenedorLoader .loader{width:72px;height:72px;border-radius:50%;border:8px solid rgba(255,255,255,0.15);border-top-color:#4DB8FF;animation:spin 1s linear infinite}
+  .contenedorLoader{display:none;position:fixed;inset:0;justify-content:center;align-items:center;background:rgba(0,0,0,0.45);z-index:9999}
+  .contenedorLoader .loader{width:72px;height:72px;border-radius:50%;border:8px solid rgba(255,255,255,0.15);border-top-color:#4DB8FF;animation:spin 1s linear infinite}
     @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
