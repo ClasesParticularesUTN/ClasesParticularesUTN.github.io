@@ -156,7 +156,7 @@ function enviar(urlFinal) {
           persona: data,
           expiresAt: now + sevenDaysMs
         };
-        localStorage.setItem('personaPersistente', JSON.stringify(payload));
+        localStorage.setItem('personaPersistenteNuevo', JSON.stringify(payload));
       } catch (e) {
         console.warn('No se pudo guardar personaPersistente:', e);
       }
@@ -166,7 +166,7 @@ function enviar(urlFinal) {
       try { if (correo && typeof correo === 'string') localStorage.setItem('UltimoCorreo', JSON.stringify(correo)); } catch(e) { console.warn('No se pudo guardar UltimoCorreo tras login:', e); }
       console.log(urlFinal)
       // Redirigir: mantener la lógica original con excepciones conocidas
-      if (document.referrer !== '' && document.referrer !== 'https://clasesparticularesutn.com.ar/Horarios/Registro/Registro.html' && document.referrer !== 'http://127.0.0.1:5501/Horarios/Login/Login2.html') {
+      if (document.referrer !== '' && document.referrer !== 'https://clasesparticularesutn.com.ar/Horarios/Registro/Registro.html' && document.referrer !== 'https://clasesparticularesutn.com.ar/Horarios/Login/RecuperarContraseña.html'  && document.referrer !== 'http://127.0.0.1:5501/Horarios/Login/Login2.html') {
         window.location.href = document.referrer;
       } else {
         window.location.href = '../index.html';
