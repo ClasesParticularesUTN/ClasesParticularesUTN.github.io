@@ -150,7 +150,7 @@ document.querySelector(".loginMovil").addEventListener("click", ()=>{
 
 function cerrarSesion(){
   sessionStorage.removeItem('persona');
-  try { localStorage.removeItem('personaPersistente'); } catch(e) { /* ignore */ }
+  try { localStorage.removeItem('personaPersistenteNuevo'); } catch(e) { /* ignore */ }
   location.reload();
 }
 

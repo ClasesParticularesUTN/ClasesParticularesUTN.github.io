@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
                 sessionStorage.setItem('persona', JSON.stringify(parsed.persona));
             } else {
                 // Si expiró, eliminar
-                localStorage.removeItem('personaPersistente');
+                localStorage.removeItem('personaPersistenteNuevo');
             }
         }
     } catch (e) {
