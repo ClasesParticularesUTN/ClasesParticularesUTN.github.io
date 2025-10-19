@@ -1005,7 +1005,6 @@ void cargarMatriz(int matriz[TF][TF], int TLFilas, int TLColumnas) {
 void mostrarMatriz(int matriz[TF][TF], int TLFilas, int TLColumnas) {
     int anchoMax = 0;
 
-    // 1️⃣ Buscar el número con más dígitos
     for (int i = 0; i < TLFilas; i++) {
         for (int j = 0; j < TLColumnas; j++) {
             int longitud = to_string(matriz[i][j]).length();
@@ -1013,12 +1012,12 @@ void mostrarMatriz(int matriz[TF][TF], int TLFilas, int TLColumnas) {
         }
     }
 
-    // 2️⃣ Mostrar la matriz usando ese ancho máximo + 2 espacios
     for (int i = 0; i < TLFilas; i++) {
+		cout<<"[";
         for (int j = 0; j < TLColumnas; j++) {
             cout << right << setw(anchoMax + 2) << matriz[i][j];
         }
-        cout << endl;
+        cout << right << setw(anchoMax + 2)<<"]"<< endl;
     }
 }
 `;
