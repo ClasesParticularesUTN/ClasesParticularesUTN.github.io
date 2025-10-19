@@ -220,6 +220,19 @@
       transition: max-height 0.3s ease;
     }
 
+    /* Animación para el texto de estado (Ejecutando...) */
+    @keyframes pulseOpacity {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    .loading-pulse {
+      animation: pulseOpacity 1s ease-in-out infinite;
+      /* Asegura que la transición de color/visibilidad se vea bien sobre el fondo oscuro */
+      will-change: opacity;
+    }
+
     #output button#toggleOutputSize {
       position: absolute;
       top: 8px;
@@ -899,7 +912,8 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-let usarPlantillaVector = false;
+// Indice de plantilla: 0 = CPP básico, 1 = Vector, 2 = Matriz
+let plantillaIndex = 0;
   
     // Plantilla básica C++
     const PLANTILLA_CPP = `#include <iostream>
@@ -943,6 +957,71 @@ void mostrarVector(int v[], int TL) {
     }
     cout << "]"<<endl;
 }`;
+
+// Plantilla de matrices (nueva)
+const PLANTILLA_MATRIZ = `#include <iostream>
+#include <iomanip>
+#define TF 100
+using namespace std;
+
+void cargarMatriz(int[][TF], int, int);
+void mostrarMatriz(int[][TF], int, int);
+
+int main() {
+  int matriz[TF][TF];
+  int TLFilas, TLColumnas;
+
+  cin >> TLFilas;
+  cin >> TLColumnas;
+
+  cargarMatriz(matriz, TLFilas, TLColumnas);
+
+  mostrarMatriz(matriz, TLFilas, TLColumnas);
+
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void cargarMatriz(int matriz[TF][TF], int TLFilas, int TLColumnas) {
+  for (int i = 0; i < TLFilas; i++) {
+    for (int j = 0; j < TLColumnas; j++) {
+      cin >> matriz[i][j];
+    }
+  }
+}
+
+void mostrarMatriz(int matriz[TF][TF], int TLFilas, int TLColumnas) {
+    int anchoMax = 0;
+
+    // 1️⃣ Buscar el número con más dígitos
+    for (int i = 0; i < TLFilas; i++) {
+        for (int j = 0; j < TLColumnas; j++) {
+            int longitud = to_string(matriz[i][j]).length();
+            if (longitud > anchoMax) anchoMax = longitud;
+        }
+    }
+
+    // 2️⃣ Mostrar la matriz usando ese ancho máximo + 2 espacios
+    for (int i = 0; i < TLFilas; i++) {
+        for (int j = 0; j < TLColumnas; j++) {
+            cout << right << setw(anchoMax + 2) << matriz[i][j];
+        }
+        cout << endl;
+    }
+}
+`;
   
     // Configuración y creación del editor CodeMirror
     let editorInstance;
@@ -1221,7 +1300,10 @@ function toggleEditor() {
     editorInstance.refresh();
 
     if (!editorIniciado || editorInstance.getValue().trim() === "" || editorInstance.getValue().startsWith("// Escribí")) {
-      editorInstance.setValue(PLANTILLA_CPP);
+      // Al abrir por primera vez, seleccionar plantilla según plantillaIndex
+      if (plantillaIndex === 1) editorInstance.setValue(PLANTILLA_VECTOR);
+      else if (plantillaIndex === 2) editorInstance.setValue(PLANTILLA_MATRIZ);
+      else editorInstance.setValue(PLANTILLA_CPP);
       editorIniciado = true;
       editorInstance.setCursor({ line: 4, ch: 0 });
     } else if (focoAnterior === "editor" && posicionCursorEditor) {
@@ -1242,11 +1324,12 @@ function toggleEditor() {
 
   
     function restaurarPlantilla() {
-     
-      editorInstance.setValue((usarPlantillaVector)?PLANTILLA_VECTOR:PLANTILLA_CPP);
+      // Establece la plantilla según plantillaIndex
+      if (plantillaIndex === 1) editorInstance.setValue(PLANTILLA_VECTOR);
+      else if (plantillaIndex === 2) editorInstance.setValue(PLANTILLA_MATRIZ);
+      else editorInstance.setValue(PLANTILLA_CPP);
       document.getElementById("input-area").value = "";
       document.getElementById("output-content").textContent = "Esperando ejecución...";
-      
     }
   
     // Ejecución de código llamando al backend que compila C++
@@ -1277,7 +1360,15 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
   }
 
   // Mostrar mensaje de ejecución
-  outputContent.textContent = "Ejecutando...";
+  // Mostrar mensaje de ejecución: pulso + puntos animados
+  outputContent.textContent = "Ejecutando";
+  outputContent.classList.add('loading-pulse');
+  let dotCount = 0;
+  const maxDots = 3;
+  const dotIntervalId = setInterval(() => {
+    dotCount = (dotCount + 1) % (maxDots + 1); // 0..3
+    outputContent.textContent = 'Ejecutando' + '.'.repeat(dotCount);
+  }, 400);
 
   fetch(COMPILER_API, {
           method: "POST",
@@ -1291,6 +1382,9 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
   .then(data => {
     const output = data.output || "Sin salida";
     const partes = output.split("Mensaje original de compilador:");
+  // Limpiar animación de puntos y pulso al recibir respuesta
+  if (typeof dotIntervalId !== 'undefined') clearInterval(dotIntervalId);
+  outputContent.classList.remove('loading-pulse');
     if (partes.length === 2) {
       // Si hay mensaje del compilador, maximiza la salida
       outputDiv.classList.add("maximized");
@@ -1314,6 +1408,9 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
     }
   })
   .catch(err => {
+  // Limpiar animación de puntos y pulso en caso de error
+  if (typeof dotIntervalId !== 'undefined') clearInterval(dotIntervalId);
+  outputContent.classList.remove('loading-pulse');
     outputDiv.classList.add("maximized");
     toggleBtn.textContent = "🗗";
     toggleBtn.title = "Minimizar salida";
@@ -1664,7 +1761,18 @@ let posicionCursorEditor = null;
 document.addEventListener("keydown", function(e) {
   if (e.key === "F11" || e.code === "F11") {
     e.preventDefault();
-    usarPlantillaVector = !usarPlantillaVector;
+    // Ciclar entre 0,1,2
+    plantillaIndex = (plantillaIndex + 1) % 3;
+    // Si el editor está abierto, actualizar su contenido con la plantilla seleccionada
+    const overlay = document.getElementById("editor-overlay");
+    if (overlay.style.display === "flex" && typeof editorInstance !== 'undefined' && editorInstance) {
+      if (plantillaIndex === 1) editorInstance.setValue(PLANTILLA_VECTOR);
+      else if (plantillaIndex === 2) editorInstance.setValue(PLANTILLA_MATRIZ);
+      else editorInstance.setValue(PLANTILLA_CPP);
+      // posicionar cursor aproximadamente dentro del main
+      editorInstance.setCursor({ line: 4, ch: 0 });
+      editorInstance.focus();
+    }
   }
 });
 
