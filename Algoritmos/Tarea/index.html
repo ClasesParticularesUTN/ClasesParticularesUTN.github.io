@@ -540,6 +540,7 @@
       <li><b>Ctrl + Shift + ↑</b> o <b>Alt + V</b>: Duplicar línea arriba</li>
       <li><b>Ctrl + Shift + ↓</b> o <b>Alt + C</b>: Duplicar línea abajo</li>
       <li><b>Ctrl + D</b>: Seleccionar varias lineas en simultaneoasd (multi-cursor)</li>
+      <li><b>Alt + H</b>: Borrar historial del editor (no se puede deshacer)</li>
     </ul>
     <div style="text-align: right;">
       <button onclick="document.getElementById('modal-atajos').style.display='none'" style="margin-top:1rem;">Cerrar</button>
@@ -2244,6 +2245,23 @@ function ejercicioTerminado() {
    
   document.addEventListener('keydown', function() {
       contador = 0;
+  });
+
+  // Función para borrar el historial del editor
+  function limpiarHistorialEditor() {
+    if (typeof editorInstance !== 'undefined' && editorInstance) {
+      // Limpiar el historial de deshacer/rehacer
+      editorInstance.clearHistory();
+      console.log("Historial del editor borrado");
+    }
+  }
+
+  // Listener para Alt + H
+  document.addEventListener("keydown", function(e) {
+    if (e.altKey && (e.key === "h" || e.key === "H")) {
+      e.preventDefault();
+      limpiarHistorialEditor();
+    }
   });
   </script>  
 </body>
