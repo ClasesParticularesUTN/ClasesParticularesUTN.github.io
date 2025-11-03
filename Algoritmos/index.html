@@ -686,12 +686,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     function mostrarEjercicio() {
       if (indice >= 0 && indice < ejercicios.length) {
         const actual = ejercicios[indice];
-        document.getElementById('ejercicio').textContent = actual.enunciado;
-        document.getElementById('pista').textContent = "";
+        document.getElementById('ejercicio').innerHTML = actual.enunciado;
+        document.getElementById('pista').innerHTML = "";
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";
         document.getElementById('input-ejercicio').value = indice + 1;
-        document.getElementById('total-ejercicios').textContent = ejercicios.length;
+        document.getElementById('total-ejercicios').innerHTML = ejercicios.length;
         sessionStorage.setItem("indice", indice);
       }
     }
