@@ -401,7 +401,7 @@
       <input id="input-ejercicio" type="number" min="1" value="1" /> /
       <span id="total-ejercicios">0</span>
     </p>
-    <pre id="ejercicio">Presioná "Iniciar" para comenzar</pre>
+    <div id="ejercicio" style="background: #f7f9fc; border-left: 5px solid #007bff; padding: 1.5rem; border-radius: 8px; font-size: 1rem; white-space: pre-wrap; overflow-x: auto;">Presioná "Iniciar" para comenzar</div>
     <div class="botones">
       <button onclick="iniciar()">Iniciar</button>
       <button onclick="siguiente()" style="display: none;">Siguiente</button>
@@ -661,7 +661,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         abrirModalValidacion();
       } else if (indice === ejercicios.length -1) {
         indice++;
-        document.getElementById('ejercicio').textContent = "¡Has llegado al final de los ejercicios!";
+        document.getElementById('ejercicio').innerHTML = "¡Has llegado al final de los ejercicios!";
         document.getElementById('pista').textContent = "";
         document.getElementById('codigo-solucion').innerHTML = "";
         document.getElementById('solucion').style.display = "none";

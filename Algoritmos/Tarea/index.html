@@ -584,7 +584,7 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
         if (!res.ok) {
           throw new Error(`HTTP ${res.status} al pedir ejercicios`);
         }
-
+        
         const obj = await res.json();
         //console.log("objeto retorno", obj);
         if (!obj) {
