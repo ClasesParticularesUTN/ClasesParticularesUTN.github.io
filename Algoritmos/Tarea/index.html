@@ -566,7 +566,7 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-let GAS_WEBAPP_URL ="https://script.google.com/macros/s/AKfycbw-dfL7rIvlGKnSwzvv4_WL8C4U4SKUXJmc85pJhEyNXuPEoOJqb2KbDMayGTXwB4fT/exec";
+let GAS_WEBAPP_URL ="https://script.google.com/macros/s/AKfycbxc0n1QwADejqhFxcB5l0RTUPngM9XxQKlWVc71-EkixKtIsIze0L2Ea1jsqtssWNEs/exec";
 
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/Login/Login.html";
@@ -604,7 +604,9 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
         document.getElementById("titulo").innerHTML = obj.titulo;
         document.getElementById("cantiddad-ejercicios").innerHTML += `${obj.totalEjercicios} ( ${obj.cantGuias} Guias )`;
         pasarEjercicio = obj.pasarEjercicio;
-        console.log(obj.cantGuias)
+        console.log("Cantidad de guias " + obj.cantGuias)
+        
+        console.log("Indice: " + obj.indice)
         if(obj.indice < ejercicios.length) sessionStorage.setItem("indice", obj.indice);
 
         if (loader) loader.style.display = "none";
@@ -678,6 +680,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       document.getElementById('total-ejercicios').textContent = ejercicios.length;
       await iniciar();
       indice = parseInt(sessionStorage.getItem("indice"));
+      console.log(indice);
       mostrarEjercicio();
     } catch (err) {
       console.error("❌ Error al restaurar ejercicios guardados:", err);
