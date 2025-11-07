@@ -1049,6 +1049,7 @@
     let menuUsuariosMinimizado = false; // Estado del menú de usuarios
     let arrastrandoMenu = false; // Estado de arrastre del menú
     let offsetMenu = { x: 0, y: 0 }; // Offset del mouse al iniciar arrastre
+    let socketListenersRegistrados = false; // Control para registrar listeners solo una vez
 
     // Variables para sistema de pestañas
     let editoresPorPestaña = new Map(); // tabId -> {editorInstance, codigo, cursosRemotos}
@@ -2377,7 +2378,7 @@ document.addEventListener("keydown", function(e) {
   <script>
     // ========== FUNCIONES SOCKET.IO ==========
     
-    function conectarUsuario() {
+    async function conectarUsuario() {
       const nombreUsuario = document.getElementById('input-usuario').value.trim();
       
       if (!nombreUsuario) {
@@ -2385,34 +2386,157 @@ document.addEventListener("keydown", function(e) {
         return;
       }
 
-      // Conectar a Socket.io
-      // Obtener la URL del servidor desde la configuración
-      let serverURL = 'http://localhost:3002'; // Valor por defecto
+      // Obtener las URLs a intentar desde config.js
+      let urlsToTry = ['http://localhost:3002']; // Valor por defecto
       
-      // Intentar obtener la URL desde config.js (si existe)
-      if (typeof getServerURL === 'function') {
-        serverURL = getServerURL();
+      if (typeof getServerURLs === 'function') {
+        // Si existe la función getServerURLs, usarla para obtener múltiples URLs
+        urlsToTry = getServerURLs();
+      } else if (typeof getServerURL === 'function') {
+        // Si solo existe getServerURL, usar solo esa URL
+        urlsToTry = [getServerURL()];
       } else {
         // Si config.js no existe, detectar automáticamente
         const hostname = window.location.hostname;
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
-          serverURL = 'http://localhost:3002';
+          urlsToTry = ['http://localhost:3002'];
         } else {
-          // Para GitHub Pages u otros dominios, necesitas configurar tu URL de servidor
-          // Puedes hacerlo de dos formas:
-          // 1. Crear un archivo config.js con la función getServerURL()
-          // 2. Cambiar esta línea directamente con tu URL de servidor
-          serverURL = 'http://TU-SERVIDOR-AQUI:3002'; // ⚠️ CAMBIA ESTA URL
+          // Para GitHub Pages u otros dominios, intentar localhost primero
+          // Si falla, detectar automáticamente la IP de red
+          urlsToTry = ['http://localhost:3002'];
         }
       }
       
-      console.log('Conectando a servidor:', serverURL);
-      socket = io(serverURL);
+      // Si el modo es 'auto' y estamos fuera de localhost, intentar detectar IP automáticamente
+      if (typeof MODE !== 'undefined' && MODE === 'auto' && 
+          window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+        console.log('🔍 Intentando detectar IP del servidor automáticamente...');
+        try {
+          const detectedIP = await detectarIPServidor();
+          if (detectedIP) {
+            urlsToTry.push(`http://${detectedIP}:3002`);
+            console.log('✅ IP detectada automáticamente:', detectedIP);
+          }
+        } catch (error) {
+          console.log('⚠️ No se pudo detectar la IP automáticamente, usando configuración manual');
+        }
+      }
+      
+      // Intentar conectarse a cada URL en orden hasta que una funcione
+      intentarConectar(urlsToTry, 0, nombreUsuario);
+    }
+
+    // Función para detectar automáticamente la IP del servidor en la red local
+    async function detectarIPServidor() {
+      // Rangos comunes de IPs de red local (ordenados por probabilidad)
+      const rangos = [
+        { base: '192.168.1', ips: [1, 100, 254, 2, 3, 4, 5, 10, 20, 50] },
+        { base: '192.168.0', ips: [1, 100, 254, 2, 3, 4, 5, 10, 20, 50] },
+        { base: '10.0.0', ips: [1, 2, 3, 10, 100] },
+        { base: '172.16.0', ips: [1, 2, 3, 10] }
+      ];
+
+      // Función para probar una IP específica
+      const probarIP = async (ip) => {
+        try {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 800); // Timeout de 800ms por IP
+          
+          const response = await fetch(`http://${ip}:3002/server-info`, {
+            method: 'GET',
+            signal: controller.signal
+          });
+          
+          clearTimeout(timeoutId);
+          
+          if (response.ok) {
+            const data = await response.json();
+            return data.ip || ip; // Devolver la IP del servidor o la probada
+          }
+        } catch (error) {
+          // Ignorar errores (IP no responde o no es el servidor)
+        }
+        return null;
+      };
+
+      // Probar IPs en paralelo (en lotes para no sobrecargar)
+      for (const rango of rangos) {
+        // Probar las IPs más comunes primero en paralelo
+        const promesas = rango.ips.map(ultimoOcteto => {
+          const ip = `${rango.base}.${ultimoOcteto}`;
+          return probarIP(ip).then(result => ({ ip, result }));
+        });
+        
+        const resultados = await Promise.all(promesas);
+        const ipEncontrada = resultados.find(r => r.result);
+        
+        if (ipEncontrada) {
+          console.log(`✅ Servidor encontrado en: ${ipEncontrada.result}`);
+          return ipEncontrada.result;
+        }
+      }
+
+      console.log('⚠️ No se encontró el servidor en los rangos comunes');
+      return null; // No se encontró ninguna IP
+    }
+
+    function intentarConectar(urls, index, nombreUsuario) {
+      if (index >= urls.length) {
+        console.error('No se pudo conectar a ningún servidor');
+        alert('No se pudo conectar al servidor. Asegúrate de que el servidor esté corriendo.');
+        return;
+      }
+
+      const serverURL = urls[index];
+      console.log(`Intentando conectar a servidor ${index + 1}/${urls.length}:`, serverURL);
+      
+      // Crear nueva conexión socket
+      socket = io(serverURL, {
+        timeout: 5000, // Timeout de 5 segundos
+        reconnection: false // Desactivar reconexión automática para poder intentar otra URL
+      });
+
+      // Timeout para detectar si la conexión falla
+      const connectionTimeout = setTimeout(() => {
+        if (!socket.connected) {
+          console.log(`Conexión a ${serverURL} falló, intentando siguiente URL...`);
+          socket.disconnect();
+          socket = null;
+          // Intentar siguiente URL
+          intentarConectar(urls, index + 1, nombreUsuario);
+        }
+      }, 5000);
 
       socket.on('connect', () => {
-        console.log('Conectado al servidor');
+        clearTimeout(connectionTimeout);
+        console.log('✅ Conectado al servidor:', serverURL);
+        
+        // Registrar listeners solo una vez cuando la conexión sea exitosa
+        if (!socketListenersRegistrados) {
+          registrarSocketListeners(nombreUsuario);
+          socketListenersRegistrados = true;
+        }
+        
         socket.emit('usuario-join', { username: nombreUsuario });
       });
+
+      socket.on('connect_error', (error) => {
+        clearTimeout(connectionTimeout);
+        console.log(`❌ Error conectando a ${serverURL}:`, error.message);
+        socket.disconnect();
+        socket = null;
+        // Resetear flag de listeners si la conexión falla completamente
+        if (index + 1 >= urls.length) {
+          socketListenersRegistrados = false;
+        }
+        // Intentar siguiente URL
+        intentarConectar(urls, index + 1, nombreUsuario);
+      });
+    }
+
+    // Función para registrar todos los event listeners de socket (solo una vez)
+    function registrarSocketListeners(nombreUsuario) {
+      if (!socket) return;
 
       socket.on('usuario-confirmado', (data) => {
         miUsuario = data.username;
@@ -2460,10 +2584,12 @@ document.addEventListener("keydown", function(e) {
       socket.on('pestaña-creada', (data) => {
         documentosDisponibles.set(data.tabId, { nombre: data.nombre, codigo: data.codigo });
         crearPestañaUI(data.tabId, data.nombre, false);
-        // Cambiar automáticamente a la nueva pestaña creada
-        setTimeout(() => {
-          cambiarPestaña(data.tabId);
-        }, 100);
+        // Solo cambiar automáticamente a la nueva pestaña si somos el usuario que la creó
+        if (data.creadorSocketId === socket.id) {
+          setTimeout(() => {
+            cambiarPestaña(data.tabId);
+          }, 100);
+        }
       });
 
       socket.on('codigo-actual', (data) => {
@@ -2500,15 +2626,22 @@ document.addEventListener("keydown", function(e) {
         // Evitar sincronización circular
         if (data.socketId === socket.id) return;
         
-        const { tabId } = data;
+        const { tabId, lineaInsercion, lineasInsertadas } = data;
         const editorData = editoresPorPestaña.get(tabId);
         if (!editorData || !editorData.editorInstance) return;
 
         sincronizando = true;
         const nuevoCodigo = data.cambios.codigo;
         const cursor = editorData.editorInstance.getCursor();
+        
+        // Si se insertó una línea nueva y nuestro cursor está por debajo, ajustarlo
+        let nuevoCursor = cursor;
+        if (lineaInsercion !== null && lineasInsertadas > 0 && cursor.line > lineaInsercion) {
+          nuevoCursor = { line: cursor.line + lineasInsertadas, ch: cursor.ch };
+        }
+        
         editorData.editorInstance.setValue(nuevoCodigo);
-        editorData.editorInstance.setCursor(cursor);
+        editorData.editorInstance.setCursor(nuevoCursor);
         editorData.codigo = nuevoCodigo;
         
         // Refrescar cursos remotos después de actualizar el código SOLO si es la pestaña activa
@@ -2665,6 +2798,8 @@ document.addEventListener("keydown", function(e) {
       socket.on('disconnect', () => {
         console.log('Desconectado del servidor');
         mostrarIndicadorSincronizacion();
+        // Resetear flag para permitir reconexión
+        socketListenersRegistrados = false;
         // Limpiar todos los cursos remotos al desconectarse
         editoresPorPestaña.forEach((editorData, tabId) => {
           if (editorData.cursosRemotos) {
@@ -3933,3 +4068,4 @@ document.addEventListener("keydown", function(e) {
   </script>  
 </body>
 </html>
+
