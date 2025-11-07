@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+
+<!-- ✅ NECESARIO PARA MOBILE -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Visor de Capítulos PDF</title>
@@ -25,7 +27,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     overflow: hidden;
   }
 
-  /* ====== MENU (ambos) ====== */
+  /* ===== MENU (BASE) ===== */
   #menu {
     background: #111;
     color: #fff;
@@ -58,7 +60,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     transform:scale(1.03);
   }
 
-  /* ====== VISOR ====== */
+  /* ===== VISOR ===== */
 
   #visorArea {
     width: 100vw;
@@ -78,6 +80,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     flex-direction: column;
     align-items: center;
     gap: 10px;
+
     width: 100vw;
     box-sizing: border-box;
   }
@@ -110,7 +113,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
   }
 
 
-  /* ====== ✅ MOBILE ====== */
+  /* ===== ✅ MOBILE ===== */
   @media (max-width: 800px) {
 
     #menu {
@@ -119,7 +122,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
       left: 0;
       top: 0;
       height: 100vh;
-      transform: translateX(-100%);
+      transform: translateX(-100%);   /* inicio: oculto */
     }
 
     #menu.oculto {
@@ -135,7 +138,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     }
   }
 
-  /* ====== ✅ DESKTOP ====== */
+
+  /* ===== ✅ DESKTOP ===== */
   @media (min-width: 801px) {
 
     body{
@@ -143,8 +147,8 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     }
 
     #menu {
-      position: relative;
       width: 300px;
+      position: relative;
       transform: translateX(0);
     }
 
@@ -166,7 +170,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
     }
 
     canvas {
-      max-width:800px; /* ← tamaño agradable en PC */
+      max-width:800px; /* tamaño ideal desktop */
     }
   }
 
@@ -190,7 +194,9 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 </div>
 
 <script>
-/* PDFs */
+/* ===========================
+      LISTA DE PDFs
+=========================== */
 const pdfs = [
   "Capitlo 1.pdf",
   "Capitulo 2.pdf",
@@ -221,6 +227,7 @@ pdfs.forEach(nombre => {
   lista.appendChild(d);
 });
 
+
 async function limpiarPDF(){
   try{ if(currentTask) await currentTask.destroy(); }catch{}
   try{ if(currentPdf) await currentPdf.destroy(); }catch{}
@@ -229,14 +236,29 @@ async function limpiarPDF(){
   visor.innerHTML="";
 }
 
-function ocultarMenu(){ menu.classList.add("oculto"); }
-function mostrarMenu(){ menu.classList.remove("oculto"); }
+
+/* ========= MENU ========= */
+function ocultarMenu(){
+  menu.classList.add("oculto");
+  menu.classList.remove("mostrar");
+}
+
+function mostrarMenu(){
+  menu.classList.add("mostrar");
+  menu.classList.remove("oculto");
+}
 
 document.getElementById("toggleMenuBtn").onclick = ()=>{
-  if(menu.classList.contains("oculto")) mostrarMenu();
-  else ocultarMenu();
+  if(menu.classList.contains("oculto")){
+    mostrarMenu();
+  } else {
+    ocultarMenu();
+  }
 };
 
+
+
+/* ========= PDF ========= */
 async function abrirPDF(nombre){
   ocultarMenu();
   await limpiarPDF();
@@ -257,6 +279,7 @@ async function abrirPDF(nombre){
   visor.innerHTML = "";
   renderAll(pdf);
 }
+
 
 async function renderAll(pdf){
   const total = pdf.numPages;
@@ -281,6 +304,7 @@ async function renderAll(pdf){
   }
 }
 </script>
+
 
 <!-- ✅ VALIDAR USUARIO -->
 <script>
