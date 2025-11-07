@@ -4079,7 +4079,7 @@ document.addEventListener("keydown", function(e) {
         navegandoConShiftEspacio = false;
       }
     });
-
+    
     document.addEventListener('mousedown', function(e) {
       if (autocompleteMenu.style.display === 'block' && !autocompleteMenu.contains(e.target)) {
         hideAutocompleteMenu();
@@ -4091,7 +4091,7 @@ document.addEventListener("keydown", function(e) {
   if (typeof editorInstance !== 'undefined' && editorInstance) {
     inicializarAutocompletadoPersonalizado();
   } else {
-    // Si el editor se inicializa de forma asíncrona, observar hasta que esté disponible
+    // Si el editor se inicializa de forma asíncrona, observar hasta que este disponible
     let intentos = 0;
     const intervalo = setInterval(() => {
       if (typeof editorInstance !== 'undefined' && editorInstance) {
