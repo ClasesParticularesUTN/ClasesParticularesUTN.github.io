@@ -2378,7 +2378,7 @@ document.addEventListener("keydown", function(e) {
   <script>
     // ========== FUNCIONES SOCKET.IO ==========
     
-    async function conectarUsuario() {
+    function conectarUsuario() {
       const nombreUsuario = document.getElementById('input-usuario').value.trim();
       
       if (!nombreUsuario) {
@@ -2401,83 +2401,13 @@ document.addEventListener("keydown", function(e) {
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
           urlsToTry = ['http://localhost:3002'];
         } else {
-          // Para GitHub Pages u otros dominios, intentar localhost primero
-          // Si falla, detectar automáticamente la IP de red
-          urlsToTry = ['http://localhost:3002'];
-        }
-      }
-      
-      // Si el modo es 'auto' y estamos fuera de localhost, intentar detectar IP automáticamente
-      if (typeof MODE !== 'undefined' && MODE === 'auto' && 
-          window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-        console.log('🔍 Intentando detectar IP del servidor automáticamente...');
-        try {
-          const detectedIP = await detectarIPServidor();
-          if (detectedIP) {
-            urlsToTry.push(`http://${detectedIP}:3002`);
-            console.log('✅ IP detectada automáticamente:', detectedIP);
-          }
-        } catch (error) {
-          console.log('⚠️ No se pudo detectar la IP automáticamente, usando configuración manual');
+          // Para GitHub Pages u otros dominios, intentar localhost primero, luego IP de red
+          urlsToTry = ['http://localhost:3002', 'http://192.168.0.138:3002'];
         }
       }
       
       // Intentar conectarse a cada URL en orden hasta que una funcione
       intentarConectar(urlsToTry, 0, nombreUsuario);
-    }
-
-    // Función para detectar automáticamente la IP del servidor en la red local
-    async function detectarIPServidor() {
-      // Rangos comunes de IPs de red local (ordenados por probabilidad)
-      const rangos = [
-        { base: '192.168.1', ips: [1, 100, 254, 2, 3, 4, 5, 10, 20, 50] },
-        { base: '192.168.0', ips: [1, 100, 254, 2, 3, 4, 5, 10, 20, 50] },
-        { base: '10.0.0', ips: [1, 2, 3, 10, 100] },
-        { base: '172.16.0', ips: [1, 2, 3, 10] }
-      ];
-
-      // Función para probar una IP específica
-      const probarIP = async (ip) => {
-        try {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 800); // Timeout de 800ms por IP
-          
-          const response = await fetch(`http://${ip}:3002/server-info`, {
-            method: 'GET',
-            signal: controller.signal
-          });
-          
-          clearTimeout(timeoutId);
-          
-          if (response.ok) {
-            const data = await response.json();
-            return data.ip || ip; // Devolver la IP del servidor o la probada
-          }
-        } catch (error) {
-          // Ignorar errores (IP no responde o no es el servidor)
-        }
-        return null;
-      };
-
-      // Probar IPs en paralelo (en lotes para no sobrecargar)
-      for (const rango of rangos) {
-        // Probar las IPs más comunes primero en paralelo
-        const promesas = rango.ips.map(ultimoOcteto => {
-          const ip = `${rango.base}.${ultimoOcteto}`;
-          return probarIP(ip).then(result => ({ ip, result }));
-        });
-        
-        const resultados = await Promise.all(promesas);
-        const ipEncontrada = resultados.find(r => r.result);
-        
-        if (ipEncontrada) {
-          console.log(`✅ Servidor encontrado en: ${ipEncontrada.result}`);
-          return ipEncontrada.result;
-        }
-      }
-
-      console.log('⚠️ No se encontró el servidor en los rangos comunes');
-      return null; // No se encontró ninguna IP
     }
 
     function intentarConectar(urls, index, nombreUsuario) {
