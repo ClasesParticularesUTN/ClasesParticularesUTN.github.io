@@ -1668,26 +1668,122 @@ function toggleEditor() {
         if (outputContent) outputContent.textContent = "Esperando ejecución...";
       }
     }
-    // URLs para compilación - usar configuración o valores por defecto
-    let compileServerURL = 'http://localhost:3000/compile'; // Valor por defecto
+    // URLs para compilación - lista de URLs a probar
+    let compileServerURL = null; // Se establecerá cuando se encuentre una URL que funcione
+    let urlsCompilacion = [
+      'http://localhost:3000/compile',
+      'http://192.168.0.138:3000/compile',
+      'http://192.168.96.91:3000/compile'
+    ];
     
     // Intentar obtener desde configuración si existe
     if (typeof getServerURL === 'function') {
       const baseURL = getServerURL();
       // Cambiar el puerto a 3000 y agregar /compile
-      compileServerURL = baseURL.replace(':3002', ':3000') + '/compile';
-    } else {
-      // Auto-detección
-      const hostname = window.location.hostname;
-      if (true) {
-        compileServerURL = 'http://localhost:3000/compile';
-      } else {
-        // ⚠️ CAMBIA ESTA URL a la de tu servidor de compilación
-        compileServerURL = 'http://TU-SERVIDOR-AQUI:3000/compile';
+      const urlDesdeConfig = baseURL.replace(':3002', ':3000') + '/compile';
+      // Agregar al inicio de la lista si no está ya incluida
+      if (!urlsCompilacion.includes(urlDesdeConfig)) {
+        urlsCompilacion.unshift(urlDesdeConfig);
       }
     }
     
     let URL = compileServerURL;
+    
+    // Función para intentar compilar con múltiples URLs
+    function intentarCompilar(urls, index, sourceCode, input, outputContent, outputDiv, toggleBtn) {
+      if (index >= urls.length) {
+        outputDiv.classList.add("maximized");
+        if (toggleBtn) {
+          toggleBtn.textContent = "🗗";
+          toggleBtn.title = "Minimizar salida";
+        }
+        outputContent.textContent = "Error: No se pudo conectar a ningún servidor de compilación. Verifica que el servidor esté corriendo.";
+        return;
+      }
+
+      const serverURL = urls[index];
+      console.log(`Intentando compilar con servidor ${index + 1}/${urls.length}:`, serverURL);
+      
+      // Timeout para detectar si la compilación falla
+      const compileTimeout = setTimeout(() => {
+        console.log(`Compilación con ${serverURL} falló por timeout, intentando siguiente URL...`);
+        intentarCompilar(urls, index + 1, sourceCode, input, outputContent, outputDiv, toggleBtn);
+      }, 10000); // Timeout de 10 segundos
+
+      // Crear AbortController para timeout compatible
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
+      fetch(serverURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code: sourceCode,
+          input: input
+        }),
+        signal: controller.signal
+      })
+      .then(res => {
+        clearTimeout(compileTimeout);
+        clearTimeout(timeoutId);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then(data => {
+        // Si llegamos aquí, la URL funciona, guardarla para futuras compilaciones
+        compileServerURL = serverURL;
+        URL = serverURL;
+        console.log('✅ URL de compilación establecida:', serverURL);
+        
+        const output = data.output || "Sin salida";
+        const partes = output.split("Mensaje original de compilador:");
+        if (partes.length === 2) {
+          // Si hay mensaje del compilador, maximiza la salida
+          outputDiv.classList.add("maximized");
+          if (toggleBtn) {
+            toggleBtn.textContent = "🗗";
+            toggleBtn.title = "Minimizar salida";
+          }
+          outputContent.innerHTML =
+            `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
+            `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
+        } else if (/error|Error|compilador|compilation/i.test(output)) {
+          // Si detecta la palabra error, también maximiza
+          outputDiv.classList.add("maximized");
+          if (toggleBtn) {
+            toggleBtn.textContent = "🗗";
+            toggleBtn.title = "Minimizar salida";
+          }
+          outputContent.textContent = output;
+        } else {
+          // Salida normal
+          outputContent.textContent = output;
+          // Asegurar que el output sea visible
+          outputDiv.style.display = 'block';
+          outputContent.style.display = 'block';
+        }
+      })
+      .catch(err => {
+        clearTimeout(compileTimeout);
+        clearTimeout(timeoutId);
+        // Si es un error de timeout o conexión, intentar siguiente URL
+        if (err.name === 'AbortError' || err.name === 'TypeError' || err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
+          console.log(`Error con ${serverURL}:`, err.message);
+          intentarCompilar(urls, index + 1, sourceCode, input, outputContent, outputDiv, toggleBtn);
+        } else {
+          // Si es otro tipo de error (compilación/ejecución), mostrar el error
+          outputDiv.classList.add("maximized");
+          if (toggleBtn) {
+            toggleBtn.textContent = "🗗";
+            toggleBtn.title = "Minimizar salida";
+          }
+          outputContent.textContent = "Error al ejecutar: " + err.message;
+        }
+      });
+    }
+    
     // Ejecución de código llamando al backend que compila C++
     function ejecutarCodigo() {
   const editorActivo = obtenerEditorActivo();
@@ -1743,52 +1839,13 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
   // Mostrar mensaje de ejecución
   outputContent.textContent = "Ejecutando...";
   
-  fetch(URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      code: sourceCode,
-      input: input
-    })
-  })
-  .then(res => res.json())
-  .then(data => {
-    const output = data.output || "Sin salida";
-    const partes = output.split("Mensaje original de compilador:");
-    if (partes.length === 2) {
-      // Si hay mensaje del compilador, maximiza la salida
-      outputDiv.classList.add("maximized");
-      if (toggleBtn) {
-        toggleBtn.textContent = "🗗";
-        toggleBtn.title = "Minimizar salida";
-      }
-      outputContent.innerHTML =
-        `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
-        `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
-    } else if (/error|Error|compilador|compilation/i.test(output)) {
-      // Si detecta la palabra error, también maximiza
-      outputDiv.classList.add("maximized");
-      if (toggleBtn) {
-        toggleBtn.textContent = "🗗";
-        toggleBtn.title = "Minimizar salida";
-      }
-      outputContent.textContent = output;
-    } else {
-      // Salida normal
-      outputContent.textContent = output;
-      // Asegurar que el output sea visible
-      outputDiv.style.display = 'block';
-      outputContent.style.display = 'block';
-    }
-  })
-  .catch(err => {
-    outputDiv.classList.add("maximized");
-    if (toggleBtn) {
-      toggleBtn.textContent = "🗗";
-      toggleBtn.title = "Minimizar salida";
-    }
-    outputContent.textContent = "Error al ejecutar: " + err;
-  });
+  // Si ya tenemos una URL que funciona, usarla directamente
+  if (compileServerURL) {
+    intentarCompilar([compileServerURL], 0, sourceCode, input, outputContent, outputDiv, toggleBtn);
+  } else {
+    // Si no, probar con todas las URLs
+    intentarCompilar(urlsCompilacion, 0, sourceCode, input, outputContent, outputDiv, toggleBtn);
+  }
 }
 
   
@@ -1888,6 +1945,66 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
       document.getElementById('validacion-modal').style.display = "none";
     }
   
+    // Función auxiliar para compilar código con reintentos de URL
+    function compilarConReintentos(codigo, entrada) {
+      return new Promise((resolve, reject) => {
+        const urlsAProbar = compileServerURL ? [compileServerURL] : urlsCompilacion;
+        
+        function intentarCompilarAux(urls, index) {
+          if (index >= urls.length) {
+            reject(new Error("No se pudo conectar a ningún servidor de compilación"));
+            return;
+          }
+
+          const serverURL = urls[index];
+          console.log(`Intentando compilar (validación) con servidor ${index + 1}/${urls.length}:`, serverURL);
+
+          // Crear AbortController para timeout compatible
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+          fetch(serverURL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              code: codigo,
+              input: entrada
+            }),
+            signal: controller.signal
+          })
+          .then(res => {
+            clearTimeout(timeoutId);
+            if (!res.ok) {
+              throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+          })
+          .then(data => {
+            // Si llegamos aquí, la URL funciona, guardarla para futuras compilaciones
+            if (!compileServerURL) {
+              compileServerURL = serverURL;
+              URL = serverURL;
+              console.log('✅ URL de compilación establecida (desde validación):', serverURL);
+            }
+            resolve(data);
+          })
+          .catch(err => {
+            clearTimeout(timeoutId);
+            // Si es un error de timeout o conexión, intentar siguiente URL
+            if (err.name === 'AbortError' || err.name === 'TypeError' || err.message.includes('fetch') || err.message.includes('Failed to fetch')) {
+              console.log(`Error con ${serverURL}:`, err.message);
+              intentarCompilarAux(urls, index + 1);
+            } else {
+              // Si es otro tipo de error (compilación/ejecución), rechazar con el error
+              reject(err);
+            }
+          });
+        }
+
+        intentarCompilarAux(urlsAProbar, 0);
+      });
+    }
+    
     // Probar el código del usuario contra los casos de prueba
     function probarValidacion() {
       const codigoUsuario = document.getElementById('codigo-validacion').value.trim();
@@ -1916,16 +2033,8 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
       let errores = [];
       subirCodigo();
       let promesas = ejercicioActual.casosDePrueba.map((caso, i) => {
-        console.log(caso.entrada,i);
-        return fetch(URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            code: codigoUsuario,
-            input: caso.entrada
-          })
-        })
-        .then(res => res.json())
+        console.log(caso.entrada, i);
+        return compilarConReintentos(codigoUsuario, caso.entrada)
         .then(data => {
           let salidaObtenida = (data.output || "").trim();
           let salidaEsperada = (caso.salida || "").trim();
@@ -1944,7 +2053,7 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
               obtenido: salidaObtenida
             });
             console.log("la salida fue distinta");
-          }else console.log("las salidas coinciden")
+          } else console.log("las salidas coinciden");
         })
         .catch(err => {
           errores.push({
