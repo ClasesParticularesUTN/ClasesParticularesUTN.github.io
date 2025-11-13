@@ -428,7 +428,8 @@
       <button onclick="iniciar()">Iniciar</button>
       <button onclick="siguiente()" style="display: none;">Siguiente</button>
       <button onclick="mostrarPista()">Mostrar pista</button>
-      <button onclick="mostrarSolucion()">Mostrar solución</button>
+      <!-- <button onclick="mostrarSolucion()">Mostrar solución</button> -->
+      <button onclick="corregirCasosPrueba()" id="btn-corregir-casos" style="display: none;">Corregir casos de prueba</button>
     </div>
 
     <div class="extra">
@@ -512,6 +513,33 @@
 </pre>
     </div>
   </div>
+
+  <!-- Modal para corregir casos de prueba -->
+  <div id="modal-corregir-casos" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: sans-serif;
+    overflow-y: auto;
+    padding: 2rem 0;
+    ">
+    <div style="background:#222;padding:2rem;border-radius:10px;max-width:800px;width:90%;max-height:90vh;overflow-y:auto;">
+      <h3>Corregir casos de prueba - Ejercicio #<span id="numero-ejercicio-corregir"></span></h3>
+      <p style="margin-bottom:1rem;color:#aaa;">Modificá los casos de prueba del ejercicio actual:</p>
+      <div id="contenedor-casos-prueba" style="margin-bottom:1rem;"></div>
+      <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;">
+        <button onclick="agregarCasoPrueba()" style="background-color:#28a745;">+ Agregar caso</button>
+        <button onclick="guardarCasosPrueba()" style="background-color:#007bff;">Guardar cambios</button>
+        <button onclick="cerrarModalCorregirCasos()" style="background-color:darkred;">Cancelar</button>
+      </div>
+    </div>
+  </div>
   <div id="modal-atajos" style="
   position: fixed;
   top: 0; left: 0;
@@ -566,7 +594,7 @@
 
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
-let GAS_WEBAPP_URL ="https://script.google.com/macros/s/AKfycbxuUBD1NA1WIVmqEzk1ctbhsNOZpNzS4DbwLtpo7MLXp2CShbD9cGYd0IKiZuGB7PwM/exec";
+let GAS_WEBAPP_URL ="https://script.google.com/macros/s/AKfycbwKHW5c4UeOOl18dWq2i0bhstPFrZpaSsWpjDrBpAc2EdaBJxs_JxDbBG0L1r4j_kG8/exec";
 
 if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/Login/Login.html";
@@ -815,6 +843,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         document.getElementById('input-ejercicio').value = indice + 1;
         document.getElementById('total-ejercicios').textContent = `${ejercicios.length}`;
         sessionStorage.setItem("indice", indice);
+        // Mostrar botón de corregir casos si el ejercicio tiene casos de prueba
+        const btnCorregir = document.getElementById('btn-corregir-casos');
+        if (btnCorregir && actual.casosDePrueba && actual.casosDePrueba.length > 0) {
+          btnCorregir.style.display = "inline-block";
+        } else if (btnCorregir) {
+          btnCorregir.style.display = "none";
+        }
       }else if(indice == ejercicios.length){
          document.getElementById('ejercicio').textContent = "Fin de esta guia de ejercicios" + document.getElementById("titulo").innerHTML + ", recargue la pagina y si tiene otra guia cargada podra seguir haciendo ejercicios";
         document.getElementById('pista').textContent = "";
@@ -2232,6 +2267,165 @@ function ejercicioTerminado() {
     sessionStorage.clear();
     // Redirige al usuario a la página de inicio de sesión
     window.location.href = "/Horarios/Login/Login.html";
+  }
+
+  // Función para abrir modal de corrección de casos de prueba
+  function corregirCasosPrueba() {
+    if (indice < 0 || indice >= ejercicios.length) {
+      alert("Ejercicio inválido.");
+      return;
+    }
+
+    const ejercicioActual = ejercicios[indice];
+    if (!ejercicioActual.casosDePrueba || ejercicioActual.casosDePrueba.length === 0) {
+      alert("Este ejercicio no tiene casos de prueba definidos.");
+      return;
+    }
+
+    // Solicitar contraseña
+    Swal.fire({
+      title: "Confirmación",
+      text: "Para corregir casos de prueba, ingresá la contraseña (solicitela al profesor):",
+      input: "text",
+      inputPlaceholder: "Contraseña",
+      inputAttributes: {
+        autocapitalize: "off",
+        autocorrect: "off"
+      },
+      showCancelButton: true,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: "Cancelar",
+      preConfirm: (value) => {
+        if (value.toString() !== pasarEjercicio.toString()) {
+          Swal.showValidationMessage("Contraseña incorrecta.");
+          return false;
+        } else {
+          abrirModalCorregirCasos();
+        }
+      }
+    });
+  }
+
+  // Función para abrir el modal de edición de casos de prueba
+  function abrirModalCorregirCasos() {
+    if (indice < 0 || indice >= ejercicios.length) return;
+
+    const ejercicioActual = ejercicios[indice];
+    const contenedor = document.getElementById('contenedor-casos-prueba');
+    const numeroEjercicio = document.getElementById('numero-ejercicio-corregir');
+    
+    numeroEjercicio.textContent = indice + 1;
+    contenedor.innerHTML = '';
+
+    // Crear campos para cada caso de prueba
+    ejercicioActual.casosDePrueba.forEach((caso, i) => {
+      const casoDiv = document.createElement('div');
+      casoDiv.style.marginBottom = '1.5rem';
+      casoDiv.style.padding = '1rem';
+      casoDiv.style.background = '#333';
+      casoDiv.style.borderRadius = '8px';
+      casoDiv.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+          <strong style="color:#00ffcc;">Caso de prueba #${i + 1}</strong>
+          <button onclick="eliminarCasoPrueba(${i})" style="background-color:#dc3545;padding:0.3rem 0.8rem;font-size:0.9rem;">Eliminar</button>
+        </div>
+        <label style="display:block;margin-bottom:0.5rem;color:#aaa;">Entrada:</label>
+        <textarea id="caso-entrada-${i}" style="width:100%;padding:0.5rem;font-family:monospace;background:#111;color:#00ffcc;border:none;border-radius:4px;min-height:60px;resize:vertical;" placeholder="Entrada del caso de prueba">${caso.entrada || ''}</textarea>
+        <label style="display:block;margin-top:0.8rem;margin-bottom:0.5rem;color:#aaa;">Salida esperada:</label>
+        <textarea id="caso-salida-${i}" style="width:100%;padding:0.5rem;font-family:monospace;background:#111;color:#00ffcc;border:none;border-radius:4px;min-height:60px;resize:vertical;" placeholder="Salida esperada">${caso.salida || ''}</textarea>
+      `;
+      contenedor.appendChild(casoDiv);
+    });
+
+    document.getElementById('modal-corregir-casos').style.display = 'flex';
+  }
+
+  // Función para cerrar el modal de corrección
+  function cerrarModalCorregirCasos() {
+    document.getElementById('modal-corregir-casos').style.display = 'none';
+  }
+
+  // Función para agregar un nuevo caso de prueba
+  function agregarCasoPrueba() {
+    if (indice < 0 || indice >= ejercicios.length) return;
+
+    const ejercicioActual = ejercicios[indice];
+    if (!ejercicioActual.casosDePrueba) {
+      ejercicioActual.casosDePrueba = [];
+    }
+
+    // Agregar nuevo caso vacío al array
+    ejercicioActual.casosDePrueba.push({ entrada: '', salida: '' });
+
+    // Reabrir el modal para mostrar el nuevo caso
+    abrirModalCorregirCasos();
+  }
+
+  // Función para eliminar un caso de prueba
+  function eliminarCasoPrueba(indiceCaso) {
+    if (indice < 0 || indice >= ejercicios.length) return;
+
+    const ejercicioActual = ejercicios[indice];
+    if (ejercicioActual.casosDePrueba && ejercicioActual.casosDePrueba.length > indiceCaso) {
+      ejercicioActual.casosDePrueba.splice(indiceCaso, 1);
+      abrirModalCorregirCasos(); // Refrescar la vista
+    }
+  }
+
+  // Función para guardar los cambios en los casos de prueba
+  function guardarCasosPrueba() {
+    if (indice < 0 || indice >= ejercicios.length) {
+      alert("Ejercicio inválido.");
+      return;
+    }
+
+    const ejercicioActual = ejercicios[indice];
+    if (!ejercicioActual.casosDePrueba) {
+      ejercicioActual.casosDePrueba = [];
+    }
+
+    // Recopilar todos los casos de prueba editados
+    const nuevosCasos = [];
+    const contenedor = document.getElementById('contenedor-casos-prueba');
+    const casosDivs = contenedor.querySelectorAll('div[style*="background:#333"]');
+
+    casosDivs.forEach((casoDiv) => {
+      // Buscar los textareas dentro de este div
+      const textareas = casoDiv.querySelectorAll('textarea');
+      if (textareas.length >= 2) {
+        const entrada = textareas[0].value || '';
+        const salida = textareas[1].value || '';
+        
+        if (entrada.trim() || salida.trim()) {
+          nuevosCasos.push({
+            entrada: entrada,
+            salida: salida
+          });
+        }
+      }
+    });
+
+    if (nuevosCasos.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'Debe haber al menos un caso de prueba con entrada o salida.',
+        confirmButtonText: 'Entendido'
+      });
+      return;
+    }
+
+    // Actualizar el array de casos de prueba
+    ejercicioActual.casosDePrueba = nuevosCasos;
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Casos de prueba actualizados',
+      text: 'Los casos de prueba han sido modificados correctamente.',
+      confirmButtonText: 'Entendido'
+    });
+
+    cerrarModalCorregirCasos();
   }
   document.addEventListener("keydown", function(e) {
     if (e.altKey && (e.key === "s" || e.key === "S")) {

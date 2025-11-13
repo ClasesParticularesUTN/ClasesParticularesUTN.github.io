@@ -407,7 +407,6 @@
       <button onclick="siguiente()" style="display: none;">Siguiente</button>
       <button onclick="mostrarPista()">Mostrar pista</button>
       <button onclick="mostrarSolucion()">Mostrar solución</button>
-      <button onclick="abrirModalCorregirCasos()" id="corregir-casos-btn" style="display: none; background-color: #ff9800;">Corregir casos de prueba</button>
     </div>
 
     <div class="extra">
@@ -489,34 +488,6 @@
 ">
 <button id="toggleOutputSize" title="Maximizar salida">🗗</button>
 </pre>
-    </div>
-  </div>
-
-  <!-- Modal para corregir casos de prueba -->
-  <div id="modal-corregir-casos" style="
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.8);
-    display: none;
-    z-index: 3000;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-family: sans-serif;
-    overflow-y: auto;
-    padding: 2rem 0;
-    ">
-    <div style="background:#222;padding:2rem;border-radius:10px;max-width:800px;width:90%;max-height:90vh;overflow-y:auto;">
-      <h3 id="titulo-modal-casos">Corregir casos de prueba</h3>
-      <div id="contenedor-casos-prueba" style="margin-top:1rem;">
-        <!-- Los casos de prueba se cargarán aquí dinámicamente -->
-      </div>
-      <div style="margin-top:1rem;display:flex;gap:0.5rem;justify-content:flex-end;">
-        <button onclick="agregarCasoPrueba()" style="background-color:#28a745;color:white;padding:0.5rem 1rem;border:none;border-radius:5px;">+ Agregar caso</button>
-        <button onclick="guardarCasosPrueba()" style="background-color:#007bff;color:white;padding:0.5rem 1rem;border:none;border-radius:5px;">Guardar cambios</button>
-        <button onclick="cerrarModalCorregirCasos()" style="background-color:darkred;color:white;padding:0.5rem 1rem;border:none;border-radius:5px;">Cancelar</button>
-      </div>
     </div>
   </div>
   <div id="modal-atajos" style="
@@ -673,7 +644,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       indice = sessionStorage.getItem("indice")? parseInt(sessionStorage.getItem("indice")) : 0;
       document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
       document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button onclick="anterior()">Anterior</button>';
-      document.getElementById('corregir-casos-btn').style.display = "inline-block";
        if (confirm("¿Querés pegar automáticamente tu código al abrir la validacion?")) {
         navigator.clipboard.readText().catch(() => {});
         pegadoAutomatico = true;
@@ -753,158 +723,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   
         preBlock.style.display = "block";
       }
-    }
-
-    // Funciones para corregir casos de prueba
-    function abrirModalCorregirCasos() {
-      if (indice < 0 || indice >= ejercicios.length) {
-        alert("No hay ejercicio seleccionado.");
-        return;
-      }
-
-      // Validar contraseña (misma que para avanzar de ejercicio)
-      const ahora = new Date();
-      const horas = String(ahora.getHours()).padStart(2, '0');
-      const minutos = String(ahora.getMinutes()).padStart(2, '0');
-      const ejercicioNumero = (indice + 1).toString();
-      const contrasenaEsperada = ejercicioNumero + horas + minutos;
-
-      const ingreso = prompt(`Para corregir casos de prueba del ejercicio ${ejercicioNumero}, ingresá la contraseña:`);
-
-      if (ingreso !== contrasenaEsperada) {
-        alert("Contraseña incorrecta. Intentá de nuevo.");
-        return;
-      }
-
-      // Cargar casos de prueba actuales
-      cargarCasosPruebaEnModal();
-      document.getElementById('modal-corregir-casos').style.display = "flex";
-      document.getElementById('titulo-modal-casos').textContent = `Corregir casos de prueba - Ejercicio ${indice + 1}`;
-    }
-
-    function cargarCasosPruebaEnModal() {
-      const contenedor = document.getElementById('contenedor-casos-prueba');
-      contenedor.innerHTML = '';
-
-      const ejercicioActual = ejercicios[indice];
-      const casos = ejercicioActual.casosDePrueba || [];
-
-      casos.forEach((caso, index) => {
-        const casoDiv = document.createElement('div');
-        casoDiv.style.cssText = 'margin-bottom:1.5rem;padding:1rem;background:#333;border-radius:8px;';
-        
-        // Crear header con título y botón eliminar
-        const header = document.createElement('div');
-        header.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;';
-        
-        const titulo = document.createElement('strong');
-        titulo.style.color = '#00ffcc';
-        titulo.textContent = `Caso ${index + 1}`;
-        
-        const btnEliminar = document.createElement('button');
-        btnEliminar.textContent = 'Eliminar';
-        btnEliminar.style.cssText = 'background-color:#dc3545;color:white;border:none;padding:0.3rem 0.8rem;border-radius:4px;cursor:pointer;';
-        btnEliminar.onclick = () => eliminarCasoPrueba(index);
-        
-        header.appendChild(titulo);
-        header.appendChild(btnEliminar);
-        casoDiv.appendChild(header);
-        
-        // Crear label y textarea para entrada
-        const labelEntrada = document.createElement('label');
-        labelEntrada.textContent = 'Entrada:';
-        labelEntrada.style.cssText = 'display:block;margin-bottom:0.5rem;';
-        casoDiv.appendChild(labelEntrada);
-        
-        const textareaEntrada = document.createElement('textarea');
-        textareaEntrada.id = `entrada-caso-${index}`;
-        textareaEntrada.value = caso.entrada || '';
-        textareaEntrada.style.cssText = 'width:100%;padding:0.5rem;font-family:monospace;background:#111;color:#00ffcc;border:1px solid #555;border-radius:4px;min-height:60px;margin-bottom:0.5rem;';
-        casoDiv.appendChild(textareaEntrada);
-        
-        // Crear label y textarea para salida
-        const labelSalida = document.createElement('label');
-        labelSalida.textContent = 'Salida esperada:';
-        labelSalida.style.cssText = 'display:block;margin-bottom:0.5rem;';
-        casoDiv.appendChild(labelSalida);
-        
-        const textareaSalida = document.createElement('textarea');
-        textareaSalida.id = `salida-caso-${index}`;
-        textareaSalida.value = caso.salida || '';
-        textareaSalida.style.cssText = 'width:100%;padding:0.5rem;font-family:monospace;background:#111;color:#00ffcc;border:1px solid #555;border-radius:4px;min-height:60px;';
-        casoDiv.appendChild(textareaSalida);
-        
-        contenedor.appendChild(casoDiv);
-      });
-
-      // Si no hay casos, mostrar mensaje
-      if (casos.length === 0) {
-        const mensaje = document.createElement('p');
-        mensaje.textContent = 'No hay casos de prueba. Agregá uno usando el botón "+ Agregar caso".';
-        mensaje.style.cssText = 'color:#888;text-align:center;padding:2rem;';
-        contenedor.appendChild(mensaje);
-      }
-    }
-
-    function agregarCasoPrueba() {
-      const contenedor = document.getElementById('contenedor-casos-prueba');
-      const casosActuales = ejercicios[indice].casosDePrueba || [];
-      const nuevoIndex = casosActuales.length;
-
-      // Agregar caso vacío al array
-      if (!ejercicios[indice].casosDePrueba) {
-        ejercicios[indice].casosDePrueba = [];
-      }
-      ejercicios[indice].casosDePrueba.push({ entrada: '', salida: '' });
-
-      // Recargar el modal
-      cargarCasosPruebaEnModal();
-    }
-
-    function eliminarCasoPrueba(index) {
-      if (confirm(`¿Estás seguro de que querés eliminar el caso ${index + 1}?`)) {
-        ejercicios[indice].casosDePrueba.splice(index, 1);
-        cargarCasosPruebaEnModal();
-      }
-    }
-
-    function guardarCasosPrueba() {
-      const ejercicioActual = ejercicios[indice];
-      if (!ejercicioActual.casosDePrueba) {
-        ejercicioActual.casosDePrueba = [];
-      }
-
-      // Recopilar todos los casos del modal
-      const casosGuardados = [];
-      const contenedor = document.getElementById('contenedor-casos-prueba');
-      
-      // Buscar todos los textareas de entrada y salida
-      let index = 0;
-      while (true) {
-        const entrada = document.getElementById(`entrada-caso-${index}`);
-        const salida = document.getElementById(`salida-caso-${index}`);
-        
-        if (!entrada || !salida) {
-          break; // No hay más casos
-        }
-        
-        casosGuardados.push({
-          entrada: entrada.value.trim(),
-          salida: salida.value.trim()
-        });
-        
-        index++;
-      }
-
-      // Actualizar el array de ejercicios
-      ejercicios[indice].casosDePrueba = casosGuardados;
-
-      alert("Casos de prueba guardados correctamente.");
-      cerrarModalCorregirCasos();
-    }
-
-    function cerrarModalCorregirCasos() {
-      document.getElementById('modal-corregir-casos').style.display = "none";
     }
   
     // Control del input para cambiar el ejercicio por número
