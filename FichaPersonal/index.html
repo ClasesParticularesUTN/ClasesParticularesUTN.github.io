@@ -407,6 +407,9 @@
             }
             errorDiv.style.display = "none";
             // Datos personales
+            data.abrirLink = function () {
+              window.open(this.linkHoja, "_blank");
+            };
             Alumno = data;
             document.getElementById("nombre").textContent = data.nombre || "";
             document.getElementById("apellido").textContent = data.apellido || "";
@@ -548,7 +551,24 @@
             loader.style.display = "none";
             main.style.display = "block";
         });
-
+        document.addEventListener('keydown', function(e) {
+          if (!e.altKey) return;
+          const key = e.key ? e.key.toLowerCase() : String.fromCharCode(e.keyCode).toLowerCase();
+          if (key !== 'a') return;
+          const tgt = e.target;
+          if (tgt && (tgt.tagName === 'INPUT' || tgt.tagName === 'TEXTAREA' || tgt.isContentEditable)) return;
+          e.preventDefault();
+          if (typeof Alumno === 'object' && Alumno && typeof Alumno.abrirLink === 'function') {
+            try {
+              Alumno.abrirLink();
+            } catch (err) {
+              console.error(err);
+              Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo abrir el enlace.' });
+            }
+          } else {
+            Swal.fire({ icon: 'info', title: 'Información', text: 'No hay alumno cargado o falta Alumno.abrirLink().' });
+          }
+        });
 
 </script>
 </body>
