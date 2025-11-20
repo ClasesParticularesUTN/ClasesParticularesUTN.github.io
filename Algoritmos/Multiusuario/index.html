@@ -1122,7 +1122,7 @@
     </div>
   </div>
 </div>
-<script src="./URLS.js"></script>
+<script src="/URLS.js"></script>
   <script>
     // Variables globales Socket.io
     let socket = null;
@@ -1274,14 +1274,76 @@
   if(inputArchivo) inputArchivo.style.display = "none";
   if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
 
+  // Función auxiliar: detecta si estamos en GitHub Pages o un dominio externo
+  function estaEnGitHubPages() {
+    const hostname = window.location.hostname;
+    return hostname.includes('github.io') || 
+           hostname.includes('github.com') || 
+           (hostname !== 'localhost' && hostname !== '127.0.0.1' && !/^\d+\.\d+\.\d+\.\d+$/.test(hostname));
+  }
+
+  // Función auxiliar: genera IPs comunes de la red local para probar cuando estamos en GitHub Pages
+  // Solo genera IPs relevantes basándose en config.js o rangos comunes
+  function generarIPsComunesParaProbar() {
+    const ips = [];
+    
+    // Primero, intentar extraer IPs de config.js si existen
+    let ipsDesdeConfig = [];
+    if (typeof getServerURLs === 'function') {
+      try {
+        const configUrls = getServerURLs();
+        configUrls.forEach(url => {
+          if (url && typeof url === 'string') {
+            const match = url.match(/(\d+\.\d+\.\d+\.\d+)/);
+            if (match) {
+              const ip = match[1];
+              ipsDesdeConfig.push(ip);
+              // Generar variaciones cercanas de esta IP (último octeto ±3 para no probar demasiadas)
+              const partes = ip.split('.');
+              const base = partes.slice(0, 3).join('.');
+              const ultimoOcteto = parseInt(partes[3]);
+              for (let i = Math.max(1, ultimoOcteto - 3); i <= Math.min(254, ultimoOcteto + 3); i++) {
+                if (i !== ultimoOcteto) {
+                  ipsDesdeConfig.push(`${base}.${i}`);
+                }
+              }
+            }
+          }
+        });
+      } catch (e) {
+        console.warn('⚠️ Error al extraer IPs desde config.js:', e);
+      }
+    }
+    
+    // Agregar IPs desde config primero
+    ips.push(...ipsDesdeConfig);
+    
+    // Si no hay IPs desde config, agregar algunas IPs comunes (solo las más probables)
+    if (ips.length === 0) {
+      // IPs comunes en redes locales (solo las más probables para no hacer demasiadas pruebas)
+      const ipsComunes = [
+        '192.168.0.1', '192.168.0.100', '192.168.0.101',
+        '192.168.1.1', '192.168.1.100', '192.168.1.101',
+        '192.168.96.91', '192.168.96.90', '192.168.96.92', '192.168.96.93',
+        '10.0.0.1', '10.0.0.100'
+      ];
+      ips.push(...ipsComunes);
+      console.log('📋 No se encontraron IPs en config.js, usando IPs comunes predeterminadas');
+    }
+    
+    return [...new Set(ips)]; // Eliminar duplicados
+  }
+
   // Función para obtener URLs del servidor de archivos estáticos (puerto 3001)
   function obtenerURLsServidorArchivos() {
     const urlsToTry = [];
     const currentHostname = window.location.hostname;
     const protocol = window.location.protocol;
+    const esGitHubPages = estaEnGitHubPages();
     
     // PRIORIDAD 1: Usar la misma URL desde donde se está cargando la página, pero cambiar el puerto a 3001
-    if (currentHostname) {
+    // Solo si NO estamos en GitHub Pages (en GitHub Pages, el hostname no es la IP del servidor)
+    if (currentHostname && !esGitHubPages) {
       if (currentHostname !== 'localhost' && currentHostname !== '127.0.0.1') {
         // Es una IP de red, construir URL con puerto 3001
         const archivosURL = `${protocol}//${currentHostname}:3001`;
@@ -1331,7 +1393,19 @@
       }
     }
     
-    // PRIORIDAD 3: Fallback - localhost si no hay nada más
+    // PRIORIDAD 3: Si estamos en GitHub Pages, agregar IPs comunes para probar
+    if (esGitHubPages) {
+      const ipsComunes = generarIPsComunesParaProbar();
+      ipsComunes.forEach(ip => {
+        const archivosURL = `http://${ip}:3001`;
+        if (!urlsToTry.includes(archivosURL)) {
+          urlsToTry.push(archivosURL);
+          console.log('  ➕ Agregada IP común para probar desde GitHub Pages:', archivosURL);
+        }
+      });
+    }
+    
+    // PRIORIDAD 4: Fallback - localhost si no hay nada más
     if (urlsToTry.length === 0) {
       urlsToTry.push('http://localhost:3001');
       console.log('⚠️ No se detectaron URLs, usando fallback localhost para archivos');
@@ -2119,6 +2193,7 @@ function toggleEditor() {
     // Función para obtener URLs del compilador (similar a la de Socket.IO)
     function obtenerURLsCompilador() {
       const urlsToTry = [];
+      const esGitHubPages = estaEnGitHubPages();
       
       // Detectar automáticamente la URL del servidor basándose en dónde se carga la página
       const currentOrigin = window.location.origin; // Ej: http://192.168.96.91:3002
@@ -2130,12 +2205,14 @@ function toggleEditor() {
         origin: currentOrigin,
         hostname: currentHostname,
         port: currentPort,
-        protocol: protocol
+        protocol: protocol,
+        esGitHubPages: esGitHubPages
       });
       
       // PRIORIDAD 1: Usar la misma URL desde donde se está cargando la página, pero cambiar el puerto a 3000
+      // Solo si NO estamos en GitHub Pages (en GitHub Pages, el hostname no es la IP del servidor)
       // Si accedes desde http://192.168.96.91:3002, el compilador estará en http://192.168.96.91:3000
-      if (currentHostname) {
+      if (currentHostname && !esGitHubPages) {
         if (currentHostname !== 'localhost' && currentHostname !== '127.0.0.1') {
           // Es una IP de red, construir URL con puerto 3000
           const compileURL = `${protocol}//${currentHostname}:3000/compile`;
@@ -2195,7 +2272,19 @@ function toggleEditor() {
         }
       }
       
-      // PRIORIDAD 3: Fallback - localhost si no hay nada más
+      // PRIORIDAD 3: Si estamos en GitHub Pages, agregar IPs comunes para probar
+      if (esGitHubPages) {
+        const ipsComunes = generarIPsComunesParaProbar();
+        ipsComunes.forEach(ip => {
+          const compileURL = `http://${ip}:3000/compile`;
+          if (!urlsToTry.includes(compileURL)) {
+            urlsToTry.push(compileURL);
+            console.log('  ➕ Agregada IP común para probar desde GitHub Pages:', compileURL);
+          }
+        });
+      }
+      
+      // PRIORIDAD 4: Fallback - localhost si no hay nada más
       if (urlsToTry.length === 0) {
         urlsToTry.push('http://localhost:3000/compile');
         console.log('⚠️ No se detectaron URLs, usando fallback localhost');
@@ -3201,6 +3290,8 @@ document.addEventListener("keydown", function(e) {
         return;
       }
 
+      const esGitHubPages = estaEnGitHubPages();
+
       // Detectar automáticamente la URL del servidor basándose en dónde se carga la página
       // window.location.origin ya incluye protocolo, hostname y puerto completo
       // Ejemplo: si accedes desde http://192.168.96.91:3002, origin será "http://192.168.96.91:3002"
@@ -3216,11 +3307,14 @@ document.addEventListener("keydown", function(e) {
       let urlsToTry = [];
       
       // PRIORIDAD 1: Usar la misma URL desde donde se está cargando la página
+      // Solo si NO estamos en GitHub Pages (en GitHub Pages, el hostname no es la IP del servidor)
       // Esto funciona perfectamente cuando accedes desde otra máquina en la red
       // Si accedes desde http://192.168.96.91:3002, el socket se conectará a esa misma URL
-      if (currentHostname && currentHostname !== 'localhost' && currentHostname !== '127.0.0.1') {
-        urlsToTry.push(serverURLFromOrigin);
-        console.log('🌐 Detectada URL de red desde window.location.origin:', serverURLFromOrigin);
+      if (currentHostname && !esGitHubPages) {
+        if (currentHostname !== 'localhost' && currentHostname !== '127.0.0.1') {
+          urlsToTry.push(serverURLFromOrigin);
+          console.log('🌐 Detectada URL de red desde window.location.origin:', serverURLFromOrigin);
+        }
       }
       
       // PRIORIDAD 2: Si estamos en localhost, usar localhost
@@ -3245,7 +3339,19 @@ document.addEventListener("keydown", function(e) {
         }
       }
       
-      // PRIORIDAD 4: Fallback - localhost si no hay nada más
+      // PRIORIDAD 4: Si estamos en GitHub Pages, agregar IPs comunes para probar
+      if (esGitHubPages) {
+        const ipsComunes = generarIPsComunesParaProbar();
+        ipsComunes.forEach(ip => {
+          const socketURL = `http://${ip}:3002`;
+          if (!urlsToTry.includes(socketURL)) {
+            urlsToTry.push(socketURL);
+            console.log('  ➕ Agregada IP común para probar desde GitHub Pages:', socketURL);
+          }
+        });
+      }
+      
+      // PRIORIDAD 5: Fallback - localhost si no hay nada más
       if (urlsToTry.length === 0) {
         urlsToTry.push('http://localhost:3002');
       }
