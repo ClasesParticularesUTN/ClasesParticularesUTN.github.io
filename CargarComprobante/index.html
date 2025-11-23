@@ -1,11 +1,14 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- Agregado -->
-  <title>Clase Particular</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pagar Clase Particular</title>
+
+  <!-- SDK Mercado Pago -->
+  <script src="https://sdk.mercadopago.com/js/v2"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -24,11 +27,11 @@
 
     h2 {
       color: #666;
-      margin-bottom: 40px;
-
+      margin-bottom: 10px;
+      text-align: center;
     }
 
-    form {
+    .card {
       background: #fff;
       padding: 40px 50px;
       border-radius: 16px;
@@ -39,316 +42,165 @@
       box-sizing: border-box;
     }
 
-    p {
-      margin-bottom: 25px;
-      font-size: 16px;
-      color: #444;
-    }
-
-    /* Ocultar input original */
-    input[type="file"] {
-      display: none;
-    }
-
-    /* Botón personalizado */
-    .custom-file-label {
-      background: #007bff;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      display: inline-block;
-      margin-bottom: 20px;
-    }
-
-    .custom-file-label:hover {
-      background: #0056b3;
-    }
-
-    /* Texto del archivo seleccionado */
-    #file-name {
-      margin: 20px 0;
-      font-size: 15px;
-      color: #555;
-      font-style: italic;
-    }
-
-    /* CBU styles */
-    .cbu-container {
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      /* gap: 16px; */
-      background: #f1f5f9;
-      padding: 18px 16px;
-      border-radius: 10px;
-      /* margin: 28px 0 24px 0; */
-      box-sizing: border-box;
-      width: 100%;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .cbu-text {
-      font-family: monospace;
-      color: #111;
-      font-weight: 600;
-      font-size: 16px;
-      word-break: break-all;
-      white-space: pre-line;
-      flex: 1 1 220px;
-      min-width: 0;
-    }
-
-    .copy-btn {
-      background: #007bff;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      flex-shrink: 0;
-    }
-
-    .copy-btn:hover {
-      background: #0056b3;
-    }
-
-    form > *:not(:last-child) {
-      margin-bottom: 18px;
-    }
-
     button {
       margin-top: 30px;
-      background: #28a745;
+      background: #009ee3;
       color: white;
       border: none;
       padding: 12px 28px;
       border-radius: 8px;
       cursor: pointer;
       font-size: 16px;
+      width: 100%;
     }
 
     button:hover {
-      background: #1e7e34;
+      background: #007bb8;
     }
 
-    /* --- RESPONSIVE --- */
     @media (max-width: 600px) {
       body {
         padding: 10px;
       }
 
-      form {
-        padding: 20px 10px;
+      .card {
+        padding: 20px 15px;
         max-width: 100%;
       }
 
-      h1,
-      h2 {
-        font-size: 1.2em;
+      h1, h2 {
+        font-size: 1.1em;
       }
 
-      .custom-file-label,
       button {
-        width: 100%;
         font-size: 1em;
         padding: 12px 0;
-      }
-
-      #file-name {
-        font-size: 0.95em;
       }
     }
   </style>
 </head>
 
 <body>
-  <h1>Cargar Comprobante Clase Particular</h1>
-  <h2 id="fecha">Miércoles, 25/10 10:00</h2>
+  <h1>Pagar Clase Particular</h1>
+  <h2 id="fecha"></h2>
   <h2 id="precio-clase"></h2>
 
-  <form id="uploadForm" action="/subir" method="post" enctype="multipart/form-data">
-    <!-- Mostrar CBU y botón de copia -->
-    <div class="cbu-container" role="group" aria-label="CBU de transferencia">
-      <div class="cbu-text" id="cbu-text">CBU: 0000003100094744875484</div>
-      <button type="button" class="copy-btn" id="copy-cbu">Copiar CBU</button>
-    </div>
-
-    <p>Subí tu comprobante de pago (imagen o PDF):</p>
-
-    <!-- Botón estilizado para el input -->
-    <label for="comprobante" class="custom-file-label">📎 Seleccionar archivo</label>
-    <input type="file" id="comprobante" name="comprobante" accept=".pdf, image/*" required>
-    <div id="file-name">Ningún archivo seleccionado</div>
-
-    <!-- Campo oculto para referencia -->
-    <input type="hidden" name="referencia" id="referencia">
-
-    <button type="submit">Enviar</button>
-  </form>
-
-  <!-- Loader Spinner -->
-  <div id="loader"
-    style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:9999;justify-content:center;align-items:center;">
-    <div
-      style="border:8px solid #f3f3f3;border-top:8px solid #007bff;border-radius:50%;width:70px;height:70px;animation:spin 1s linear infinite;">
-    </div>
+  <div class="card">
+    <button id="btnPagar">Pagar con Mercado Pago</button>
   </div>
 
-  <style>
-    @keyframes spin {
-      0% {
-        transform: rotate(0deg);
-      }
-
-      100% {
-        transform: rotate(360deg);
-      }
-    }
-
-    #loader {
-      display: flex;
-    }
-    #fecha{
-      margin-bottom: 0;
-    }
-  </style>
-  <script src="/Horarios/JS/URLS.js"></script>
   <script>
-    let $ = (id) => document.querySelector(id);
-  // Extraer referencia de la URL
-  const params = new URLSearchParams(window.location.search);
-  let ref = params.get("ref");
-  let correo = params.get("correo");
-  let fecha = params.get("fecha");
-  let precio = params.get("precio");
+    // ====== CONFIGURACIÓN ======
+    const PUBLIC_KEY = "APP_USR-44993db0-ff1b-47ff-95df-dd7d53c79c15";
+    const GAS_URL    = "https://script.google.com/macros/s/AKfycby3CAqimaAZbJmvllYVlZiVKKW2nXhRl91t0x61M1_WG7f3zFKLkEms6AmzEX0tHps/exec";
 
-  // Si no hay argumentos, usar valores por defecto
-  if (!ref && !correo && !fecha && !precio) {
-    ref = "zZRTvEEiMr";
-    fecha = "miércoles, 10/09 17:00";
-    correo = "valedasilvacatela.vdc@gmail.com";
-    precio = "6000";
-  }
+    const mp = new MercadoPago(PUBLIC_KEY, { locale: "es-AR" });
 
-  console.log(correo, ref, fecha)
-  $("#fecha").innerHTML = fecha;
-  if (precio) {
-    $("#precio-clase").innerHTML = "Precio: $" + precio;
-  }
-  if (ref) {
-    document.getElementById("referencia").value = ref;
-  }
+    // ====== LEER PARÁMETROS ======
+    const params = new URLSearchParams(window.location.search);
+    let ref    = params.get("ref");
+    let correo = params.get("correo");
+    let fecha  = params.get("fecha");
+    let precio = params.get("precio");
 
-    // Mostrar nombre del archivo seleccionado
-    const fileInput = document.getElementById("comprobante");
-    const fileName = document.getElementById("file-name");
-    fileInput.addEventListener("change", () => {
-      if (fileInput.files.length > 0) {
-        fileName.textContent = "📄 " + fileInput.files[0].name;
-      } else {
-        fileName.textContent = "Ningún archivo seleccionado";
+    // Valores por defecto (para pruebas)
+    if (!ref && !correo && !fecha && !precio) {
+      ref    = "zZRTvEEiMr";
+      correo = "valedasilvacatela.vdc@gmail.com";
+      fecha  = "miércoles, 10/09 17:00";
+      precio = "6000";
+    }
+
+    // Mostrar en pantalla
+    document.getElementById("fecha").textContent = fecha || "";
+    document.getElementById("precio-clase").textContent = "Precio: $" + (precio || "0");
+
+    // Si ya está marcado como pago en localStorage, aviso
+    document.addEventListener("DOMContentLoaded", () => {
+      if (ref && localStorage.getItem(ref) === ref) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Atención',
+          text: 'Este pago ya está registrado como pago.',
+          confirmButtonText: 'Aceptar'
+        });
       }
     });
 
-    async function RegistrarPago(correo, referencia) {
-      const datos = {
-        funcion: "registrarPagoAutomatico",
-        correo,
-        referencia,
+    // ====== CREAR PREFERENCIA VÍA GAS ======
+    async function crearPreferencia() {
+      const payload = {
+        funcion: "crearPreferencia",
+        referencia: ref,
+        correo: correo,
+        precio: Number(precio)
       };
 
-      try {
-        await fetch(URLUsuarios, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(datos)
-        });
+      const resp = await fetch(GAS_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
 
-        console.log("Pago registrado");
-        localStorage.setItem(ref, ref);
-        Swal.fire({
-          icon: 'success',
-          title: '¡Pago registrado!',
-          text: 'Tu comprobante fue enviado correctamente.',
-          confirmButtonText: 'Aceptar'
-        }).then(() => {
-          window.location.href = "/";
-        });
-
-      } catch (error) {
-        console.error('Error al enviar datos:', error);
-      } finally {
-        document.getElementById("loader").style.display = "none";
+      if (!resp.ok) {
+        throw new Error("Error al crear preferencia");
       }
+
+      const data = await resp.json(); // { preferenceId: "..." }
+      return data.preferenceId;
     }
 
-    // Funcionalidad para copiar el CBU al portapapeles
-    (function(){
-      const CBU = "0000003100094744875484";
-      const cbuTextEl = document.getElementById('cbu-text');
-      if (cbuTextEl) cbuTextEl.textContent = "CBU: " + CBU;
+    // ====== CLICK EN "Pagar con Mercado Pago" ======
+    document.getElementById("btnPagar").addEventListener("click", async () => {
+      if (!correo || !ref || !precio) {
+        Swal.fire({
+          icon: "error",
+          title: "Faltan datos",
+          text: "Faltan datos de la clase (correo, ref o precio). Revisá el link."
+        });
+        return;
+      }
 
-      const copyBtn = document.getElementById('copy-cbu');
-      if (copyBtn) {
-        copyBtn.addEventListener('click', async () => {
-          try {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-              await navigator.clipboard.writeText(CBU);
-            } else {
-              const ta = document.createElement('textarea');
-              ta.value = CBU;
-              document.body.appendChild(ta);
-              ta.select();
-              document.execCommand('copy');
-              document.body.removeChild(ta);
+      try {
+        Swal.fire({
+          icon: "info",
+          title: "Generando pago...",
+          text: "Un momento por favor",
+          allowOutsideClick: false,
+          showConfirmButton: false
+        });
+
+        const preferenceId = await crearPreferencia();
+
+        Swal.close();
+
+        const bricksBuilder = mp.bricks();
+        await bricksBuilder.create("wallet", "wallet_container", {
+          initialization: {
+            preferenceId: preferenceId
+          },
+          customization: {
+            texts: {
+              valueProp: "smart_option"
             }
-
-            Swal.fire({
-              icon: 'success',
-              title: 'Copiado',
-              text: 'CBU copiado al portapapeles',
-              timer: 1400,
-              showConfirmButton: false
-            });
-          } catch (err) {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'No se pudo copiar el CBU'
-            });
           }
         });
-      }
-    })();
 
-    document.getElementById("uploadForm").addEventListener("submit", function (e) {
-      e.preventDefault();
-      document.getElementById("loader").style.display = "flex";
-      if (correo && ref) {
-        RegistrarPago(correo, ref);
-      } else {
-        alert("Faltan argumentos para poder procesar el pago");
-        document.getElementById("loader").style.display = "none";
+        // Si querés que se abra en modal automáticamente, podés dejarlo así.
+        // La Wallet Brick se renderiza sola.
+      } catch (e) {
+        console.error(e);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "No se pudo iniciar el pago. Intentalo de nuevo."
+        });
       }
     });
-    document.addEventListener("DOMContentLoaded", ()=>{
-      if(ref == localStorage.getItem(ref)){
-        Swal.fire({
-                icon: 'warning',
-                title: 'Atención',
-                text: 'Este pago ya está registrado como pago',
-                confirmButtonText: 'Aceptar'
-              });        
-      }
-    })
-  </script>
-</body>
 
+  </script>
+
+  <!-- Contenedor requerido por la Wallet Brick -->
+  <div id="wallet_container" style="margin-top:20px;"></div>
+</body>
 </html>
