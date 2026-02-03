@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Clases Particulares UTN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        :root {
+            --primary: #0077c2;
+            --primary-dark: #005ea3;
+            --accent: #00b894;
+            --warning: #e67e22;
+            --bg: #f0f4f8;
+            --text-main: #1a1a1a;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        body, html { 
+            margin:0; padding:0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg); color: var(--text-main);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 30px 20px; text-align: center;
+            border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
+            box-shadow: var(--shadow); margin-bottom: 25px;
+        }
+
+        h1 { margin:0; font-size: 1.5rem; font-weight: 800; }
+
+        /* Loaders */
+        .loader {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(255, 255, 255, 0.96);
+            display:flex; justify-content:center; align-items:center;
+            z-index:9999; flex-direction: column; gap:20px;
+            backdrop-filter: blur(10px); text-align: center; padding: 25px;
+        }
+        .loader.hidden { display:none; }
+
+        .spinner {
+            border: 4px solid rgba(0, 119, 194, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%; width:50px; height:50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .progress-container {
+            width: 80%; max-width: 300px; height: 6px;
+            background: #eee; border-radius: 10px; overflow: hidden;
+        }
+        .progress-bar {
+            width: 0%; height: 100%; background: var(--primary);
+            animation: progress 45s linear forwards;
+        }
+        @keyframes progress { 0% { width: 0%; } 100% { width: 95%; } }
+
+        /* Contenedor e Items */
+        .container { max-width: 600px; margin: 0 auto; padding: 0 15px 140px; }
+
+        .empty-state {
+            text-align: center; padding: 60px 20px;
+            background: var(--white); border-radius: 20px;
+            box-shadow: var(--shadow); border: 1px solid #e2e8f0;
+        }
+
+        .card {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--white); border-radius: 18px; padding: 18px;
+            border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: var(--shadow); margin-bottom: 12px;
+        }
+
+        .info strong { font-size: 1.1rem; color: var(--primary); display: block; }
+        .info .details { font-size: 0.85rem; color: var(--text-light); display: block; }
+        
+        .recargo-tag {
+            font-size: 0.72rem; background: #fff3e0; color: var(--warning);
+            padding: 3px 10px; border-radius: 6px; font-weight: 700;
+            display: inline-block; margin-top: 6px;
+        }
+
+        .controles { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .pago-checkbox {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.85rem; font-weight: 700; color: var(--text-light);
+            cursor: pointer; background: #edf2f7;
+            padding: 8px 16px; border-radius: 12px; transition: 0.2s;
+        }
+        .pago-checkbox:has(input:checked) { background: var(--accent); color: white; }
+
+        /* Precios */
+        .price-display { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
+        .sub-price { 
+            font-size: 0.8rem; 
+            color: var(--text-light); 
+            text-decoration: line-through; 
+            opacity: 0.6;
+            margin-bottom: -4px;
+        }
+
+        /* Barra Inferior */
+        .footer-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--white); padding: 15px 0 35px;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.08);
+            display: none; z-index: 1000;
+            border-top-left-radius: 25px; border-top-right-radius: 25px;
+        }
+        .footer-content {
+            max-width: 600px; margin: 0 auto; padding: 0 25px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        button {
+            background: var(--primary); color: white; border: none;
+            border-radius: 16px; padding: 14px 28px; font-size: 1rem;
+            font-weight: 700; cursor: pointer;
+        }
+
+        @media (max-width: 450px) {
+            .card { flex-direction: column; align-items: flex-start; }
+            .controles { width: 100%; flex-direction: row; justify-content: space-between; margin-top: 12px; border-top: 1px solid #f1f5f9; padding-top: 12px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Registro de pagos</h1>
+</header>
+
+<div id="loaderClases" class="loader">
+    <div class="spinner"></div>
+    <p>Buscando clases pendientes de pago...</p>
+</div>
+
+<div id="loaderPago" class="loader hidden">
+    <div class="spinner"></div>
+    <div style="font-weight: 800; font-size: 1.1rem;">Iniciando servidor de pagos</div>
+    <div class="progress-container"><div class="progress-bar"></div></div>
+    <p style="color: var(--warning); font-size: 0.9rem; max-width: 250px;">El servidor puede tardar hasta 1 minuto en responder. Por favor espera.</p>
+</div>
+
+<div class="container">
+    <div class="productos" id="productos"></div>
+</div>
+
+<div class="footer-bar" id="totalContainer">
+    <div class="footer-content">
+        <div class="total-text">
+            <div style="font-size: 0.8rem; color: var(--text-light); font-weight: 600;">TOTAL SELECCIONADO</div>
+            <div style="font-size: 1.5rem; font-weight: 900;">$<span id="total">0</span></div>
+        </div>
+        <button onclick="pagarSeleccion()">Pagar Ahora</button>
+    </div>
+</div>
+
+<script>
+const correoAlumno = (typeof Alumno !== "undefined" && Alumno.correoElectronico)
+    ? Alumno.correoElectronico
+    : "valedasilvacatela.vdc@gmail.com";
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec";
+const BACKEND_URL = "https://mercadopago-di7q.onrender.com/crear-preferencia";
+
+let clases = [];
+
+async function cargarClases() {
+    try {
+        document.getElementById("loaderClases").classList.remove("hidden");
+        const res = await fetch(`${GAS_URL}?funcion=devolverDeuda&correo=${encodeURIComponent(correoAlumno)}`);
+        const data = await res.json();
+
+        clases = data.map((c, index) => ({
+            id: index,
+            fecha: c.fecha,
+            modalidad: c.modalidad,
+            horas: c.horas,
+            precioBase: parseFloat(c.precio) || 0,
+            recargo: parseFloat(c.recargo) || 0,
+            precioFinal: (parseFloat(c.precio) || 0) + (parseFloat(c.recargo) || 0),
+            codigo: c.codigo 
+        }));
+
+        mostrarClases();
+    } catch(e) {
+        alert("Error al conectar con la base de datos.");
+    } finally {
+        document.getElementById("loaderClases").classList.add("hidden");
+    }
+}
+
+function mostrarClases() {
+    const contenedor = document.getElementById("productos");
+    contenedor.innerHTML = "";
+
+    if (clases.length === 0) {
+        contenedor.innerHTML = `
+            <div class="empty-state">
+                <span style="font-size:3rem">🎉</span>
+                <h2 style="color:var(--accent)">¡Estás al día!</h2>
+                <p>No se encontraron pagos pendientes.</p>
+            </div>`;
+        return;
+    }
+
+    clases.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+        
+        // Lógica de Recargo y Precio Original Tachado
+        const tieneRecargo = c.recargo > 0;
+        const htmlRecargo = tieneRecargo ? `<div class="recargo-tag">Recargo por mora: +$${c.recargo.toLocaleString('es-AR')}</div>` : "";
+        const htmlTachado = tieneRecargo ? `<div class="sub-price">$${c.precioBase.toLocaleString('es-AR')}</div>` : "";
+        
+        card.innerHTML = `
+            <div class="info">
+                <strong>${c.modalidad}</strong>
+                <span class="details">📅 ${c.fecha}</span>
+                <span class="details">⏱️ ${c.horas} hs</span>
+                ${htmlRecargo}
+            </div>
+            <div class="controles">
+                <div style="text-align:right">
+                    ${htmlTachado}
+                    <div class="price-display">$${c.precioFinal.toLocaleString('es-AR')}</div>
+                </div>
+                <label class="pago-checkbox">
+                    <input type="checkbox" value="${c.id}" onchange="actualizarTotal()">
+                    Pagar
+                </label>
+            </div>`;
+        contenedor.appendChild(card);
+    });
+}
+
+function actualizarTotal() {
+    let total = 0;
+    let haySeleccion = false;
+    clases.forEach(c => {
+        const cb = document.querySelector(`input[type="checkbox"][value="${c.id}"]`);
+        if (cb && cb.checked) { total += c.precioFinal; haySeleccion = true; }
+    });
+    document.getElementById("totalContainer").style.display = haySeleccion ? "block" : "none";
+    document.getElementById("total").textContent = total.toLocaleString('es-AR');
+}
+
+async function pagarSeleccion() {
+    const items = [];
+    clases.forEach(c => {
+        const cb = document.querySelector(`input[type="checkbox"][value="${c.id}"]`);
+        if (cb && cb.checked) {
+            items.push({ 
+                title: `${c.modalidad} (${c.fecha})`, 
+                price: c.precioFinal,
+                codigo: c.codigo 
+            });
+        }
+    });
+
+    try {
+        document.getElementById("loaderPago").classList.remove("hidden");
+        const res = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items })
+        });
+        const data = await res.json();
+        if (data.init_point) window.location.href = data.init_point;
+        else throw new Error();
+    } catch(e) {
+        alert("El servidor de pagos está demorando. Reintenta en un momento.");
+        document.getElementById("loaderPago").classList.add("hidden");
+    }
+}
+
+cargarClases();
+</script>
+</body>
+</html>
