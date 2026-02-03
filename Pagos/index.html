@@ -33,14 +33,13 @@
 
         h1 { margin:0; font-size: 1.5rem; font-weight: 800; }
 
-        /* Loaders Corregidos */
         .loader {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(255, 255, 255, 0.96);
             display:flex; justify-content:center; align-items:center;
             z-index:9999; flex-direction: column; gap:20px;
             backdrop-filter: blur(10px); text-align: center; 
-            padding: 0; margin: 0; box-sizing: border-box; /* Asegura centrado total en móvil */
+            padding: 0; margin: 0; box-sizing: border-box;
         }
         .loader.hidden { display:none; }
 
@@ -62,7 +61,6 @@
         }
         @keyframes progress { 0% { width: 0%; } 100% { width: 95%; } }
 
-        /* Contenedor e Items */
         .container { max-width: 600px; margin: 0 auto; padding: 0 15px 140px; }
 
         .empty-state {
@@ -95,7 +93,6 @@
         }
         .pago-checkbox:has(input:checked) { background: var(--accent); color: white; }
 
-        /* Precios */
         .price-display { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
         .sub-price { 
             font-size: 0.8rem; 
@@ -105,7 +102,6 @@
             margin-bottom: -4px;
         }
 
-        /* Barra Inferior */
         .footer-bar {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--white); padding: 15px 0 35px;
@@ -163,10 +159,12 @@
 </div>
 
 <script>
-const correoAlumno = (typeof Alumno !== "undefined" && Alumno.correoElectronico)
-    ? Alumno.correoElectronico
-    : "valedasilvacatela.vdc@gmail.com";
+// --- VALIDACIÓN DE USUARIO Y REDIRECCIÓN ---
+if (typeof Alumno === "undefined" || !Alumno.correoElectronico) {
+    window.location.href = "https://clasesparticularesutn.com.ar/Horarios/Login/Login.html";
+}
 
+const correoAlumno = Alumno.correoElectronico;
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec";
 const BACKEND_URL = "https://mercadopago-di7q.onrender.com/crear-preferencia";
 
@@ -269,16 +267,17 @@ async function pagarSeleccion() {
         const res = await fetch(BACKEND_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ items })
+            body: JSON.stringify({ 
+                items: items, 
+                email: correoAlumno 
+            })
         });
         const data = await res.json();
         
         if (data.init_point) {
-            // Cerramos el loader antes de redirigir
             window.location.href = data.init_point;
             let reiniciar = true;
             setTimeout(() => {
-                // Cerramos el loader justo antes de irnos
                 if(reiniciar) document.getElementById("loaderPago").classList.add("hidden");
                 reiniciar = false;
             }, 2000);
