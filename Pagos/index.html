@@ -275,8 +275,8 @@ async function pagarSeleccion() {
         
         if (data.init_point) {
             // Cerramos el loader antes de redirigir
-            document.getElementById("loaderPago").classList.add("hidden");
             window.location.href = data.init_point;
+            document.getElementById("loaderPago").classList.add("hidden");
         } else {
             throw new Error();
         }
