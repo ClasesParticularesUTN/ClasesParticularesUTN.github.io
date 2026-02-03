@@ -97,6 +97,7 @@ async function asignarHorario(celdas, numeroDeHoja,integrantes = []) {
         metodoDePago: metodoDePago,
         integrantes: integrantes,
         precio:(precioInfo.total)/integrantes.length,
+        nombre: Alumno.nombre
     };
     console.log(datos)
     if (!integrantes || integrantes.length === 1) {
