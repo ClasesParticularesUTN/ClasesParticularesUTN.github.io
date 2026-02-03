@@ -31,7 +31,7 @@
             box-shadow: var(--shadow); margin-bottom: 15px;
         }
 
-        /* MENSAJE ESTÁS AL DÍA */
+        /* MENSAJE ESTÁS AL DÍA MEJORADO */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -55,7 +55,7 @@
             margin-top: 8px;
         }
 
-        /* LOADERS */
+        /* LOADERS (IGUAL QUE LOS ORIGINALES) */
         .loader {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(255, 255, 255, 0.96);
@@ -143,11 +143,9 @@
 
     <div id="loaderPago" class="loader hidden">
         <div class="spinner"></div>
-        <div id="pagoTitulo" style="font-weight: 800; font-size: 1.1rem;">Iniciando pago</div>
+        <div style="font-weight: 800; font-size: 1.1rem;">Iniciando servidor de pagos</div>
         <div class="progress-container"><div class="progress-bar"></div></div>
-        <p id="pagoMensaje" style="color: var(--warning); font-size: 0.9rem; max-width: 250px; margin: 0 auto; line-height: 1.4;">
-            Conectando con Mercado Pago...
-        </p>
+        <p style="color: var(--warning); font-size: 0.9rem; max-width: 250px; margin: 0 auto;">El servidor puede tardar hasta 1 minuto en responder. Por favor espera.</p>
     </div>
 
     <div class="productos" id="productos"></div>
@@ -164,7 +162,6 @@
 </div>
 
 <script>
-// --- Lógica de Sesión ---
 const sessionData = sessionStorage.getItem("persona");
 let Alumno = sessionData ? JSON.parse(sessionData) : null;
 
@@ -218,7 +215,6 @@ function mostrarClases() {
     clases.forEach(c => {
         const card = document.createElement("div");
         card.className = "card";
-        
         card.innerHTML = `
             <div class="info">
                 <strong>${c.modalidad}</strong>
@@ -266,23 +262,16 @@ async function pagarSeleccion() {
     });
 
     try {
-        const loader = document.getElementById("loaderPago");
-        const mensaje = document.getElementById("pagoMensaje");
-        
-        loader.classList.remove("hidden");
-        mensaje.innerHTML = "Si tienes la app de Mercado Pago, se abrirá automáticamente. <br> Por favor espera...";
-
+        document.getElementById("loaderPago").classList.remove("hidden");
         const res = await fetch(BACKEND_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ items, email: correoAlumno })
         });
-        
         const data = await res.json();
         
         if (data.init_point) {
-            // Redirección directa para activar el Deep Linking en móviles
-            window.location.assign(data.init_point);
+            window.location.href = data.init_point;
         } else {
             throw new Error();
         }
