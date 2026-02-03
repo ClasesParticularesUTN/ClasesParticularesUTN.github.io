@@ -143,9 +143,11 @@
 
     <div id="loaderPago" class="loader hidden">
         <div class="spinner"></div>
-        <div style="font-weight: 800; font-size: 1.1rem;">Iniciando servidor de pagos</div>
+        <div id="pagoTitulo" style="font-weight: 800; font-size: 1.1rem;">Iniciando pago</div>
         <div class="progress-container"><div class="progress-bar"></div></div>
-        <p style="color: var(--warning); font-size: 0.9rem; max-width: 250px; margin: 0 auto;">El servidor puede tardar hasta 1 minuto en responder. Por favor espera.</p>
+        <p id="pagoMensaje" style="color: var(--warning); font-size: 0.9rem; max-width: 250px; margin: 0 auto; line-height: 1.4;">
+            Conectando con Mercado Pago...
+        </p>
     </div>
 
     <div class="productos" id="productos"></div>
@@ -264,16 +266,23 @@ async function pagarSeleccion() {
     });
 
     try {
-        document.getElementById("loaderPago").classList.remove("hidden");
+        const loader = document.getElementById("loaderPago");
+        const mensaje = document.getElementById("pagoMensaje");
+        
+        loader.classList.remove("hidden");
+        mensaje.innerHTML = "Si tienes la app de Mercado Pago, se abrirá automáticamente. <br> Por favor espera...";
+
         const res = await fetch(BACKEND_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ items, email: correoAlumno })
         });
+        
         const data = await res.json();
         
         if (data.init_point) {
-            window.location.href = data.init_point;
+            // Redirección directa para activar el Deep Linking en móviles
+            window.location.assign(data.init_point);
         } else {
             throw new Error();
         }
