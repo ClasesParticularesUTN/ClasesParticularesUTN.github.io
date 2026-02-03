@@ -276,11 +276,11 @@ async function pagarSeleccion() {
         if (data.init_point) {
             // Cerramos el loader antes de redirigir
             window.location.href = data.init_point;
-            
+            let reiniciar = true;
             setTimeout(() => {
                 // Cerramos el loader justo antes de irnos
-                document.getElementById("loaderPago").classList.add("hidden");
-                
+                if(reiniciar) document.getElementById("loaderPago").classList.add("hidden");
+                reiniciar = false;
             }, 2000);
         } else {
             throw new Error();
