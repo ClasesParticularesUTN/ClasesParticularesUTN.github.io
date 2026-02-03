@@ -1,228 +1,287 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reserva Horarios</title>
-  <link rel="stylesheet" href="css/horarios.css">
-  <link rel="stylesheet" href="css/botones.css">
-  <link rel="stylesheet" href="css/loader.css">
-  <link rel="stylesheet" href="css/titulo.css">
-  <link rel="stylesheet" href="css/menuUsuario.css">
-  <link rel="stylesheet" href="css/VentanaModal.css">
-  <link rel="stylesheet" href="css/VentanaModalAvisos.css">
-  <link rel="stylesheet" href="css/Avisos.css">
-  <link rel="stylesheet" href="css/Swal.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <title>Clases Particulares UTN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        :root {
+            --primary: #0077c2;
+            --primary-dark: #005ea3;
+            --accent: #00b894;
+            --warning: #e67e22;
+            --bg: #f0f4f8;
+            --text-main: #1a1a1a;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
+        body, html { 
+            margin:0; padding:0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg); color: var(--text-main);
+            -webkit-tap-highlight-color: transparent;
+        }
 
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 20px; text-align: center;
+            border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
+            box-shadow: var(--shadow); margin-bottom: 15px;
+        }
+
+        /* MENSAJE ESTÁS AL DÍA MEJORADO */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--white);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            margin-top: 20px;
+        }
+        .empty-state .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .empty-state h2 {
+            margin: 0;
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+        .empty-state p {
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        /* LOADERS (IGUAL QUE LOS ORIGINALES) */
+        .loader {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(255, 255, 255, 0.96);
+            display:flex; justify-content:center; align-items:center;
+            z-index:9999; flex-direction: column; gap:20px;
+            backdrop-filter: blur(10px); text-align: center; 
+        }
+        .loader.hidden { display:none; }
+
+        .spinner {
+            border: 4px solid rgba(0, 119, 194, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%; width:50px; height:50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .progress-container {
+            width: 80%; max-width: 300px; height: 6px;
+            background: #eee; border-radius: 10px; overflow: hidden;
+        }
+        .progress-bar {
+            width: 0%; height: 100%; background: var(--primary);
+            animation: progress 45s linear forwards;
+        }
+        @keyframes progress { 0% { width: 0%; } 100% { width: 95%; } }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 0 15px 140px; }
+
+        .card {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--white); border-radius: 18px; padding: 18px;
+            border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: var(--shadow); margin-bottom: 12px;
+        }
+
+        .info strong { font-size: 1.1rem; color: var(--primary); display: block; }
+        .info .details { font-size: 0.85rem; color: var(--text-light); display: block; }
+
+        .controles { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        .pago-checkbox {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.85rem; font-weight: 700; color: var(--text-light);
+            cursor: pointer; background: #edf2f7;
+            padding: 8px 16px; border-radius: 12px; transition: 0.2s;
+        }
+        .pago-checkbox:has(input:checked) { background: var(--accent); color: white; }
+
+        .price-display { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
+
+        .footer-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--white); padding: 15px 0 35px;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.08);
+            display: none; z-index: 1000;
+            border-top-left-radius: 25px; border-top-right-radius: 25px;
+        }
+        .footer-content {
+            max-width: 600px; margin: 0 auto; padding: 0 25px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        button {
+            background: var(--primary); color: white; border: none;
+            border-radius: 16px; padding: 14px 28px; font-size: 1rem;
+            font-weight: 700; cursor: pointer;
+        }
+
+        @media (max-width: 450px) {
+            .card { flex-direction: column; align-items: flex-start; }
+            .controles { width: 100%; flex-direction: row; justify-content: space-between; margin-top: 12px; border-top: 1px solid #f1f5f9; padding-top: 12px; }
+        }
+    </style>
 </head>
 <body>
-  <div class="titulo">
-    <p class="semana animate__animated animate__flash">Reserva de Horarios</p>
-    <div class="login">
-        <div class="cajaMensajeLogin">
-            <p id="MensajeLogin">Iniciar Sesion / Registrarse</p>
-        </div>
-        <div class="cajaIncognito">
-            <img class="incognito" src="assets/fotos/Incognito.svg" alt="Fondo" >
-        </div>
+
+<header>
+    <h1>Registro de pagos</h1>
+</header>
+
+<div class="container">
+    <div id="loaderClases" class="loader">
+        <div class="spinner"></div>
+        <p>Buscando clases pendientes...</p>
     </div>
-    <div class="loginMovil">
-        <img class="incognitoMovil" src="assets/fotos/Incognito.svg" alt="Fondo" >
+
+    <div id="loaderPago" class="loader hidden">
+        <div class="spinner"></div>
+        <div style="font-weight: 800; font-size: 1.1rem;">Iniciando servidor de pagos</div>
+        <div class="progress-container"><div class="progress-bar"></div></div>
+        <p style="color: var(--warning); font-size: 0.9rem; max-width: 250px; margin: 0 auto;">El servidor puede tardar hasta 1 minuto en responder. Por favor espera.</p>
+    </div>
+
+    <div class="productos" id="productos"></div>
+</div>
+
+<div class="footer-bar" id="totalContainer">
+    <div class="footer-content">
+        <div class="total-text">
+            <div style="font-size: 0.8rem; color: var(--text-light); font-weight: 600;">TOTAL</div>
+            <div style="font-size: 1.5rem; font-weight: 900;">$<span id="total">0</span></div>
+        </div>
+        <button onclick="pagarSeleccion()">Ir a Mercado Pago</button>
     </div>
 </div>
-  </div>
-    <div class="containerLoader">
-        <div class="loaderSencillo"></div>
-    </div>
-        <div class="menu animate__animated">
-            
-            <p class="usuarioClasesAFAvor">Cantida de horas a Favor: </p>
-            <p class="usuarioClasesAFAvor numero">0</p>
-            <hr style="border: 0.1px solid white; width: 100%; padding: 0;">
-            <button id="verFichaCompleta" style="margin: 4px 0 8px 0; padding: 4px 12px; background: #e3f2fd; color: #0077cc; border: none; border-radius: 6px; font-size: 0.95rem; cursor: pointer; width: auto; float: right;">Ver ficha completa</button>
-            <p class="usuarioDatos usuarioNombre">Nombre Completo: </p>
-            <p class="usuarioDatos usuarioCorreo">Correo Electronico: </p>
-            <p class="usuarioDatos usuarioTelefono">Telefono: </p>
-            <p class="usuarioDatos">Horarios Reservados:</p>
-            <ul class="listaHorarios"></ul>
-            <div id="LoaderSencillo" class="loaderSencillo"></div>
-        </div>
-  <table style="display: none;">
-    <tr>
-      <td class="primero"></td>
-      <td data-name="B2" class="dia">Lunes<br>12/10</td>
-      <td data-name="C2" class="dia">Martes<br>12/10</td>
-      <td data-name="D2" class="dia">Miercoles<br>12/10</td>
-      <td data-name="E2" class="dia">Jueves<br>12/10</td>
-      <td data-name="F2" class="dia">Viernes<br>12/10</td>
-    </tr>
-     <tr>
-        <td class="hora">8:00</td>
-        <td data-name="B3" class="horario"></td>
-        <td data-name="C3" class="horario"></td>
-        <td data-name="D3" class="horario"></td>
-        <td data-name="E3" class="horario"></td>
-        <td data-name="F3" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">9:00</td>
-        <td data-name="B4" class="horario"></td>
-        <td data-name="C4" class="horario"></td>
-        <td data-name="D4" class="horario"></td>
-        <td data-name="E4" class="horario"></td>
-        <td data-name="F4" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">10:00</td>
-        <td data-name="B5" class="horario"></td>
-        <td data-name="C5" class="horario"></td>
-        <td data-name="D5" class="horario"></td>
-        <td data-name="E5" class="horario"></td>
-        <td data-name="F5" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">11:00</td>
-        <td data-name="B6" class="horario"></td>
-        <td data-name="C6" class="horario"></td>
-        <td data-name="D6" class="horario"></td>
-        <td data-name="E6" class="horario"></td>
-        <td data-name="F6" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">12:00</td>
-        <td data-name="B7" class="horario"></td>
-        <td data-name="C7" class="horario"></td>
-        <td data-name="D7" class="horario"></td>
-        <td data-name="E7" class="horario"></td>
-        <td data-name="F7" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">13:00</td>
-        <td data-name="B8" class="horario"></td>
-        <td data-name="C8" class="horario"></td>
-        <td data-name="D8" class="horario"></td>
-        <td data-name="E8" class="horario"></td>
-        <td data-name="F8" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">14:00</td>
-        <td data-name="B9" class="horario"></td>
-        <td data-name="C9" class="horario"></td>
-        <td data-name="D9" class="horario"></td>
-        <td data-name="E9" class="horario"></td>
-        <td data-name="F9" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">15:00</td>
-        <td data-name="B10" class="horario"></td>
-        <td data-name="C10" class="horario"></td>
-        <td data-name="D10" class="horario"></td>
-        <td data-name="E10" class="horario"></td>
-        <td data-name="F10" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">16:00</td>
-        <td data-name="B11" class="horario"></td>
-        <td data-name="C11" class="horario"></td>
-        <td data-name="D11" class="horario"></td>
-        <td data-name="E11" class="horario"></td>
-        <td data-name="F11" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">17:00</td>
-        <td data-name="B12" class="horario"></td>
-        <td data-name="C12" class="horario"></td>
-        <td data-name="D12" class="horario"></td>
-        <td data-name="E12" class="horario"></td>
-        <td data-name="F12" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">18:00</td>
-        <td data-name="B13" class="horario"></td>
-        <td data-name="C13" class="horario"></td>
-        <td data-name="D13" class="horario"></td>
-        <td data-name="E13" class="horario"></td>
-        <td data-name="F13" class="horario"></td>
-    </tr>
-  </table>
-  <div style="display: none;"class="botones">
-        <div class="sig">Siguiente Semana</div>
-        <div class="enviarReserva">Reservar</div>       
-  </div>
-  <template id="aviso-template">
-    <div class="tarjeta">
-        <h2 class="titulo"></h2>
-        <p class="descripcion"></p>
-    </div>
-</template>
-  <img style="display: none;" class="cafe" src="assets/fotos/aviso.png" alt="AvisoImportante">
-  <div id="VentanaModalAvisos" class="modalAvisos">
-    <div class="VentanaModalAvisos container">
-        <a href="#cerrar" id="cerrarVentana">X</a>
-        <h1>Avisos</h1>
-        <div class="avisos"></div>
-    </div>
-  </div>
-  <div id="VentanaModal" class="modal">
-  <div class="VentanaModal container">
-    <a href="#cerrar" id="cerrarVentanaModalidad">X</a>
-    <h1>Selecciona la modalidad de la clase</h1>
 
-    <div class="modalidad-opciones">
-      <label class="radio-option">
-        <input type="radio" name="modalidad" value="individual" onclick="mostrarCampos()" checked>
-        Individual
-      </label>
-      <label class="radio-option">
-        <input type="radio" name="modalidad" value="grupal" onclick="mostrarCampos()">
-        Grupal
-      </label>
-    </div>
+<script>
+const sessionData = sessionStorage.getItem("persona");
+let Alumno = sessionData ? JSON.parse(sessionData) : null;
 
-    <div style="display:none; align-items: center; flex-direction: column;" id="grupo-container" class="hidden">
-        <div style="display: flex; justify-content: center; margin-bottom: 10px;" class="campo-num-integrantes">
-            <label for="num-integrantes">Cantidad de integrantes:</label>
-            <input type="number" id="num-integrantes" min="1" max="3" onchange="generarCampos()">
-        </div>
-      <div style="display: flex; flex-direction: column; align-items: center; max-width: 70%;" id="integrantes"></div>
-    </div>
+if (!Alumno || !Alumno.correoElectronico) {
+    window.location.href = "/Horarios/Login/Login.html";
+}
 
-    <div id="precio-container" class="precio-info">
-        <div id="precio-total-simple"></div>
-        <button id="ver-detalle-btn" class="btn-detalle" onclick="toggleDetallePrecio()">Ver detalle</button>
-        <div id="precio-detalle-completo" class="precio-detalle-completo" style="display: none;"></div>
-    </div>
+const correoAlumno = Alumno.correoElectronico;
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec";
+const BACKEND_URL = "https://mercadopago-di7q.onrender.com/crear-preferencia";
 
-    <button class="btn-enviar enviar">Enviar</button>
-  </div>
-</div>
-  <script src="JS/cargarMedida.js"></script>
-  <script src="JS/URLS.js"></script>
-  <script src="JS/horariosReservados.js"></script>
-  <script src="JS/horariosFijos.js"></script>
-  <script src="JS/clickEnCelda.js"></script>
-  <script src="JS/siguienteSemana.js"></script>
-  <script src="JS/enviarReserva.js"></script>
-  <script src="JS/login.js"></script>
-  <script src="JS/usuarioRegistrado.js"></script>
-  <script src="JS/inhabilitarPago.js"></script>
-  <script src="JS/diaConDemanda.js"></script>
-  <script src="JS/modalidadClases.js "></script>
-  <script src="JS/Avisos.js"></script>
-  <script src="JS/AbrirMenu.js"></script>
-  <script>
-    // Redirigir al hacer click en 'Ver ficha completa'
-    document.addEventListener('DOMContentLoaded', function() {
-      const btnFicha = document.getElementById('verFichaCompleta');
-      if (btnFicha) {
-        btnFicha.onclick = function() {
-          window.location.href = '/FichaPersonal';
-        };
-      }
+let clases = [];
+
+async function cargarClases() {
+    try {
+        document.getElementById("loaderClases").classList.remove("hidden");
+        const res = await fetch(`${GAS_URL}?funcion=devolverDeuda&correo=${encodeURIComponent(correoAlumno)}`);
+        const data = await res.json();
+
+        clases = data.map((c, index) => ({
+            id: index,
+            fecha: c.fecha,
+            modalidad: c.modalidad,
+            horas: c.horas,
+            precioEditado: (parseFloat(c.precio) || 0) + (parseFloat(c.recargo) || 0),
+            codigo: c.codigo 
+        }));
+
+        mostrarClases();
+    } catch(e) {
+        alert("Error al cargar deuda.");
+    } finally {
+        document.getElementById("loaderClases").classList.add("hidden");
+    }
+}
+
+function mostrarClases() {
+    const contenedor = document.getElementById("productos");
+    contenedor.innerHTML = "";
+
+    if (clases.length === 0) {
+        contenedor.innerHTML = `
+            <div class="empty-state">
+                <span class="icon">✨</span>
+                <h2>¡Estás al día!</h2>
+                <p>No tienes clases pendientes de pago.</p>
+            </div>`;
+        return;
+    }
+
+    clases.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+            <div class="info">
+                <strong>${c.modalidad}</strong>
+                <span class="details">📅 ${c.fecha} | ⏱️ ${c.horas} hs</span>
+            </div>
+            <div class="controles">
+                <div style="text-align:right">
+                    <div class="price-display">$${c.precioEditado.toLocaleString('es-AR')}</div>
+                </div>
+                <label class="pago-checkbox">
+                    <input type="checkbox" value="${c.id}" onchange="actualizarTotal()">
+                    Pagar
+                </label>
+            </div>`;
+        contenedor.appendChild(card);
     });
-  </script>
+    actualizarTotal();
+}
+
+function actualizarTotal() {
+    let total = 0;
+    let haySeleccion = false;
+    clases.forEach(c => {
+        const cb = document.querySelector(`input[type="checkbox"][value="${c.id}"]`);
+        if (cb && cb.checked) { 
+            total += c.precioEditado; 
+            haySeleccion = true; 
+        }
+    });
+    document.getElementById("totalContainer").style.display = haySeleccion ? "block" : "none";
+    document.getElementById("total").textContent = total.toLocaleString('es-AR');
+}
+
+async function pagarSeleccion() {
+    const items = [];
+    clases.forEach(c => {
+        const cb = document.querySelector(`input[type="checkbox"][value="${c.id}"]`);
+        if (cb && cb.checked) {
+            items.push({ 
+                title: `${c.modalidad} (${c.fecha})`, 
+                price: c.precioEditado, 
+                codigo: c.codigo 
+            });
+        }
+    });
+
+    try {
+        document.getElementById("loaderPago").classList.remove("hidden");
+        const res = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items, email: correoAlumno })
+        });
+        const data = await res.json();
+        
+        if (data.init_point) {
+            window.location.href = data.init_point;
+        } else {
+            throw new Error();
+        }
+    } catch(e) {
+        alert("El servidor de pagos está demorando. Reintenta en un momento.");
+        document.getElementById("loaderPago").classList.add("hidden");
+    }
+}
+
+cargarClases();
+</script>
 </body>
 </html>
