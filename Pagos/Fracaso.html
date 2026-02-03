@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pago no procesado - UTN Clases</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --primary: #0077c2;
+            --error: #eb4d4b;
+            --warning: #f0932b;
+            --bg: #f8fafc;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 450px;
+            width: 90%;
+            background: var(--white);
+            padding: 40px 30px;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .icon-circle {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(235, 77, 75, 0.1);
+            color: var(--error);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin: 0 0 10px;
+            font-weight: 800;
+        }
+
+        p {
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .info-card {
+            background-color: #fffaf0;
+            border-left: 4px solid var(--warning);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 30px;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .info-card strong {
+            display: block;
+            color: #af6000;
+            margin-bottom: 5px;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-retry {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-retry:hover {
+            background-color: #005ea3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: var(--text-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2e8f0;
+        }
+
+        .help-text {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="icon-circle">
+            <i data-lucide="x-circle" size="48"></i>
+        </div>
+        
+        <h1>Pago no realizado</h1>
+        <p>No pudimos procesar tu pago. Esto puede deberse a fondos insuficientes o una interrupción en la conexión.</p>
+
+        <div class="info-card">
+            <strong>¿Qué pasó?</strong>
+            Mercado Pago no pudo autorizar la transacción. No se ha realizado ningún cargo en tu cuenta.
+        </div>
+
+        <div class="actions">
+            <a href="https://clasesparticularesutn.com.ar/Pagos.html" class="btn btn-retry">Reintentar pago</a>
+            <a href="https://clasesparticularesutn.com.ar" class="btn btn-secondary">Ir al inicio</a>
+        </div>
+
+        <div class="help-text">
+            Si el problema persiste, contacta con tu banco o intenta con otro medio de pago.
+        </div>
+    </div>
+
+    <script>
+        // Inicializar iconos
+        lucide.createIcons();
+
+        // Limpiar URL de parámetros de Mercado Pago
+        setTimeout(() => {
+            const cleanURL = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.replaceState({}, document.title, cleanURL);
+        }, 1500);
+    </script>
+</body>
+</html>
