@@ -1,206 +1,277 @@
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Pagar Clase Particular</title>
+    <meta charset="UTF-8">
+    <title>Clases Particulares UTN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        :root {
+            --primary: #0077c2;
+            --primary-dark: #005ea3;
+            --accent: #00b894;
+            --warning: #e67e22;
+            --bg: #f0f4f8;
+            --text-main: #1a1a1a;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-  <!-- SDK Mercado Pago -->
-  <script src="https://sdk.mercadopago.com/js/v2"></script>
+        body, html { 
+            margin:0; padding:0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: var(--bg); color: var(--text-main);
+            -webkit-tap-highlight-color: transparent;
+        }
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9f9f9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 50px;
-    }
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white; padding: 30px 20px; text-align: center;
+            border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;
+            box-shadow: var(--shadow); margin-bottom: 20px;
+        }
 
-    h1 {
-      color: #333;
-      margin-bottom: 10px;
-      text-align: center;
-    }
+        h1 { margin:0; font-size: 1.5rem; font-weight: 800; }
 
-    h2 {
-      color: #666;
-      margin-bottom: 10px;
-      text-align: center;
-    }
+        /* Loaders */
+        .loader {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: rgba(255, 255, 255, 0.95);
+            display:flex; justify-content:center; align-items:center;
+            z-index:9999; flex-direction: column; gap:20px;
+            backdrop-filter: blur(10px); text-align: center; padding: 20px; box-sizing: border-box;
+        }
+        .loader.hidden { display:none; }
 
-    .card {
-      background: #fff;
-      padding: 40px 50px;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
-      box-sizing: border-box;
-    }
+        .spinner {
+            border: 4px solid rgba(0, 119, 194, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%; width:50px; height:50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    button {
-      margin-top: 30px;
-      background: #009ee3;
-      color: white;
-      border: none;
-      padding: 12px 28px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      width: 100%;
-    }
+        /* Barra de progreso para el loader de pago */
+        .progress-container {
+            width: 80%; max-width: 300px; height: 6px;
+            background: #eee; border-radius: 10px; overflow: hidden; margin-top: 10px;
+        }
+        .progress-bar {
+            width: 0%; height: 100%; background: var(--primary);
+            animation: progress 45s linear forwards; /* Simula la espera del server */
+        }
+        @keyframes progress { 0% { width: 0%; } 100% { width: 95%; } }
 
-    button:hover {
-      background: #007bb8;
-    }
+        .warning-text {
+            color: var(--warning); font-size: 0.9rem; font-weight: 600;
+            max-width: 280px; margin-top: 5px;
+        }
 
-    @media (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
+        /* Layout Cards */
+        .container { max-width: 600px; margin: 0 auto; padding: 0 15px 140px; }
+        .productos { display: grid; gap: 12px; }
 
-      .card {
-        padding: 20px 15px;
-        max-width: 100%;
-      }
+        .card {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--white); border-radius: 18px; padding: 18px;
+            border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: var(--shadow);
+        }
 
-      h1, h2 {
-        font-size: 1.1em;
-      }
+        .info { display: flex; flex-direction: column; gap: 2px; }
+        .info strong { font-size: 1.1rem; color: var(--primary); }
+        .info .details { font-size: 0.85rem; color: var(--text-light); }
+        
+        .recargo-tag {
+            font-size: 0.75rem; background: #fff3e0; color: var(--warning);
+            padding: 2px 8px; border-radius: 6px; font-weight: 700;
+            display: inline-block; margin-top: 4px;
+        }
 
-      button {
-        font-size: 1em;
-        padding: 12px 0;
-      }
-    }
-  </style>
+        .controles { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+        .pago-checkbox {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.85rem; font-weight: 700; color: var(--text-light);
+            cursor: pointer; background: #edf2f7;
+            padding: 8px 16px; border-radius: 12px; transition: 0.2s;
+        }
+        .pago-checkbox:has(input:checked) { background: var(--accent); color: white; }
+
+        .price-display { font-size: 1.2rem; font-weight: 800; }
+        .sub-price { font-size: 0.75rem; color: var(--text-light); text-decoration: line-through; }
+
+        /* Barra Inferior */
+        .footer-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--white); padding: 15px 0 30px;
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.08);
+            display: none; z-index: 1000;
+            border-top-left-radius: 25px; border-top-right-radius: 25px;
+        }
+        .footer-content {
+            max-width: 600px; margin: 0 auto; padding: 0 25px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .total-amount { font-size: 1.5rem; font-weight: 900; color: var(--text-main); }
+
+        button {
+            background: var(--primary); color: white; border: none;
+            border-radius: 16px; padding: 14px 28px; font-size: 1rem;
+            font-weight: 700; cursor: pointer;
+        }
+
+        @media (max-width: 450px) {
+            .card { flex-direction: column; align-items: flex-start; }
+            .controles { width: 100%; flex-direction: row; justify-content: space-between; margin-top: 10px; border-top: 1px solid #f0f0f0; padding-top: 10px; }
+        }
+    </style>
 </head>
-
 <body>
-  <h1>Pagar Clase Particular</h1>
-  <h2 id="fecha"></h2>
-  <h2 id="precio-clase"></h2>
 
-  <div class="card">
-    <button id="btnPagar">Pagar con Mercado Pago</button>
-  </div>
+<header>
+    <h1>Mis Clases UTN</h1>
+</header>
 
-  <script>
-    // ====== CONFIGURACIÓN ======
-    const PUBLIC_KEY = "APP_USR-44993db0-ff1b-47ff-95df-dd7d53c79c15";
-    const GAS_URL    = "https://script.google.com/macros/s/AKfycby3CAqimaAZbJmvllYVlZiVKKW2nXhRl91t0x61M1_WG7f3zFKLkEms6AmzEX0tHps/exec";
+<div id="loaderClases" class="loader">
+    <div class="spinner"></div>
+    <p style="font-weight: 600; color: var(--primary);">Cargando tu agenda...</p>
+</div>
 
-    const mp = new MercadoPago(PUBLIC_KEY, { locale: "es-AR" });
+<div id="loaderPago" class="loader hidden">
+    <div class="spinner"></div>
+    <div style="font-weight: 800; color: var(--text-main); font-size: 1.2rem;">Conectando con el servidor</div>
+    <div class="progress-container">
+        <div class="progress-bar"></div>
+    </div>
+    <p class="warning-text">El servidor se está iniciando. Por favor, <b>no cierres ni refresques</b> esta página. Puede demorar hasta 1 minuto.</p>
+</div>
 
-    // ====== LEER PARÁMETROS ======
-    const params = new URLSearchParams(window.location.search);
-    let ref    = params.get("ref");
-    let correo = params.get("correo");
-    let fecha  = params.get("fecha");
-    let precio = params.get("precio");
+<div class="container">
+    <div class="productos" id="productos"></div>
+</div>
 
-    // Valores por defecto (para pruebas)
-    if (!ref && !correo && !fecha && !precio) {
-      ref    = "zZRTvEEiMr";
-      correo = "valedasilvacatela.vdc@gmail.com";
-      fecha  = "miércoles, 10/09 17:00";
-      precio = "6000";
+<div class="footer-bar" id="totalContainer">
+    <div class="footer-content">
+        <div class="total-text">
+            <div style="font-size: 0.8rem; color: var(--text-light); font-weight: 600;">TOTAL</div>
+            <div class="total-amount">$<span id="total">0</span></div>
+        </div>
+        <button onclick="pagarSeleccion()">Pagar Clases</button>
+    </div>
+</div>
+
+<script>
+const correoAlumno = (typeof Alumno !== "undefined" && Alumno.correoElectronico)
+    ? Alumno.correoElectronico
+    : "valedasilvacatela.vdc@gmail.com";
+
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec";
+const BACKEND_URL = "https://mercadopago-di7q.onrender.com/crear-preferencia";
+
+let clases = [];
+
+async function cargarClases() {
+    try {
+        document.getElementById("loaderClases").classList.remove("hidden");
+        const res = await fetch(`${GAS_URL}?funcion=devolverDeuda&correo=${encodeURIComponent(correoAlumno)}`);
+        const data = await res.json();
+
+        clases = data.map((c, index) => ({
+            id: index,
+            fecha: c.fecha,
+            modalidad: c.modalidad,
+            horas: c.horas,
+            precioBase: parseFloat(c.precio) || 0,
+            recargo: parseFloat(c.recargo) || 0,
+            precioFinal: (parseFloat(c.precio) || 0) + (parseFloat(c.recargo) || 0)
+        }));
+
+        mostrarClases();
+    } catch(e) {
+        alert("Error al obtener las clases.");
+    } finally {
+        document.getElementById("loaderClases").classList.add("hidden");
     }
+}
 
-    // Mostrar en pantalla
-    document.getElementById("fecha").textContent = fecha || "";
-    document.getElementById("precio-clase").textContent = "Precio: $" + (precio || "0");
+function mostrarClases() {
+    const contenedor = document.getElementById("productos");
+    contenedor.innerHTML = "";
 
-    // Si ya está marcado como pago en localStorage, aviso
-    document.addEventListener("DOMContentLoaded", () => {
-      if (ref && localStorage.getItem(ref) === ref) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Atención',
-          text: 'Este pago ya está registrado como pago.',
-          confirmButtonText: 'Aceptar'
-        });
-      }
-    });
-
-    // ====== CREAR PREFERENCIA VÍA GAS ======
-    async function crearPreferencia() {
-      const payload = {
-        funcion: "crearPreferencia",
-        referencia: ref,
-        correo: correo,
-        precio: Number(precio)
-      };
-
-      const resp = await fetch(GAS_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!resp.ok) {
-        throw new Error("Error al crear preferencia");
-      }
-
-      const data = await resp.json(); // { preferenceId: "..." }
-      return data.preferenceId;
-    }
-
-    // ====== CLICK EN "Pagar con Mercado Pago" ======
-    document.getElementById("btnPagar").addEventListener("click", async () => {
-      if (!correo || !ref || !precio) {
-        Swal.fire({
-          icon: "error",
-          title: "Faltan datos",
-          text: "Faltan datos de la clase (correo, ref o precio). Revisá el link."
-        });
+    if (clases.length === 0) {
+        contenedor.innerHTML = "<p style='text-align:center; color:var(--text-light); padding: 40px;'>No hay deudas pendientes.</p>";
         return;
-      }
+    }
 
-      try {
-        Swal.fire({
-          icon: "info",
-          title: "Generando pago...",
-          text: "Un momento por favor",
-          allowOutsideClick: false,
-          showConfirmButton: false
-        });
+    clases.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+        const htmlRecargo = c.recargo > 0 ? `<div class="recargo-tag">Recargo: +$${c.recargo.toLocaleString('es-AR')}</div>` : "";
+        const htmlBase = c.recargo > 0 ? `<div class="sub-price">$${c.precioBase.toLocaleString('es-AR')}</div>` : "";
 
-        const preferenceId = await crearPreferencia();
+        card.innerHTML = `
+            <div class="info">
+                <strong>${c.modalidad}</strong>
+                <span class="details">📅 ${c.fecha}</span>
+                <span class="details">⏱️ ${c.horas} horas</span>
+                ${htmlRecargo}
+            </div>
+            <div class="controles">
+                <div style="text-align:right">
+                    ${htmlBase}
+                    <div class="price-display">$${c.precioFinal.toLocaleString('es-AR')}</div>
+                </div>
+                <label class="pago-checkbox">
+                    <input type="checkbox" value="${c.id}" onchange="actualizarTotal()">
+                    Pagar
+                </label>
+            </div>
+        `;
+        contenedor.appendChild(card);
+    });
+}
 
-        Swal.close();
+function actualizarTotal() {
+    let total = 0;
+    let haySeleccion = false;
+    clases.forEach(c => {
+        const cb = document.querySelector(`input[type="checkbox"][value="${c.id}"]`);
+        if (cb && cb.checked) { total += c.precioFinal; haySeleccion = true; }
+    });
+    document.getElementById("totalContainer").style.display = haySeleccion ? "block" : "none";
+    document.getElementById("total").textContent = total.toLocaleString('es-AR');
+}
 
-        const bricksBuilder = mp.bricks();
-        await bricksBuilder.create("wallet", "wallet_container", {
-          initialization: {
-            preferenceId: preferenceId
-          },
-          customization: {
-            texts: {
-              valueProp: "smart_option"
-            }
-          }
-        });
-
-        // Si querés que se abra en modal automáticamente, podés dejarlo así.
-        // La Wallet Brick se renderiza sola.
-      } catch (e) {
-        console.error(e);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "No se pudo iniciar el pago. Intentalo de nuevo."
-        });
-      }
+async function pagarSeleccion() {
+    const items = [];
+    clases.forEach(c => {
+        const cb = document.querySelector(`input[type="checkbox"][value="${c.id}"]`);
+        if (cb && cb.checked) {
+            items.push({ title: `${c.modalidad} (${c.fecha})`, price: c.precioFinal });
+        }
     });
 
-  </script>
+    try {
+        // Mostramos el loader con advertencia
+        document.getElementById("loaderPago").classList.remove("hidden");
 
-  <!-- Contenedor requerido por la Wallet Brick -->
-  <div id="wallet_container" style="margin-top:20px;"></div>
+        const res = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items })
+        });
+        
+        const data = await res.json();
+        if (data.init_point) window.location.href = data.init_point;
+        else throw new Error("No init_point");
+
+    } catch(e) {
+        alert("El servidor tardó demasiado en responder o hubo un error. Por favor, intenta de nuevo.");
+        document.getElementById("loaderPago").classList.add("hidden");
+    }
+}
+
+cargarClases();
+</script>
 </body>
 </html>
