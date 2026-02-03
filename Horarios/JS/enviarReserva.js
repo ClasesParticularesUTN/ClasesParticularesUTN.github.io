@@ -75,7 +75,7 @@ async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
          Swal.fire({
                 icon: 'success',
                 title: 'Datos enviados',
-                html: 'Por favor, <span style="color: red; font-weight: bold;">revise su correo electronico.',
+                html: '<span style="color: red; font-weight: bold;">caPor favor, revise su correo electronico.',
             }).then(() => {
                 // Redirige a la página de horarios
                 window.location.hash = "";
