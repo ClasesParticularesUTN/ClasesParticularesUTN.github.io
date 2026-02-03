@@ -26,20 +26,42 @@
 
         header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white; padding: 30px 20px; text-align: center;
+            color: white; padding: 20px; text-align: center;
             border-bottom-left-radius: 25px; border-bottom-right-radius: 25px;
-            box-shadow: var(--shadow); margin-bottom: 25px;
+            box-shadow: var(--shadow); margin-bottom: 15px;
         }
 
-        h1 { margin:0; font-size: 1.5rem; font-weight: 800; }
+        /* MODO ADMIN UI */
+        #adminZone {
+            display: none; justify-content: center; align-items: center;
+            gap: 10px; margin-bottom: 20px; font-weight: bold; color: var(--text-light);
+        }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc; transition: .4s; border-radius: 20px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px;
+            background-color: white; transition: .4s; border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--warning); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
+        .price-input-admin {
+            width: 85px; padding: 6px; border: 2px solid var(--warning);
+            border-radius: 10px; font-weight: 800; text-align: right;
+            outline: none; background: #fffbe6;
+        }
+
+        /* LOADERS */
         .loader {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(255, 255, 255, 0.96);
             display:flex; justify-content:center; align-items:center;
             z-index:9999; flex-direction: column; gap:20px;
             backdrop-filter: blur(10px); text-align: center; 
-            padding: 0; margin: 0; box-sizing: border-box;
         }
         .loader.hidden { display:none; }
 
@@ -63,12 +85,6 @@
 
         .container { max-width: 600px; margin: 0 auto; padding: 0 15px 140px; }
 
-        .empty-state {
-            text-align: center; padding: 60px 20px;
-            background: var(--white); border-radius: 20px;
-            box-shadow: var(--shadow); border: 1px solid #e2e8f0;
-        }
-
         .card {
             display: flex; justify-content: space-between; align-items: center;
             background: var(--white); border-radius: 18px; padding: 18px;
@@ -77,12 +93,6 @@
 
         .info strong { font-size: 1.1rem; color: var(--primary); display: block; }
         .info .details { font-size: 0.85rem; color: var(--text-light); display: block; }
-        
-        .recargo-tag {
-            font-size: 0.72rem; background: #fff3e0; color: var(--warning);
-            padding: 3px 10px; border-radius: 6px; font-weight: 700;
-            display: inline-block; margin-top: 6px;
-        }
 
         .controles { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
         .pago-checkbox {
@@ -94,13 +104,6 @@
         .pago-checkbox:has(input:checked) { background: var(--accent); color: white; }
 
         .price-display { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
-        .sub-price { 
-            font-size: 0.8rem; 
-            color: var(--text-light); 
-            text-decoration: line-through; 
-            opacity: 0.6;
-            margin-bottom: -4px;
-        }
 
         .footer-bar {
             position: fixed; bottom: 0; left: 0; width: 100%;
@@ -132,26 +135,34 @@
     <h1>Registro de pagos</h1>
 </header>
 
-<div id="loaderClases" class="loader">
-    <div class="spinner"></div>
-    <p>Buscando clases pendientes de pago...</p>
-</div>
-
-<div id="loaderPago" class="loader hidden">
-    <div class="spinner"></div>
-    <div style="font-weight: 800; font-size: 1.1rem;">Iniciando servidor de pagos</div>
-    <div class="progress-container"><div class="progress-bar"></div></div>
-    <p style="color: var(--warning); font-size: 0.9rem; max-width: 250px; margin: 0 auto;">El servidor puede tardar hasta 1 minuto en responder. Por favor espera.</p>
-</div>
-
 <div class="container">
+    <div id="adminZone">
+        <span>Modo Admin</span>
+        <label class="switch">
+            <input type="checkbox" id="adminToggle" onchange="mostrarClases()">
+            <span class="slider"></span>
+        </label>
+    </div>
+
+    <div id="loaderClases" class="loader">
+        <div class="spinner"></div>
+        <p>Buscando clases pendientes...</p>
+    </div>
+
+    <div id="loaderPago" class="loader hidden">
+        <div class="spinner"></div>
+        <div style="font-weight: 800; font-size: 1.1rem;">Iniciando servidor de pagos</div>
+        <div class="progress-container"><div class="progress-bar"></div></div>
+        <p style="color: var(--warning); font-size: 0.9rem; max-width: 250px; margin: 0 auto;">El servidor puede tardar hasta 1 minuto en responder. Por favor espera.</p>
+    </div>
+
     <div class="productos" id="productos"></div>
 </div>
 
 <div class="footer-bar" id="totalContainer">
     <div class="footer-content">
         <div class="total-text">
-            <div style="font-size: 0.8rem; color: var(--text-light); font-weight: 600;">TOTAL SELECCIONADO</div>
+            <div style="font-size: 0.8rem; color: var(--text-light); font-weight: 600;">TOTAL</div>
             <div style="font-size: 1.5rem; font-weight: 900;">$<span id="total">0</span></div>
         </div>
         <button onclick="pagarSeleccion()">Ir a Mercado Pago</button>
@@ -159,9 +170,16 @@
 </div>
 
 <script>
-// --- VALIDACIÓN DE USUARIO Y REDIRECCIÓN ---
-if (typeof Alumno === "undefined" || !Alumno.correoElectronico) {
-    window.location.href = "https://clasesparticularesutn.com.ar/Horarios/Login/Login.html";
+// --- Lógica de Sesión ---
+const sessionData = sessionStorage.getItem("persona");
+let Alumno = sessionData ? JSON.parse(sessionData) : null;
+
+if (!Alumno || !Alumno.correoElectronico) {
+    window.location.href = "/Horarios/Login/Login.html";
+}
+
+if (Alumno.admin === true) {
+    document.getElementById("adminZone").style.display = "flex";
 }
 
 const correoAlumno = Alumno.correoElectronico;
@@ -181,15 +199,13 @@ async function cargarClases() {
             fecha: c.fecha,
             modalidad: c.modalidad,
             horas: c.horas,
-            precioBase: parseFloat(c.precio) || 0,
-            recargo: parseFloat(c.recargo) || 0,
-            precioFinal: (parseFloat(c.precio) || 0) + (parseFloat(c.recargo) || 0),
+            precioEditado: (parseFloat(c.precio) || 0) + (parseFloat(c.recargo) || 0),
             codigo: c.codigo 
         }));
 
         mostrarClases();
     } catch(e) {
-        alert("Error al conectar con la base de datos.");
+        alert("Error al cargar deuda.");
     } finally {
         document.getElementById("loaderClases").classList.add("hidden");
     }
@@ -197,15 +213,11 @@ async function cargarClases() {
 
 function mostrarClases() {
     const contenedor = document.getElementById("productos");
+    const isAdminMode = document.getElementById("adminToggle").checked;
     contenedor.innerHTML = "";
 
     if (clases.length === 0) {
-        contenedor.innerHTML = `
-            <div class="empty-state">
-                <span style="font-size:3rem">🎉</span>
-                <h2 style="color:var(--accent)">¡Estás al día!</h2>
-                <p>No se encontraron pagos pendientes.</p>
-            </div>`;
+        contenedor.innerHTML = `<div style="text-align:center; padding:40px;">🎉 ¡Estás al día!</div>`;
         return;
     }
 
@@ -213,22 +225,17 @@ function mostrarClases() {
         const card = document.createElement("div");
         card.className = "card";
         
-        const tieneRecargo = c.recargo > 0;
-        const htmlRecargo = tieneRecargo ? `<div class="recargo-tag">Recargo por mora: +$${c.recargo.toLocaleString('es-AR')}</div>` : "";
-        const htmlTachado = tieneRecargo ? `<div class="sub-price">$${c.precioBase.toLocaleString('es-AR')}</div>` : "";
-        
+        const precioHTML = isAdminMode 
+            ? `<input type="number" class="price-input-admin" value="${c.precioEditado}" onchange="cambiarPrecioLocal(${c.id}, this.value)">`
+            : `<div class="price-display">$${c.precioEditado.toLocaleString('es-AR')}</div>`;
+
         card.innerHTML = `
             <div class="info">
                 <strong>${c.modalidad}</strong>
-                <span class="details">📅 ${c.fecha}</span>
-                <span class="details">⏱️ ${c.horas} hs</span>
-                ${htmlRecargo}
+                <span class="details">📅 ${c.fecha} | ⏱️ ${c.horas} hs</span>
             </div>
             <div class="controles">
-                <div style="text-align:right">
-                    ${htmlTachado}
-                    <div class="price-display">$${c.precioFinal.toLocaleString('es-AR')}</div>
-                </div>
+                <div style="text-align:right">${precioHTML}</div>
                 <label class="pago-checkbox">
                     <input type="checkbox" value="${c.id}" onchange="actualizarTotal()">
                     Pagar
@@ -236,6 +243,15 @@ function mostrarClases() {
             </div>`;
         contenedor.appendChild(card);
     });
+    actualizarTotal();
+}
+
+function cambiarPrecioLocal(id, nuevoPrecio) {
+    const clase = clases.find(c => c.id === id);
+    if (clase) {
+        clase.precioEditado = parseFloat(nuevoPrecio) || 0;
+        actualizarTotal();
+    }
 }
 
 function actualizarTotal() {
@@ -243,7 +259,10 @@ function actualizarTotal() {
     let haySeleccion = false;
     clases.forEach(c => {
         const cb = document.querySelector(`input[type="checkbox"][value="${c.id}"]`);
-        if (cb && cb.checked) { total += c.precioFinal; haySeleccion = true; }
+        if (cb && cb.checked) { 
+            total += c.precioEditado; 
+            haySeleccion = true; 
+        }
     });
     document.getElementById("totalContainer").style.display = haySeleccion ? "block" : "none";
     document.getElementById("total").textContent = total.toLocaleString('es-AR');
@@ -256,7 +275,7 @@ async function pagarSeleccion() {
         if (cb && cb.checked) {
             items.push({ 
                 title: `${c.modalidad} (${c.fecha})`, 
-                price: c.precioFinal,
+                price: c.precioEditado, 
                 codigo: c.codigo 
             });
         }
@@ -267,20 +286,12 @@ async function pagarSeleccion() {
         const res = await fetch(BACKEND_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                items: items, 
-                email: correoAlumno 
-            })
+            body: JSON.stringify({ items, email: correoAlumno })
         });
         const data = await res.json();
         
         if (data.init_point) {
             window.location.href = data.init_point;
-            let reiniciar = true;
-            setTimeout(() => {
-                if(reiniciar) document.getElementById("loaderPago").classList.add("hidden");
-                reiniciar = false;
-            }, 2000);
         } else {
             throw new Error();
         }
