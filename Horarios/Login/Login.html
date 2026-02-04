@@ -164,9 +164,7 @@
             submitBtn.disabled = true;
             btnText.style.display = 'none';
             loader.style.display = 'block';
-
             const urlFinal = `${URLUsuarios}?correo=${encodeURIComponent(correo)}&contrasenia=${encodeURIComponent(contrasenia)}&funcion=validarUsuario`;
-
             fetch(urlFinal)
                 .then(response => response.json())
                 .then(data => {
@@ -190,10 +188,30 @@
                             icon: 'success',
                             title: 'Sesión Iniciada',
                             text: 'Redirigiendo...',
-                            timer: 1500,
+                            timer: 800, // Un poquito más de tiempo para que se vea el check
                             showConfirmButton: false
                         }).then(() => {
-                            window.location.href = '../index.html';
+                            const anterior = document.referrer;
+                            
+                            // Definimos las páginas que NO deben ser destinos de retorno
+                            const paginasProhibidas = [
+                                'Registro', 
+                                'RecuperarContraseña', 
+                                'Login'
+                            ];
+
+                            // Verificamos si la página anterior es válida
+                            // 1. Que no esté vacía
+                            // 2. Que no sea una de las páginas prohibidas
+                            const esValida = anterior !== "" && !paginasProhibidas.some(p => anterior.includes(p));
+
+                            if (esValida) {
+                                window.location.href = anterior;
+                            } else {
+                                // Si no hay página previa o viene de Registro/Recuperar, va a /Horarios
+                                // Ajusta esta ruta según la estructura de tus carpetas (puede ser '../index.html' o '/Horarios')
+                                window.location.href = '../index.html'; 
+                            }
                         });
                     } else {
                         throw new Error(data.error || 'Credenciales incorrectas');

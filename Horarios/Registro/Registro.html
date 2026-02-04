@@ -368,7 +368,7 @@
                 Swal.fire({ icon: "error", title: "Error en contraseña", text: "Las contraseñas no coinciden" });
                 return false;
             }
-            if (contardorContraseñas < 1 || contraseñas.includes(contraseña)) {
+            if (contardorContraseñas < 1 || (contraseñas.length < 2 && contraseñas.includes(contraseña))) {
                 Swal.fire({ icon: "error", title: "Eror de contraseña", text: "Contraseña demasiado debil, intenta nuevamente" });
                 contardorContraseñas++;
                 return false;
@@ -401,7 +401,10 @@
                     icon: "success",
                     title: "Registro exitoso",
                     text: "Se ha enviado tu información correctamente."
+                }).then(() => {
+                    window.location.href = "../Login/Login.html";
                 });
+
             }).catch(error => {
                 console.error('Error:', error);
                 document.querySelector(".loader").style.display = "none";

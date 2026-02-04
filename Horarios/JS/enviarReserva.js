@@ -27,7 +27,7 @@ document.querySelector(".enviarReserva").addEventListener("click", async () => {
             html: `Debes clickear las celdas que quieres reservar`,
             showConfirmButton: true
           });
-    }else if(parseInt(Alumno.dineroQueDebe.slice(1)) > 0){
+    }else if(Alumno.condicionPago == 'Normal' && parseInt(Alumno.dineroQueDebe.slice(1)) > 18000 || Alumno.condicionPago == 'Deudor' && parseInt(Alumno.dineroQueDebe.slice(1)) > 0){
         Swal.fire({
           icon: 'error',
           title: 'Error',
