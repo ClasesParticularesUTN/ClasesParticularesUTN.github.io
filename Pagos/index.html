@@ -31,7 +31,6 @@
             box-shadow: var(--shadow); margin-bottom: 15px;
         }
 
-        /* MENSAJE ESTÁS AL DÍA MEJORADO */
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -40,22 +39,10 @@
             box-shadow: var(--shadow);
             margin-top: 20px;
         }
-        .empty-state .icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-            display: block;
-        }
-        .empty-state h2 {
-            margin: 0;
-            color: var(--primary);
-            font-size: 1.4rem;
-        }
-        .empty-state p {
-            color: var(--text-light);
-            margin-top: 8px;
-        }
+        .empty-state .icon { font-size: 50px; margin-bottom: 15px; display: block; }
+        .empty-state h2 { margin: 0; color: var(--primary); font-size: 1.4rem; }
+        .empty-state p { color: var(--text-light); margin-top: 8px; }
 
-        /* LOADERS (IGUAL QUE LOS ORIGINALES) */
         .loader {
             position: fixed; top:0; left:0; width:100%; height:100%;
             background: rgba(255, 255, 255, 0.96);
@@ -104,6 +91,9 @@
         .pago-checkbox:has(input:checked) { background: var(--accent); color: white; }
 
         .price-display { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
+        /* Estilo para el precio tachado */
+        .old-price { font-size: 0.85rem; color: #a0aec0; text-decoration: line-through; margin-right: 5px; font-weight: 400; }
+        .recargo-tag { font-size: 0.7rem; color: var(--warning); font-weight: bold; display: block; }
 
         .footer-bar {
             position: fixed; bottom: 0; left: 0; width: 100%;
@@ -182,15 +172,20 @@ async function cargarClases() {
         const data = await res.json();
 
         clases = data.map((c, index) => {
-            // Si el alumno es Libre, no se suma el recargo (intereses)
-            const recargo = (Alumno.condicionPago === 'Libre') ? 0 : (parseFloat(c.recargo) || 0);
+            const precioBase = parseFloat(c.precio) || 0;
+            const recargoValor = parseFloat(c.recargo) || 0;
+            
+            // Si es Libre, recargo es 0. Si no, es el valor que viene de GAS.
+            const recargoFinal = (Alumno.condicionPago === 'Libre') ? 0 : recargoValor;
             
             return {
                 id: index,
                 fecha: c.fecha,
                 modalidad: c.modalidad,
                 horas: c.horas,
-                precioEditado: (parseFloat(c.precio) || 0) + recargo,
+                precioOriginal: precioBase,
+                recargoAplicado: recargoFinal,
+                precioEditado: precioBase + recargoFinal,
                 codigo: c.codigo 
             };
         });
@@ -220,6 +215,15 @@ function mostrarClases() {
     clases.forEach(c => {
         const card = document.createElement("div");
         card.className = "card";
+        
+        // Lógica para mostrar el precio tachado solo si hay recargo real aplicado
+        const tieneRecargo = c.recargoAplicado > 0;
+        const htmlPrecio = tieneRecargo 
+            ? `<span class="old-price">$${c.precioOriginal.toLocaleString('es-AR')}</span>
+               <span class="price-display">$${c.precioEditado.toLocaleString('es-AR')}</span>
+               <span class="recargo-tag">Incluye recargo</span>`
+            : `<span class="price-display">$${c.precioEditado.toLocaleString('es-AR')}</span>`;
+
         card.innerHTML = `
             <div class="info">
                 <strong>${c.modalidad}</strong>
@@ -227,7 +231,7 @@ function mostrarClases() {
             </div>
             <div class="controles">
                 <div style="text-align:right">
-                    <div class="price-display">$${c.precioEditado.toLocaleString('es-AR')}</div>
+                    ${htmlPrecio}
                 </div>
                 <label class="pago-checkbox">
                     <input type="checkbox" value="${c.id}" onchange="actualizarTotal()">
