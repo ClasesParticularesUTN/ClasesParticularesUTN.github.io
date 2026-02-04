@@ -49,7 +49,7 @@
         h2 { font-weight: 600; margin-bottom: 8px; font-size: 1.5rem; }
         .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 35px; }
 
-        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group { text-align: left; margin-bottom: 20px; position: relative; }
         .form-label { display: block; margin-bottom: 8px; font-size: 0.8rem; color: #ddd; text-transform: uppercase; letter-spacing: 1px; }
 
         .input-control {
@@ -64,6 +64,17 @@
         }
 
         .input-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--input-focus); }
+
+        .forgot-link {
+            display: block;
+            text-align: right;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .forgot-link:hover { color: var(--primary); }
 
         .btn-login {
             width: 100%; padding: 16px; background: var(--primary); border: none;
@@ -101,12 +112,13 @@
 
             <div class="form-group">
                 <label class="form-label">Correo Electrónico</label>
-                <input type="text" id="user_id" class="input-control" placeholder="nombre@ejemplo.com" autocomplete="one-time-code" required>
+                <input type="email" id="user_id" class="input-control" placeholder="nombre@ejemplo.com" autocomplete="username" required>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Contraseña</label>
-                <input type="text" id="security_key" class="input-control" placeholder="••••••••" autocomplete="new-password" onfocus="this.type='password'" required>
+                <input type="password" id="security_key" class="input-control" placeholder="••••••••" autocomplete="current-password" required>
+                <a href="#" class="forgot-link" id="btnForgot">¿Olvidaste tu contraseña?</a>
             </div>
 
             <button type="submit" class="btn-login" id="btnLogin">
@@ -114,7 +126,8 @@
                 <div class="loader" id="loginLoader"></div>
             </button>
 
-            <p class="register-link">¿Eres nuevo? <a href="Registro.html">Crea tu cuenta</a></p>
+            <p class="register-link">¿Eres nuevo? <a href="../Registro/Registro.html">Crea tu cuenta</a></p>
+            
         </form>
     </div>
 
@@ -127,6 +140,7 @@
         const submitBtn = document.getElementById('btnLogin');
         const btnText = document.getElementById('btnText');
         const loader = document.getElementById('loginLoader');
+        const btnForgot = document.getElementById('btnForgot');
 
         // Al cargar: Intentar recuperar el último correo
         document.addEventListener('DOMContentLoaded', () => {
@@ -134,12 +148,19 @@
             if (ultimo) emailInput.value = JSON.parse(ultimo);
         });
 
+        // --- Lógica de Recuperación de Contraseña ---
+        btnForgot.addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            window.location.href = 'RecuperarContraña.html'
+        });
+
+        // --- Lógica de Login ---
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             const correo = emailInput.value.trim().toLowerCase();
             const contrasenia = passInput.value;
 
-            // UI State: Cargando
             submitBtn.disabled = true;
             btnText.style.display = 'none';
             loader.style.display = 'block';
@@ -150,24 +171,18 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.sesion) {
-                        // --- LÓGICA DE PERSISTENCIA DE CICLO FIJO (7 DÍAS) ---
                         const sesionExistente = localStorage.getItem('personaPersistenteNuevo');
                         
                         if (!sesionExistente) {
-                            // Si NO hay sesión previa, el cronómetro de 7 días empieza hoy
                             const expiracion = Date.now() + (7 * 24 * 60 * 60 * 1000);
                             const payload = { persona: data, expiresAt: expiracion };
                             localStorage.setItem('personaPersistenteNuevo', JSON.stringify(payload));
-                            console.log("Iniciando nuevo ciclo de 7 días");
                         } else {
-                            // Si YA existe, actualizamos los datos del usuario pero NO la fecha
                             let datosActuales = JSON.parse(sesionExistente);
                             datosActuales.persona = data; 
                             localStorage.setItem('personaPersistenteNuevo', JSON.stringify(datosActuales));
-                            console.log("Manteniendo fecha de expiración original");
                         }
 
-                        // Guardamos también en SessionStorage para la pestaña actual
                         sessionStorage.setItem('persona', JSON.stringify(data));
                         localStorage.setItem('UltimoCorreo', JSON.stringify(correo));
 
