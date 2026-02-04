@@ -329,12 +329,12 @@
                     if (llave == "Nombre") datosAEnviar[0] = valor;
                     if (llave == "Apellido") datosAEnviar[1] = valor;
                     if (llave == "correoElectronico") datosAEnviar[2] = valor.trim().toLowerCase();
+                    if (llave == "Contrasenia") datosAEnviar[3] = valor;
                     if (llave == "Area") numeroTelefonico += valor;
                     if (llave == "Telefono") {
                         numeroTelefonico += valor;
-                        datosAEnviar[3] = numeroTelefonico;
+                        datosAEnviar[4] = numeroTelefonico;
                     }
-                    if (llave == "Contrasenia") datosAEnviar[4] = valor;
                     if (llave == "AnioIngreso") datosAEnviar[6] = valor;
                     if (llave == "Estado") datosAEnviar[7] = valor;
                     if (llave == "Situacion") datosAEnviar[8] = valor;
