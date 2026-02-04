@@ -181,14 +181,19 @@ async function cargarClases() {
         const res = await fetch(`${GAS_URL}?funcion=devolverDeuda&correo=${encodeURIComponent(correoAlumno)}`);
         const data = await res.json();
 
-        clases = data.map((c, index) => ({
-            id: index,
-            fecha: c.fecha,
-            modalidad: c.modalidad,
-            horas: c.horas,
-            precioEditado: (parseFloat(c.precio) || 0) + (parseFloat(c.recargo) || 0),
-            codigo: c.codigo 
-        }));
+        clases = data.map((c, index) => {
+            // Si el alumno es Libre, no se suma el recargo (intereses)
+            const recargo = (Alumno.condicionPago === 'Libre') ? 0 : (parseFloat(c.recargo) || 0);
+            
+            return {
+                id: index,
+                fecha: c.fecha,
+                modalidad: c.modalidad,
+                horas: c.horas,
+                precioEditado: (parseFloat(c.precio) || 0) + recargo,
+                codigo: c.codigo 
+            };
+        });
 
         mostrarClases();
     } catch(e) {
