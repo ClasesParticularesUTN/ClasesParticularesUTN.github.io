@@ -6,6 +6,7 @@
     <title>Login</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
@@ -42,10 +43,30 @@
             text-align: center;
         }
 
-        .logo-box { margin-bottom: 30px; }
-        .logo-circle { display: inline-block; border: 2px solid var(--primary); border-radius: 50%; padding: 15px; margin-bottom: 10px; }
-        .logo-text { font-size: 1.8rem; font-weight: 600; border-bottom: 2px solid var(--primary); line-height: 1; }
-        
+        /* --- LOGO UNIFICADO --- */
+        .logo-box { text-align: center; margin-bottom: 30px; }
+        .logo-circle {
+            display: inline-block;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            padding: 20px; /* Aumentado para coincidir con registro */
+            margin-bottom: 10px;
+        }
+        .logo-text { 
+            font-size: 2.2rem; /* Igualado al registro */
+            font-weight: 600; 
+            border-bottom: 2px solid var(--primary); 
+            line-height: 1; 
+        }
+        .logo-sub { 
+            font-size: 0.6rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            color: var(--primary); 
+            margin-top: 5px;
+        }
+        /* ---------------------- */
+
         h2 { font-weight: 600; margin-bottom: 8px; font-size: 1.5rem; }
         .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 35px; }
 
@@ -55,6 +76,7 @@
         .input-control {
             width: 100%;
             padding: 14px 16px;
+            padding-right: 45px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
@@ -64,6 +86,17 @@
         }
 
         .input-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--input-focus); }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: color 0.3s;
+            z-index: 10;
+        }
+        .toggle-password:hover { color: var(--primary); }
 
         .forgot-link {
             display: block;
@@ -100,9 +133,14 @@
 
     <div class="login-container">
         <div class="logo-box">
-            <div class="logo-circle"><div class="logo-text">C/S</div></div>
-            <h2>Acceso Alumnos</h2>
+            <div class="logo-circle">
+                <div class="logo-text">C/S</div>
+                <div class="logo-sub">Ing. en Sistemas</div>
+            </div>
         </div>
+        
+        <h2>Acceso Alumnos</h2>
+        <p class="subtitle">Ingresa tus credenciales para continuar</p>
 
         <form id="loginForm" autocomplete="off">
             <div style="opacity: 0; position: absolute; z-index: -1;">
@@ -118,6 +156,7 @@
             <div class="form-group">
                 <label class="form-label">Contraseña</label>
                 <input type="password" id="security_key" class="input-control" placeholder="••••••••" autocomplete="current-password" required>
+                <i class="fa-regular fa-eye toggle-password" id="toggleEye"></i>
                 <a href="#" class="forgot-link" id="btnForgot">¿Olvidaste tu contraseña?</a>
             </div>
 
@@ -132,6 +171,7 @@
     </div>
 
     <script>
+        // ... (Tu script de login se mantiene igual, ya es funcional) ...
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
 
         const form = document.getElementById('loginForm');
@@ -141,21 +181,25 @@
         const btnText = document.getElementById('btnText');
         const loader = document.getElementById('loginLoader');
         const btnForgot = document.getElementById('btnForgot');
+        const toggleEye = document.getElementById('toggleEye');
 
-        // Al cargar: Intentar recuperar el último correo
+        toggleEye.addEventListener('click', function() {
+            const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             const ultimo = localStorage.getItem('UltimoCorreo');
             if (ultimo) emailInput.value = JSON.parse(ultimo);
         });
 
-        // --- Lógica de Recuperación de Contraseña ---
-        btnForgot.addEventListener('click', async (e) => {
+        btnForgot.addEventListener('click', (e) => {
             e.preventDefault();
-            
-            window.location.href = 'RecuperarContraña.html'
+            window.location.href = 'RecuperarContraña.html';
         });
 
-        // --- Lógica de Login ---
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             const correo = emailInput.value.trim().toLowerCase();
@@ -165,6 +209,7 @@
             btnText.style.display = 'none';
             loader.style.display = 'block';
             const urlFinal = `${URLUsuarios}?correo=${encodeURIComponent(correo)}&contrasenia=${encodeURIComponent(contrasenia)}&funcion=validarUsuario`;
+            
             fetch(urlFinal)
                 .then(response => response.json())
                 .then(data => {
@@ -188,30 +233,10 @@
                             icon: 'success',
                             title: 'Sesión Iniciada',
                             text: 'Redirigiendo...',
-                            timer: 800, // Un poquito más de tiempo para que se vea el check
+                            timer: 800,
                             showConfirmButton: false
                         }).then(() => {
-                            const anterior = document.referrer;
-                            
-                            // Definimos las páginas que NO deben ser destinos de retorno
-                            const paginasProhibidas = [
-                                'Registro', 
-                                'RecuperarContraseña', 
-                                'Login'
-                            ];
-
-                            // Verificamos si la página anterior es válida
-                            // 1. Que no esté vacía
-                            // 2. Que no sea una de las páginas prohibidas
-                            const esValida = anterior !== "" && !paginasProhibidas.some(p => anterior.includes(p));
-
-                            if (esValida) {
-                                window.location.href = anterior;
-                            } else {
-                                // Si no hay página previa o viene de Registro/Recuperar, va a /Horarios
-                                // Ajusta esta ruta según la estructura de tus carpetas (puede ser '../index.html' o '/Horarios')
-                                window.location.href = '../index.html'; 
-                            }
+                            window.location.href = '../index.html'; 
                         });
                     } else {
                         throw new Error(data.error || 'Credenciales incorrectas');

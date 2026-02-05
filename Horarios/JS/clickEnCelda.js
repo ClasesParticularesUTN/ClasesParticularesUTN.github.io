@@ -3,75 +3,98 @@ var horariosSeleccionados = [];
 let advertenciaGrupal = false;
 let advertenciaCostoExtra = false;
 let seleccionoUnGrupal = false;
+tds.forEach((td) => {
+    td.addEventListener("click", () => {
+        const dataName = td.getAttribute("data-name");
 
-tds.forEach(td => {
-  td.addEventListener("click", () => {
-    const dataName = td.getAttribute("data-name");
-    if (td.style.backgroundColor === "red") {
-        let dia = dataName[0]+"2";
-        let celdaDia = document.querySelector(`td[data-name="${dia}"]`);
-        let innerHTMLDia = celdaDia ? celdaDia.innerHTML : "";
-                 horariosSeleccionados = eliminarElemento(horariosSeleccionados, dataName);
-        if(diasConDemanda.includes(innerHTMLDia)){
-          td.style.backgroundColor = 'violet';
-          
-        } else if(soloGrupales.includes(innerHTMLDia)){
-          seleccionoUnGrupal = false;
-          td.style.backgroundColor = '#ffe066';
-        } else if(consultar.includes(innerHTMLDia)){
-           td.style.backgroundColor = '#a2ff79';
-        }
-        else td.style.backgroundColor = 'white';
-        horariosSeleccionados =  eliminarElemento(horariosSeleccionados,dataName);
-      } else{
-                 if(td.style.backgroundColor == 'rgb(255, 224, 102)' && !advertenciaGrupal){
-          Swal.fire({
-            icon: "warning",
-            title: "Solo clases grupales",
-            text: "El color amarillo indica que este horario está disponible únicamente para clases grupales.",
-          }).then(() => {
-            advertenciaGrupal = true;
-          });
-          
-        }
-        if(td.style.backgroundColor == 'violet' && !advertenciaCostoExtra){
-            Swal.fire({
-            icon: "info",
-            title: "Recargo por horario",
-            text: "El color violeta indica que este horario tiene un recargo de $1000 por hora.",
-            }).then(() => {
-            advertenciaCostoExtra = true;
-            });
-        }
-                 if(validarHorariosSeleccionados(dataName) || Alumno.admin){
-          
-          if(validarFecha(dataName) || Alumno.admin){
+        if (td.style.backgroundColor === "red") {
+            // --- BLOQUE: DESELECCIONAR CELDA ---
+            let dia = dataName[0] + "2";
+            let celdaDia = document.querySelector(`td[data-name="${dia}"]`);
+            let innerHTMLDia = celdaDia ? celdaDia.innerHTML : "";
 
-            if(td.style.backgroundColor == 'rgb(255, 224, 102)'){
-              seleccionoUnGrupal = true;
+            horariosSeleccionados = eliminarElemento(horariosSeleccionados, dataName);
+
+            if (diasConDemanda.includes(innerHTMLDia)) {
+                td.style.backgroundColor = "violet";
+            } else if (soloGrupales.includes(innerHTMLDia)) {
+                seleccionoUnGrupal = false;
+                td.style.backgroundColor = "#ffe066";
+            } else if (consultar.includes(innerHTMLDia)) {
+                td.style.backgroundColor = "#a2ff79";
+            } else {
+                td.style.backgroundColor = "white";
             }
-            td.style.backgroundColor = "red";
-            
-            horariosSeleccionados.push(dataName);
-          }else{
-            Swal.fire({
-              icon: "error",
-              title: "No es posible reservar en esta fecha",
-              text: `Debes reservar turnos como minimo el dia anterior.`,
-            });
-          }
-        }else{
-          Swal.fire({
-            icon: "error",
-            title: "No debes seleccionar varios dias",
-            text: `Si quieres varios turnos, tienes que registrarlos por separado.`,
-          });
-        }
-      }
-           });
-      
-});
 
+            horariosSeleccionados = eliminarElemento(horariosSeleccionados, dataName);
+
+        } else {
+            // --- BLOQUE: SELECCIONAR CELDA ---
+
+            // NUEVA VALIDACIÓN: Si la celda está ocupada (marrón/terracota)
+            // Nota: El navegador suele convertir hex a rgb, por eso comparamos ambos
+            if (td.style.backgroundColor === "rgb(155, 73, 34)" || td.style.backgroundColor === "transparent") {
+                Swal.fire({
+                    icon: "error",
+                    title: "Horario no disponible",
+                    text: "Esta celda ya se encuentra ocupada por otro alumno.",
+                });
+                console.log("Intentaste seleccionar una celda ocupada.");
+                return; // Cortamos la ejecución para que no siga evaluando
+            }
+            
+            // 1. Verificación de advertencia para clases grupales (Amarillo)
+            if (td.style.backgroundColor === "rgb(255, 224, 102)" && !advertenciaGrupal) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Solo clases grupales",
+                    text: "El color amarillo indica que este horario está disponible únicamente para clases grupales.",
+                }).then(() => {
+                    advertenciaGrupal = true;
+                });
+            }
+
+            // 2. Verificación de advertencia para recargo (Violeta)
+            if (td.style.backgroundColor === "violet" && !advertenciaCostoExtra) {
+                Swal.fire({
+                    icon: "info",
+                    title: "Recargo por horario",
+                    text: "El color violeta indica que este horario tiene un recargo de $1000 por hora.",
+                }).then(() => {
+                    advertenciaCostoExtra = true;
+                });
+            }
+
+            // 3. Validaciones de reserva
+            if (validarHorariosSeleccionados(dataName) || Alumno.admin) {
+                
+                if (validarFecha(dataName) || Alumno.admin) {
+                    
+                    if (td.style.backgroundColor === "rgb(255, 224, 102)") {
+                        seleccionoUnGrupal = true;
+                    }
+                    
+                    td.style.backgroundColor = "red";
+                    horariosSeleccionados.push(dataName);
+
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "No es posible reservar en esta fecha",
+                        text: "Debes reservar turnos como minimo el dia anterior.",
+                    });
+                }
+
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "No debes seleccionar varios dias",
+                    text: "Si quieres varios turnos, tienes que registrarlos por separado.",
+                });
+            }
+        }
+    });
+});
 
 function eliminarElemento(array, elemento) {
     return array.filter(item => item !== elemento);
