@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - Ing. en Sistemas</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -34,7 +34,7 @@
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            width: 100%;
+            width: 90%; /* Mejorado para móviles pequeños */
             max-width: 400px;
             padding: 50px 40px;
             border-radius: 24px;
@@ -49,11 +49,11 @@
             display: inline-block;
             border: 2px solid var(--primary);
             border-radius: 50%;
-            padding: 20px; /* Aumentado para coincidir con registro */
+            padding: 20px;
             margin-bottom: 10px;
         }
         .logo-text { 
-            font-size: 2.2rem; /* Igualado al registro */
+            font-size: 2.2rem;
             font-weight: 600; 
             border-bottom: 2px solid var(--primary); 
             line-height: 1; 
@@ -65,7 +65,6 @@
             color: var(--primary); 
             margin-top: 5px;
         }
-        /* ---------------------- */
 
         h2 { font-weight: 600; margin-bottom: 8px; font-size: 1.5rem; }
         .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 35px; }
@@ -76,27 +75,39 @@
         .input-control {
             width: 100%;
             padding: 14px 16px;
-            padding-right: 45px;
+            padding-right: 45px; /* Espacio para el ojo */
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             color: #fff;
-            font-size: 1rem;
+            font-size: 16px; /* Evita zoom automático en iOS al hacer focus */
             transition: all 0.3s ease;
         }
 
         .input-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--input-focus); }
 
+        /* Mejora del botón del ojo para móviles */
         .toggle-password {
             position: absolute;
-            right: 15px;
-            top: 42px;
+            right: 10px;
+            top: 35px; /* Ajustado para centrar mejor con el input */
+            padding: 12px; /* Mayor área de contacto para dedos */
             cursor: pointer;
             color: var(--text-muted);
             transition: color 0.3s;
             z-index: 10;
+            touch-action: manipulation;
         }
         .toggle-password:hover { color: var(--primary); }
+
+        /* Evitar que el autocompletado dañe el diseño */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus {
+            -webkit-text-fill-color: #fff;
+            -webkit-box-shadow: 0 0 0px 1000px #1a1a1a inset;
+            transition: background-color 5000s ease-in-out 0s;
+        }
 
         .forgot-link {
             display: block;
@@ -143,7 +154,7 @@
         <p class="subtitle">Ingresa tus datos para continuar</p>
 
         <form id="loginForm" autocomplete="off">
-            <div style="opacity: 0; position: absolute; z-index: -1;">
+            <div style="opacity: 0; position: absolute; z-index: -1; height: 0;">
                 <input type="text" name="anti_fill_1" tabindex="-1">
                 <input type="password" name="anti_fill_2" tabindex="-1">
             </div>
@@ -155,7 +166,7 @@
 
             <div class="form-group">
                 <label class="form-label">Contraseña</label>
-                <input type="password" id="security_key" class="input-control" placeholder="••••••••" autocomplete="current-password" required>
+                <input type="password" id="security_key" class="input-control" placeholder="Escribe tu contraseña" autocomplete="current-password" required>
                 <i class="fa-regular fa-eye toggle-password" id="toggleEye"></i>
                 <a href="#" class="forgot-link" id="btnForgot">¿Olvidaste tu contraseña?</a>
             </div>
@@ -166,12 +177,10 @@
             </button>
 
             <p class="register-link">¿Eres nuevo? <a href="../Registro/Registro.html">Crea tu cuenta</a></p>
-            
         </form>
     </div>
 
     <script>
-        // ... (Tu script de login se mantiene igual, ya es funcional) ...
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
 
         const form = document.getElementById('loginForm');
@@ -183,11 +192,24 @@
         const btnForgot = document.getElementById('btnForgot');
         const toggleEye = document.getElementById('toggleEye');
 
-        toggleEye.addEventListener('click', function() {
-            const type = passInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passInput.setAttribute('type', type);
+        // CORRECCIÓN PARA MÓVILES DEL OJO
+        toggleEye.addEventListener('click', function(e) {
+            e.preventDefault(); // Evita pérdida de foco brusca
+            
+            const isPassword = passInput.getAttribute('type') === 'password';
+            passInput.setAttribute('type', isPassword ? 'text' : 'password');
+            
+            // Cambiar icono
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
+
+            // Refrescar el valor para forzar al navegador móvil a mostrar el texto real
+            const tempVal = passInput.value;
+            passInput.value = '';
+            passInput.value = tempVal;
+            
+            // Mantener el foco si el usuario estaba escribiendo
+            passInput.focus();
         });
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -208,6 +230,7 @@
             submitBtn.disabled = true;
             btnText.style.display = 'none';
             loader.style.display = 'block';
+            
             const urlFinal = `${URLUsuarios}?correo=${encodeURIComponent(correo)}&contrasenia=${encodeURIComponent(contrasenia)}&funcion=validarUsuario`;
             
             fetch(urlFinal)
@@ -229,34 +252,24 @@
                         sessionStorage.setItem('persona', JSON.stringify(data));
                         localStorage.setItem('UltimoCorreo', JSON.stringify(correo));
 
-Swal.fire({
+                        Swal.fire({
                             icon: 'success',
                             title: 'Sesión Iniciada',
                             text: 'Redirigiendo...',
                             timer: 800,
                             showConfirmButton: false
                         }).then(() => {
-                            // --- REDIRECCIÓN INTELIGENTE ---
                             const anterior = document.referrer;
-                            
-                            // Lista de fragmentos de URL prohibidos (no importa en qué carpeta estén)
-                            const prohibidas = [
-                                'Registro', 
-                                'RecuperarContraseña', 
-                                'Login.html',
-                                'Registro.html'
-                            ];
-
-                            // Verificamos si la URL anterior contiene alguno de los fragmentos prohibidos
+                            const prohibidas = ['Registro', 'RecuperarContraseña', 'Login.html', 'Registro.html'];
                             const esProhibida = prohibidas.some(p => anterior.includes(p));
 
                             if (anterior !== "" && !esProhibida) {
                                 window.location.href = anterior;
                             } else {
-                                // Fallback: vuelve a la raíz del sistema de horarios
                                 window.location.href = '../index.html'; 
                             }
-                        });                    } else {
+                        });
+                    } else {
                         throw new Error(data.error || 'Credenciales incorrectas');
                     }
                 })

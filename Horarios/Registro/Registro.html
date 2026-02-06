@@ -397,6 +397,7 @@
             }).then(function() {
                 document.querySelector(".loader").style.display = "none";
                 document.querySelector(".contenedorLouder").style.zIndex = "-100";
+                        localStorage.setItem('UltimoCorreo', JSON.stringify(datos.datosAlumnos[2]));
                 Swal.fire({
                     icon: "success",
                     title: "Registro exitoso",
