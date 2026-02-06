@@ -149,9 +149,43 @@ document.querySelector(".loginMovil").addEventListener("click", ()=>{
 })
 
 function cerrarSesion(){
-  sessionStorage.removeItem('persona');
-  try { localStorage.removeItem('personaPersistenteNuevo'); } catch(e) { /* ignore */ }
-  location.reload();
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: '¿Deseas cerrar tu sesión?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#ff6b6b',
+    cancelButtonColor: '#6c757d',
+    confirmButtonText: 'Sí, cerrar sesión',
+    cancelButtonText: 'Cancelar',
+    showClass: {
+      popup: 'animate__animated animate__fadeInUp animate__faster'
+    },
+    hideClass: {
+      popup: 'animate__animated animate__fadeOutDown animate__faster'
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      sessionStorage.removeItem('persona');
+      try { 
+        localStorage.removeItem('personaPersistenteNuevo');
+        localStorage.removeItem('personaPersistente');
+      } catch(e) { /* ignore */ }
+      
+      Swal.fire({
+        title: 'Sesión cerrada',
+        text: 'Has cerrado sesión correctamente',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+        showClass: {
+          popup: 'animate__animated animate__fadeInUp animate__faster'
+        }
+      }).then(() => {
+        location.reload();
+      });
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {

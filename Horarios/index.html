@@ -10,8 +10,6 @@
   <link rel="stylesheet" href="css/titulo.css">
   <link rel="stylesheet" href="css/menuUsuario.css">
   <link rel="stylesheet" href="css/VentanaModal.css">
-  <link rel="stylesheet" href="css/VentanaModalAvisos.css">
-  <link rel="stylesheet" href="css/Avisos.css">
   <link rel="stylesheet" href="css/Swal.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -38,17 +36,23 @@
         <div class="loaderSencillo"></div>
     </div>
         <div class="menu animate__animated">
-            
-            <p class="usuarioClasesAFAvor">Cantida de horas a Favor: </p>
-            <p class="usuarioClasesAFAvor numero">0</p>
-            <hr style="border: 0.1px solid white; width: 100%; padding: 0;">
-            <button id="verFichaCompleta" style="margin: 4px 0 8px 0; padding: 4px 12px; background: #e3f2fd; color: #0077cc; border: none; border-radius: 6px; font-size: 0.95rem; cursor: pointer; width: auto; float: right;">Ver ficha completa</button>
-            <p class="usuarioDatos usuarioNombre">Nombre Completo: </p>
-            <p class="usuarioDatos usuarioCorreo">Correo Electronico: </p>
-            <p class="usuarioDatos usuarioTelefono">Telefono: </p>
-            <p class="usuarioDatos">Horarios Reservados:</p>
+            <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
+                <p class="usuarioClasesAFAvor">Cantidad de horas a Favor: </p>
+                <p class="usuarioClasesAFAvor numero">0</p>
+            </div>
+            <hr>
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <p class="usuarioDatos usuarioNombre">Nombre Completo: </p>
+                <p class="usuarioDatos usuarioCorreo">Correo Electronico: </p>
+                <p class="usuarioDatos usuarioTelefono">Telefono: </p>
+            </div>
+            <hr>
+            <p class="usuarioDatos" style="margin-bottom: 10px; font-weight: 600; color: #ffffff;">Horarios Reservados:</p>
             <ul class="listaHorarios"></ul>
             <div id="LoaderSencillo" class="loaderSencillo"></div>
+            <div class="contenedor-botones">
+                <button class="btn-cerrar-sesion" id="btnCerrarSesion">Cerrar Sesión</button>
+            </div>
         </div>
   <table style="display: none;">
     <tr>
@@ -152,20 +156,6 @@
         <div class="sig">Siguiente Semana</div>
         <div class="enviarReserva">Reservar</div>       
   </div>
-  <template id="aviso-template">
-    <div class="tarjeta">
-        <h2 class="titulo"></h2>
-        <p class="descripcion"></p>
-    </div>
-</template>
-  <img style="display: none;" class="cafe" src="assets/fotos/aviso.png" alt="AvisoImportante">
-  <div id="VentanaModalAvisos" class="modalAvisos">
-    <div class="VentanaModalAvisos container">
-        <a href="#cerrar" id="cerrarVentana">X</a>
-        <h1>Avisos</h1>
-        <div class="avisos"></div>
-    </div>
-  </div>
   <div id="VentanaModal" class="modal">
   <div class="VentanaModal container">
     <a href="#cerrar" id="cerrarVentanaModalidad">X</a>
@@ -211,15 +201,16 @@
   <script src="JS/inhabilitarPago.js"></script>
   <script src="JS/diaConDemanda.js"></script>
   <script src="JS/modalidadClases.js "></script>
-  <script src="JS/Avisos.js"></script>
   <script src="JS/AbrirMenu.js"></script>
   <script>
-    // Redirigir al hacer click en 'Ver ficha completa'
+    // Cerrar sesión al hacer click en el botón
     document.addEventListener('DOMContentLoaded', function() {
-      const btnFicha = document.getElementById('verFichaCompleta');
-      if (btnFicha) {
-        btnFicha.onclick = function() {
-          window.location.href = '/FichaPersonal';
+      const btnCerrarSesion = document.getElementById('btnCerrarSesion');
+      if (btnCerrarSesion) {
+        btnCerrarSesion.onclick = function() {
+          if (typeof cerrarSesion === 'function') {
+            cerrarSesion();
+          }
         };
       }
     });

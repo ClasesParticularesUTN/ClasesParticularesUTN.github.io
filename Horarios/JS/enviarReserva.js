@@ -3,7 +3,33 @@ let admin = 0;
 
 document.querySelector(".enviarReserva").addEventListener("click", async () => {
     reservados = horariosSeleccionados;
-    if(Alumno.admin) {
+    
+    // Validación: Verificar si hay celdas seleccionadas (excepto para admin)
+    if (!Alumno || !Alumno.admin) {
+        if (!horariosSeleccionados || horariosSeleccionados === undefined || horariosSeleccionados.length === 0) {
+            Swal.fire({
+                title: "Acción Errónea",
+                icon: "error",
+                html: `Debes seleccionar al menos una celda para reservar un horario. Haz clic en las celdas que deseas reservar antes de continuar.`,
+                showConfirmButton: true,
+                confirmButtonText: "Entendido"
+            });
+            return; // Detener la ejecución
+        }
+    }
+    
+    if(Alumno && Alumno.admin) {
+        // Si es admin pero no hay celdas seleccionadas, también debe seleccionar
+        if (!horariosSeleccionados || horariosSeleccionados === undefined || horariosSeleccionados.length === 0) {
+            Swal.fire({
+                title: "Acción Errónea",
+                icon: "error",
+                html: `Debes seleccionar al menos una celda para reservar un horario.`,
+                showConfirmButton: true,
+                confirmButtonText: "Entendido"
+            });
+            return;
+        }
         window.location.hash = "#VentanaModal";
         return;
     }else{
@@ -22,10 +48,11 @@ document.querySelector(".enviarReserva").addEventListener("click", async () => {
           });
     } else if (reservados == undefined || reservados.length == 0) {
         Swal.fire({
-            title: "Accion Erronea",
-            icon: "info",
-            html: `Debes clickear las celdas que quieres reservar`,
-            showConfirmButton: true
+            title: "Acción Errónea",
+            icon: "error",
+            html: `Debes seleccionar al menos una celda para reservar un horario. Haz clic en las celdas que deseas reservar antes de continuar.`,
+            showConfirmButton: true,
+            confirmButtonText: "Entendido"
           });
     }else if(Alumno.condicionPago == 'Normal' && parseInt(Alumno.dineroQueDebe.slice(1)) > 18000 || Alumno.condicionPago == 'Deudor' && parseInt(Alumno.dineroQueDebe.slice(1)) > 0){
         Swal.fire({
