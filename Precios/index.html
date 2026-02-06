@@ -1,46 +1,257 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Precios</title>
-    <link rel="stylesheet" href="estilos.css">
-</head>
-<body>
-    <div id="seleccion" class="portadaContainer">
-        <div class="portada portadaIndividuales">
-            ꧁༒☬𝓒𝓵𝓪𝓼𝓮𝓼 𝓘𝓷𝓭𝓲𝓿𝓲𝓭𝓾𝓪𝓵𝓮𝓼☬༒꧂
-            <img src="assets/imagenes/clasesIndividuales.png" alt="">
-        </div>
-        <div class="portada portadaGrupales">
-            ꧁༒☬𝓒𝓵𝓪𝓼𝓮𝓼 𝓖𝓻𝓾𝓪𝓹𝓪𝓵𝓮𝓼☬༒꧂
-            <img src="assets/imagenes/clasesGrupales.png" alt="">
-        </div>
-    </div>
-    <img id="clasesGrupalesPC" src="assets/imagenes/PrecioPCGrupales.png" alt="">
-    <img id="clasesIndividualesPC" src="assets/imagenes/PrecioPCIndividuales.png" alt="">
-    <img id="clasesGrupalesMovil" src="assets/imagenes/PrecioMovilGrupales.png" alt="">
-    <img id="clasesIndividualesMovil" src="assets/imagenes/PrecioMovilIndividuales.png" alt="">
-
-    <script>
-       if (!window.location.hash) {
-            window.location.hash = 'seleccion';
+    <title>C/S | Precios e Inscripción</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Variables Modo Oscuro (Default) */
+            --primary: #f3a661; 
+            --accent: #a35a2d; 
+            --bg: #0f172a; 
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(243, 166, 97, 0.15);
+            --text-main: #ffffff;
+            --text-subtitle: #94a3b8;
+            --item-bg: rgba(255, 255, 255, 0.02);
+            --footer-border: #1e293b;
         }
 
+        /* Variables Modo Claro */
+        body.light-mode {
+            --bg: #f0f4f8;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --card-bg: #ffffff;
+            --glass-border: rgba(243, 166, 97, 0.3);
+            --text-main: #1a1a24;
+            --text-subtitle: #64748b;
+            --item-bg: #f8fafc;
+            --footer-border: #cbd5e1;
+        }
 
-        let grupal = document.querySelector(".portadaGrupales");
-        let individual = document.querySelector(".portadaIndividuales");
-
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            scroll-behavior: smooth; 
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-        grupal.addEventListener("click", () => {
-            window.location.hash = window.innerWidth < 1000 ? 'clasesGrupalesMovil' : 'clasesGrupalesPC';
-        });
+        /* --- NAVEGACIÓN --- */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 5%; position: fixed; width: 100%; top: 0; z-index: 1000;
+            background: var(--nav-bg); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo-box { text-align: center; }
+        .logo-circle { display: inline-block; border: 2px solid var(--primary); border-radius: 50%; padding: 8px; transition: 0.3s; }
+        .logo-text { font-family: 'Inter', sans-serif; color: var(--text-main); font-size: 1.2rem; font-weight: 700; border-bottom: 2px solid var(--primary); line-height: 1; display: inline-block; }
+        .logo-sub { font-family: 'Inter', sans-serif; font-size: 0.45rem; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); margin-top: 3px; }
 
-        individual.addEventListener("click", () => {
-            window.location.hash = window.innerWidth < 1000 ? 'clasesIndividualesMovil' : 'clasesIndividualesPC';
-        });
+        nav ul { display: flex; list-style: none; align-items: center; }
+        nav ul li { margin-left: 20px; }
+        nav ul li a { text-decoration: none; color: var(--text-subtitle); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; transition: 0.3s; }
+        nav ul li a:hover { color: var(--primary); }
+
+        /* Botón Modo Claro/Oscuro */
+        .theme-toggle {
+            background: rgba(243, 166, 97, 0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--primary);
+            width: 35px; height: 35px; border-radius: 10px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.3s; margin-left: 15px;
+        }
+
+        /* --- SECCIÓN PRECIOS --- */
+        .pricing-section { padding: 120px 5% 60px; text-align: center; }
+        .pricing-section h2 { font-size: 2.2rem; margin-bottom: 10px; color: var(--text-main); }
+        .pricing-section p.subtitle { color: var(--text-subtitle); margin-bottom: 40px; font-weight: 300; font-size: 1rem; }
+
+        .pricing-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 25px;
+            transition: all 0.4s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .pricing-card h3 { font-size: 1.7rem; margin-bottom: 15px; color: var(--primary); font-weight: 700; }
+
+        .group-disclaimer {
+            font-size: 0.85rem;
+            color: var(--text-subtitle);
+            margin-bottom: 25px;
+            line-height: 1.5;
+            padding: 0 5px;
+        }
+        .group-disclaimer strong { color: var(--primary); font-weight: 600; }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: var(--item-bg);
+            border-radius: 14px;
+            border: 1px solid rgba(128,128,128,0.1);
+        }
+
+        .price-label { font-size: 0.9rem; text-align: left; color: var(--text-main); line-height: 1.3; }
+        .price-label small { color: var(--text-subtitle); font-size: 0.75rem; display: block; margin-top: 2px; }
+        .price-value { font-weight: 700; color: var(--text-main); font-size: 1.1rem;  margin-left: 5px;}
         
+        .highlight-pack { border: 1px solid rgba(243, 166, 97, 0.4); background: rgba(243, 166, 97, 0.07); }
+        
+        .badge {
+            position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: #1a1a24;
+            font-size: 0.7rem; font-weight: 800; padding: 5px 18px;
+            border-radius: 20px; text-transform: uppercase; white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .no-price { color: var(--text-subtitle); font-style: italic; font-size: 0.8rem; }
+
+        .btn-select {
+            display: block; width: 100%; padding: 16px; margin-top: 25px;
+            background: transparent; color: var(--primary);
+            text-decoration: none; border-radius: 12px; font-weight: 700;
+            border: 2px solid var(--primary);
+            transition: 0.3s; font-size: 1rem;
+            text-align: center;
+        }
+        .btn-select:hover { background: var(--primary); color: #1a1a24; }
+
+        footer { padding: 50px 20px; text-align: center; font-size: 0.85rem; color: var(--text-subtitle); border-top: 1px solid var(--footer-border); margin-top: 60px; }
+
+        /* --- OPTIMIZACIÓN MÓVIL --- */
+        @media (max-width: 768px) {
+            nav ul li:not(:last-child) { display: none; }
+            .pricing-section { padding-top: 110px; }
+            .pricing-section h2 { font-size: 1.8rem; }
+            .pricing-container { gap: 45px; padding: 0 10px; }
+            .pricing-card { padding: 40px 18px 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo-box">
+            <div class="logo-circle">
+                <div class="logo-text">C/S</div>
+                <div class="logo-sub">Ing. en Sistemas</div>
+            </div>
+        </div>
+        <ul>
+            <li><a href="#materias">Materias</a></li>
+            <li><a href="https://wa.me/5493421234567">Contacto</a></li>
+            <li><a href="/Materias">Horarios</a></li>
+            <li>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar modo">
+                    <i id="theme-icon" class="fas fa-sun"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="pricing-section" id="precios">
+        <h2>Elegí tu Plan de Éxito</h2>
+        <p class="subtitle">Inversión en tu formación académica con Ingenieros profesionales.</p>
+        
+        <div class="pricing-container">
+            <div class="pricing-card">
+                <span class="badge">Más Personalizado</span>
+                <h3>Individual</h3>
+                <p class="group-disclaimer">
+                    Clases exclusivas diseñadas <strong>para tu ritmo</strong> y tus objetivos personales.
+                </p>
+                
+                <div class="price-item">
+                    <span class="price-label">Clase Express<small>1 hora de clase</small></span>
+                    <span class="price-value">$5.000</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-label">Clase Estándar<small>2 horas de clase</small></span>
+                    <span class="price-value">$9.000</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label"><strong>Pack Preparación Examen</strong><small>10 clases (20hs totales)</small></span>
+                    <span class="price-value">$72.000</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label"><strong>Pack Preparación De Materia</strong><small>20 clases (40hs totales)</small></span>
+                    <span class="price-value">$120.000</span>
+                </div>
+                <a href="/Horarios" class="btn-select">Agendar Individual</a>
+            </div>
+
+            <div class="pricing-card">
+                <span class="badge" style="background: #94a3b8; color: white;">Ahorro Grupal</span>
+                <h3>Grupal</h3>
+                <p class="group-disclaimer">
+                    Los grupos deben ser <strong>armados por los alumnos</strong>, con el objetivo de que asistas con un amigo o compañero de clase.
+                </p>
+
+                <div class="price-item">
+                    <span class="price-label">Clase Express<small>No disponible en grupo</small></span>
+                    <span class="no-price">No se puede</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-label">Clase Estándar<small>2 horas de clase</small></span>
+                    <span class="price-value">$6.000 c/u</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label"><strong>Pack Preparación Examen</strong><small>10 clases (20hs totales)</small></span>
+                    <span class="price-value">$48.000 c/u</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label"><strong>Pack Preparación De Materia</strong><small>20 clases (40hs totales)</small></span>
+                    <span class="price-value">$80.000 c/u</span>
+                </div>
+                <a href="/Horarios" class="btn-select">Agendar Grupal</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 C/S Ingeniería en Sistemas - Santa Fe, Argentina</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            body.classList.toggle('light-mode');
+            
+            if (body.classList.contains('light-mode')) {
+                icon.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+        }
     </script>
 </body>
 </html>

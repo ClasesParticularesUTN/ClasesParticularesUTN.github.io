@@ -229,16 +229,34 @@
                         sessionStorage.setItem('persona', JSON.stringify(data));
                         localStorage.setItem('UltimoCorreo', JSON.stringify(correo));
 
-                        Swal.fire({
+Swal.fire({
                             icon: 'success',
                             title: 'Sesión Iniciada',
                             text: 'Redirigiendo...',
                             timer: 800,
                             showConfirmButton: false
                         }).then(() => {
-                            window.location.href = '../index.html'; 
-                        });
-                    } else {
+                            // --- REDIRECCIÓN INTELIGENTE ---
+                            const anterior = document.referrer;
+                            
+                            // Lista de fragmentos de URL prohibidos (no importa en qué carpeta estén)
+                            const prohibidas = [
+                                'Registro', 
+                                'RecuperarContraseña', 
+                                'Login.html',
+                                'Registro.html'
+                            ];
+
+                            // Verificamos si la URL anterior contiene alguno de los fragmentos prohibidos
+                            const esProhibida = prohibidas.some(p => anterior.includes(p));
+
+                            if (anterior !== "" && !esProhibida) {
+                                window.location.href = anterior;
+                            } else {
+                                // Fallback: vuelve a la raíz del sistema de horarios
+                                window.location.href = '../index.html'; 
+                            }
+                        });                    } else {
                         throw new Error(data.error || 'Credenciales incorrectas');
                     }
                 })
