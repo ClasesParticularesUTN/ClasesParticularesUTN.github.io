@@ -2,20 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Redirigiendo...</title>
-
-    <!-- Redirección automática -->
-    <meta http-equiv="refresh" content="0; url=http://181.99.158.157:4002/">
-
-    <script>
-        // Redirección por JavaScript (por si el meta refresh falla)
-        window.location.href = "http://181.99.158.157:4002/";
-    </script>
+    <title>Mi página</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-    <p>Redirigiendo a la página...</p>
-    <p>Si no sos redirigido automáticamente, hacé click
-        <a href="http://181.99.158.157:4002/">acá</a>.
-    </p>
+    <iframe src="http://181.99.158.157:4002/"></iframe>
 </body>
 </html>
