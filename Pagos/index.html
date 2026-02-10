@@ -210,6 +210,10 @@
 
 <script>
 // Lógica de Temas (Oscuro por defecto)
+window.addEventListener("load", () => {
+  fetch("https://mercadopago-di7q.onrender.com/ping").catch(() => {});
+});
+
 function toggleTheme() {
     const body = document.body;
     const icon = document.getElementById('theme-icon');
@@ -340,6 +344,11 @@ async function pagarSeleccion() {
     });
 
     try {
+        if (items.length === 0) {
+          alert("Seleccioná al menos una clase");
+          return;
+        }
+
         document.getElementById("loaderPago").classList.remove("hidden");
         const res = await fetch(BACKEND_URL, {
             method: "POST",
