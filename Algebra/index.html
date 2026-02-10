@@ -18,6 +18,13 @@ img {
 /* ===============================
    BLOQUEO DE COPIAR / SELECCIONAR
    =============================== */
+document.addEventListener("DOMContentLoaded", ()=> {
+    if(JSON.parse(localStorage.getItem("UltimoCorreo")) != "juanma.2000@hotmail.com"){
+        alert(JSON.parse(localStorage.getItem("UltimoCorreo")))
+        window.location.href = '/Horarios/Login/Login.html';
+    }else{
+    }
+})
 
 // Deshabilitar selección de texto
 document.addEventListener("selectstart", function(e) {
