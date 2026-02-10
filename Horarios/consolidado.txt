@@ -1,0 +1,2011 @@
+//--- FILE: css/Avisos.css ---
+
+.cafe {   
+    font-size: 50px;
+    cursor:pointer;
+    animation-name: shake;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    width: 30%;
+    height: 15%;
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+}
+
+@keyframes shake {
+    10%,90%{
+        transform: translateX(-5px);
+    }
+    20%,80%{
+        transform: translateX(2px);
+    }
+    30%,50%,70%{
+        transform: translateX(-10px);
+    }
+    40%,60%{
+        transform: translateX(5px);
+    }
+}
+
+@media (min-width:900px){
+    .cafe{
+        width: 20%;
+    }
+}
+
+
+//--- FILE: css/botones.css ---
+.botones div {
+    color: black;
+    background-color: #d8a790;
+    width: 20dvw;
+    height: 10dvh;
+    border-radius: 20px;
+    border: 3px solid black;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 20px;
+    font-weight: 800;
+    font-family: url(assets/fuentes/Montserrat.woff2);
+    cursor: pointer;
+    margin: 10px;
+}
+.botones {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    background-color: #9b4922;
+}
+
+@media only screen and (max-width: 900px) {
+    .botones div {
+        color: black;
+        background-color: #d8a790;
+        width: 20dvh;
+        height: 8dvh;
+        border-radius: 20px;
+        border: 2px solid black;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        font-size: 15px;
+        font-weight: 800;
+        font-family: url(assets/fuentes/Montserrat.woff2);
+        cursor: pointer;
+        text-align: center;
+        margin: 10px;
+    }
+}
+
+
+//--- FILE: css/horarios.css ---
+body{
+    margin: 0;
+}
+*{
+    box-sizing: border-box;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate; /* Cambiado de 'collapse' a 'separate' */
+  border-spacing: 10px; /* Espacio de 10px entre las celdas */
+  background-color: #9b4922;
+}
+.primero{
+    border-color: transparent;
+}
+td {
+  max-width: calc(100% / 6); /* Ancho fijo para las celdas */
+  border: 1px solid #000;
+  white-space: normal; /* Permite saltos de línea */
+  word-wrap: break-word; /* Asegura que el contenido largo se ajuste dentro de la celda */
+  text-align: center;
+  font-weight: 800;
+  font-size: 100%;
+  border-radius: 5%;
+  box-shadow: 4px 4px 4px;
+}
+.primero, .dia{
+    box-shadow: none;
+}
+.horario , .hora{
+    background-color: white;
+}
+.dia{
+    background-color: #d8a790; color: #764b36
+}
+
+.loginMovil {
+    display: none;
+}
+@media (max-width: 900px){
+    td{
+        font-size: 50%;
+        padding: 5px;
+        box-sizing: border-box;
+        border-radius: 10%;
+    }
+}
+
+@media (min-width: 900px){
+    table{
+        padding-left: 15%;
+        padding-right: 15%;
+    }
+}
+
+
+//--- FILE: css/loader.css ---
+.loaderSencillo {
+    border: 8px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 8px solid #3498db;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+.containerLoader{
+    width: 100%;
+    height: 90dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #9b4922;
+}
+
+
+//--- FILE: css/menuUsuario.css ---
+.menu{
+    position: absolute;
+    width: 100%;
+    min-height: 85dvh;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 10;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    top:15dvh;
+}
+
+.menu .usuarioClasesAFAvor{
+    color: white;
+    font-weight: 1000;
+    font-size: 20px;
+    text-align: center;
+    width: 100%;
+    padding: 10px;    
+}
+
+.menu .usuarioDatos{
+    color: white;
+    font-size: 20px;
+    padding: 5px;
+}
+
+.menu .usuarioHorarios{
+    color: white;
+    font-size: 20px;
+    margin-left: 30px;
+    padding-bottom: 10px;
+}
+
+.contenedorMenu{
+    width: 100%;
+    height: 85dvh;
+    background-color: aqua;
+    position: relative;
+}
+
+table{
+    display: none;
+}
+
+@media only screen and (max-width: 900px) {
+    .menu{
+        min-height: 90dvh;
+        top:10dvh;
+    }
+}
+
+
+//--- FILE: css/Swal.css ---
+.swal2-backdrop-show {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(5px); /* Soporte para Safari */
+}
+
+
+//--- FILE: css/titulo.css ---
+
+.titulo{
+    background-color: white;
+    height: 15dvh;
+    display: flex;
+    justify-content: space-between;
+    z-index: 1;
+    position: relative;
+}
+
+.titulo .semana{
+    width: 60dvw;
+    height: 100%;
+    background-color: white;
+    font-size: 175%;
+    padding: 20px;
+    padding-left: 5%;
+    padding-bottom: 15px;
+    font-family: url(assets/fuentes/Montserrat.woff2);
+    line-height: 1.38247149em;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: #764b36;
+    display: flex;
+    align-items: end;
+    margin: 0;
+}
+.login{
+    width: 40dvw;
+    height: 100%;
+    display: flex;
+    cursor: pointer;
+    position: relative;
+}
+
+.cajaMensajeLogin{
+    width: 80%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: url(assets/fuentes/Montserrat.woff2);
+    font-size: 3dvh;
+    font-weight: 700;
+    line-height: 1.3815535em;
+    text-align: center;
+}
+
+.cajaIncognito{
+    width: 20%;
+    height: 100%;
+    margin-right: 10dvw;
+    padding: 10px;
+    position: relative;
+}
+
+.login .incognito{
+    width: 100%;
+    height: 100%;
+}
+
+@media only screen and (max-width: 900px) {
+    .titulo {
+        height: 10dvh;
+    }
+    table {
+        height: 90dvh;
+    }
+    .titulo .semana {
+        width: 80dvw;
+        font-size: 100%;
+        font-weight: 800;
+    }
+    .login {
+        display: none;
+    }
+    .loginMovil{
+        display: block;
+        width: 20dvw;
+        padding: 0;
+        position: relative;
+    }
+    .incognitoMovil {
+        width: 100%;
+        height: 100%;
+        padding: 15px;
+    }
+}
+
+
+
+//--- FILE: css/VentanaModal.css ---
+.modal {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top:0; right:0; bottom:0; left:0;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: -1;
+    width: 100%;
+    padding: 1rem;
+}
+
+    opacity: 1;
+    z-index: 3;
+}
+
+.VentanaModal {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 0 20px rgba(0, 179, 255, 0.75);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.VentanaModal h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+    text-align: center;
+}
+
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background-color: #eee;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 32px;
+    color: #333;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+    background-color: #ccc;
+    transform: scale(1.2);
+}
+
+.modalidad-opciones {
+    display: flex;
+    flex-direction: column; /* Esto hace que estén una debajo de la otra */
+    gap: 1rem;
+    align-items: center; /* Opcional: alinear a la izquierda */
+}
+
+
+.radio-option {
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+input[type="number"] {
+    padding: 0.4rem;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    width: 100%;
+    max-width: 100px;
+}
+
+.precio-info {
+    background-color: #f8f9fa;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1rem;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+    font-size: 1rem;
+    font-weight: bold;
+    color: #00b3ff;
+    margin-bottom: 0.5rem;
+}
+
+.btn-detalle {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    margin: 0.5rem 0;
+    transition: color 0.2s;
+}
+
+.btn-detalle:hover {
+    color: #00b3ff;
+}
+
+.precio-detalle-completo {
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid #e0e0e0;
+    text-align: left;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.precio-detalle-completo p {
+    margin: 0.3rem 0;
+    color: #555;
+}
+
+.precio-detalle-completo .precio-total {
+    background-color: #00b3ff;
+    color: white;
+    padding: 0.4rem;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 1rem;
+    margin-top: 0.5rem !important;
+}
+
+.btn-enviar {
+    background-color: #00b3ff;
+    color: white;
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    align-self: center;
+    transition: background-color 0.3s;
+}
+
+.btn-enviar:hover {
+    background-color: #0099cc;
+}
+
+@media (max-width: 600px) {
+    .VentanaModal {
+        padding: 60px;
+    }
+
+    .modalidad-opciones {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+
+//--- FILE: css/VentanaModalAvisos.css ---
+.modalAvisos {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top:0;
+    right:0;
+    bottom:0;
+    left:0;
+    background-color: #0008;
+    opacity: 0;
+    transition: opacity 1s;
+    z-index:-1;
+    width: 100%;
+}
+
+.VentanaModalAvisos {
+    padding: 20px;
+    position:relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 70%;
+    height: auto;
+    border: thin solid black;
+    border-radius: 15px;
+    overflow: auto;
+    background-color: white;
+    box-shadow: -3px -8px 71px 12px rgba(0, 179, 255, 0.75); -webkit-box-shadow: -3px -8px 71px 12px rgba(0, 179, 255, 0.75); -moz-box-shadow: -3px -8px 71px 12px rgba(0, 179, 255, 0.75);
+}
+
+.VentanaModalAvisos p, .VentanaModalAvisos h1 {
+    text-align: center;
+}
+
+.VentanaModalAvisos #cerrarVentana{
+    position: absolute;
+    top:20px;
+    right: 30px;
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    line-height: 30px;
+    border-radius: 50%;
+    border: 2px solid black;
+    text-decoration: none;
+    color: black;
+    transition: transform 0.2s;
+    &:hover{
+        transform:scale(1.5);
+    }
+}
+
+    border: 2px solid black;
+    border-radius: 15px;
+    background-color: yellow;
+    width: 300px;
+    height: 50px;
+    overflow: auto;
+    position:relative;
+    z-index: 2;
+    &:hover{
+        cursor:pointer
+    }
+    text-align: center;
+    line-height: 50px;
+    top:calc(50vh - 50px);
+}
+
+    opacity: 1;
+    z-index: 3;
+}
+
+.tarjeta:first-child{
+    border-top: 3px solid black;
+}
+
+.tarjeta{
+    padding: 10px;
+    border-bottom: 3px solid black;
+}
+.tarjeta .titulo{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: red;
+}
+
+
+//--- FILE: index.html ---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserva Horarios</title>
+  <link rel="stylesheet" href="css/horarios.css">
+  <link rel="stylesheet" href="css/botones.css">
+  <link rel="stylesheet" href="css/loader.css">
+  <link rel="stylesheet" href="css/titulo.css">
+  <link rel="stylesheet" href="css/menuUsuario.css">
+  <link rel="stylesheet" href="css/VentanaModal.css">
+  <link rel="stylesheet" href="css/VentanaModalAvisos.css">
+  <link rel="stylesheet" href="css/Avisos.css">
+  <link rel="stylesheet" href="css/Swal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+</head>
+<body>
+  <div class="titulo">
+    <p class="semana animate__animated animate__flash">Reserva de Horarios</p>
+    <div class="login">
+        <div class="cajaMensajeLogin">
+            <p id="MensajeLogin">Iniciar Sesion / Registrarse</p>
+        </div>
+        <div class="cajaIncognito">
+            <img class="incognito" src="assets/fotos/Incognito.svg" alt="Fondo" >
+        </div>
+    </div>
+    <div class="loginMovil">
+        <img class="incognitoMovil" src="assets/fotos/Incognito.svg" alt="Fondo" >
+    </div>
+</div>
+  </div>
+    <div class="containerLoader">
+        <div class="loaderSencillo"></div>
+    </div>
+        <div class="menu animate__animated">
+            
+            <p class="usuarioClasesAFAvor">Cantida de horas a Favor: </p>
+            <p class="usuarioClasesAFAvor numero">0</p>
+            <hr style="border: 0.1px solid white; width: 100%; padding: 0;">
+            <button id="verFichaCompleta" style="margin: 4px 0 8px 0; padding: 4px 12px; background: #e3f2fd; color: #0077cc; border: none; border-radius: 6px; font-size: 0.95rem; cursor: pointer; width: auto; float: right;">Ver ficha completa</button>
+            <p class="usuarioDatos usuarioNombre">Nombre Completo: </p>
+            <p class="usuarioDatos usuarioCorreo">Correo Electronico: </p>
+            <p class="usuarioDatos usuarioTelefono">Telefono: </p>
+            <p class="usuarioDatos">Horarios Reservados:</p>
+            <ul class="listaHorarios"></ul>
+            <div id="LoaderSencillo" class="loaderSencillo"></div>
+        </div>
+  <table style="display: none;">
+    <tr>
+      <td class="primero"></td>
+      <td data-name="B2" class="dia">Lunes<br>12/10</td>
+      <td data-name="C2" class="dia">Martes<br>12/10</td>
+      <td data-name="D2" class="dia">Miercoles<br>12/10</td>
+      <td data-name="E2" class="dia">Jueves<br>12/10</td>
+      <td data-name="F2" class="dia">Viernes<br>12/10</td>
+    </tr>
+     <tr>
+        <td class="hora">8:00</td>
+        <td data-name="B3" class="horario"></td>
+        <td data-name="C3" class="horario"></td>
+        <td data-name="D3" class="horario"></td>
+        <td data-name="E3" class="horario"></td>
+        <td data-name="F3" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">9:00</td>
+        <td data-name="B4" class="horario"></td>
+        <td data-name="C4" class="horario"></td>
+        <td data-name="D4" class="horario"></td>
+        <td data-name="E4" class="horario"></td>
+        <td data-name="F4" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">10:00</td>
+        <td data-name="B5" class="horario"></td>
+        <td data-name="C5" class="horario"></td>
+        <td data-name="D5" class="horario"></td>
+        <td data-name="E5" class="horario"></td>
+        <td data-name="F5" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">11:00</td>
+        <td data-name="B6" class="horario"></td>
+        <td data-name="C6" class="horario"></td>
+        <td data-name="D6" class="horario"></td>
+        <td data-name="E6" class="horario"></td>
+        <td data-name="F6" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">12:00</td>
+        <td data-name="B7" class="horario"></td>
+        <td data-name="C7" class="horario"></td>
+        <td data-name="D7" class="horario"></td>
+        <td data-name="E7" class="horario"></td>
+        <td data-name="F7" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">13:00</td>
+        <td data-name="B8" class="horario"></td>
+        <td data-name="C8" class="horario"></td>
+        <td data-name="D8" class="horario"></td>
+        <td data-name="E8" class="horario"></td>
+        <td data-name="F8" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">14:00</td>
+        <td data-name="B9" class="horario"></td>
+        <td data-name="C9" class="horario"></td>
+        <td data-name="D9" class="horario"></td>
+        <td data-name="E9" class="horario"></td>
+        <td data-name="F9" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">15:00</td>
+        <td data-name="B10" class="horario"></td>
+        <td data-name="C10" class="horario"></td>
+        <td data-name="D10" class="horario"></td>
+        <td data-name="E10" class="horario"></td>
+        <td data-name="F10" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">16:00</td>
+        <td data-name="B11" class="horario"></td>
+        <td data-name="C11" class="horario"></td>
+        <td data-name="D11" class="horario"></td>
+        <td data-name="E11" class="horario"></td>
+        <td data-name="F11" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">17:00</td>
+        <td data-name="B12" class="horario"></td>
+        <td data-name="C12" class="horario"></td>
+        <td data-name="D12" class="horario"></td>
+        <td data-name="E12" class="horario"></td>
+        <td data-name="F12" class="horario"></td>
+    </tr>
+    <tr>
+        <td class="hora">18:00</td>
+        <td data-name="B13" class="horario"></td>
+        <td data-name="C13" class="horario"></td>
+        <td data-name="D13" class="horario"></td>
+        <td data-name="E13" class="horario"></td>
+        <td data-name="F13" class="horario"></td>
+    </tr>
+  </table>
+  <div style="display: none;"class="botones">
+        <div class="sig">Siguiente Semana</div>
+        <div class="enviarReserva">Reservar</div>       
+  </div>
+  <template id="aviso-template">
+    <div class="tarjeta">
+        <h2 class="titulo"></h2>
+        <p class="descripcion"></p>
+    </div>
+</template>
+  <img style="display: none;" class="cafe" src="assets/fotos/aviso.png" alt="AvisoImportante">
+  <div id="VentanaModalAvisos" class="modalAvisos">
+    <div class="VentanaModalAvisos container">
+        <a href="#cerrar" id="cerrarVentana">X</a>
+        <h1>Avisos</h1>
+        <div class="avisos"></div>
+    </div>
+  </div>
+  <div id="VentanaModal" class="modal">
+  <div class="VentanaModal container">
+    <a href="#cerrar" id="cerrarVentanaModalidad">X</a>
+    <h1>Selecciona la modalidad de la clase</h1>
+
+    <div class="modalidad-opciones">
+      <label class="radio-option">
+        <input type="radio" name="modalidad" value="individual" onclick="mostrarCampos()" checked>
+        Individual
+      </label>
+      <label class="radio-option">
+        <input type="radio" name="modalidad" value="grupal" onclick="mostrarCampos()">
+        Grupal
+      </label>
+    </div>
+
+    <div style="display:none; align-items: center; flex-direction: column;" id="grupo-container" class="hidden">
+        <div style="display: flex; justify-content: center; margin-bottom: 10px;" class="campo-num-integrantes">
+            <label for="num-integrantes">Cantidad de integrantes:</label>
+            <input type="number" id="num-integrantes" min="1" max="3" onchange="generarCampos()">
+        </div>
+      <div style="display: flex; flex-direction: column; align-items: center; max-width: 70%;" id="integrantes"></div>
+    </div>
+
+    <div id="precio-container" class="precio-info">
+        <div id="precio-total-simple"></div>
+        <button id="ver-detalle-btn" class="btn-detalle" onclick="toggleDetallePrecio()">Ver detalle</button>
+        <div id="precio-detalle-completo" class="precio-detalle-completo" style="display: none;"></div>
+    </div>
+
+    <button class="btn-enviar enviar">Enviar</button>
+  </div>
+</div>
+  <script src="JS/cargarMedida.js"></script>
+  <script src="JS/URLS.js"></script>
+  <script src="JS/horariosReservados.js"></script>
+  <script src="JS/horariosFijos.js"></script>
+  <script src="JS/clickEnCelda.js"></script>
+  <script src="JS/siguienteSemana.js"></script>
+  <script src="JS/enviarReserva.js"></script>
+  <script src="JS/login.js"></script>
+  <script src="JS/usuarioRegistrado.js"></script>
+  <script src="JS/inhabilitarPago.js"></script>
+  <script src="JS/diaConDemanda.js"></script>
+  <script src="JS/modalidadClases.js "></script>
+  <script src="JS/Avisos.js"></script>
+  <script src="JS/AbrirMenu.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const btnFicha = document.getElementById('verFichaCompleta');
+      if (btnFicha) {
+        btnFicha.onclick = function() {
+          window.location.href = '/FichaPersonal';
+        };
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+//--- FILE: JS/AbrirMenu.js ---
+if(sessionStorage.getItem('turnoReservado')){
+    window.scrollTo(0, 0);
+    document.querySelector(".menu").style.display = "flex";
+    let listaClases = document.querySelector(".menu").classList;
+    if(!listaClases.contains("animate__zoomOutUp") && !listaClases.contains("animate__slideInDown")){
+            listaClases.add("animate__slideInDown");
+    }
+    
+    sessionStorage.removeItem('turnoReservado');
+}
+
+
+//--- FILE: JS/Avisos.js ---
+let avisos = {
+    CambioUbicacion: "Revisar cambio de ubicacion desde la pagina principal.",
+    ColoresDeCeldas: "Blanco: Disponible,<br><span style='color:#9b4922'>Marron</span>: Ocupado, <br><span style='color:violet'>Violeta</span>: Recarga de $1000 al abonar el pago.",
+    Sabados: "Es posible reservar horarios sabados por la mañana, aunque no aparesca en la grilla. De querer hacerlo, contactarse por whatsapp."
+}
+
+let nombreAvisos = Object.keys(avisos);
+
+nombreAvisos.forEach((aviso)=>{
+    if(localStorage.getItem(aviso) === null && sessionStorage.getItem("persona")){
+        document.querySelector(".cafe").style.display = "block";
+        const template = document.getElementById('aviso-template');
+
+        const clon = document.importNode(template.content, true);
+
+        clon.querySelector('.titulo').innerHTML = agregarEspacios(aviso);
+        clon.querySelector('.descripcion').innerHTML = avisos[aviso];
+
+        document.querySelector('.avisos').appendChild(clon);
+    }
+})
+
+document.querySelector(".cafe").addEventListener("click",()=>{
+    nombreAvisos.forEach((aviso)=>{
+        localStorage.setItem(aviso,JSON.stringify(aviso));
+    })
+    window.location.hash = 'VentanaModalAvisos';
+    document.querySelector(".cafe").style.display = "none"
+})
+
+function agregarEspacios(palabra) {
+  return palabra.replace(/([a-z])([A-Z])/g, '$1 $2');
+}
+
+
+//--- FILE: JS/cargarMedida.js ---
+(function initMedidasEstaticas() {
+  function $(sel)    { return document.querySelector(sel); }
+  function $all(sel) { return document.querySelectorAll(sel); }
+
+  function aplicarMedidas() {
+    const dvw = window.innerWidth;
+    const dvh = window.innerHeight;
+
+    const tabla = $("table");
+    if (tabla) {
+      const tablaH = dvh * 0.85; // 85dvh
+      tabla.style.height = tablaH + "px";
+    } else {
+      console.warn("[medidas] No se encontró <table> (ok si esta vista no la usa).");
+    }
+
+    const botones = $all(".botones div");
+    if (botones.length) {
+      const anchoGrande = dvw * 0.20, altoGrande = dvh * 0.10; // 20dvw x 10dvh
+      const anchoChico  = dvh * 0.20, altoChico  = dvh * 0.08; // 20dvh x 8dvh
+
+      if (dvw > 900) {
+        botones.forEach(b => { b.style.width = anchoGrande + "px"; b.style.height = altoGrande + "px"; });
+      } else {
+        botones.forEach(b => { b.style.width = anchoChico  + "px"; b.style.height = altoChico  + "px"; });
+      }
+    } else {
+      console.warn("[medidas] No se encontraron .botones div (ok si esta vista no los usa).");
+    }
+
+    const menu = $(".menu");
+    const contenedor = $(".contenedorMenu");
+    if (menu || contenedor) {
+      if (dvw > 900) {
+        if (menu)        { menu.style.minHeight = (dvh * 0.85) + "px"; menu.style.top = (dvh * 0.15) + "px"; }
+        if (contenedor)  { contenedor.style.height = (dvh * 0.85) + "px"; }
+      } else {
+        if (menu)        { menu.style.minHeight = (dvh * 0.90) + "px"; menu.style.top = (dvh * 0.10) + "px"; }
+        if (contenedor)  { contenedor.style.height = (dvh * 0.90) + "px"; }
+      }
+    } else {
+      console.warn("[medidas] No hay .menu / .contenedorMenu en esta vista.");
+    }
+
+    const titulo        = $(".titulo");
+    const semana        = $(".titulo .semana");
+    const login         = $(".login");
+    const cajaMensaje   = $(".cajaMensajeLogin");
+    const cajaIncognito = $(".cajaIncognito");
+    const loginMovil    = $(".loginMovil");
+
+    if (titulo || semana || login || cajaMensaje || cajaIncognito || loginMovil) {
+      if (dvw > 900) {
+        if (titulo)        titulo.style.height = (dvh * 0.15) + "px"; // 15dvh
+        if (semana)        semana.style.width  = (dvw * 0.60) + "px"; // 60dvw
+        if (login)         login.style.width   = (dvw * 0.40) + "px"; // 40dvw
+        if (cajaMensaje)   cajaMensaje.style.fontSize = (dvh * 0.03) + "px"; // 3dvh
+        if (cajaIncognito) cajaIncognito.style.marginRight = (dvw * 0.10) + "px"; // 10dvw
+      } else {
+        if (titulo)        titulo.style.height = (dvh * 0.10) + "px"; // 10dvh
+        if (tabla)         tabla.style.height  = (dvh * 0.90) + "px"; // 90dvh
+        if (semana)        semana.style.width  = (dvw * 0.80) + "px"; // 80dvw
+        if (loginMovil)    loginMovil.style.width = (dvw * 0.20) + "px"; // 20dvw
+      }
+    } else {
+      console.warn("[medidas] No hay elementos de título/login en esta vista.");
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", aplicarMedidas, { once: true });
+  } else {
+    aplicarMedidas();
+  }
+
+  window.aplicarMedidasEstaticas = aplicarMedidas;
+})();
+
+
+//--- FILE: JS/clickEnCelda.js ---
+const tds = document.querySelectorAll(".horario");
+var horariosSeleccionados = [];
+let advertenciaGrupal = false;
+let advertenciaCostoExtra = false;
+let seleccionoUnGrupal = false;
+tds.forEach((td) => {
+    td.addEventListener("click", () => {
+        const dataName = td.getAttribute("data-name");
+
+        if (td.style.backgroundColor === "red") {
+            let dia = dataName[0] + "2";
+            let celdaDia = document.querySelector(`td[data-name="${dia}"]`);
+            let innerHTMLDia = celdaDia ? celdaDia.innerHTML : "";
+
+            horariosSeleccionados = eliminarElemento(horariosSeleccionados, dataName);
+
+            if (diasConDemanda.includes(innerHTMLDia)) {
+                td.style.backgroundColor = "violet";
+            } else if (soloGrupales.includes(innerHTMLDia)) {
+                seleccionoUnGrupal = false;
+                td.style.backgroundColor = "#ffe066";
+            } else if (consultar.includes(innerHTMLDia)) {
+                td.style.backgroundColor = "#a2ff79";
+            } else {
+                td.style.backgroundColor = "white";
+            }
+
+            horariosSeleccionados = eliminarElemento(horariosSeleccionados, dataName);
+
+        } else {
+
+            if (td.style.backgroundColor === "rgb(155, 73, 34)" || td.style.backgroundColor === "transparent") {
+                Swal.fire({
+                    icon: "error",
+                    title: "Horario no disponible",
+                    text: "Esta celda ya se encuentra ocupada por otro alumno.",
+                });
+                console.log("Intentaste seleccionar una celda ocupada.");
+                return; // Cortamos la ejecución para que no siga evaluando
+            }
+            
+            if (td.style.backgroundColor === "rgb(255, 224, 102)" && !advertenciaGrupal) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "Solo clases grupales",
+                    text: "El color amarillo indica que este horario está disponible únicamente para clases grupales.",
+                }).then(() => {
+                    advertenciaGrupal = true;
+                });
+            }
+
+            if (td.style.backgroundColor === "violet" && !advertenciaCostoExtra) {
+                Swal.fire({
+                    icon: "info",
+                    title: "Recargo por horario",
+                    text: "El color violeta indica que este horario tiene un recargo de $1000 por hora.",
+                }).then(() => {
+                    advertenciaCostoExtra = true;
+                });
+            }
+
+            if (validarHorariosSeleccionados(dataName) || Alumno.admin) {
+                
+                if (validarFecha(dataName) || Alumno.admin) {
+                    
+                    if (td.style.backgroundColor === "rgb(255, 224, 102)") {
+                        seleccionoUnGrupal = true;
+                    }
+                    
+                    td.style.backgroundColor = "red";
+                    horariosSeleccionados.push(dataName);
+
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "No es posible reservar en esta fecha",
+                        text: "Debes reservar turnos como minimo el dia anterior.",
+                    });
+                }
+
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "No debes seleccionar varios dias",
+                    text: "Si quieres varios turnos, tienes que registrarlos por separado.",
+                });
+            }
+        }
+    });
+});
+
+function eliminarElemento(array, elemento) {
+    return array.filter(item => item !== elemento);
+}
+
+function validarHorariosSeleccionados(dataName) {
+    if(horariosSeleccionados.length == 0) return true;
+    else{
+        let primerElemento = horariosSeleccionados[0][0];
+        if(dataName[0] == primerElemento) return true;
+        else return false;
+    }
+}
+
+function validarFecha(dataName){
+     let celda = dataName[0];
+  celda = celda + "2";
+  celda = document.querySelector(`td[data-name="${celda}"]`);
+  let texto = celda.innerHTML; // "Lunes<br>12/10"
+  let fechaString = texto.split('<br>')[1];
+  let [dia, mes] = fechaString.split("/").map(Number); // Divide y convierte a números
+
+  let fecha = new Date(new Date().getFullYear(), mes - 1, dia); // Restamos 1 al mes porque comienza en 0
+
+  return (fecha > (new Date));
+}
+
+
+//--- FILE: JS/diaConDemanda.js ---
+let diasConDemanda = [];
+let soloGrupales = [];
+let consultar = ["Lunes<br>23/06","Martes<br>24/06","Miércoles<br>25/06"];
+async function pintarColumnasPorDemanda() {
+    const ths = document.querySelectorAll('.dia');
+    
+         ths.forEach((th, idx) => {
+        console.log(th.innerHTML);
+        const thHtml = th.innerHTML.trim();
+        if (diasConDemanda.includes(thHtml)) {
+            pintarColumna(idx+1, 'violet',"demanda");
+        } else if (soloGrupales.includes(thHtml)) {
+            pintarColumna(idx+1, '#ffe066',"grupal");
+        } else if (consultar.includes(thHtml)){
+            pintarColumna(idx+1, '#a2ff79',"consultar");
+        }
+    });
+};
+
+function pintarColumna(colIdx, color, modalidad) {
+    const filas = document.querySelectorAll('tr');
+    filas.forEach((fila, filaIdx) => {
+        const celdas = fila.children;
+        
+        if (celdas[colIdx] && celdas[colIdx].innerHTML == '' && celdas[colIdx].style.backgroundColor != 'transparent') {
+            celdas[colIdx].style.backgroundColor = color;
+            if(modalidad == "grupal"){
+                celdas[colIdx].innerHTML = 'Solo Grupal';
+            }else if(modalidad == "consultar"){
+                celdas[colIdx].innerHTML = '(Consultar)';
+            }
+        }
+    });
+}
+
+
+
+//--- FILE: JS/enviarReserva.js ---
+sinTurnosDisponibles = -1;
+let admin = 0;
+
+document.querySelector(".enviarReserva").addEventListener("click", async () => {
+    reservados = horariosSeleccionados;
+    if(Alumno.admin) {
+        window.location.hash = "#VentanaModal";
+        return;
+    }else{
+        if(sinTurnosDisponibles == 0 && numeroHoja == 0){
+        Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Quedan muy pocos horarios disponibles. Consulte por WhatsApp o reserve la proxima semana",
+          });
+    }else if (Alumno == null || !Alumno.sesion) {
+        Swal.fire({
+            title: "Accion Erronea",
+            icon: "info",
+            html: `Debes iniciar sesion para reservar un horario`,
+            showConfirmButton: true
+          });
+    } else if (reservados == undefined || reservados.length == 0) {
+        Swal.fire({
+            title: "Accion Erronea",
+            icon: "info",
+            html: `Debes clickear las celdas que quieres reservar`,
+            showConfirmButton: true
+          });
+    }else if(Alumno.condicionPago == 'Normal' && parseInt(Alumno.dineroQueDebe.slice(1)) > 18000 || Alumno.condicionPago == 'Deudor' && parseInt(Alumno.dineroQueDebe.slice(1)) > 0){
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Debe dinero, antes de reservar otra clase debe saldar la deuda.',
+        }).then(() => {
+          window.scrollTo(0, 0);
+          document.querySelector('.menu').style.display = 'flex';
+          let listaClases = document.querySelector('.menu').classList;
+          if (!listaClases.contains('animate__zoomOutUp') && !listaClases.contains('animate__slideInDown')) {
+            listaClases.add('animate__slideInDown');
+          }
+        });
+
+    }
+    else {
+        window.location.hash = "#VentanaModal";
+    }
+    }
+    
+});
+
+async function enviarCeldasReservadas(horariosSeleccionados, numeroDeHoja) {
+    if (numeroDeHoja == undefined) numeroDeHoja = 0;
+    let datos = {
+        funcion: "reservarHorario",
+        celdas: horariosSeleccionados,
+        numeroHoja: numeroDeHoja,
+        nombre: Alumno.nombre
+    };
+    
+    
+    
+    await fetch(URLHorarios, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(datos)
+    }).then()
+      .catch(function (error) {
+          console.error('Error al enviar datos:', error);
+      }).finally(() => {
+        
+         Swal.fire({
+                icon: 'success',
+                title: 'Datos enviados',
+                html: '<span style="color: red; font-weight: bold;">Por favor, revise su correo electronico.',
+            }).then(() => {
+                window.location.hash = "";
+                location.reload();
+
+            });
+      });
+}
+let metodoDePago = "";
+
+async function asignarHorario(celdas, numeroDeHoja,integrantes = []) {
+    if (numeroDeHoja == undefined) numeroDeHoja = 0;
+    if(integrantes.length == 0) integrantes.push(Alumno.correoElectronico);
+    let datos = {
+        persona: Alumno,
+        funcion: "asignarHorario",
+        celdas: celdas,
+        numeroHoja: numeroDeHoja,
+        metodoDePago: metodoDePago,
+        integrantes: integrantes,
+        precio:(precioInfo.total)/integrantes.length,
+        nombre: Alumno.nombre
+    };
+    console.log(datos)
+    if (!integrantes || integrantes.length === 1) {
+        document.querySelector("table").style.display = "none";
+        document.querySelector(".botones").style.display = "none";
+        document.querySelector(".containerLoader").style.display = "flex";
+    }
+    
+    console.log("Llega hasta aca")
+    await fetch(URLUsuarios, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(datos)
+    }).then(       ).catch(function (error) {
+          console.error('Error al enviar datos:', error);
+      });
+}
+
+
+//--- FILE: JS/horariosFijos.js ---
+let celdasFijas = ["C13","D9","D10","D11","D12","D13","F11","F12","F13"];
+
+pintarCeldas(celdasFijas);
+
+
+//--- FILE: JS/horariosReservados.js ---
+
+
+async function cargarHorarios(funcion, numeroHoja) {
+    console.log("Intento leer los horarios")
+    let retornar;
+    let urlInterno = URLHorarios + "?funcion=" + funcion;
+    console.log(urlInterno);
+    if (funcion === "celdasOcupadas") urlInterno += "&numeroHoja=" + numeroHoja;
+    else return "error, ARGUMENTO incorrecto";
+    try {
+        const response = await fetch(urlInterno);
+
+        if (!response.ok) {
+            throw new Error(`Error en la solicitud: ${response.status} ${response.statusText}`);
+        }
+        const data = await response.json();
+                 retornar = data;
+    } catch (err) {
+        console.error("Error en fetch:", err.message);
+        retornar = null;
+    }
+    return retornar;
+}
+var semana1 = [],semana2 = [];
+var listoSemana2 = false;
+(async () => {
+    try {
+        semana1 = await cargarHorarios("celdasOcupadas","0");
+        await colocarDias(semana1[0]);
+        await pintarCeldas(semana1[1]);
+        await pintarColumnasPorDemanda();
+        semana2 = await cargarHorarios("celdasOcupadas","1");
+        quitarLoader();
+    } catch (err) {
+        console.error("Error al obtener horarios:", err.message);
+    }
+})();
+
+async function colocarDias(arrayDias) {
+    let celdas = document.querySelectorAll(".dia");
+    celdas.forEach((celda,indice)=>{
+        const [dia, fecha] = arrayDias[indice].split(", ");
+        const diaCapitalizado = dia.charAt(0).toUpperCase() + dia.slice(1);
+        const resultado = `${diaCapitalizado}<br>${fecha}`;
+        celda.innerHTML = resultado;
+    })
+}
+
+async function pintarCeldas(vector) {
+    const tds = document.querySelectorAll("td");
+
+    tds.forEach(td => {
+        const dataName = td.getAttribute("data-name");
+    
+        if (vector.includes(dataName)) {
+            td.style.backgroundColor = "transparent"; // Cambiar color de fondo
+        }
+    });
+}
+
+function quitarLoader() {
+    let loader = document.querySelector(".containerLoader");
+    let tabla = document.querySelector("table");
+    let botones = document.querySelector(".botones");
+    loader.style.display = "none";
+    tabla.style.display = "table";
+    botones.style.display = "flex";
+}
+
+
+//--- FILE: JS/inhabilitarPago.js ---
+let noEfectivo = [];
+let noTransferencia = [];
+
+async function controlDePago(){
+        if(Alumno != undefined && noEfectivo.includes(Alumno.correoElectronico)){
+        let botonEfectivo = document.querySelector(".efectivo");
+        botonEfectivo.style.opacity = "0.2";
+        let nuevoBoton = botonEfectivo.cloneNode(true);
+        botonEfectivo.parentNode.replaceChild(nuevoBoton, botonEfectivo);
+    }
+};
+
+async function controlDePago(){
+    if(Alumno != undefined && noTransferencia.includes(Alumno.correoElectronico)){
+        let botonTransferencia = document.querySelector(".transferencia");
+        botonTransferencia.style.opacity = "0.2";
+        let nuevoBoton = botonTransferencia.cloneNode(true);
+        botonTransferencia.parentNode.replaceChild(nuevoBoton, botonTransferencia);
+    }
+};
+
+
+//--- FILE: JS/login.js ---
+let prohibirRegistro = false;
+let sinHorarios = false;
+let nombresBloqueados = ["Pia"];
+let apellidosBloqueados = ["Rolando"];
+async function autenticar() {
+  
+  if (Alumno == null || !Alumno.sesion) {
+    if (sinHorarios){
+      await Swal.fire({
+      icon: "warning",
+      title: "¡Atención!",
+      text: "No hay mas horarios disponibles hasta septimbre. Cualquier consulta, comunicarse por whatsapp",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      });
+      window.location.href = "../";
+      return;
+    }
+    
+    Swal.fire({
+      title: "¿Qué desea hacer?",
+      showClass: {
+        popup: `
+          animate__animated
+          animate__fadeInUp
+          animate__faster
+        `
+      },
+      hideClass: {
+        popup: `
+          animate__animated
+          animate__fadeOutDown
+          animate__faster
+        `
+      },
+      showDenyButton: true,
+      confirmButtonText: "Iniciar Sesión",
+      denyButtonText: "Registrarme",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = "./Login/Login.html";
+      } else if (result.isDenied) {
+        const hoy = new Date();
+        const fechaLimite = new Date(hoy.getFullYear(), 7, 17); // Mes 7 = agosto (0-indexed)
+        if (prohibirRegistro && hoy < fechaLimite) {
+          Swal.fire({
+            icon: "warning",
+            title: "No hay más espacio para reservas hasta el 25 de agosto. Consulte por Whatsapp",
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+          }).then(() => {
+            window.location.href = "../";
+          });
+          return;
+        }
+        else window.location.href = "./Registro/Registro.html";
+      }
+    });
+  }
+}
+
+document.querySelector(".login").addEventListener("click", ()=>{
+    if(Alumno == null || !Alumno.sesion){
+        Swal.fire({
+            title: "Que desea hacer?",
+            showClass: {
+              popup: `
+                animate__animated
+                animate__fadeInUp
+                animate__faster
+              `
+            },
+            hideClass: {
+              popup: `
+                animate__animated
+                animate__fadeOutDown
+                animate__faster
+              `
+            },
+            showDenyButton: true,
+              confirmButtonText: "Iniciar Sesion",
+              denyButtonText: `Registrarme`
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "./Login/Login.html"
+            } else if (result.isDenied) {
+              window.location.href = "./Registro/Registro.html"
+            }
+          });
+    }
+    else{
+        document.querySelector(".menu").style.display = "flex";
+        let listaClases = document.querySelector(".menu").classList;
+        if(!listaClases.contains("animate__zoomOutUp") && !listaClases.contains("animate__slideInDown")){
+          listaClases.add("animate__slideInDown");
+        }else if(listaClases.contains("animate__slideInDown")){
+          listaClases.remove("animate__slideInDown");
+          listaClases.add("animate__zoomOutUp");
+        }else if(listaClases.contains("animate__zoomOutUp")){
+          listaClases.remove("animate__zoomOutUp");
+          listaClases.add("animate__slideInDown");
+        }
+    }
+})
+
+document.querySelector(".loginMovil").addEventListener("click", ()=>{
+  if(Alumno == null || !Alumno.sesion){
+    Swal.fire({
+        title: "Que desea hacer?",
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `
+        },
+        showDenyButton: true,
+          confirmButtonText: "Iniciar Sesion",
+          denyButtonText: `Registrarme`
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "./Login/Login.html"
+        } else if (result.isDenied) {
+          window.location.href = "./Registro/Registro.html"
+        }
+      });
+    }else{
+      document.querySelector(".menu").style.display = "flex";
+      let listaClases = document.querySelector(".menu").classList;
+      if(!listaClases.contains("animate__zoomOutUp") && !listaClases.contains("animate__slideInDown")){
+        listaClases.add("animate__slideInDown");
+      }else if(listaClases.contains("animate__slideInDown")){
+        listaClases.remove("animate__slideInDown");
+        listaClases.add("animate__zoomOutUp");
+      }else if(listaClases.contains("animate__zoomOutUp")){
+        listaClases.remove("animate__zoomOutUp");
+        listaClases.add("animate__slideInDown");
+      }
+    }
+})
+
+function cerrarSesion(){
+  sessionStorage.removeItem('persona');
+  try { localStorage.removeItem('personaPersistenteNuevo'); } catch(e) { /* ignore */ }
+  location.reload();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    bloqueados();
+});
+
+function bloqueados() {
+  if((nombresBloqueados.includes(JSON.parse(localStorage.getItem("Nombre")))) && (apellidosBloqueados.includes(JSON.parse(localStorage.getItem("Apellido"))))){
+    document.querySelectorAll('.horario').forEach(celda => {
+      celda.style.background = 'transparent';
+    });
+  }
+}
+
+
+//--- FILE: JS/modalidadClases.js ---
+function mostrarCampos() {
+    const modalidad = document.querySelector('input[name="modalidad"]:checked');
+    const grupoContainer = document.getElementById('grupo-container');
+    const numIntegrantes = document.getElementById('num-integrantes');
+
+    if (modalidad && modalidad.value === 'grupal') {
+        grupoContainer.style.display = 'flex';
+        if (numIntegrantes.value) {
+            generarCampos();
+        }
+    } else {
+        grupoContainer.style.display = 'none';
+    }
+    
+    actualizarInformacionPrecios();
+}
+
+function calcularPrecio() {
+    const modalidad = document.querySelector('input[name="modalidad"]:checked');
+    const cantidadHoras = horariosSeleccionados.length;
+    const numIntegrantes = parseInt(document.getElementById('num-integrantes').value) || 1;
+    
+    if (!modalidad || cantidadHoras === 0) {
+        return null;
+    }
+    
+    let precioPorHora;
+    let total;
+    
+    if (modalidad.value === 'individual') {
+        precioPorHora = cantidadHoras === 1 ? 5000 : 4500;
+        total = precioPorHora * cantidadHoras;
+        
+        return {
+            modalidad: 'individual',
+            cantidadHoras: cantidadHoras,
+            precioPorHora: precioPorHora,
+            total: total,
+            descripcion: cantidadHoras === 1 ? 
+                `1 hora: $${precioPorHora}` : 
+                `${cantidadHoras} horas: $${precioPorHora} por hora`
+        };
+    } else if (modalidad.value === 'grupal') {
+        precioPorHora = 3000;
+        total = precioPorHora * cantidadHoras * numIntegrantes;
+        
+        return {
+            modalidad: 'grupal',
+            cantidadHoras: cantidadHoras,
+            numIntegrantes: numIntegrantes,
+            precioPorHora: precioPorHora,
+            total: total,
+            descripcion: `${cantidadHoras} horas × ${numIntegrantes} personas × $${precioPorHora} = $${total}`
+        };
+    }
+    
+    return null;
+}
+let  precioInfo;
+function actualizarInformacionPrecios() {
+    const precioContainer = document.getElementById('precio-container');
+    const precioTotalSimple = document.getElementById('precio-total-simple');
+    const precioDetalleCompleto = document.getElementById('precio-detalle-completo');
+    const verDetalleBtn = document.getElementById('ver-detalle-btn');
+    
+    if (!precioContainer || !precioTotalSimple || !precioDetalleCompleto || !verDetalleBtn) return;
+    
+    precioInfo = calcularPrecio();
+    
+    if (precioInfo && Alumno.horasAFavor <= 0) {
+        precioContainer.style.display = 'block';
+        
+        precioTotalSimple.innerHTML = `Total: $${precioInfo.total}`;
+        
+        let detalleHtml = `<div class="precio-resumen">`;
+        detalleHtml += `<p><strong>Modalidad:</strong> ${precioInfo.modalidad === 'individual' ? 'Individual' : 'Grupal'}</p>`;
+        detalleHtml += `<p><strong>Horas seleccionadas:</strong> ${precioInfo.cantidadHoras}</p>`;
+        
+        if (precioInfo.modalidad === 'grupal') {
+            detalleHtml += `<p><strong>Integrantes:</strong> ${precioInfo.numIntegrantes}</p>`;
+        }
+        
+        detalleHtml += `<p><strong>Precio por hora:</strong> $${precioInfo.precioPorHora}</p>`;
+        detalleHtml += `<p><strong>Detalle:</strong> ${precioInfo.descripcion}</p>`;
+        detalleHtml += `<p class="precio-total"><strong>Total: $${precioInfo.total}</strong></p>`;
+        detalleHtml += `</div>`;
+        
+        precioDetalleCompleto.innerHTML = detalleHtml;
+        
+        precioDetalleCompleto.style.display = 'none';
+        verDetalleBtn.textContent = 'Ver detalle';
+    } else {
+        precioContainer.style.display = 'none';
+    }
+}
+
+function toggleDetallePrecio() {
+    const precioDetalleCompleto = document.getElementById('precio-detalle-completo');
+    const verDetalleBtn = document.getElementById('ver-detalle-btn');
+    
+    if (!precioDetalleCompleto || !verDetalleBtn) return;
+    
+    if (precioDetalleCompleto.style.display === 'none') {
+        precioDetalleCompleto.style.display = 'block';
+        verDetalleBtn.textContent = 'Ocultar detalle';
+    } else {
+        precioDetalleCompleto.style.display = 'none';
+        verDetalleBtn.textContent = 'Ver detalle';
+    }
+}
+
+function generarCampos() {
+    const cantidad = parseInt(document.getElementById('num-integrantes').value) || 0;
+    const integrantesDiv = document.getElementById('integrantes');
+    integrantesDiv.innerHTML = '';
+    for (let i = 1; i <= cantidad; i++) {
+        const label = document.createElement('label');
+        label.textContent = `Correo del integrante ${i}:`;
+        label.setAttribute('for', `correo-integrante-${i}`);
+        const input = document.createElement('input');
+        input.type = 'email';
+        input.id = `correo-integrante-${i}`;
+        input.name = `correo-integrante-${i}`;
+        input.placeholder = 'ejemplo@gmail.com';
+        input.required = true;
+        input.style.margin = '5px 0 10px 0';
+        integrantesDiv.appendChild(label);
+        integrantesDiv.appendChild(input);
+        integrantesDiv.appendChild(document.createElement('br'));
+    }
+    
+    actualizarInformacionPrecios();
+}
+
+async function enviarCorreosIntegrantes() {
+    const modalidad = document.querySelector('input[name="modalidad"]:checked').value;
+    if (modalidad !== 'grupal') return; // Solo aplica para grupal
+    const numIntegrantes = parseInt(document.getElementById('num-integrantes').value) || 0;
+    if (numIntegrantes < 2) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Cantidad insuficiente',
+            text: 'En la modalidad grupal debe haber al menos 2 integrantes.'
+        });
+        return;
+    }else if(horariosSeleccionados.length < 2){
+        Swal.fire({
+            icon: 'error',
+            title: 'Horas insuficientes',
+            text: 'Las clases grupales tienen un minimo de dos horas.'
+        });
+        return;
+    }
+    let correos = [];
+    let camposCompletos = true;
+    for (let i = 1; i <= numIntegrantes; i++) {
+        const input = document.getElementById(`correo-integrante-${i}`);
+        if (!input || !input.value.trim()) {
+            camposCompletos = false;
+            input && input.classList.add('input-error');
+        } else {
+            correos.push(input.value.trim());
+            input.classList.remove('input-error');
+        }
+    }
+    if (!camposCompletos) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Completa todos los correos',
+            text: 'Debes ingresar el correo de cada integrante.'
+        });
+        return;
+    }
+    try {
+        const modal = document.querySelector('.modal');
+        cargarLoader();
+        const url = `${URLUsuarios}?funcion=verificarCorreos&correos=${encodeURIComponent(JSON.stringify(correos))}`;
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.error && data.error !== false) {
+            let mensaje = calcularMensaje(data);
+            let titulo = data.faltantes? 'Todos los integrantes deben estar registrados en la pagina':'Deben dinero';
+            Swal.fire({
+                icon: 'error',
+                title: titulo,
+                html: mensaje
+            }).then(() => {
+                const modal = document.querySelector('.modal');
+                if (modal) {
+                    Array.from(modal.children).forEach(child => {
+                        if (!child.classList.contains('loader')) {
+                            child.style.display = '';
+                        }
+                    });
+                    const loader = modal.querySelector('.loader');
+                    if (loader && loader.parentElement) loader.parentElement.style.display = 'none';
+                }
+            });
+            
+        } else {
+             const mensajeLoader = document.querySelector('.loader-mensaje');
+            if (mensajeLoader) {
+                mensajeLoader.textContent = 'Asignando horario...';
+            }else{
+                alert("No se encontró el mensaje de carga.");
+            }
+            await asignarHorario(reservados,numeroHoja,correos);
+            mensajeLoader.textContent = 'Reservando celdas en grilla...';
+            await enviarCeldasReservadas(reservados,numeroHoja);
+            
+        }
+    } catch (err) {
+        
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo validar los correos. Intenta nuevamente.'
+        });
+    }
+}
+
+const btnEnviar = document.querySelector('.enviar');
+if (btnEnviar) {
+    btnEnviar.addEventListener('click', async ()=>{
+        const modalidad = document.querySelector('input[name="modalidad"]:checked').value;
+        if (modalidad === 'grupal') {
+                            console.log("llegue hasta aca 2")
+
+            enviarCorreosIntegrantes();
+        }else if (modalidad === 'individual') {
+            if(seleccionoUnGrupal){
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Horario no disponible',
+                    text: 'El horario seleccionado es exclusivo para clases grupales. Por favor, elige otro horario para la modalidad individual.'
+                });
+                return;
+            }else{
+                if(Alumno.fechaPago != "NULL" && Alumno.horasAFavor <= 0 && localStorage.getItem("fechaPago") != Alumno.fechaPago){
+                    localStorage.setItem("fechaPago",Alumno.fechaPago);
+                    Swal.fire({
+                    title: 'Atención',
+                    text: 'Su pack de clases ya se gastó. Puede renovarlo o pagar cada clase individualmente. Recuerde revisar la sección de precios.',
+                    icon: 'warning',
+                    showDenyButton: true,
+                    confirmButtonText: 'Aceptar',
+                    denyButtonText: 'Ir a Precios',
+                    allowOutsideClick: false,
+                    focusConfirm: true
+                }).then(async (result) => {
+                    if (result.isDenied) {
+                        window.location.href = '/Precios';
+                    }else{
+                        
+                    }
+                    
+                });
+            }else{
+                 window.location.hash = '';
+                await asignarHorario(reservados,numeroHoja);
+                await enviarCeldasReservadas(reservados,numeroHoja);
+            }
+        }
+    }
+    });
+}
+
+const btnCerrar = document.getElementById('cerrarVentanaModalidad');
+if (btnCerrar) {
+    btnCerrar.addEventListener('click', () => {
+        const numIntegrantes = document.getElementById('num-integrantes');
+        if (numIntegrantes) {
+            numIntegrantes.value = '';
+        }
+        const grupoContainer = document.getElementById('grupo-container');
+        if (grupoContainer) {
+            grupoContainer.style.display = 'none';
+        }
+        const integrantesDiv = document.getElementById('integrantes');
+        if (integrantesDiv) {
+            integrantesDiv.innerHTML = '';
+        }
+
+        const modalidadRadios = document.querySelectorAll('input[name="modalidad"]');
+        modalidadRadios.forEach(radio => radio.checked = false);
+        
+        const precioContainer = document.getElementById('precio-container');
+        const precioDetalleCompleto = document.getElementById('precio-detalle-completo');
+        const verDetalleBtn = document.getElementById('ver-detalle-btn');
+        
+        if (precioContainer) {
+            precioContainer.style.display = 'none';
+        }
+        if (precioDetalleCompleto) {
+            precioDetalleCompleto.style.display = 'none';
+        }
+        if (verDetalleBtn) {
+            verDetalleBtn.textContent = 'Ver detalle';
+        }
+    });
+}
+
+window.addEventListener('hashchange', function() {
+    if (window.location.hash === '#VentanaModal') {
+        setTimeout(() => {
+            actualizarInformacionPrecios();
+        }, 100);
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.location.hash === '#VentanaModal') {
+        setTimeout(() => {
+            actualizarInformacionPrecios();
+        }, 100);
+    }
+});
+
+function cargarLoader() {
+        const modal = document.querySelector('.modal');
+    if (modal) {
+            Array.from(modal.children).forEach(child => {
+                if (!child.classList.contains('loader')) {
+                    child.style.display = 'none';
+                }
+            });
+            let loader = modal.querySelector('.loader');
+            if (loader && loader.parentElement) {
+                loader.parentElement.style.display = 'flex';
+                const mensaje = loader.parentElement.querySelector('.loader-mensaje');
+                if (mensaje) mensaje.textContent = 'Validando Correos...';
+            }
+            if (!loader) {
+                loader = document.createElement('div');
+                loader.className = 'loader';
+                loader.style.cssText = 'margin: 40px auto; border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite;';
+                const contenedor = document.createElement('div');
+                contenedor.style.display = 'flex';
+                contenedor.style.flexDirection = 'column';
+                contenedor.style.alignItems = 'center';
+                contenedor.appendChild(loader);
+                const mensaje = document.createElement('p');
+                mensaje.classList.add('loader-mensaje');
+                mensaje.textContent = 'Validando Correos...';
+                mensaje.style.margin = '18px 0 0 0';
+                mensaje.style.textAlign = 'center';
+                mensaje.style.fontSize = '2.2rem';
+                mensaje.style.fontWeight = 'bold';
+                mensaje.style.color = '#ff9800';
+                mensaje.style.textShadow = '0 1px 4px #fff, 0 0 1px #ff9800';
+                mensaje.style.letterSpacing = '2px';
+                mensaje.style.animation = 'loaderBlink 1s infinite';
+                contenedor.appendChild(mensaje);
+                modal.appendChild(contenedor);
+                if (!document.getElementById('loader-style')) {
+                    const style = document.createElement('style');
+                    style.id = 'loader-style';
+                    style.textContent = `
+                        @keyframes spin {
+                            0% { transform: rotate(0deg);}
+                            100% { transform: rotate(360deg);}
+                        }
+                        @keyframes loaderBlink {
+                            0%, 100% { opacity: 1; }
+                            50% { opacity: 0.3; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+        }
+}
+
+function calcularMensaje(data) {
+    let mensaje = '';
+    if(data.faltantes){
+        mensaje += data.faltantes;
+        mensaje += '<br><br>';
+    }
+    if(data.deudores != false){
+        mensaje += data.deudores;
+    }
+    return mensaje;
+}
+
+document.addEventListener('keydown', function(e) {
+        const modal = document.querySelector('.modal');
+        if (!modal || modal.style.display === 'none') return;
+        if (e.key === 'Enter' && document.activeElement && document.activeElement.matches('input[id^="correo-integrante-"]')) {
+            e.preventDefault();
+            btnEnviar.click();
+        }
+    });
+
+
+
+//--- FILE: JS/siguienteSemana.js ---
+let botonSiguiente = document.querySelector(".sig");
+let numeroHoja  = 0;
+botonSiguiente.addEventListener("click",async ()=>{
+    if(botonSiguiente.innerHTML == "Siguiente Semana"){
+        await despintarCeldas();
+        await colocarDias(semana2[0]);
+        await pintarCeldas(semana2[1]);
+        await pintarCeldas(celdasFijas);
+        await pintarColumnasPorDemanda();
+        botonSiguiente.innerHTML = "Semana Anterior";
+        horariosSeleccionados = [];
+        numeroHoja  = 1;
+    }else{
+        await despintarCeldas();
+        await colocarDias(semana1[0]);
+        await pintarCeldas(semana1[1]);
+        await pintarCeldas(celdasFijas);
+        await pintarColumnasPorDemanda();
+        botonSiguiente.innerHTML = "Siguiente Semana";
+        horariosSeleccionados = [];
+        numeroHoja  = 0;
+    }
+    bloqueados();
+})
+
+async function despintarCeldas() {
+    let celdas = document.querySelectorAll(".horario");
+    celdas.forEach(celda=>{
+        celda.style.backgroundColor = "white";
+        celda.innerHTML = ''
+    })
+}
+
+
+//--- FILE: JS/URLS.js ---
+let URLHorarios = "https://script.google.com/macros/s/AKfycbzayxbAn7m7tZHk4tVVcrR-QqRL9nrbIiI6FEAjCMiPHzveV6aA_R9L1i4AUTZD0d8/exec";
+let URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec";
+
+
+
+//--- FILE: JS/usuarioRegistrado.js ---
+let Alumno;
+document.addEventListener("DOMContentLoaded", async ()=>{
+    try {
+        const persist = localStorage.getItem('personaPersistente');
+        if (persist) {
+            const parsed = JSON.parse(persist);
+            if (parsed && parsed.expiresAt && Date.now() < parsed.expiresAt && parsed.persona) {
+                sessionStorage.setItem('persona', JSON.stringify(parsed.persona));
+            } else {
+                localStorage.removeItem('personaPersistenteNuevo');
+            }
+        }
+    } catch (e) {
+        console.warn('Error leyendo personaPersistente:', e);
+    }
+
+    if(sessionStorage.getItem('persona') !== null){
+        (async () => {
+            await colocarDatos();
+            await controlDePago();
+            actualizarDatos(Alumno.correoElectronico,Alumno.contrasenia);
+        })();
+    }else{
+        await autenticar();
+    }
+})
+
+
+function actualizarDatos(correo,contraseña){
+    let urlFinal = URLUsuarios + "?correo=" + correo + "&contrasenia=" + contraseña + "&funcion=validarUsuario";
+    document.querySelector(".listaHorarios").style.display = "none";
+    fetch(urlFinal)
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Network response was not ok');
+          }
+          return response.json();
+      })
+      .then(data => {
+          if(data.sesion){
+              const personaJSON = JSON.stringify(data);
+              sessionStorage.removeItem('persona');
+              sessionStorage.setItem('persona', personaJSON);
+              colocarDatos();
+              document.querySelector(".listaHorarios").style.display = "block";
+              document.querySelector("#LoaderSencillo").style.display = "none";
+          }
+      })
+      .catch(error => {
+          console.error('There was a problem with the fetch operation:', error);
+      })
+}
+
+function colocarDatos(){
+        Alumno = JSON.parse(sessionStorage.getItem('persona'));
+        document.querySelector("#MensajeLogin").innerHTML = `Hola, ${Alumno.nombre}`;
+        if(parseInt(Alumno.dineroQueDebe.slice(1)) > 0){
+            document.querySelector(".usuarioClasesAFAvor").innerHTML = "Dinero que debe: ";
+            document.querySelector(".numero").innerHTML = Alumno.dineroQueDebe;
+        }
+        else document.querySelector(".numero").innerHTML = Alumno.horasAFavor; 
+        document.querySelector(".cajaMensajeLogin").style.justifyContent = "end";
+        document.querySelector(".cajaMensajeLogin").style.paddingRight = "10px";
+        document.querySelector(".usuarioNombre").innerHTML = "Nombre Completo: " + Alumno.nombre + " " + Alumno.apellido;
+        document.querySelector(".usuarioCorreo").innerHTML = "Correo: " + Alumno.correoElectronico;
+        document.querySelector(".usuarioTelefono").innerHTML= "Telefono: " + Alumno.telefono;
+        document.querySelector(".listaHorarios").innerHTML = '';
+        Alumno.horarios.forEach(horario => {
+            let li = document.createElement("li");
+            li.className = "usuarioHorarios";
+            li.innerHTML = horario;
+            document.querySelector(".listaHorarios").appendChild(li);
+        });
+        if(Object.keys(Alumno.horarios).length == 0){
+            let li = document.createElement("li");
+            li.className = "usuarioHorarios";
+            li.innerHTML = "(Sin Horarios Reservados)";
+            document.querySelector(".listaHorarios").appendChild(li);
+        }
+}
+
+
