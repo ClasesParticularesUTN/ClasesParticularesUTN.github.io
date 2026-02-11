@@ -3,24 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C/S | Clases Particulares</title>
+    <title>C/S | Clases Particulares y Rangos</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <style>
-        /* CSS INTEGRADO */
         :root {
-            --primary: #f3a661; /* El color de tu logo */
+            --primary: #f3a661; 
             --dark: #1a1a2e;
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(243, 166, 97, 0.2);
+            --text-subtitle: #94a3b8;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 
         body {
             background: var(--dark);
@@ -32,168 +28,95 @@
                 radial-gradient(circle at 90% 80%, rgba(52, 152, 219, 0.05) 0%, transparent 40%);
         }
 
-        /* --- ESTILOS DEL LOGO REFORMULADOS --- */
-        .logo-box { 
-            text-align: center; 
-            background: transparent;
-            transition: transform 0.3s ease;
-        }
-
-        .logo-circle {
-            display: inline-block;
-            border: 2px solid var(--primary); 
-            border-radius: 50%;
-            padding: 15px; /* Ajustado para el nav */
-            margin-bottom: 5px;
-        }
-
-        .logo-text { 
-            font-family: 'Inter', sans-serif;
-            color: #ffffff;
-            font-size: 1.8rem; /* Ajustado para que no sea gigante en el nav */
-            font-weight: 600; 
-            border-bottom: 2px solid var(--primary); 
-            line-height: 1; 
-            display: inline-block;
-        }
-
-        .logo-sub { 
-            font-family: 'Inter', sans-serif;
-            font-size: 0.5rem; 
-            text-transform: uppercase; 
-            letter-spacing: 2px; 
-            color: var(--primary); 
-            margin-top: 3px;
-            text-align: center;
-        }
-
-        /* Navbar */
+        /* --- NAVBAR --- */
         nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 8%;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1000;
-            background: rgba(26, 26, 46, 0.9);
-            backdrop-filter: blur(10px);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 8%; position: fixed; width: 100%; top: 0; z-index: 1000;
+            background: rgba(26, 26, 46, 0.9); backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(243, 166, 97, 0.1);
         }
 
+        .logo-box { text-align: center; }
+        .logo-circle { display: inline-block; border: 2px solid var(--primary); border-radius: 50%; padding: 10px; margin-bottom: 5px; }
+        .logo-text { font-family: 'Inter', sans-serif; color: #ffffff; font-size: 1.4rem; font-weight: 600; border-bottom: 2px solid var(--primary); line-height: 1; display: inline-block; }
+        .logo-sub { font-family: 'Inter', sans-serif; font-size: 0.45rem; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); margin-top: 3px; }
+
         nav ul { display: flex; list-style: none; align-items: center; }
-        nav ul li { margin-left: 30px; }
-        nav ul li a { 
-            text-decoration: none; 
-            color: white; 
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-        }
+        nav ul li { margin-left: 25px; }
+        nav ul li a { text-decoration: none; color: white; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
         nav ul li a:hover { color: var(--primary); }
 
-        /* Hero Section */
+        /* --- HERO --- */
         .hero {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 0 10%;
-            background: linear-gradient(rgba(26, 26, 46, 0.7), rgba(26, 26, 46, 0.7)), 
-                        url('https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?auto=format&fit=crop&q=80'); 
-            background-size: cover;
-            background-position: center;
+            height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 0 10%;
+            background: linear-gradient(rgba(26, 26, 46, 0.7), rgba(26, 26, 46, 0.7)), url('https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?auto=format&fit=crop&q=80'); 
+            background-size: cover; background-position: center;
         }
+        .hero h1 { font-size: clamp(2.2rem, 7vw, 4rem); margin-bottom: 15px; font-weight: 700; }
+        .hero p { font-size: 1.1rem; max-width: 650px; margin-bottom: 35px; color: #ddd; font-weight: 300; }
 
-        .hero h1 {
-            font-size: clamp(2.2rem, 7vw, 4rem);
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            max-width: 650px;
-            margin-bottom: 35px;
-            color: #ddd;
-            font-weight: 300;
-        }
-
-        /* Botones */
         .btn-container { display: flex; gap: 15px; }
-        .btn {
-            padding: 14px 35px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: 0.4s;
-            font-size: 0.8rem;
-            letter-spacing: 1px;
-        }
+        .btn { padding: 14px 35px; border-radius: 4px; text-decoration: none; font-weight: 600; transition: 0.4s; font-size: 0.8rem; letter-spacing: 1px; }
         .btn-primary { background: var(--primary); color: var(--dark); }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(243, 166, 97, 0.4); }
-        
         .btn-secondary { border: 1px solid white; color: white; }
-        .btn-secondary:hover { background: white; color: var(--dark); }
 
-        /* Servicios */
+        /* --- SERVICIOS --- */
         .services {
-            padding: 100px 8%;
+            padding: 80px 8%;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
         }
-
         .card {
-            background: var(--glass);
-            padding: 50px 30px;
-            border-radius: 15px;
-            border: 1px solid var(--glass-border);
-            text-align: center;
-            transition: 0.4s;
+            background: var(--glass); padding: 40px 20px; border-radius: 15px; border: 1px solid var(--glass-border);
+            text-align: center; transition: 0.4s; cursor: pointer;
+        }
+        .card:hover { background: rgba(243, 166, 97, 0.05); border-color: var(--primary); transform: translateY(-5px); }
+        .card .icon { font-size: 2rem; margin-bottom: 15px; display: block; }
+        .card h3 { margin-bottom: 10px; text-transform: uppercase; font-size: 0.95rem; letter-spacing: 1px; }
+        .card p { font-size: 0.85rem; color: #bbb; }
+
+        /* --- SECCIÓN RANGOS (INTEGRACIÓN) --- */
+        .ranks-section { padding: 100px 8%; text-align: center; background: rgba(0,0,0,0.2); }
+        .ranks-section h2 { font-size: 2.2rem; margin-bottom: 10px; }
+        .ranks-container {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px; max-width: 1200px; margin: 40px auto 0;
         }
 
-        .card:hover {
-            background: rgba(243, 166, 97, 0.05);
-            border-color: var(--primary);
-            transform: translateY(-10px);
+        .rank-card {
+            background: var(--glass); border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 45px 20px; position: relative; display: flex; flex-direction: column; transition: 0.3s;
         }
-
-        .card .icon {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            display: block;
-            color: var(--primary);
+        .rank-badge {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: var(--dark);
+            padding: 6px 20px; border-radius: 20px; font-weight: 800; font-size: 0.7rem; text-transform: uppercase;
         }
+        .rank-card i.main-icon { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; }
+        .rank-req { font-size: 0.85rem; color: var(--primary); font-weight: 600; margin-bottom: 25px; text-transform: uppercase; }
 
-        .card h3 {
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-        }
+        /* Items expandibles */
+        .benefit-details { text-align: left; margin-bottom: 12px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); overflow: hidden; }
+        summary { list-style: none; padding: 14px; cursor: pointer; display: flex; align-items: center; font-size: 0.85rem; font-weight: 600; outline: none; }
+        summary i { margin-right: 12px; color: var(--primary); width: 18px; text-align: center; }
+        summary::after { content: '\f107'; font-family: 'Font Awesome 5 Free'; font-weight: 900; margin-left: auto; transition: 0.3s; font-size: 0.7rem; opacity: 0.4; }
+        details[open] summary::after { transform: rotate(180deg); }
+        .detail-content { padding: 0 14px 14px 44px; font-size: 0.8rem; color: #bbb; border-top: 1px solid rgba(255,255,255,0.05); animation: slideDown 0.2s ease-out; }
 
-        .card p { font-size: 0.9rem; color: #bbb; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        footer {
-            padding: 40px;
-            text-align: center;
-            background: #0d0d16;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            color: #666;
-            border-top: 1px solid #222;
-        }
+        .btn-rank { display: block; width: 100%; padding: 15px; margin-top: auto; border: 2px solid var(--primary); color: var(--primary); text-decoration: none; border-radius: 10px; font-weight: 700; transition: 0.3s; text-align: center; }
+        .btn-rank:hover { background: var(--primary); color: var(--dark); }
+
+        .vip-card { border: 2px solid var(--primary); box-shadow: 0 10px 30px rgba(243, 166, 97, 0.15); }
+        .vip-card .btn-rank { background: var(--primary); color: var(--dark); }
+
+        footer { padding: 40px; text-align: center; background: #0d0d16; font-size: 0.75rem; color: #666; border-top: 1px solid #222; }
 
         @media (max-width: 768px) {
-            nav { padding: 10px 5%; }
             nav ul { display: none; }
-            .hero h1 { font-size: 2rem; }
-            .btn-container { flex-direction: column; width: 100%; }
+            .services { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -207,10 +130,12 @@
             </div>
         </div>
         <ul>
-            <li><a href="#materias">Materias</a></li>
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="/Materias">Materias</a></li>
             <li><a href="/Precios">Precios</a></li>
+            <li><a href="/Rangos">Rangos</a></li>
+            <li><a href="/Horarios">Horarios</a></li>
             <li><a href="https://wa.me/5493421234567">Contacto</a></li>
-            <li><a href="/Materias">Horarios</a></li>
         </ul>
     </nav>
 
@@ -219,38 +144,98 @@
         <p>"Desbloquea tu potencial, una clase a la vez. Juntos, podremos conquistar los desafíos académicos."</p>
         <div class="btn-container">
             <a href="https://wa.me/3425271005" class="btn btn-primary">Contactame ahora</a>
-            <a href="#servicios" class="btn btn-secondary">Mas informacion</a>
+            <a href="#servicios" class="btn btn-secondary">Más información</a>
         </div>
     </section>
 
     <section class="services" id="servicios">
         <div class="card" onclick="window.location.href = '/Materias'">
             <span class="icon">💻</span>
-            <h3>Materias que dicto</h3>
-            <p>Materias de la carrera de Ingenieria en sistemas de las cuales doy clases</p>
+            <h3>Materias</h3>
+            <p>Contenidos de Ingeniería en Sistemas.</p>
         </div>
-
-        <div class="card" onclick="window.location.href = 'https://maps.app.goo.gl/Pq2c8nqgZFqq94SBA'">
-            <span class="icon">📍</span>
-            <h3>Ubicacion</h3>
-            <p>Clickea para ir a la ubicacion en Google Maps</p>
-        </div>
-
         <div class="card" onclick="window.location.href = '/Precios'">
             <span class="icon">💰</span>
             <h3>Precios</h3>
-            <p>Consultá por planes individuales o grupales. Descuentos por packs de 10 o 20 clases.</p>
+            <p>Planes individuales y grupales.</p>
         </div>
-
+        <div class="card" onclick="window.location.href = '/Rangos'">
+            <span class="icon">🏅</span>
+            <h3>Sistema de Rangos</h3>
+            <p>Conocé los beneficios por tu constancia.</p>
+        </div>
         <div class="card" onclick="window.location.href = '/Horarios'">
             <span class="icon">📅</span>
-            <h3>Reserva de Horarios</h3>
-            <p>Elegi la fecha y hora tu clase particular con anticipacion</p>
+            <h3>Horarios</h3>
+            <p>Reservá tu lugar con anticipación.</p>
+        </div>
+    </section>
+
+    <section class="ranks-section" id="rangos">
+        <h2>Beneficios de Alumno</h2>
+        <p style="color: var(--text-subtitle)">Tu compromiso académico tiene recompensa.</p>
+
+        <div class="ranks-container">
+            <div class="rank-card">
+                <span class="rank-badge">Nivel 1</span>
+                <i class="fas fa-seedling main-icon"></i>
+                <h3>Inicial</h3>
+                <p class="rank-req">Alumnos Nuevos</p>
+                <details class="benefit-details">
+                    <summary><i class="fas fa-calendar-day"></i> 1 Reserva a la vez</summary>
+                    <div class="detail-content">Hasta que no abones la clase realizada, el sistema no permite agendar una nueva.</div>
+                </details>
+                <details class="benefit-details">
+                    <summary><i class="fas fa-percentage"></i> Recargos por mora</summary>
+                    <div class="detail-content">5% de recargo si demoras más de 24hs en pagar. Luego +1% diario extra.</div>
+                </details>
+                <details class="benefit-details" style="opacity: 0.6">
+                    <summary><i class="fab fa-whatsapp"></i> Sin consultas</summary>
+                    <div class="detail-content">En este nivel no se dispone de soporte de consultas vía WhatsApp.</div>
+                </details>
+                <a href="/Horarios" class="btn-rank">Sacar Turno</a>
+            </div>
+
+            <div class="rank-card">
+                <span class="rank-badge" style="background: #94a3b8; color: white;">Nivel 2</span>
+                <i class="fas fa-star main-icon"></i>
+                <h3>Frecuente</h3>
+                <p class="rank-req">+4 Clases Tomadas</p>
+                <details class="benefit-details">
+                    <summary><i class="fas fa-layer-group"></i> Hasta 4 Clases</summary>
+                    <div class="detail-content">Puedes reservar hasta 4 turnos en la web para asegurar tus horarios semanales.</div>
+                </details>
+                <details class="benefit-details">
+                    <summary><i class="fas fa-clock"></i> Semana de Gracia</summary>
+                    <div class="detail-content">Tienes 7 días desde la clase para pagar sin el 1% diario (solo aplica el 5% inicial).</div>
+                </details>
+                <details class="benefit-details">
+                    <summary><i class="fab fa-whatsapp"></i> Consultas Chat</summary>
+                    <div class="detail-content">Habilitado para hacer consultas sobre ejercicios por WhatsApp.</div>
+                </details>
+                <a href="/Horarios" class="btn-rank">Agendar Pack</a>
+            </div>
+
+            <div class="rank-card vip-card">
+                <span class="rank-badge">Nivel Elite</span>
+                <i class="fas fa-crown main-icon"></i>
+                <h3>Premium</h3>
+                <p class="rank-req">+20 Clases Tomadas</p>
+                <details class="benefit-details">
+                    <summary><i class="fas fa-comments-dollar"></i> Pagos Flexibles</summary>
+                    <div class="detail-content"><b>Sin presiones:</b> Charlamos personalmente cuándo abonar. No se aplican intereses automáticos.</div>
+                </details>
+                <details class="benefit-details">
+                    <summary><i class="fas fa-user-check"></i> Prioridad Total</summary>
+                    <div class="detail-content">Acceso prioritario a la agenda y resolución de dudas VIP.</div>
+                </details>
+                <a href="https://wa.me/5493421234567" class="btn-rank">Charlar con el Profe</a>
+            </div>
         </div>
     </section>
 
     <footer>
-        <p>&copy; 2024 C/S Ingeniería en Sistemas - Clases Particulares</p>
+        <p>© 2026 C/S Ingeniería en Sistemas - Santa Fe, Argentina</p>
     </footer>
 
     <script>
