@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C/S | Sistema de Rangos Exclusivos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #f3a661; 
+            --accent: #a35a2d; 
+            --bg: #0f172a; 
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(243, 166, 97, 0.15);
+            --text-main: #ffffff;
+            --text-subtitle: #94a3b8;
+            --item-bg: rgba(255, 255, 255, 0.02);
+            --footer-border: #1e293b;
+        }
+
+        body.light-mode {
+            --bg: #f0f4f8;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --card-bg: #ffffff;
+            --glass-border: rgba(243, 166, 97, 0.3);
+            --text-main: #1a1a24;
+            --text-subtitle: #64748b;
+            --item-bg: #f8fafc;
+            --footer-border: #cbd5e1;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
+        }
+
+        /* --- NAVEGACIÓN --- */
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 5%; position: fixed; width: 100%; top: 0; z-index: 1000;
+            background: var(--nav-bg); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo-box { text-align: center; }
+        .logo-circle { display: inline-block; border: 2px solid var(--primary); border-radius: 50%; padding: 8px; }
+        .logo-text { font-family: 'Inter', sans-serif; color: var(--text-main); font-size: 1.2rem; font-weight: 700; border-bottom: 2px solid var(--primary); line-height: 1; }
+        .logo-sub { font-family: 'Inter', sans-serif; font-size: 0.45rem; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); margin-top: 3px; }
+
+        .theme-toggle {
+            background: rgba(243, 166, 97, 0.1); border: 1px solid var(--glass-border); color: var(--primary);
+            width: 35px; height: 35px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* --- SECCIÓN RANGOS --- */
+        .ranks-section { padding: 120px 5% 60px; text-align: center; }
+        .ranks-section h2 { font-size: 2.5rem; margin-bottom: 10px; }
+        .subtitle { color: var(--text-subtitle); margin-bottom: 50px; }
+
+        .ranks-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .rank-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 45px 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+        }
+        .rank-card:hover { transform: translateY(-5px); }
+
+        .rank-badge {
+            position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: #1a1a24;
+            padding: 6px 20px; border-radius: 20px; font-weight: 800; font-size: 0.75rem; text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .rank-card i.main-icon { font-size: 2.5rem; color: var(--primary); margin-bottom: 20px; }
+        .rank-card h3 { font-size: 1.8rem; margin-bottom: 5px; }
+        .rank-req { font-size: 0.85rem; color: var(--primary); font-weight: 600; margin-bottom: 25px; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- ITEMS EXPANDIBLES --- */
+        .benefit-details {
+            text-align: left;
+            margin-bottom: 12px;
+            background: var(--item-bg);
+            border-radius: 14px;
+            border: 1px solid rgba(128,128,128,0.1);
+            overflow: hidden;
+        }
+
+        summary {
+            list-style: none;
+            padding: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        summary i { margin-right: 12px; color: var(--primary); width: 18px; text-align: center; font-size: 1rem; }
+        
+        summary::after {
+            content: '\f107';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-left: auto;
+            transition: 0.3s;
+            font-size: 0.7rem;
+            opacity: 0.4;
+        }
+
+        details[open] summary::after { transform: rotate(180deg); }
+
+        .detail-content {
+            padding: 0 14px 14px 44px;
+            font-size: 0.8rem;
+            color: var(--text-subtitle);
+            border-top: 1px solid rgba(128,128,128,0.05);
+            animation: slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .btn-action {
+            display: block; width: 100%; padding: 15px; margin-top: auto;
+            border: 2px solid var(--primary); color: var(--primary);
+            text-decoration: none; border-radius: 12px; font-weight: 700;
+            transition: 0.3s; text-align: center; font-size: 0.9rem;
+        }
+        .btn-action:hover { background: var(--primary); color: #1a1a24; }
+
+        /* --- ESTILO RANGO PREMIUM (VIP) --- */
+        .vip-card { 
+            border: 2px solid var(--primary); 
+            box-shadow: 0 10px 30px rgba(243, 166, 97, 0.15);
+            background: linear-gradient(145deg, rgba(255,255,255,0.05) 0%, rgba(243, 166, 97, 0.02) 100%);
+        }
+        
+        .vip-card .btn-action {
+            background: var(--primary);
+            color: #1a1a24;
+        }
+        .vip-card .btn-action:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+
+        footer { text-align: center; padding: 60px 20px; color: var(--text-subtitle); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo-box">
+            <div class="logo-circle">
+                <div class="logo-text">C/S</div>
+                <div class="logo-sub">Panel de Alumnos</div>
+            </div>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <i id="theme-icon" class="fas fa-sun"></i>
+        </button>
+    </nav>
+
+    <section class="ranks-section">
+        <h2>Estatus Académico</h2>
+        <p class="subtitle">Gestiona tus clases y beneficios según tu nivel de compromiso.</p>
+
+        <div class="ranks-container">
+            
+            <div class="rank-card">
+                <span class="rank-badge">Nivel 1</span>
+                <i class="fas fa-seedling main-icon"></i>
+                <h3>Inicial</h3>
+                <p class="rank-req">Nuevo Ingreso</p>
+                
+                <details class="benefit-details">
+                    <summary><i class="fas fa-calendar-day"></i> Reserva Simple</summary>
+                    <div class="detail-content">
+                        Solo puedes reservar 1 clase a la vez. No se permiten nuevas reservas hasta que la clase anterior esté abonada.
+                    </div>
+                </details>
+
+                <details class="benefit-details">
+                    <summary><i class="fas fa-percentage"></i> Recargo 24hs</summary>
+                    <div class="detail-content">
+                        Se aplica un recargo del 5% si el pago no se realiza dentro de las primeras 24hs después de la clase.
+                    </div>
+                </details>
+
+                <details class="benefit-details">
+                    <summary><i class="fas fa-chart-line"></i> Interés Diario</summary>
+                    <div class="detail-content">
+                        Superado el primer recargo, se suma un 1% diario por cada día de retraso adicional.
+                    </div>
+                </details>
+
+                <details class="benefit-details" style="opacity: 0.7;">
+                    <summary><i class="fab fa-whatsapp"></i> Sin WhatsApp</summary>
+                    <div class="detail-content">
+                        Las consultas por chat no están disponibles en este rango inicial.
+                    </div>
+                </details>
+
+                <a href="#" class="btn-action">Agendar Clase</a>
+            </div>
+
+            <div class="rank-card">
+                <span class="rank-badge" style="background: #94a3b8; color: white;">Nivel 2</span>
+                <i class="fas fa-star main-icon"></i>
+                <h3>Frecuente</h3>
+                <p class="rank-req">+4 Clases Tomadas</p>
+                
+                <details class="benefit-details">
+                    <summary><i class="fas fa-layer-group"></i> Hasta 4 Turnos</summary>
+                    <div class="detail-content">
+                        Habilitación para reservar hasta 4 clases simultáneas en el calendario para asegurar tu semana.
+                    </div>
+                </details>
+
+                <details class="benefit-details">
+                    <summary><i class="fas fa-calendar-plus"></i> Semana de Gracia</summary>
+                    <div class="detail-content">
+                        Mantienes el recargo inicial del 5%, pero dispones de una semana entera sin intereses diarios adicionales.
+                    </div>
+                </details>
+
+                <details class="benefit-details">
+                    <summary><i class="fas fa-hand-holding-dollar"></i> Mora Fija</summary>
+                    <div class="detail-content">
+                        Tras la semana de gracia, se aplica una multa fija de $1000 + el 1% diario.
+                    </div>
+                </details>
+
+                <details class="benefit-details">
+                    <summary><i class="fab fa-whatsapp"></i> Consultas Chat</summary>
+                    <div class="detail-content">
+                        Habilitado para realizar consultas rápidas sobre dudas puntuales de las clases vía WhatsApp.
+                    </div>
+                </details>
+
+                <a href="#" class="btn-action">Reservar Horarios</a>
+            </div>
+
+            <div class="rank-card vip-card">
+                <span class="rank-badge">Nivel Elite</span>
+                <i class="fas fa-crown main-icon"></i>
+                <h3>Premium</h3>
+                <p class="rank-req">+20 Clases Tomadas</p>
+                
+                <details class="benefit-details">
+                    <summary><i class="fas fa-comments-dollar"></i> Pagos Flexibles</summary>
+                    <div class="detail-content">
+                        <b>Flexibilidad Absoluta:</b> Charlamos personalmente cuándo y cómo abonar según tu situación. Sin sistemas de recargo rígidos.
+                    </div>
+                </details>
+
+                <details class="benefit-details">
+                    <summary><i class="fas fa-user-check"></i> Prioridad Agenda</summary>
+                    <div class="detail-content">
+                        Acceso a sobreturnos y prioridad máxima ante cancelaciones de otros alumnos.
+                    </div>
+                </details>
+
+                <details class="benefit-details">
+                    <summary><i class="fas fa-percent"></i> Interés Mínimo</summary>
+                    <div class="detail-content">
+                        En caso de demoras prolongadas, los intereses son simbólicos y siempre charlables cara a cara.
+                    </div>
+                </details>
+
+                <details class="benefit-details">
+                    <summary><i class="fas fa-bolt"></i> Atención VIP</summary>
+                    <div class="detail-content">
+                        Resolución prioritaria de dudas complejas por WhatsApp en cualquier momento del día.
+                    </div>
+                </details>
+
+                <a href="https://wa.me/5493421234567" class="btn-action">Charlar con el Profe</a>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 C/S Ingeniería en Sistemas - Santa Fe, Argentina</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('theme-icon');
+            body.classList.toggle('light-mode');
+            icon.classList.toggle('fa-sun');
+            icon.classList.toggle('fa-moon');
+        }
+    </script>
+</body>
+</html>
