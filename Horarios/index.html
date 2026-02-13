@@ -127,10 +127,40 @@
     <script>
         const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
-
-        let Alumno = JSON.parse(sessionStorage.getItem("persona"));
-        if(!Alumno) window.location.href = '/Horarios/Login/Login.html';
-
+let Alumno = JSON.parse(sessionStorage.getItem("persona"));
+        
+        // Si no hay sesión, mostrar menú de acceso
+        if (!Alumno) {
+            Swal.fire({
+                title: '¡Bienvenido!',
+                text: 'Para reservar un horario primero debes ingresar a tu cuenta.',
+                icon: 'info',
+                background: '#151517',
+                color: '#fff',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión',
+                cancelButtonText: '<i class="fa-solid fa-user-plus"></i> Registrarse',
+                confirmButtonColor: '#f3a661',
+                cancelButtonColor: '#222',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                customClass: {
+                    confirmButton: 'btn-footer',
+                    cancelButton: 'btn-footer'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Horarios/Login/Login.html';
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Cambia esta ruta si tu archivo de registro se llama distinto
+                    window.location.href = '/Horarios/Login/Registro.html'; 
+                }
+            });
+            
+            // Definimos un objeto Alumno vacío temporal para evitar errores de lectura 
+            // en el resto del script antes de que cambie la página
+            Alumno = { nombre: "", cantidadDebe: 0, horarios: [] };
+        }
         let weekOffset = 0, selectedSlots = [], cacheHorarios = { 0: null, 1: null };
         let isAdmin = false;
 
