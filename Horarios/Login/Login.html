@@ -238,7 +238,8 @@
                 .then(data => {
                     if (data.sesion) {
                         const sesionExistente = localStorage.getItem('personaPersistenteNuevo');
-                        
+                        localStorage.setItem('Nombre', data.nombre);
+                        localStorage.setItem('Apellido', data.apellido);
                         if (!sesionExistente) {
                             const expiracion = Date.now() + (7 * 24 * 60 * 60 * 1000);
                             const payload = { persona: data, expiresAt: expiracion };
