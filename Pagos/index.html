@@ -210,10 +210,15 @@
 
 <script>
 // Lógica de Temas (Oscuro por defecto)
-window.addEventListener("load", () => {
-  fetch("https://mercadopago-di7q.onrender.com/ping").catch(() => {});
-  alert("Servidor de pagos iniciado.");
+window.addEventListener("DOMContentLoaded", () => {
+  fetch("https://mercadopago-di7q.onrender.com/ping")
+    .catch(() => {}); // ignoramos cualquier error
+
+    if (!Alumno || !Alumno.correoElectronico) {
+        window.location.href = "/Horarios/Login/Login.html";
+    }
 });
+
 
 function toggleTheme() {
     const body = document.body;
@@ -232,9 +237,7 @@ function toggleTheme() {
 const sessionData = sessionStorage.getItem("persona");
 let Alumno = sessionData ? JSON.parse(sessionData) : null;
 
-if (!Alumno || !Alumno.correoElectronico) {
-    window.location.href = "/Horarios/Login/Login.html";
-}
+
 
 const correoAlumno = Alumno.correoElectronico;
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec";
