@@ -600,7 +600,7 @@ if(localStorage.getItem("Nombre") == undefined){
    window.location = "/Horarios/Login/Login.html";
    //console.log("No ha iniciado sesion")
 }
-let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(localStorage.getItem("Apellido"));
+let nombre = localStorage.getItem("Nombre"), apellido = localStorage.getItem("Apellido");
   function cargarEjerciciosDesdeServidor() {
     return new Promise(async (resolve, reject) => {
       const loader = document.getElementById("loader-spinner");
@@ -636,6 +636,17 @@ let nombre = JSON.parse(localStorage.getItem("Nombre")), apellido = JSON.parse(l
         
         console.log("Indice: " + obj.indice)
         if(obj.indice < ejercicios.length) sessionStorage.setItem("indice", obj.indice);
+
+        if (ejercicios.length === 0) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Sin tareas',
+            text: 'No tienes tarea cargada',
+            confirmButtonText: 'Entendido'
+          });
+          if (loader) loader.style.display = "none";
+          return;
+        }
 
         if (loader) loader.style.display = "none";
         if (typeof btnIniciar !== "undefined" && btnIniciar) btnIniciar.click();
@@ -1617,17 +1628,23 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
         // VALIDAR PALABRAS CLAVE
 
         if (errores.length === 0) {
-          resultadoArea.textContent = "¡Todos los casos de prueba pasaron correctamente! Avanzando al siguiente ejercicio.";
-          cerrarModalValidacion();
-          const overlay = document.getElementById("editor-overlay");
-          if (overlay.style.display === "flex") {
-            toggleEditor();
-          }
-          subirCodigo(true);
-          ejercicioTerminado();
-          indice++;
-          mostrarEjercicio();
-          restaurarPlantilla();
+          Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'Todos los casos de prueba pasaron correctamente. Avanzando al siguiente ejercicio.',
+            confirmButtonText: 'Continuar'
+          }).then(() => {
+            cerrarModalValidacion();
+            const overlay = document.getElementById("editor-overlay");
+            if (overlay.style.display === "flex") {
+              toggleEditor();
+            }
+            subirCodigo(true);
+            ejercicioTerminado();
+            indice++;
+            mostrarEjercicio();
+            restaurarPlantilla();
+          });
         } else {
           subirCodigo(false);
           let mensaje = "Algunos casos fallaron:\n\n";
@@ -2158,21 +2175,23 @@ document.addEventListener("keydown", function(e) {
   }
 
   // Esperar a que editorInstance esté definido
-  if (typeof editorInstance !== 'undefined' && editorInstance) {
-    inicializarAutocompletadoPersonalizado();
-  } else {
-    // Si el editor se inicializa de forma asíncrona, observar hasta que esté disponible
-    let intentos = 0;
-    const intervalo = setInterval(() => {
-      if (typeof editorInstance !== 'undefined' && editorInstance) {
-        clearInterval(intervalo);
-        inicializarAutocompletadoPersonalizado();
-      } else if (++intentos > 50) {
-        clearInterval(intervalo);
-        console.warn('No se pudo inicializar el autocompletado personalizado: editorInstance no está disponible.');
-      }
-    }, 100);
-  }
+  window.addEventListener('load', () => {
+    if (typeof editorInstance !== 'undefined' && editorInstance) {
+      inicializarAutocompletadoPersonalizado();
+    } else {
+      // Si el editor se inicializa de forma asíncrona, observar hasta que esté disponible
+      let intentos = 0;
+      const intervalo = setInterval(() => {
+        if (typeof editorInstance !== 'undefined' && editorInstance) {
+          clearInterval(intervalo);
+          inicializarAutocompletadoPersonalizado();
+        } else if (++intentos > 50) {
+          clearInterval(intervalo);
+          console.warn('No se pudo inicializar el autocompletado personalizado: editorInstance no está disponible.');
+        }
+      }, 100);
+    }
+  });
   document.getElementById("formulario-funcion").addEventListener("keydown", function(event) {
       if (event.key === "Enter") {
         
