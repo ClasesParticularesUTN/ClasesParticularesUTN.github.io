@@ -1,219 +1,416 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reserva Horarios</title>
-  <link rel="stylesheet" href="css/horarios.css">
-  <link rel="stylesheet" href="css/botones.css">
-  <link rel="stylesheet" href="css/loader.css">
-  <link rel="stylesheet" href="css/titulo.css">
-  <link rel="stylesheet" href="css/menuUsuario.css">
-  <link rel="stylesheet" href="css/VentanaModal.css">
-  <link rel="stylesheet" href="css/Swal.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Reserva Pro - Ing. en Sistemas</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #f3a661;
+            --bg-dark: #0a0a0b;
+            --glass: rgba(20, 20, 22, 0.95);
+            --border: rgba(255, 255, 255, 0.08);
+            --available: rgba(243, 166, 97, 0.07);
+            --danger: #ff5f5f;
+        }
 
+        /* Ajuste de prioridad para que SweetAlert esté sobre el sidebar */
+        .swal2-container { z-index: 10000 !important; }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark) url('/Horarios/assets/fotos/fondo.avif') no-repeat center center fixed;
+            background-size: cover; color: #fff; overflow: hidden; height: 100vh;
+        }
+
+        .swal-modal-light .swal2-popup { background: #ffffff !important; color: #000000 !important; }
+        .swal-modal-light .swal2-title, .swal-modal-light .swal2-html-container { color: #000000 !important; }
+        .swal-modal-light .swal2-radio { color: #000000 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; padding-left: 20% !important; }
+
+        .navbar { height: 65px; background: var(--glass); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); z-index: 900; }
+        .brand-title { font-weight: 700; color: var(--primary); letter-spacing: 1px; }
+        .user-access { width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); }
+
+        #user-sidebar { position: fixed; top: 0; right: -350px; width: 350px; height: 100%; background: rgba(13, 13, 15, 0.98); backdrop-filter: blur(25px); z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+        #user-sidebar.active { right: 0; }
+        .sidebar-header { padding: 40px 25px 20px; text-align: center; }
+        .profile-img { width: 60px; height: 60px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 10px; font-weight: 700; box-shadow: 0 0 15px rgba(243, 166, 97, 0.3); }
+        .sidebar-content { padding: 10px 25px; flex-grow: 1; overflow-y: auto; }
+        .info-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+        .info-label { font-size: 0.65rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        
+        .horario-tag { display: flex; align-items: center; background: rgba(243, 166, 97, 0.1); border: 1px solid rgba(243, 166, 97, 0.2); padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; font-size: 0.75rem; color: #ddd; }
+        .horario-tag i { color: var(--primary); margin-right: 10px; font-size: 0.8rem; }
+
+        .sidebar-footer { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border); }
+        .btn-footer { padding: 12px; border-radius: 8px; border: 1px solid #444; cursor: pointer; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; transition: 0.2s; }
+        .btn-close { background: #222; color: white; }
+        .btn-logout { background: rgba(255, 95, 95, 0.1); color: var(--danger); border-color: rgba(255, 95, 95, 0.3); }
+        .btn-logout:hover { background: var(--danger); color: white; }
+        .btn-admin { grid-column: span 2; background: transparent; color: var(--primary); border: 1px dashed var(--primary); margin-top: 5px; }
+        .btn-admin.active { background: var(--primary); color: black; border-style: solid; }
+
+        .main-container { height: calc(100vh - 65px); padding: 10px; display: flex; flex-direction: column; }
+        .calendar-card { background: var(--glass); border-radius: 16px; flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; margin-bottom: 85px; border: 1px solid var(--border); }
+        .agenda-wrapper { display: flex; flex-grow: 1; }
+        .hours-column { width: 50px; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; }
+        .hour-cell, .slot { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .days-container { display: flex; flex-grow: 1; width: calc(100% - 50px); }
+        .day-column { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--border); }
+        .day-header { height: 45px; border-bottom: 2px solid var(--primary); background: rgba(255,255,255,0.03); text-align: center; display: flex; flex-direction: column; justify-content: center; }
+
+        .slot { margin: 1px; cursor: pointer; transition: 0.2s; background: var(--available); position: relative; }
+        .slot.occupied { background: rgba(255,255,255,0.03); opacity: 0.4; cursor: not-allowed; }
+        .slot.occupied::after { content: "\f023"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 0.7rem; color: rgba(255,255,255,0.4); }
+        .slot.selected { background: var(--primary) !important; border: 1px solid #fff; box-shadow: 0 0 10px var(--primary); }
+
+        .controls-overlay { position: fixed; bottom: 20px; left: 0; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 1000; }
+        .week-selector { background: #151517; padding: 5px; border-radius: 12px; display: flex; border: 1px solid #333; }
+        .btn-week { background: transparent; border: none; color: #888; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .btn-week.active { background: var(--primary); color: #000; }
+        .btn-reserve { width: 90%; background: var(--primary); color: #000; padding: 18px; border-radius: 15px; font-weight: 800; border: none; display: none; }
+
+        #loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 5000; }
+        .spinner { width: 40px; height: 40px; border: 3px solid rgba(243, 166, 97, 0.1); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
 </head>
 <body>
-  <div class="titulo">
-    <p class="semana animate__animated animate__flash">Reserva de Horarios</p>
-    <div class="login">
-        <div class="cajaMensajeLogin">
-            <p id="MensajeLogin">Iniciar Sesion / Registrarse</p>
+
+    <div id="loader-overlay"><div class="spinner"></div><p id="loader-text" style="margin-top:15px; color:var(--primary);">Cargando horarios...</p></div>
+
+    <div id="user-sidebar">
+        <div class="sidebar-header">
+            <div class="profile-img" id="user-initial">?</div>
+            <h2 id="sb-nombre-completo">-</h2>
+            <p id="sb-correo" style="font-size: 0.8rem; opacity: 0.6;"></p>
         </div>
-        <div class="cajaIncognito">
-            <img class="incognito" src="assets/fotos/Incognito.svg" alt="Fondo" >
-        </div>
-    </div>
-    <div class="loginMovil">
-        <img class="incognitoMovil" src="assets/fotos/Incognito.svg" alt="Fondo" >
-    </div>
-</div>
-  </div>
-    <div class="containerLoader">
-        <div class="loaderSencillo"></div>
-    </div>
-        <div class="menu animate__animated">
-            <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 20px;">
-                <p class="usuarioClasesAFAvor">Cantidad de horas a Favor: </p>
-                <p class="usuarioClasesAFAvor numero">0</p>
-            </div>
-            <hr>
-            <div style="display: flex; flex-direction: column; gap: 5px;">
-                <p class="usuarioDatos usuarioNombre">Nombre Completo: </p>
-                <p class="usuarioDatos usuarioCorreo">Correo Electronico: </p>
-                <p class="usuarioDatos usuarioTelefono">Telefono: </p>
-            </div>
-            <hr>
-            <p class="usuarioDatos" style="margin-bottom: 10px; font-weight: 600; color: #ffffff;">Horarios Reservados:</p>
-            <ul class="listaHorarios"></ul>
-            <div id="LoaderSencillo" class="loaderSencillo"></div>
-            <div class="contenedor-botones">
-                <button class="btn-cerrar-sesion" id="btnCerrarSesion">Cerrar Sesión</button>
+        <div class="sidebar-content">
+            <div class="info-card"><span class="info-label">Deuda Actual</span><div class="info-value" id="sb-deuda"></div></div>
+            <div class="info-card"><span class="info-label">Horas a Favor</span><div class="info-value" id="sb-horas"></div></div>
+            <div class="info-card" style="border:none; background:transparent; padding:5px 0;">
+                <span class="info-label">Mis Horarios Reservados</span>
+                <div id="sb-lista-horarios"></div>
             </div>
         </div>
-  <table style="display: none;">
-    <tr>
-      <td class="primero"></td>
-      <td data-name="B2" class="dia">Lunes<br>12/10</td>
-      <td data-name="C2" class="dia">Martes<br>12/10</td>
-      <td data-name="D2" class="dia">Miercoles<br>12/10</td>
-      <td data-name="E2" class="dia">Jueves<br>12/10</td>
-      <td data-name="F2" class="dia">Viernes<br>12/10</td>
-    </tr>
-     <tr>
-        <td class="hora">8:00</td>
-        <td data-name="B3" class="horario"></td>
-        <td data-name="C3" class="horario"></td>
-        <td data-name="D3" class="horario"></td>
-        <td data-name="E3" class="horario"></td>
-        <td data-name="F3" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">9:00</td>
-        <td data-name="B4" class="horario"></td>
-        <td data-name="C4" class="horario"></td>
-        <td data-name="D4" class="horario"></td>
-        <td data-name="E4" class="horario"></td>
-        <td data-name="F4" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">10:00</td>
-        <td data-name="B5" class="horario"></td>
-        <td data-name="C5" class="horario"></td>
-        <td data-name="D5" class="horario"></td>
-        <td data-name="E5" class="horario"></td>
-        <td data-name="F5" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">11:00</td>
-        <td data-name="B6" class="horario"></td>
-        <td data-name="C6" class="horario"></td>
-        <td data-name="D6" class="horario"></td>
-        <td data-name="E6" class="horario"></td>
-        <td data-name="F6" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">12:00</td>
-        <td data-name="B7" class="horario"></td>
-        <td data-name="C7" class="horario"></td>
-        <td data-name="D7" class="horario"></td>
-        <td data-name="E7" class="horario"></td>
-        <td data-name="F7" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">13:00</td>
-        <td data-name="B8" class="horario"></td>
-        <td data-name="C8" class="horario"></td>
-        <td data-name="D8" class="horario"></td>
-        <td data-name="E8" class="horario"></td>
-        <td data-name="F8" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">14:00</td>
-        <td data-name="B9" class="horario"></td>
-        <td data-name="C9" class="horario"></td>
-        <td data-name="D9" class="horario"></td>
-        <td data-name="E9" class="horario"></td>
-        <td data-name="F9" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">15:00</td>
-        <td data-name="B10" class="horario"></td>
-        <td data-name="C10" class="horario"></td>
-        <td data-name="D10" class="horario"></td>
-        <td data-name="E10" class="horario"></td>
-        <td data-name="F10" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">16:00</td>
-        <td data-name="B11" class="horario"></td>
-        <td data-name="C11" class="horario"></td>
-        <td data-name="D11" class="horario"></td>
-        <td data-name="E11" class="horario"></td>
-        <td data-name="F11" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">17:00</td>
-        <td data-name="B12" class="horario"></td>
-        <td data-name="C12" class="horario"></td>
-        <td data-name="D12" class="horario"></td>
-        <td data-name="E12" class="horario"></td>
-        <td data-name="F12" class="horario"></td>
-    </tr>
-    <tr>
-        <td class="hora">18:00</td>
-        <td data-name="B13" class="horario"></td>
-        <td data-name="C13" class="horario"></td>
-        <td data-name="D13" class="horario"></td>
-        <td data-name="E13" class="horario"></td>
-        <td data-name="F13" class="horario"></td>
-    </tr>
-  </table>
-  <div style="display: none;"class="botones">
-        <div class="sig">Siguiente Semana</div>
-        <div class="enviarReserva">Reservar</div>       
-  </div>
-  <div id="VentanaModal" class="modal">
-  <div class="VentanaModal container">
-    <a href="#cerrar" id="cerrarVentanaModalidad">X</a>
-    <h1>Selecciona la modalidad de la clase</h1>
-
-    <div class="modalidad-opciones">
-      <label class="radio-option">
-        <input type="radio" name="modalidad" value="individual" onclick="mostrarCampos()" checked>
-        Individual
-      </label>
-      <label class="radio-option">
-        <input type="radio" name="modalidad" value="grupal" onclick="mostrarCampos()">
-        Grupal
-      </label>
-    </div>
-
-    <div style="display:none; align-items: center; flex-direction: column;" id="grupo-container" class="hidden">
-        <div style="display: flex; justify-content: center; margin-bottom: 10px;" class="campo-num-integrantes">
-            <label for="num-integrantes">Cantidad de integrantes:</label>
-            <input type="number" id="num-integrantes" min="1" max="3" onchange="generarCampos()">
+        <div class="sidebar-footer">
+            <button class="btn-footer btn-admin" id="adminToggle" onclick="toggleAdmin()">Modo Admin</button>
+            <button class="btn-footer btn-close" onclick="toggleSidebar()">cerrar menu</button>
+            <button class="btn-footer btn-logout" onclick="logout()">cerrar sesion</button>
         </div>
-      <div style="display: flex; flex-direction: column; align-items: center; max-width: 70%;" id="integrantes"></div>
     </div>
 
-    <div id="precio-container" class="precio-info">
-        <div id="precio-total-simple"></div>
-        <button id="ver-detalle-btn" class="btn-detalle" onclick="toggleDetallePrecio()">Ver detalle</button>
-        <div id="precio-detalle-completo" class="precio-detalle-completo" style="display: none;"></div>
+    <nav class="navbar"><div class="brand-title">Reserva de Horarios</div><div class="user-access" onclick="toggleSidebar()"><i class="fa-solid fa-user"></i></div></nav>
+
+    <div class="main-container">
+        <div class="calendar-card">
+            <div class="agenda-wrapper">
+                <div class="hours-column" id="hoursCol"></div>
+                <div class="days-container" id="daysContainer"></div>
+            </div>
+        </div>
     </div>
 
-    <button class="btn-enviar enviar">Enviar</button>
-  </div>
-</div>
-  <script src="JS/cargarMedida.js"></script>
-  <script src="JS/URLS.js"></script>
-  <script src="JS/horariosReservados.js"></script>
-  <script src="JS/horariosFijos.js"></script>
-  <script src="JS/clickEnCelda.js"></script>
-  <script src="JS/siguienteSemana.js"></script>
-  <script src="JS/enviarReserva.js"></script>
-  <script src="JS/login.js"></script>
-  <script src="JS/usuarioRegistrado.js"></script>
-  <script src="JS/inhabilitarPago.js"></script>
-  <script src="JS/diaConDemanda.js"></script>
-  <script src="JS/modalidadClases.js "></script>
-  <script src="JS/AbrirMenu.js"></script>
-  <script>
-    // Cerrar sesión al hacer click en el botón
-    document.addEventListener('DOMContentLoaded', function() {
-      const btnCerrarSesion = document.getElementById('btnCerrarSesion');
-      if (btnCerrarSesion) {
-        btnCerrarSesion.onclick = function() {
-          if (typeof cerrarSesion === 'function') {
-            cerrarSesion();
-          }
-        };
-      }
-    });
-  </script>
+    <div class="controls-overlay">
+        <div class="week-selector">
+            <button class="btn-week active" id="btnW0" onclick="changeWeek(0)">ESTA SEMANA</button>
+            <button class="btn-week" id="btnW1" onclick="changeWeek(1)">PRÓXIMA SEMANA</button>
+        </div>
+        <button class="btn-reserve" id="btnConfirm" onclick="gestionarReserva()">Confirmar Reserva</button>
+    </div>
+
+    <script>
+        const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
+        const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
+
+        let Alumno = JSON.parse(sessionStorage.getItem("persona"));
+        if(!Alumno) window.location.href = '/Horarios/Login/Login.html';
+
+        let weekOffset = 0, selectedSlots = [], cacheHorarios = { 0: null, 1: null };
+        let isAdmin = false;
+
+        async function init() {
+            document.getElementById('loader-overlay').style.display = 'flex';
+            await actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
+            
+            if(Alumno.admin === true) {
+                isAdmin = true;
+                const btnAdmin = document.getElementById('adminToggle');
+                btnAdmin.innerText = "MODO ADMIN ACTIVO";
+                btnAdmin.classList.add('active');
+            }
+
+            const hCol = document.getElementById('hoursCol');
+            hCol.innerHTML = '<div style="height:45px"></div>';
+            for (let h = 8; h <= 18; h++) hCol.innerHTML += `<div class="hour-cell">${h}:00</div>`;
+            await Promise.all([fetchSemana(0), fetchSemana(1)]);
+            render();
+            document.getElementById('loader-overlay').style.display = 'none';
+        }
+
+        async function actualizarDatos(correo, contrasenia) {
+            let urlFinal = `${URLUsuarios}?correo=${correo}&contrasenia=${contrasenia}&funcion=validarUsuario`;
+            try {
+                const response = await fetch(urlFinal);
+                const data = await response.json();
+                if (data.sesion) {
+                    Alumno = data;
+                    sessionStorage.setItem('persona', JSON.stringify(data));
+                    actualizarInterfazSidebar();
+                }
+            } catch (error) { console.error('Error:', error); }
+        }
+
+        function actualizarInterfazSidebar() {
+            document.getElementById('user-initial').innerText = Alumno.nombre.charAt(0).toUpperCase();
+            document.getElementById('sb-nombre-completo').innerText = `${Alumno.nombre} ${Alumno.apellido}`;
+            document.getElementById('sb-correo').innerText = Alumno.correoElectronico;
+            document.getElementById('sb-deuda').innerText = Alumno.dineroQueDebe;
+            document.getElementById('sb-horas').innerText = Alumno.horasAFavor + " hs";
+            const container = document.getElementById('sb-lista-horarios');
+            container.innerHTML = Alumno.horarios?.length > 0 
+                ? Alumno.horarios.map(h => `<div class="horario-tag"><i class="fa-regular fa-calendar-check"></i> ${h}</div>`).join('')
+                : '<p style="font-size:0.7rem; opacity:0.5; padding-left:5px;">Sin turnos reservados.</p>';
+        }
+
+        async function toggleAdmin() {
+            if(isAdmin) {
+                isAdmin = false;
+                document.getElementById('adminToggle').innerText = "Habilitar Admin";
+                document.getElementById('adminToggle').classList.remove('active');
+                return;
+            }
+            const { value: pass } = await Swal.fire({ 
+                title: 'Contraseña Admin', 
+                input: 'password', 
+                confirmButtonColor: '#f3a661'
+            });
+            if (pass === 'admin123') {
+                isAdmin = true;
+                document.getElementById('adminToggle').innerText = "MODO ADMIN ACTIVO";
+                document.getElementById('adminToggle').classList.add('active');
+            } else if (pass) {
+                Swal.fire({ icon: 'error', title: 'Incorrecta' });
+            }
+        }
+
+        function logout() { sessionStorage.clear(); window.location.href = '/Horarios/Login/Login.html'; }
+
+        async function fetchSemana(off) {
+            try {
+                const res = await fetch(`${URLHorarios}?funcion=celdasOcupadas&numeroHoja=${off}`);
+                const data = await res.json();
+                cacheHorarios[off] = data[1];
+            } catch (e) { cacheHorarios[off] = []; }
+        }
+
+        function render() {
+            const container = document.getElementById('daysContainer');
+            container.innerHTML = '';
+            const now = new Date();
+            const limit24 = new Date(now.getTime() + (24 * 60 * 60 * 1000));
+            const monday = new Date(now);
+            const diff = (now.getDay() === 0 ? -6 : 1) - now.getDay();
+            monday.setDate(now.getDate() + diff + (weekOffset * 7));
+            monday.setHours(0,0,0,0);
+
+            const celdasOcupadas = cacheHorarios[weekOffset] || [];
+            const letras = ['B', 'C', 'D', 'E', 'F'];
+            const nombresDias = ['LUN', 'MAR', 'MIE', 'JUE', 'VIE'];
+
+            letras.forEach((letra, i) => {
+                const colDate = new Date(monday);
+                colDate.setDate(monday.getDate() + i);
+                const isoDate = colDate.toISOString().split('T')[0];
+                const col = document.createElement('div');
+                col.className = 'day-column';
+                col.innerHTML = `<div class="day-header"><span style="font-size:0.6rem; color:var(--primary); font-weight:800">${nombresDias[i]}</span><span style="font-size:0.7rem">${colDate.getDate()}/${(colDate.getMonth()+1).toString().padStart(2,'0')}</span></div>`;
+
+                for (let h = 8; h <= 19; h++) {
+                    const fullId = `${isoDate} ${h.toString().padStart(2, '0')}:00`;
+                    const slotTime = new Date(`${isoDate}T${h.toString().padStart(2, '0')}:00:00`);
+                    const isOccupied = celdasOcupadas.includes(`${letra}${h-5}`);
+                    const slot = document.createElement('div');
+                    slot.className = `slot ${isOccupied ? 'occupied' : ''} ${selectedSlots.includes(fullId) ? 'selected' : ''}`;
+                    
+                    slot.onclick = () => {
+                        if (isOccupied && !isAdmin) return Swal.fire({ icon: 'error', title: 'Turno Ocupado', text: 'Esta hora ya ha sido reservada.', background: '#1a1a1a', color: '#fff' });
+                        if (!isAdmin && selectedSlots.length > 0) {
+                            const primerDia = selectedSlots[0].split(' ')[0];
+                            if (isoDate !== primerDia) return Swal.fire({ icon: 'warning', title: 'Un día a la vez', text: 'Solo puedes elegir horas del mismo día.', background: '#1a1a1a', color: '#fff' });
+                        }
+                        if (!isAdmin && slotTime < limit24) {
+                            return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 24 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
+                        }
+                        if (selectedSlots.includes(fullId)) {
+                            selectedSlots = selectedSlots.filter(s => s !== fullId);
+                            slot.classList.remove('selected');
+                        } else {
+                            selectedSlots.push(fullId);
+                            slot.classList.add('selected');
+                        }
+                        const btn = document.getElementById('btnConfirm');
+                        btn.style.display = selectedSlots.length > 0 ? 'block' : 'none';
+                        btn.innerText = `RESERVAR (${selectedSlots.length})`;
+                    };
+                    col.appendChild(slot);
+                }
+                container.appendChild(col);
+            });
+        }
+
+        function calcularMensaje(data) {
+            let msg = "";
+            if (data.faltantes) {
+                let textoFaltantes = Array.isArray(data.faltantes) ? data.faltantes.join(', ') : data.faltantes;
+                msg += `<br>${textoFaltantes}<br><br>`;
+            }
+            if (data.deudores) {
+                let textoDeudores = Array.isArray(data.deudores) ? data.deudores.join(', ') : data.deudores;
+                msg += `<b>Estado de cuenta:</b><br>${textoDeudores}`;
+            }
+            return msg;
+        }
+
+async function gestionarReserva() {
+            // --- NUEVA RESTRICCIÓN: cantidadDebe ---
+            // Se usa el string hexadecimal directamente para evitar errores de sintaxis
+            if (!isAdmin && (Alumno.condicionPago != "Libre" && Alumno.cantidadDebe >= 2)) {
+                return Swal.fire({
+                    icon: 'error',
+                    title: 'Acceso Denegado',
+                    text: 'No puedes reservar nuevos horarios porque tienes 2 o más clases pendientes de pago.',
+                    background: '#1a1a1a',
+                    color: '#fff',
+                    confirmButtonColor: '#ff5f5f' 
+                });
+            }
+
+            if (!isAdmin && Alumno.horarios?.length >= 2) return Swal.fire({ icon: 'error', title: 'Límite de Reservas', text: 'Solo puedes tener 2 reservas activas. Si quieres mas, comunicate por whatsapp' });
+
+            const { value: mod } = await Swal.fire({
+                title: 'Modalidad de Reserva',
+                input: 'radio',
+                inputOptions: { 'individual': 'Individual', 'grupal': 'Grupal' },
+                customClass: { container: 'swal-modal-light' },
+                confirmButtonColor: '#f3a661'
+            });
+
+            if (!mod) return;
+            if (!isAdmin && mod === 'grupal' && selectedSlots.length < 2) return Swal.fire({ icon: 'warning', title: 'Atención', text: 'Mínimo 2 horas para grupales.' });
+
+            let integrantes = [Alumno.correoElectronico]; 
+            let precioTotal = (selectedSlots.length === 1 ? 5000 : 4500) * selectedSlots.length;
+            let precioPorPersona = precioTotal;
+
+            if (mod === 'grupal') {
+                const { value: cant } = await Swal.fire({ title: 'Numero de Integrantes', html:'Cantidad incluyendote', input: 'number', inputAttributes: { min: 2 }, confirmButtonColor: '#f3a661' });
+                if (!cant) return;
+                for (let i = 1; i < cant; i++) {
+                    const { value: email } = await Swal.fire({ title: `Email integrante ${i+1}`, input: 'email', confirmButtonColor: '#f3a661' });
+                    if (email) integrantes.push(email); else return;
+                }
+                
+                if (!isAdmin) {
+                    try {
+                        document.getElementById('loader-overlay').style.display = 'flex';
+                        document.getElementById('loader-text').textContent = 'Validando integrantes...';
+                        const urlVerif = `${URLUsuarios}?funcion=verificarCorreos&correos=${encodeURIComponent(JSON.stringify(integrantes))}`;
+                        const resVerif = await fetch(urlVerif);
+                        const dataVerif = await resVerif.json();
+                        if (dataVerif.error && dataVerif.error !== false) {
+                            document.getElementById('loader-overlay').style.display = 'none';
+                            return Swal.fire({ icon: 'error', title: dataVerif.faltantes ? 'Verificar Integrantes' : 'Deuda Pendiente', html: calcularMensaje(dataVerif) });
+                        }
+                    } catch (err) {
+                        document.getElementById('loader-overlay').style.display = 'none';
+                        return Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo validar los correos.' });
+                    } finally {
+                        document.getElementById('loader-overlay').style.display = 'none';
+                    }
+                }
+                precioPorPersona = 3000 * selectedSlots.length;
+                precioTotal = precioPorPersona * integrantes.length;
+            }
+
+            const letras = ['B', 'C', 'D', 'E', 'F'], diasNombres = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
+            let detalleHorarios = selectedSlots.map(id => {
+                const [fecha, hora] = id.split(' ');
+                const d = new Date(fecha + 'T00:00:00');
+                return `• ${diasNombres[d.getDay()-1].toUpperCase()} ${d.getDate()}/${d.getMonth()+1} - ${hora}hs`;
+            }).join('<br>');
+
+            const htmlConfirmacion = `
+                <div style="text-align: left; font-size: 0.9rem;">
+                    <p style="margin-bottom: 10px;">Total: <b style="font-size: 1.2rem; color: #f3a661;">$${precioTotal}</b> 
+                    ${mod === 'grupal' ? `<br><small style="color: #888;">($${precioPorPersona} c/u)</small>` : ''}</p>
+                    <button id="btnVerDetalle" style="background:none; border:none; color:#f3a661; text-decoration:underline; cursor:pointer; padding:0; font-size:0.8rem;">Ver detalle de reserva</button>
+                    <div id="detalleReserva" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.05); border-radius:8px; border:1px solid #eee;">
+                        <b>Horarios seleccionados:</b><br>${detalleHorarios}<br>
+                        <b>Modalidad:</b> ${mod.toUpperCase()}<br>
+                        ${mod === 'grupal' ? `<b>Integrantes:</b> ${integrantes.length}` : ''}
+                    </div>
+                </div>
+            `;
+
+            const result = await Swal.fire({
+                title: 'Confirmar Reserva',
+                html: htmlConfirmacion,
+                showCancelButton: true,
+                confirmButtonText: 'Confirmar',
+                cancelButtonText: 'Cancelar',
+                confirmButtonColor: '#f3a661',
+                didOpen: () => {
+                    document.getElementById('btnVerDetalle').onclick = () => {
+                        const div = document.getElementById('detalleReserva');
+                        div.style.display = div.style.display === 'none' ? 'block' : 'none';
+                    };
+                }
+            });
+
+            if (result.isConfirmed) {
+                document.getElementById('loader-overlay').style.display = 'flex';
+                document.getElementById('loader-text').textContent = 'Asignando horario...';
+                
+                const celdasExcel = [], nuevosHorarios = [...(Alumno.horarios || [])];
+                selectedSlots.forEach(id => {
+                    const [fecha, hora] = id.split(' ');
+                    const d = new Date(fecha + 'T00:00:00');
+                    celdasExcel.push(`${letras[d.getDay()-1]}${parseInt(hora)-5}`);
+                    nuevosHorarios.push(`${diasNombres[d.getDay()-1]}, ${d.getDate()}/${d.getMonth()+1} ${parseInt(hora)}:00`);
+                });
+
+                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre };
+
+                try {
+                    await fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                    document.getElementById('loader-text').textContent = 'Reservando celdas en grilla...';
+                    await fetch(URLHorarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) });
+                    document.getElementById('loader-overlay').style.display = 'none';
+                    await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
+                    location.reload();
+                } catch (e) {
+                    document.getElementById('loader-overlay').style.display = 'none';
+                    Swal.fire({ icon: 'error', title: 'Error de red' });
+                }
+            }
+        }
+
+        function changeWeek(off) {
+            weekOffset = off; selectedSlots = [];
+            document.getElementById('btnConfirm').style.display = 'none';
+            document.querySelectorAll('.btn-week').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(off === 0 ? 'btnW0' : 'btnW1').classList.add('active');
+            render();
+        }
+
+        function toggleSidebar() { document.getElementById('user-sidebar').classList.toggle('active'); }
+        init();
+    </script>
 </body>
 </html>
