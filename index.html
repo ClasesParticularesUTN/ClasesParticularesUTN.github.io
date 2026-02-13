@@ -177,21 +177,22 @@
         .btn-secondary { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
         .btn-secondary:hover { background: white; color: var(--dark-bg); border-color: white; transform: translateY(-3px); }
 
-        /* --- SERVICIOS --- */
+        /* --- SERVICIOS MODIFICADOS PARA UNA FILA --- */
         .services {
-            padding: 120px 8%;
+            padding: 120px 2%;
             display: flex;
-            flex-wrap: wrap; 
+            flex-wrap: nowrap; /* Fuerza una sola fila */
             justify-content: center; 
-            gap: 40px;
-            max-width: 1400px;
+            gap: 20px;
+            max-width: 1600px;
             margin: 0 auto;
             position: relative;
+            overflow-x: auto; /* Permite scroll si la pantalla es muy pequeña pero mayor a 992px */
         }
 
         .card {
             background: var(--dark-surface);
-            padding: 50px 35px;
+            padding: 40px 20px;
             border-radius: 24px;
             border: 1px solid var(--glass-border);
             text-align: center;
@@ -200,9 +201,9 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 10px 30px -15px rgba(0,0,0,0.5);
-            flex: 1 1 300px;
-            max-width: 380px; 
-            min-width: 280px;
+            flex: 1 1 200px; /* Base más pequeña para que entren todas */
+            max-width: 300px; 
+            min-width: 220px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -225,8 +226,8 @@
         }
 
         .card .icon {
-            font-size: 3.5rem;
-            margin-bottom: 25px;
+            font-size: 2.8rem;
+            margin-bottom: 20px;
             display: inline-block;
             transition: var(--transition-smooth);
             filter: drop-shadow(0 0 10px rgba(0,0,0,0.3));
@@ -234,9 +235,9 @@
         .card:hover .icon { transform: scale(1.1); filter: drop-shadow(0 0 15px var(--primary-glow)); }
 
         .card h3 {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             text-transform: uppercase;
-            font-size: 1.2rem;
+            font-size: 1rem;
             letter-spacing: 1px;
             color: white;
             font-weight: 700;
@@ -245,9 +246,9 @@
         }
 
         .card p { 
-            font-size: 0.95rem; 
+            font-size: 0.85rem; 
             color: var(--text-muted); 
-            line-height: 1.6; 
+            line-height: 1.5; 
             position: relative;
             z-index: 1;
         }
@@ -279,12 +280,9 @@
             }
 
             nav ul.active { right: 0; }
-
             nav ul li { margin: 20px 0; }
-            
             nav ul li a { font-size: 1.2rem; }
 
-            /* Animación hamburguesa a X */
             .hamburger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
             .hamburger.active span:nth-child(2) { opacity: 0; }
             .hamburger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
@@ -292,8 +290,10 @@
             .hero h1 { font-size: 2.8rem; }
             .btn-container { flex-direction: column; width: 100%; gap: 15px; }
             .btn { width: 100%; text-align: center; padding: 15px 30px; }
-            .services { padding: 80px 5%; gap: 20px; }
-            .card { width: 100%; max-width: 100%; }
+            
+            /* En móvil vuelven a apilarse para legibilidad */
+            .services { padding: 80px 5%; flex-wrap: wrap; gap: 20px; }
+            .card { width: 100%; max-width: 100%; min-width: 0; }
         }
     </style>
 </head>
@@ -316,7 +316,7 @@
         <ul id="nav-menu">
             <li><a href="/Algoritmos/Tarea">Tarea</a></li>
             <li><a href="/Pagos">Pagos</a></li>
-            <li><a href="/Algoritmos/Multiusuario">SitioJuez</a></li
+            <li><a href="/Algoritmos/Multiusuario">SitioJuez</a></li>
         </ul>
     </nav>
 
@@ -345,16 +345,16 @@
             <p>Clickea para ir a la ubicación en Google Maps</p>
         </div>
         
-       <!-- <div class="card" onclick="window.location.href = '/Rangos'">
-            <span class="icon">🏅</span>
-            <h3>Sistema de Rangos</h3>
-            <p>Beneficios por tu constancia tomando clases</p>
-        </div> -->
+        <div class="card" onclick="window.location.href = '/Precios'">
+            <span class="icon">💰</span>
+            <h3>Precios</h3>
+            <p>Consultá por planes individuales o grupales.</p>
+        </div>
 
         <div class="card" onclick="window.location.href = '/Horarios'">
             <span class="icon">📅</span>
-            <h3>Reserva de Horarios</h3>
-            <p>Elegí la fecha y hora tu clase particular con anticipación</p>
+            <h3>Horarios</h3>
+            <p>Elegí la fecha y hora de tu clase con anticipación</p>
         </div>
     </section>
 
@@ -363,7 +363,6 @@
     </footer>
 
     <script>
-        // Lógica del Menú Hamburguesa
         const hamburger = document.getElementById('hamburger');
         const navMenu = document.getElementById('nav-menu');
 
@@ -372,7 +371,6 @@
             navMenu.classList.toggle('active');
         });
 
-        // Cerrar menú al hacer clic en un enlace (móvil)
         document.querySelectorAll('nav ul li a').forEach(link => {
             link.addEventListener('click', () => {
                 hamburger.classList.remove('active');
@@ -380,7 +378,6 @@
             });
         });
 
-        // Scroll suave y efecto nav
         const nav = document.querySelector('nav');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
