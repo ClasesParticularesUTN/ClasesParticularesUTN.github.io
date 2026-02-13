@@ -1628,17 +1628,21 @@ Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejec
         // VALIDAR PALABRAS CLAVE
 
         if (errores.length === 0) {
+          // Primero cerramos el modal de validación y el editor para
+          // asegurar que el Swal quede visible por encima.
+          cerrarModalValidacion();
+          const overlay = document.getElementById("editor-overlay");
+          if (overlay && overlay.style.display === "flex") {
+            toggleEditor();
+          }
+
+          // Mostramos la alerta de éxito; al confirmar avanzamos.
           Swal.fire({
             icon: 'success',
             title: '¡Éxito!',
             text: 'Todos los casos de prueba pasaron correctamente. Avanzando al siguiente ejercicio.',
             confirmButtonText: 'Continuar'
           }).then(() => {
-            cerrarModalValidacion();
-            const overlay = document.getElementById("editor-overlay");
-            if (overlay.style.display === "flex") {
-              toggleEditor();
-            }
             subirCodigo(true);
             ejercicioTerminado();
             indice++;
