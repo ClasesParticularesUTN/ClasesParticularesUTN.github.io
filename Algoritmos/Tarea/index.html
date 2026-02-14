@@ -579,6 +579,8 @@
   <script>
    let COMPILER_API = "https://servidortareas-847c.onrender.com/compile";
 
+	
+
     // Variables globales
   let ejercicios = [];
   let indice = -1;
@@ -708,6 +710,9 @@ let nombre = localStorage.getItem("Nombre"), apellido = localStorage.getItem("Ap
 
   // --- Restaurar ejercicios guardados si existen ---
 window.addEventListener("DOMContentLoaded", async () => {
+	fetch("https://servidortareas-847c.onrender.com/ping")
+    .catch(() => {}); // ignoramos cualquier error
+
   const guardado = sessionStorage.getItem("archivoEjercicios");
   if (guardado) {
     try {
