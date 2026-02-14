@@ -712,6 +712,11 @@ let nombre = localStorage.getItem("Nombre"), apellido = localStorage.getItem("Ap
 window.addEventListener("DOMContentLoaded", async () => {
 	fetch("https://servidortareas-847c.onrender.com/ping")
     .catch(() => {}); // ignoramos cualquier error
+	if(localStorage.getItem("Nombre") == undefined){
+	   window.location = "/Horarios/Login/Login.html";
+	   //console.log("No ha iniciado sesion")
+	}
+
 
   const guardado = sessionStorage.getItem("archivoEjercicios");
   if (guardado) {
