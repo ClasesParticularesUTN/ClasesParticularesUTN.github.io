@@ -29,8 +29,8 @@ function calcularPrecio() {
     let total;
     
     if (modalidad.value === 'individual') {
-        // Individual: $5000 por 1 hora, $4500 por más de 1 hora
-        precioPorHora = cantidadHoras === 1 ? 5000 : 4500;
+        // Individual: usa PRECIOS de precios.js
+        precioPorHora = cantidadHoras === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2;
         total = precioPorHora * cantidadHoras;
         
         return {
@@ -43,8 +43,8 @@ function calcularPrecio() {
                 `${cantidadHoras} horas: $${precioPorHora} por hora`
         };
     } else if (modalidad.value === 'grupal') {
-        // Grupal: $3000 por hora por persona
-        precioPorHora = 3000;
+        // Grupal: usa PRECIOS de precios.js
+        precioPorHora = PRECIOS.grupal.precioPorHora;
         total = precioPorHora * cantidadHoras * numIntegrantes;
         
         return {

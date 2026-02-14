@@ -598,6 +598,7 @@ input[type="number"] {
   <link rel="stylesheet" href="css/Swal.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/precios.js"></script>
 
 
 </head>
@@ -793,7 +794,7 @@ input[type="number"] {
   <script src="JS/usuarioRegistrado.js"></script>
   <script src="JS/inhabilitarPago.js"></script>
   <script src="JS/diaConDemanda.js"></script>
-  <script src="JS/modalidadClases.js "></script>
+  <script src="JS/modalidadClases.js"></script>
   <script src="JS/Avisos.js"></script>
   <script src="JS/AbrirMenu.js"></script>
   <script>

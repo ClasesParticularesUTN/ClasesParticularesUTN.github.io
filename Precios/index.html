@@ -6,6 +6,7 @@
     <title>C/S | Precios e Inscripción</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="/precios.js"></script>
     
     <style>
         :root {
@@ -135,7 +136,7 @@
         .no-price { color: var(--text-subtitle); font-style: italic; font-size: 0.8rem; }
 
         .btn-select {
-            display: block; width: 100%; padding: 16px; margin-top: 25px;
+            display: block; width: 100%; padding: 16px; margin-top: auto;
             background: transparent; color: var(--primary);
             text-decoration: none; border-radius: 12px; font-weight: 700;
             border: 2px solid var(--primary);
@@ -143,6 +144,52 @@
             text-align: center;
         }
         .btn-select:hover { background: var(--primary); color: #1a1a24; }
+        .btn-select:not([href]) { cursor: pointer; border: 2px solid var(--primary); }
+
+        /* --- MODAL PREPARACIÓN TP --- */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.is-open { opacity: 1; visibility: visible; }
+
+        .modal-box {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 40px 32px; max-width: 420px; width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            position: relative; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .modal-overlay.is-open .modal-box { transform: scale(1); }
+
+        .modal-close {
+            position: absolute; top: 16px; right: 16px;
+            width: 36px; height: 36px; border-radius: 10px;
+            border: 1px solid var(--glass-border); background: var(--item-bg);
+            color: var(--text-subtitle); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+        }
+        .modal-close:hover { color: var(--primary); border-color: var(--primary); }
+
+        .modal-icon {
+            width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 50%;
+            background: rgba(243, 166, 97, 0.15); border: 2px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: var(--primary);
+        }
+        .modal-box h4 { font-size: 1.35rem; color: var(--text-main); margin-bottom: 12px; text-align: center; }
+        .modal-box p { color: var(--text-subtitle); text-align: center; line-height: 1.6; font-size: 0.95rem; margin-bottom: 24px; }
+        .modal-box .btn-whatsapp {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 14px 20px; border-radius: 12px;
+            background: #25d366; color: #fff; font-weight: 700; text-decoration: none;
+            border: none; font-size: 1rem; cursor: pointer; transition: 0.3s;
+        }
+        .modal-box .btn-whatsapp:hover { background: #20bd5a; transform: translateY(-1px); }
+        .modal-box .btn-whatsapp i { font-size: 1.3rem; }
 
         footer { padding: 50px 20px; text-align: center; font-size: 0.85rem; color: var(--text-subtitle); border-top: 1px solid var(--footer-border); margin-top: 60px; }
 
@@ -191,19 +238,19 @@
                 
                 <div class="price-item">
                     <span class="price-label">Clase Express<small>1 hora de clase</small></span>
-                    <span class="price-value">$5.000</span>
+                    <span class="price-value" id="precio-ind-expres">$5.000</span>
                 </div>
                 <div class="price-item">
                     <span class="price-label">Clase Estándar<small>2 horas de clase</small></span>
-                    <span class="price-value">$9.000</span>
+                    <span class="price-value" id="precio-ind-estandar">$9.000</span>
                 </div>
                 <div class="price-item highlight-pack">
                     <span class="price-label"><strong>Pack Preparación Examen</strong><small>10 clases (20hs totales)</small></span>
-                    <span class="price-value">$72.000</span>
+                    <span class="price-value" id="precio-ind-pack-examen">$72.000</span>
                 </div>
                 <div class="price-item highlight-pack">
                     <span class="price-label"><strong>Pack Preparación De Materia</strong><small>20 clases (40hs totales)</small></span>
-                    <span class="price-value">$120.000</span>
+                    <span class="price-value" id="precio-ind-pack-materia">$120.000</span>
                 </div>
                 <a href="/Horarios" class="btn-select">Agendar Individual</a>
             </div>
@@ -221,26 +268,83 @@
                 </div>
                 <div class="price-item">
                     <span class="price-label">Clase Estándar<small>2 horas de clase</small></span>
-                    <span class="price-value">$6.000 c/u</span>
+                    <span class="price-value" id="precio-grup-estandar">$6.000 c/u</span>
                 </div>
                 <div class="price-item highlight-pack">
                     <span class="price-label"><strong>Pack Preparación Examen</strong><small>10 clases (20hs totales)</small></span>
-                    <span class="price-value">$48.000 c/u</span>
+                    <span class="price-value" id="precio-grup-pack-examen">$48.000 c/u</span>
                 </div>
                 <div class="price-item highlight-pack">
                     <span class="price-label"><strong>Pack Preparación De Materia</strong><small>20 clases (40hs totales)</small></span>
-                    <span class="price-value">$80.000 c/u</span>
+                    <span class="price-value" id="precio-grup-pack-materia">$80.000 c/u</span>
                 </div>
                 <a href="/Horarios" class="btn-select">Agendar Grupal</a>
             </div>
+
+            <div class="pricing-card">
+                <span class="badge" style="background: #a35a2d; color: white;">Trabajos Prácticos</span>
+                <h3>Preparación de TPs</h3>
+                <p class="group-disclaimer">
+                    Modalidad de <strong>resolución guiada</strong>: se desarrolla el trabajo práctico consigna por consigna durante la clase (2 horas) y se entrega al alumno la resolución elaborada para estudio y presentación.
+                </p>
+
+                <div class="price-item">
+                    <span class="price-label">Clase individual<small>2 horas</small></span>
+                    <span class="price-value" id="precio-tp-individual">$15.000</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label">Clase grupal<small>2 horas · Precio total del grupo</small></span>
+                    <span class="price-value" id="precio-tp-grupal">$20.000 total</span>
+                </div>
+                <button type="button" class="btn-select" onclick="openTpModal()">Agendar Preparación TP</button>
+            </div>
         </div>
     </section>
+
+    <!-- Modal Preparación TP: consultar por WhatsApp -->
+    <div class="modal-overlay" id="tp-modal" onclick="if(event.target === this) closeTpModal()">
+        <div class="modal-box">
+            <button type="button" class="modal-close" onclick="closeTpModal()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+            <div class="modal-icon"><i class="fab fa-whatsapp"></i></div>
+            <h4>Preparación de Trabajos Prácticos</h4>
+            <p>Para esta modalidad es necesario coordinar por <strong>WhatsApp de forma privada</strong>. Escribinos y te respondemos a la brevedad.</p>
+            <a href="https://wa.me/543425271005?text=Hola,%20quiero%20consultar%20por%20la%20modalidad%20de%20Preparación%20de%20TPs" class="btn-whatsapp" target="_blank" rel="noopener">
+                <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
+            </a>
+        </div>
+    </div>
 
     <footer>
         <p>&copy; 2026 C/S Ingeniería en Sistemas - Santa Fe, Argentina</p>
     </footer>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof PRECIOS !== 'undefined') {
+                document.getElementById('precio-ind-expres').textContent = '$' + PRECIOS.individual.expres1h.toLocaleString('es-AR');
+                document.getElementById('precio-ind-estandar').textContent = '$' + PRECIOS.individual.estandar2h.toLocaleString('es-AR');
+                document.getElementById('precio-ind-pack-examen').textContent = '$' + PRECIOS.individual.packExamen.toLocaleString('es-AR');
+                document.getElementById('precio-ind-pack-materia').textContent = '$' + PRECIOS.individual.packMateria.toLocaleString('es-AR');
+                document.getElementById('precio-grup-estandar').textContent = '$' + PRECIOS.grupal.estandar2h.toLocaleString('es-AR') + ' c/u';
+                document.getElementById('precio-grup-pack-examen').textContent = '$' + PRECIOS.grupal.packExamen.toLocaleString('es-AR') + ' c/u';
+                document.getElementById('precio-grup-pack-materia').textContent = '$' + PRECIOS.grupal.packMateria.toLocaleString('es-AR') + ' c/u';
+                document.getElementById('precio-tp-individual').textContent = '$' + PRECIOS.tp.individual.toLocaleString('es-AR');
+                document.getElementById('precio-tp-grupal').textContent = '$' + PRECIOS.tp.grupal.toLocaleString('es-AR') + ' total';
+            }
+        });
+
+        function openTpModal() {
+            document.getElementById('tp-modal').classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeTpModal() {
+            document.getElementById('tp-modal').classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeTpModal();
+        });
+
         function toggleTheme() {
             const body = document.body;
             const icon = document.getElementById('theme-icon');

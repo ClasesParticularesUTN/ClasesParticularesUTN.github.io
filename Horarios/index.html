@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Reserva Pro - Ing. en Sistemas</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/precios.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -335,7 +336,7 @@ async function gestionarReserva() {
             if (!isAdmin && mod === 'grupal' && selectedSlots.length < 2) return Swal.fire({ icon: 'warning', title: 'Atención', text: 'Mínimo 2 horas para grupales.' });
 
             let integrantes = [Alumno.correoElectronico]; 
-            let precioTotal = (selectedSlots.length === 1 ? 5000 : 4500) * selectedSlots.length;
+            let precioTotal = (selectedSlots.length === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2) * selectedSlots.length;
             let precioPorPersona = precioTotal;
 
             if (mod === 'grupal') {
@@ -364,7 +365,7 @@ async function gestionarReserva() {
                         document.getElementById('loader-overlay').style.display = 'none';
                     }
                 }
-                precioPorPersona = 3000 * selectedSlots.length;
+                precioPorPersona = PRECIOS.grupal.precioPorHora * selectedSlots.length;
                 precioTotal = precioPorPersona * integrantes.length;
             }
 
