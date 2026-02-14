@@ -597,11 +597,7 @@
   // Intentar cargar ejercicios.js desde servidor localhost
   // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
 let GAS_WEBAPP_URL ="https://script.google.com/macros/s/AKfycbwKHW5c4UeOOl18dWq2i0bhstPFrZpaSsWpjDrBpAc2EdaBJxs_JxDbBG0L1r4j_kG8/exec";
-
-if(localStorage.getItem("Nombre") == undefined){
-   window.location = "/Horarios/Login/Login.html";
-   //console.log("No ha iniciado sesion")
-}
+	  
 let nombre = localStorage.getItem("Nombre"), apellido = localStorage.getItem("Apellido");
   function cargarEjerciciosDesdeServidor() {
     return new Promise(async (resolve, reject) => {
