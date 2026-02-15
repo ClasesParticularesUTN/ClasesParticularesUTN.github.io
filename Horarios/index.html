@@ -549,13 +549,47 @@ async function gestionarReserva() {
             let precioPorPersona = precioTotal;
 
             if (mod === 'grupal') {
-                const { value: cant } = await Swal.fire({ title: 'Numero de Integrantes', html:'Cantidad incluyendote', input: 'number', inputAttributes: { min: 2 }, confirmButtonColor: '#f3a661' });
+                const { value: cant } = await Swal.fire({
+                    title: 'Numero de Integrantes',
+                    html:'Cantidad incluyendote',
+                    input: 'number',
+                    inputAttributes: { min: 2 },
+                    confirmButtonColor: '#f3a661'
+                });
+
                 if (!cant) return;
+
                 const numIntegrantes = Math.max(2, parseInt(cant, 10) || 2);
+
                 for (let i = 1; i < numIntegrantes; i++) {
-                    const { value: email } = await Swal.fire({ title: `Email integrante ${i+1}`, input: 'email', confirmButtonColor: '#f3a661' });
-                    if (email) integrantes.push(email); else return;
+
+                    const { value: email } = await Swal.fire({
+                        title: `Email integrante ${i+1}`,
+                        input: 'email',
+                        confirmButtonColor: '#f3a661',
+                        inputValidator: (value) => {
+                            console.log(value);
+                            if (!value) {
+                                return 'Debes ingresar un correo';
+                            }
+
+                            if (value === Alumno.correoElectronico) {
+                                return 'No puedes ingresar tu propio correo como integrante';
+                            }
+
+                            if (integrantes.includes(value)) {
+                                return 'Ese correo ya fue ingresado';
+                            }
+
+                            return null;
+                        }
+                    });
+
+                    if (!email) return;
+
+                    integrantes.push(email);
                 }
+
 
                 // Validación de correos (integrantes registrados y sin deuda) siempre, también en modo admin
                 document.getElementById('loader-overlay').style.display = 'flex';
