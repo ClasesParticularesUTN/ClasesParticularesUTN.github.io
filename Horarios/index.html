@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reserva Pro - Ing. en Sistemas</title>
+    <title>Reserva De Clase</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/precios.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -32,6 +32,22 @@
         .swal-modal-light .swal2-popup { background: #ffffff !important; color: #000000 !important; }
         .swal-modal-light .swal2-title, .swal-modal-light .swal2-html-container { color: #000000 !important; }
         .swal-modal-light .swal2-radio { color: #000000 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; padding-left: 20% !important; }
+
+        /* Selector de modalidad */
+        .mod-selector { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin: 8px 0 4px; }
+        .mod-card {
+            flex: 1; min-width: 140px; max-width: 200px;
+            background: #f5f5f5; border: 2px solid #e0e0e0; border-radius: 14px;
+            padding: 18px 14px; cursor: pointer; transition: all 0.2s ease;
+            text-align: center; color: #333;
+        }
+        .mod-card:hover { border-color: var(--primary); background: rgba(243, 166, 97, 0.08); }
+        .mod-card.selected { border-color: var(--primary); background: rgba(243, 166, 97, 0.15); box-shadow: 0 0 0 1px var(--primary); }
+        .mod-card .mod-icon { font-size: 1.8rem; color: var(--primary); margin-bottom: 8px; }
+        .mod-card .mod-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+        .mod-card .mod-desc { font-size: 0.75rem; color: #666; margin-bottom: 8px; line-height: 1.3; }
+        .mod-card .mod-price { font-size: 0.8rem; font-weight: 700; color: var(--primary); }
+        .mod-card .mod-hint { font-size: 0.65rem; color: #999; margin-top: 2px; }
 
         .navbar { height: 65px; background: var(--glass); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; border-bottom: 1px solid var(--border); backdrop-filter: blur(12px); z-index: 900; }
         .brand-title { font-weight: 700; color: var(--primary); letter-spacing: 1px; }
@@ -246,8 +262,9 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             const now = new Date();
             const limit24 = new Date(now.getTime() + (24 * 60 * 60 * 1000));
             const monday = new Date(now);
-            const diff = (now.getDay() === 0 ? -6 : 1) - now.getDay();
-            monday.setDate(now.getDate() + diff + (weekOffset * 7));
+            // Si hoy es domingo, "semana actual" = próxima semana (desde el lunes); si no, lunes de esta semana
+            const daysToMonday = (now.getDay() === 0) ? 1 : (1 - now.getDay());
+            monday.setDate(now.getDate() + daysToMonday + (weekOffset * 7));
             monday.setHours(0,0,0,0);
 
             const celdasOcupadas = cacheHorarios[weekOffset] || [];
@@ -262,7 +279,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 col.className = 'day-column';
                 col.innerHTML = `<div class="day-header"><span style="font-size:0.6rem; color:var(--primary); font-weight:800">${nombresDias[i]}</span><span style="font-size:0.7rem">${colDate.getDate()}/${(colDate.getMonth()+1).toString().padStart(2,'0')}</span></div>`;
 
-                for (let h = 8; h <= 19; h++) {
+                for (let h = 8; h <= 18; h++) {
                     const fullId = `${isoDate} ${h.toString().padStart(2, '0')}:00`;
                     const slotTime = new Date(`${isoDate}T${h.toString().padStart(2, '0')}:00:00`);
                     const isOccupied = celdasOcupadas.includes(`${letra}${h-5}`);
@@ -303,7 +320,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             }
             if (data.deudores) {
                 let textoDeudores = Array.isArray(data.deudores) ? data.deudores.join(', ') : data.deudores;
-                msg += `<b>Estado de cuenta:</b><br>${textoDeudores}`;
+                msg += `<br>${textoDeudores}`;
             }
             return msg;
         }
@@ -324,12 +341,53 @@ async function gestionarReserva() {
 
             if (!isAdmin && Alumno.horarios?.length >= 2) return Swal.fire({ icon: 'error', title: 'Límite de Reservas', text: 'Solo puedes tener 2 reservas activas. Si quieres mas, comunicate por whatsapp' });
 
+            const nHoras = selectedSlots.length;
+            const precioInd = (nHoras === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2) * nHoras;
+            const precioGrpHora = PRECIOS.grupal.precioPorHora * nHoras;
+
+            const htmlModalidad = `
+                <input type="hidden" id="modValue" value="" />
+                <div class="mod-selector">
+                    <div class="mod-card" data-mod="individual" id="card-individual">
+                        <div class="mod-icon"><i class="fa-solid fa-user"></i></div>
+                        <div class="mod-title">Individual</div>
+                        <div class="mod-desc">Clase solo para vos</div>
+                        <div class="mod-price">$${precioInd}</div>
+                        <div class="mod-hint">${nHoras} ${nHoras === 1 ? 'hora' : 'horas'} seleccionada${nHoras > 1 ? 's' : ''}</div>
+                    </div>
+                    <div class="mod-card" data-mod="grupal" id="card-grupal">
+                        <div class="mod-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="mod-title">Grupal</div>
+                        <div class="mod-desc">Varios integrantes, precio por persona</div>
+                        <div class="mod-price">$${precioGrpHora} c/u</div>
+                        <div class="mod-hint">Mín. 2 horas · desde 2 personas</div>
+                    </div>
+                </div>
+            `;
+
             const { value: mod } = await Swal.fire({
-                title: 'Modalidad de Reserva',
-                input: 'radio',
-                inputOptions: { 'individual': 'Individual', 'grupal': 'Grupal' },
+                title: 'Elegí la modalidad',
+                html: htmlModalidad,
                 customClass: { container: 'swal-modal-light' },
-                confirmButtonColor: '#f3a661'
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Continuar',
+                confirmButtonColor: '#f3a661',
+                preConfirm: () => {
+                    const v = document.getElementById('modValue').value;
+                    if (!v) { Swal.showValidationMessage('Elegí una opción'); return false; }
+                    return v;
+                },
+                didOpen: () => {
+                    const cards = document.querySelectorAll('.mod-card');
+                    cards.forEach(card => {
+                        card.addEventListener('click', () => {
+                            cards.forEach(c => c.classList.remove('selected'));
+                            card.classList.add('selected');
+                            document.getElementById('modValue').value = card.dataset.mod;
+                        });
+                    });
+                }
             });
 
             if (!mod) return;
@@ -342,50 +400,53 @@ async function gestionarReserva() {
             if (mod === 'grupal') {
                 const { value: cant } = await Swal.fire({ title: 'Numero de Integrantes', html:'Cantidad incluyendote', input: 'number', inputAttributes: { min: 2 }, confirmButtonColor: '#f3a661' });
                 if (!cant) return;
-                for (let i = 1; i < cant; i++) {
+                const numIntegrantes = Math.max(2, parseInt(cant, 10) || 2);
+                for (let i = 1; i < numIntegrantes; i++) {
                     const { value: email } = await Swal.fire({ title: `Email integrante ${i+1}`, input: 'email', confirmButtonColor: '#f3a661' });
                     if (email) integrantes.push(email); else return;
                 }
-                
-                if (!isAdmin) {
-                    try {
-                        document.getElementById('loader-overlay').style.display = 'flex';
-                        document.getElementById('loader-text').textContent = 'Validando integrantes...';
-                        const urlVerif = `${URLUsuarios}?funcion=verificarCorreos&correos=${encodeURIComponent(JSON.stringify(integrantes))}`;
-                        const resVerif = await fetch(urlVerif);
-                        const dataVerif = await resVerif.json();
-                        if (dataVerif.error && dataVerif.error !== false) {
-                            document.getElementById('loader-overlay').style.display = 'none';
-                            return Swal.fire({ icon: 'error', title: dataVerif.faltantes ? 'Verificar Integrantes' : 'Deuda Pendiente', html: calcularMensaje(dataVerif) });
-                        }
-                    } catch (err) {
+
+                // Validación de correos (integrantes registrados y sin deuda) siempre, también en modo admin
+                document.getElementById('loader-overlay').style.display = 'flex';
+                document.getElementById('loader-text').textContent = 'Validando integrantes...';
+                try {
+                    const urlVerif = `${URLUsuarios}?funcion=verificarCorreos&correos=${encodeURIComponent(JSON.stringify(integrantes))}`;
+                    const resVerif = await fetch(urlVerif);
+                    const dataVerif = await resVerif.json();
+                    if (dataVerif.error && dataVerif.error !== false) {
                         document.getElementById('loader-overlay').style.display = 'none';
-                        return Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo validar los correos.' });
-                    } finally {
-                        document.getElementById('loader-overlay').style.display = 'none';
+                        return Swal.fire({ icon: 'error', title: dataVerif.faltantes ? 'Verificar Integrantes' : 'Deuda Pendiente', html: calcularMensaje(dataVerif) });
                     }
+                } catch (err) {
+                    document.getElementById('loader-overlay').style.display = 'none';
+                    return Swal.fire({ icon: 'error', title: 'Error de conexión', text: 'No se pudo validar los correos.' });
+                } finally {
+                    document.getElementById('loader-overlay').style.display = 'none';
                 }
                 precioPorPersona = PRECIOS.grupal.precioPorHora * selectedSlots.length;
                 precioTotal = precioPorPersona * integrantes.length;
             }
 
             const letras = ['B', 'C', 'D', 'E', 'F'], diasNombres = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
-            let detalleHorarios = selectedSlots.map(id => {
-                const [fecha, hora] = id.split(' ');
-                const d = new Date(fecha + 'T00:00:00');
-                return `• ${diasNombres[d.getDay()-1].toUpperCase()} ${d.getDate()}/${d.getMonth()+1} - ${hora}hs`;
-            }).join('<br>');
+            const [fecha0, hora0] = selectedSlots[0].split(' ');
+            const d0 = new Date(fecha0 + 'T00:00:00');
+            const diaNombre = diasNombres[d0.getDay() - 1].charAt(0).toUpperCase() + diasNombres[d0.getDay() - 1].slice(1);
+            const fechaStr = `${d0.getDate()}/${(d0.getMonth()+1).toString().padStart(2,'0')}`;
+            const horas = selectedSlots.map(id => id.split(' ')[1]).sort();
+            const horaInicio = horas[0];
+            const horaFinSlot = horas[horas.length - 1];
+            const horaFinHasta = horaFinSlot.replace(':00', ':59');
+            const textoRango = horaInicio === horaFinSlot
+                ? `a las ${horaInicio} hs`
+                : `de ${horaInicio} a ${horaFinHasta} hs`;
+            const textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}`;
 
             const htmlConfirmacion = `
-                <div style="text-align: left; font-size: 0.9rem;">
-                    <p style="margin-bottom: 10px;">Total: <b style="font-size: 1.2rem; color: #f3a661;">$${precioTotal}</b> 
-                    ${mod === 'grupal' ? `<br><small style="color: #888;">($${precioPorPersona} c/u)</small>` : ''}</p>
-                    <button id="btnVerDetalle" style="background:none; border:none; color:#f3a661; text-decoration:underline; cursor:pointer; padding:0; font-size:0.8rem;">Ver detalle de reserva</button>
-                    <div id="detalleReserva" style="display:none; margin-top:10px; padding:10px; background:rgba(0,0,0,0.05); border-radius:8px; border:1px solid #eee;">
-                        <b>Horarios seleccionados:</b><br>${detalleHorarios}<br>
-                        <b>Modalidad:</b> ${mod.toUpperCase()}<br>
-                        ${mod === 'grupal' ? `<b>Integrantes:</b> ${integrantes.length}` : ''}
-                    </div>
+                <div style="text-align: left; font-size: 0.95rem; color: #333;">
+                    <p style="margin: 0; padding: 12px 14px; background: rgba(243, 166, 97, 0.12); border-radius: 10px; border-left: 4px solid #f3a661; line-height: 1.5;">
+                        <b>Resumen de la reserva</b><br>
+                        <span style="margin-top: 6px; display: inline-block;">${textoResumen}</span>
+                    </p>
                 </div>
             `;
 
@@ -396,12 +457,7 @@ async function gestionarReserva() {
                 confirmButtonText: 'Confirmar',
                 cancelButtonText: 'Cancelar',
                 confirmButtonColor: '#f3a661',
-                didOpen: () => {
-                    document.getElementById('btnVerDetalle').onclick = () => {
-                        const div = document.getElementById('detalleReserva');
-                        div.style.display = div.style.display === 'none' ? 'block' : 'none';
-                    };
-                }
+                customClass: { container: 'swal-modal-light' }
             });
 
             if (result.isConfirmed) {
