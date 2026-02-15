@@ -12,10 +12,10 @@ const PRECIOS = {
         packMateria: 120000       // Pack Preparación Materia - 20 clases (40hs)
     },
     grupal: {
-        estandar2h: 6000,         // Clase Estándar - 2 horas (por persona)
-        precioPorHora: 3000,      // Por hora por persona
-        packExamen: 48000,        // Pack Preparación Examen (por persona)
-        packMateria: 80000        // Pack Preparación Materia (por persona)
+        estandar2h: 7000,         // Clase Estándar - 2 horas (por persona)
+        precioPorHora: 3500,      // Por hora por persona (aumentado en 1000)
+        packExamen: 7000 * 8,        // Pack Preparación Examen (por persona)
+        packMateria: 7000 * 16        // Pack Preparación Materia (por persona)
     },
     tp: {
         individual: 15000,        // Clase individual - 2 horas

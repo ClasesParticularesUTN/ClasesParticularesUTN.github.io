@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -308,10 +308,30 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             if (cursor) { cursor.classList.remove('playing'); cursor.setAttribute('aria-hidden', 'true'); }
         }
 
+        const AVISO_PACK_KEY = 'avisoPackTerminadoFecha';
+
+        function mostrarAvisoPackTerminadoSiCorresponde() {
+            if (!Alumno || !Alumno.correoElectronico) return;
+            const fechaPago = Alumno.fechaPago;
+            const horasAFavor = Alumno.horasAFavor;
+            if (fechaPago == null || fechaPago === '' || horasAFavor != 0) return;
+            if (localStorage.getItem(AVISO_PACK_KEY) === String(fechaPago)) return;
+            localStorage.setItem(AVISO_PACK_KEY, String(fechaPago));
+            Swal.fire({
+                icon: 'info',
+                title: 'Pack de horas finalizado',
+                text: 'Tu pack de horas ha terminado. Deberás abonar la clase individualmente.',
+                background: '#151517',
+                color: '#fff',
+                confirmButtonColor: '#f3a661'
+            });
+        }
+
         async function init() {
             document.getElementById('loader-overlay').style.display = 'flex';
-            await actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
-            
+            if (Alumno && Alumno.correoElectronico && Alumno.contrasenia) {
+                await actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
+            }
             if(Alumno.admin === true) {
                 isAdmin = true;
                 const btnAdmin = document.getElementById('adminToggle');
@@ -415,6 +435,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                     slot.className = `slot ${isOccupied ? 'occupied' : ''} ${selectedSlots.includes(fullId) ? 'selected' : ''}`;
                     
                     slot.onclick = () => {
+                        mostrarAvisoPackTerminadoSiCorresponde();
                         if (isOccupied && !isAdmin) return Swal.fire({ icon: 'error', title: 'Turno Ocupado', text: 'Esta hora ya ha sido reservada.', background: '#1a1a1a', color: '#fff' });
                         if (!isAdmin && selectedSlots.length > 0) {
                             const primerDia = selectedSlots[0].split(' ')[0];
