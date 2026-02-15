@@ -574,7 +574,7 @@ async function gestionarReserva() {
                             }
 
                             if (value === Alumno.correoElectronico) {
-                                return 'No puedes ingresar tu propio correo como integrante';
+                                return 'No puedes ingresar tu propio correo como integrante (ya fue considerado)';
                             }
 
                             if (integrantes.includes(value)) {
