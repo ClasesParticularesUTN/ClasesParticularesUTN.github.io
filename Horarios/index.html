@@ -341,7 +341,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
 
             const hCol = document.getElementById('hoursCol');
             hCol.innerHTML = '<div style="height:45px"></div>';
-            for (let h = 8; h <= 18; h++) hCol.innerHTML += `<div class="hour-cell">${h}:00</div>`;
+            for (let h = 8; h <= 19; h++) hCol.innerHTML += `<div class="hour-cell">${h}:00</div>`;
             await Promise.all([fetchSemana(0), fetchSemana(1)]);
             render();
             document.getElementById('loader-overlay').style.display = 'none';
@@ -408,7 +408,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             const container = document.getElementById('daysContainer');
             container.innerHTML = '';
             const now = new Date();
-            const limit24 = new Date(now.getTime() + (24 * 60 * 60 * 1000));
+            const limit12 = new Date(now.getTime() + (12 * 60 * 60 * 1000));
             const monday = new Date(now);
             // Si hoy es domingo, "semana actual" = próxima semana (desde el lunes); si no, lunes de esta semana
             const daysToMonday = (now.getDay() === 0) ? 1 : (1 - now.getDay());
@@ -427,7 +427,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 col.className = 'day-column';
                 col.innerHTML = `<div class="day-header"><span style="font-size:0.6rem; color:var(--primary); font-weight:800">${nombresDias[i]}</span><span style="font-size:0.7rem">${colDate.getDate()}/${(colDate.getMonth()+1).toString().padStart(2,'0')}</span></div>`;
 
-                for (let h = 8; h <= 18; h++) {
+                for (let h = 8; h <= 19; h++) {
                     const fullId = `${isoDate} ${h.toString().padStart(2, '0')}:00`;
                     const slotTime = new Date(`${isoDate}T${h.toString().padStart(2, '0')}:00:00`);
                     const isOccupied = celdasOcupadas.includes(`${letra}${h-5}`);
@@ -441,8 +441,8 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                             const primerDia = selectedSlots[0].split(' ')[0];
                             if (isoDate !== primerDia) return Swal.fire({ icon: 'warning', title: 'Un día a la vez', text: 'Solo puedes elegir horas del mismo día.', background: '#1a1a1a', color: '#fff' });
                         }
-                        if (!isAdmin && slotTime < limit24) {
-                            return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 24 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
+                        if (!isAdmin && slotTime < limit12) {
+                            return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 12 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
                         }
                         if (selectedSlots.includes(fullId)) {
                             selectedSlots = selectedSlots.filter(s => s !== fullId);
