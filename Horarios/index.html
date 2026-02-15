@@ -93,42 +93,45 @@
         .week-selector { background: #151517; padding: 5px; border-radius: 12px; display: flex; border: 1px solid #333; }
         .week-selector.hint-mover { animation: barraSigueCursor 2.6s cubic-bezier(0.33, 1, 0.68, 1) 1; }
         @keyframes barraSigueCursor {
-            0%, 30% { transform: translate(0, 0); box-shadow: 0 0 0 rgba(243, 166, 97, 0); }
-            36% { transform: translate(32px, -8px); box-shadow: 0 10px 24px rgba(0,0,0,0.35), 0 0 20px rgba(243, 166, 97, 0.2); }
-            50% { transform: translate(32px, -8px); box-shadow: 0 10px 24px rgba(0,0,0,0.35), 0 0 20px rgba(243, 166, 97, 0.2); }
-            58% { transform: translate(0, 2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+            0%, 28% { transform: translate(0, 0); box-shadow: 0 0 0 rgba(243, 166, 97, 0); }
+            30% { transform: translate(0, 0); box-shadow: 0 0 0 rgba(243, 166, 97, 0); }
+            35% { transform: translate(calc(var(--bar-drag-x) * 0.35), calc(var(--bar-drag-y) * 0.35)); box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 18px rgba(243, 166, 97, 0.25); }
+            48% { transform: translate(var(--bar-drag-x), var(--bar-drag-y)); box-shadow: 0 12px 28px rgba(0,0,0,0.35), 0 0 22px rgba(243, 166, 97, 0.3); }
+            50% { transform: translate(var(--bar-drag-x), var(--bar-drag-y)); box-shadow: 0 12px 28px rgba(0,0,0,0.35), 0 0 22px rgba(243, 166, 97, 0.3); }
+            58% { transform: translate(0, 3px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
             68% { transform: translate(0, 0); box-shadow: 0 0 0 rgba(243, 166, 97, 0); }
             100% { transform: translate(0, 0); box-shadow: 0 0 0 rgba(243, 166, 97, 0); }
         }
-        #dragDemoCursor { position: fixed; z-index: 1001; pointer-events: none; left: 50%; top: 90%; transform: translate(-50%, -50%); opacity: 0; color: var(--primary); font-size: 1.75rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(243, 166, 97, 0.4)); will-change: left, top, transform, opacity; }
-        #dragDemoCursor.playing { animation: cursorDrag 2.6s cubic-bezier(0.33, 1, 0.68, 1) 1; }
+        #dragDemoCursor { position: fixed; z-index: 1001; pointer-events: none; left: var(--drag-start-x, 50%); top: var(--drag-start-y, 90%); transform: translate(-50%, -50%); opacity: 0; color: var(--primary); font-size: 1.75rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(243, 166, 97, 0.4)); will-change: left, top, transform, opacity; }
+        #dragDemoCursor.playing { animation: cursorDrag 2.6s cubic-bezier(0.33, 1, 0.68, 1) 1 forwards; }
         @keyframes cursorDrag {
-            0% { left: 50%; top: 88%; opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
-            6% { left: 50%; top: 88%; opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            22% { left: 50%; top: 92%; opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-            26% { left: 50%; top: 92%; opacity: 1; transform: translate(-50%, -50%) scale(0.88) rotate(-8deg); }
-            36% { left: 56%; top: 91%; opacity: 1; transform: translate(-50%, -50%) scale(0.88) rotate(-8deg); }
-            50% { left: 62%; top: 90%; opacity: 1; transform: translate(-50%, -50%) scale(0.88) rotate(-8deg); }
-            56% { left: 62%; top: 90%; opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-            70% { left: 62%; top: 90%; opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            82% { left: 62%; top: 90%; opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            100% { left: 62%; top: 90%; opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            0% { left: var(--drag-start-x); top: var(--drag-start-y); opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            6% { left: var(--drag-start-x); top: var(--drag-start-y); opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            22% { left: var(--drag-start-x); top: var(--drag-start-y); opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            26% { left: var(--drag-start-x); top: var(--drag-start-y); opacity: 1; transform: translate(-50%, -50%) scale(0.88) rotate(-8deg); }
+            35% { left: var(--drag-mid-x); top: var(--drag-mid-y); opacity: 1; transform: translate(-50%, -50%) scale(0.88) rotate(-8deg); }
+            48% { left: var(--drag-end-x); top: var(--drag-end-y); opacity: 1; transform: translate(-50%, -50%) scale(0.88) rotate(-8deg); }
+            50% { left: var(--drag-end-x); top: var(--drag-end-y); opacity: 1; transform: translate(-50%, -50%) scale(0.88) rotate(-8deg); }
+            56% { left: var(--drag-end-x); top: var(--drag-end-y); opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            70% { left: var(--drag-end-x); top: var(--drag-end-y); opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            82% { left: var(--drag-end-x); top: var(--drag-end-y); opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            100% { left: var(--drag-end-x); top: var(--drag-end-y); opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
         }
         .btn-week { background: transparent; border: none; color: #888; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
         .btn-week.active { background: var(--primary); color: #000; }
         .btn-reserve { width: 90%; background: var(--primary); color: #000; padding: 18px; border-radius: 15px; font-weight: 800; border: none; display: none; }
 
-        #userHintCursor { position: fixed; z-index: 1001; pointer-events: none; left: 20%; top: 18%; transform: translate(-50%, -50%); opacity: 0; color: var(--primary); font-size: 1.6rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(243, 166, 97, 0.4)); will-change: left, top, transform, opacity; }
-        #userHintCursor.playing { animation: cursorClickUser 2.2s cubic-bezier(0.33, 1, 0.68, 1) 1; }
+        #userHintCursor { position: fixed; z-index: 1001; pointer-events: none; left: var(--hint-start-x, 20%); top: var(--hint-start-y, 20%); transform: translate(-50%, -50%); opacity: 0; color: var(--primary); font-size: 1.6rem; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 12px rgba(243, 166, 97, 0.4)); will-change: left, top, transform, opacity; }
+        #userHintCursor.playing { animation: cursorClickUser 2.2s cubic-bezier(0.33, 1, 0.68, 1) 1 forwards; }
         @keyframes cursorClickUser {
-            0% { left: 20%; top: 18%; opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
-            8% { left: 20%; top: 18%; opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            45% { left: 88%; top: 5%; opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            52% { left: 88%; top: 5%; opacity: 1; transform: translate(-50%, -50%) scale(0.82); }
-            60% { left: 88%; top: 5%; opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            75% { left: 88%; top: 5%; opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            88% { left: 88%; top: 5%; opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
-            100% { left: 88%; top: 5%; opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            0% { left: var(--hint-start-x); top: var(--hint-start-y); opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+            8% { left: var(--hint-start-x); top: var(--hint-start-y); opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            45% { left: var(--hint-target-x); top: var(--hint-target-y); opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            52% { left: var(--hint-target-x); top: var(--hint-target-y); opacity: 1; transform: translate(-50%, -50%) scale(0.82); }
+            60% { left: var(--hint-target-x); top: var(--hint-target-y); opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            75% { left: var(--hint-target-x); top: var(--hint-target-y); opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            88% { left: var(--hint-target-x); top: var(--hint-target-y); opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            100% { left: var(--hint-target-x); top: var(--hint-target-y); opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
         }
         .user-access.hint-destacado { animation: userIconPulse 0.5s ease-out 1; }
         @keyframes userIconPulse {
@@ -235,6 +238,15 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             const cursor = document.getElementById('userHintCursor');
             const icon = document.getElementById('userAccessBtn');
             if (!cursor || !icon) return;
+            const rect = icon.getBoundingClientRect();
+            const targetX = rect.left + rect.width / 2;
+            const targetY = rect.top + rect.height / 2;
+            const startX = Math.min(window.innerWidth * 0.22, targetX - 80);
+            const startY = window.innerHeight * 0.22;
+            cursor.style.setProperty('--hint-start-x', startX + 'px');
+            cursor.style.setProperty('--hint-start-y', startY + 'px');
+            cursor.style.setProperty('--hint-target-x', targetX + 'px');
+            cursor.style.setProperty('--hint-target-y', targetY + 'px');
             cursor.classList.remove('playing');
             cursor.offsetHeight;
             cursor.classList.add('playing');
@@ -259,6 +271,20 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             const barra = document.querySelector('#controlsOverlay .week-selector');
             const cursor = document.getElementById('dragDemoCursor');
             if (!barra || !cursor) return;
+            const rect = barra.getBoundingClientRect();
+            const startX = rect.left + rect.width / 2;
+            const startY = rect.top + rect.height / 2;
+            const dragX = 100, dragY = -22;
+            const endX = startX + dragX, endY = startY + dragY;
+            const midX = startX + dragX * 0.35, midY = startY + dragY * 0.35;
+            cursor.style.setProperty('--drag-start-x', startX + 'px');
+            cursor.style.setProperty('--drag-start-y', startY + 'px');
+            cursor.style.setProperty('--drag-mid-x', midX + 'px');
+            cursor.style.setProperty('--drag-mid-y', midY + 'px');
+            cursor.style.setProperty('--drag-end-x', endX + 'px');
+            cursor.style.setProperty('--drag-end-y', endY + 'px');
+            barra.style.setProperty('--bar-drag-x', dragX + 'px');
+            barra.style.setProperty('--bar-drag-y', dragY + 'px');
             barra.classList.remove('hint-mover');
             cursor.classList.remove('playing');
             barra.offsetHeight;
@@ -606,11 +632,12 @@ async function gestionarReserva() {
         (function setupControlsDrag() {
             const overlay = document.getElementById('controlsOverlay');
             const DRAG_THRESHOLD = 6;
-            let dragging = false, maybeDragging = false, startX, startY, startLeft, startTop;
+            let dragging = false, maybeDragging = false, justDragged = false, startX, startY, startLeft, startTop;
 
             function startDrag(e) {
                 maybeDragging = true;
                 dragging = false;
+                justDragged = false;
                 startX = e.clientX ?? e.touches[0].clientX;
                 startY = e.clientY ?? e.touches[0].clientY;
                 const rect = overlay.getBoundingClientRect();
@@ -653,6 +680,7 @@ async function gestionarReserva() {
                 if (maybeDragging && dragging && e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    justDragged = true;
                 }
                 maybeDragging = false;
                 dragging = false;
@@ -662,6 +690,14 @@ async function gestionarReserva() {
                 document.removeEventListener('touchmove', move, { passive: false });
                 document.removeEventListener('touchend', endDrag);
             }
+
+            overlay.addEventListener('click', function(e) {
+                if (justDragged) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    justDragged = false;
+                }
+            }, true);
 
             overlay.addEventListener('mousedown', startDrag);
             overlay.addEventListener('touchstart', startDrag, { passive: true });
