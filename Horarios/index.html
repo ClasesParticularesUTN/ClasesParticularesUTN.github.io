@@ -314,9 +314,8 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             if (!Alumno || !Alumno.correoElectronico) return;
             const fechaPago = Alumno.fechaPago;
             const horasAFavor = Alumno.horasAFavor;
-            if (fechaPago == null || fechaPago === '' || horasAFavor != 0) return;
+            if (fechaPago == null || fechaPago === '' || horasAFavor > 0) return;
             if (localStorage.getItem(AVISO_PACK_KEY) === String(fechaPago)) return;
-            localStorage.setItem(AVISO_PACK_KEY, String(fechaPago));
             Swal.fire({
                 icon: 'info',
                 title: 'Pack de horas finalizado',
@@ -324,7 +323,13 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 background: '#151517',
                 color: '#fff',
                 confirmButtonColor: '#f3a661'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    localStorage.setItem(AVISO_PACK_KEY, String(fechaPago));
+            
+                }
             });
+
         }
 
         async function init() {

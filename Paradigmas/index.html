@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Datos Cliente</h2>
+    <h4 id="nombreCliente">Nombre: </h4>
+    <h4 id="apellidoCliente">Apellido: </h4>
+    <h4 id="dniCliente">DNI: </h4>
+
+
+    <h2>Productos</h2>
+    
+    <ul id="listaProductos"></ul>
+    <br>
+    <br>
+    <button id="calcularTotal">Calcular Total</button>
+    <h4 id="Total">Total = </h4>
+    <script>
+        class Cliente {
+            carrito = null;
+
+            constructor(nombre = "", apellido ="", dni) {
+                this.nombre = nombre;
+                this.apellido = apellido;    
+                this.dni = dni;
+            }
+
+            setNombre(nombre){
+                this.nombre = nombre;
+            }
+
+            setApellido(apellido){
+                this.apellido = apellido;
+            }
+
+            getNombre(){
+                return this.nombre;
+            }
+
+            getApellido(){
+                return this.apellido;
+            }
+            agregarCarrito(carrito){
+                this.carrito = carrito;
+            }
+
+            agregarProducto(producto){
+                this.carrito.agregarProducto(producto);
+            }
+
+            totalCarrito(){
+                return this.carrito.totalCarrito();
+            }
+        }
+
+        let cliente1 = new Cliente("", "", 43647177);
+        cliente1.setNombre("Joel");
+        cliente1.setApellido("Vogt");
+
+        let agregarContenido = (elemento, texto)=>document.getElementById(elemento).innerHTML+=texto;
+
+        agregarContenido("nombreCliente", cliente1.getNombre());
+        agregarContenido("apellidoCliente", cliente1.getApellido());
+
+        class Producto {
+            constructor(nombre, precioUnitario, id) {
+                this.nombre = nombre;
+                this.precioUnitario = precioUnitario;
+                this.id = id;
+            }
+            setNombre(nombre) {
+                this.nombre = nombre;
+            }
+
+            setprecioUnitario(precioUnitario) {
+                this.precioUnitario = precioUnitario;
+            }
+
+            setId(id) {
+                this.id = id;
+            }
+
+            getNombre() {
+                return this.nombre;
+            }
+
+            getPrecioUnitario() {
+                return this.precioUnitario;
+            }
+
+            getId() {
+                return this.id;
+            }
+        }
+
+        let banana = new Producto("Banana", 200, 1);
+        let manzana = new Producto("Manzana", 150, 2);
+        let naranja = new Producto("Naranja", 180, 3);
+        let fresa = new Producto("Fresa", 250, 4);
+        let uva = new Producto("Uva", 220, 5);
+
+        agregarProducto = (producto) => {
+            document.getElementById("listaProductos").innerHTML += `<li>${producto.getNombre()} - $${producto.getPrecioUnitario()}</li>`;
+        }
+
+        agregarProducto(banana);
+        agregarProducto(manzana);
+        agregarProducto(naranja);
+        agregarProducto(fresa);
+        agregarProducto(uva);
+
+        class Carrito {
+            productos = [];
+            precioTotal = 0;
+
+            constructor() {
+                
+            }
+
+            agregarProducto(producto){
+                this.productos.push(producto);
+            }
+            totalCarrito(){
+                for(let i = 0; i < this.productos.length; i++){
+                    this.precioTotal += this.productos[i].getPrecioUnitario();
+                }
+                return this.precioTotal;
+            }
+        }
+        let carrito1 = new Carrito();
+        cliente1.agregarCarrito(carrito1);
+
+        let alHacerClick = (producto, funcion) => {
+            let elementos = document.querySelectorAll("li");
+            elementos.forEach(el => {
+                if(el.textContent.includes(producto.getNombre())) {
+                    el.addEventListener("click", () => funcion(producto));
+                }
+            });
+        };
+
+        alHacerClick(banana, ()=>cliente1.agregarProducto(banana));
+        alHacerClick(manzana, ()=>cliente1.agregarProducto(manzana));
+        alHacerClick(naranja, ()=>cliente1.agregarProducto(naranja));
+        alHacerClick(fresa, ()=>cliente1.agregarProducto(fresa));
+        alHacerClick(uva, ()=>cliente1.agregarProducto(uva));
+
+        document.getElementById("calcularTotal").addEventListener("click", ()=> {
+            document.getElementById("Total").innerHTML += cliente1.totalCarrito();;
+        })
+             
+    </script>
+</body>
+</html>

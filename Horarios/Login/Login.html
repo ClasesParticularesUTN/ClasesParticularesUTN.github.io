@@ -283,6 +283,9 @@
                     loader.style.display = 'none';
                 });
         });
+                
+        fetch("https://mercadopago-di7q.onrender.com/ping")
+            .catch(() => {}); // ignoramos cualquier error
     </script>
 </body>
 </html>
