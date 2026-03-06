@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded",()=>{
         }
     });
 
-        document.getElementById('jonhson1').value = "16";
+        document.getElementById('johnson1').value = "16";
         document.getElementById('gray1').value = "16";
         document.getElementById('numeroInput1').value = "1011110,101";
         document.getElementById('numeroInput2').value = "110101,01";
@@ -1342,7 +1342,7 @@ function invertirDigitos(n1){
 
 function codigoJohnson(numero){
     eliminarTodosLosHijos("pasos");
-    if(numero == undefined) numero = parseInt(document.getElementById("jonhson1").value);
+    if(numero == undefined) numero = parseInt(document.getElementById("johnson1").value);
     function agregar1(cadena){
         if (cadena.length <= 1) {
             return cadena; // Si la cadena es de un solo carácter o está vacía, no se hace nada
