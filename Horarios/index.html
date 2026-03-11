@@ -77,8 +77,30 @@
         .agenda-wrapper { display: flex; flex-grow: 1; }
         .hours-column { width: 50px; background: rgba(0,0,0,0.4); display: flex; flex-direction: column; }
         .hour-cell, .slot { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .days-container { display: flex; flex-grow: 1; width: calc(100% - 50px); }
-        .day-column { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--border); }
+        .days-container { 
+            display: flex; 
+            flex-grow: 1; 
+            width: calc(100% - 50px);
+            overflow-x: hidden; /* default: sin scroll (LUN–VIE) */
+        }
+        .day-column { 
+            flex: 1; /* default: 5 columnas entran en una pantalla */
+            min-width: 0;
+            display: flex; 
+            flex-direction: column; 
+            border-right: 1px solid var(--border); 
+        }
+        /* Sólo para usuarios habilitados a ver SÁB–DOM */
+        .days-container.weekend-enabled { 
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+        /* En modo fines de semana, todas las columnas mantienen el ancho de un layout de 5 días:
+           LUN–VIE entran completos, SÁB–DOM quedan hacia la derecha y se acceden con scroll */
+        .days-container.weekend-enabled .day-column { 
+            flex: 0 0 calc(100% / 5);
+            min-width: calc(100% / 5);
+        }
         .day-header { height: 45px; border-bottom: 2px solid var(--primary); background: rgba(255,255,255,0.03); text-align: center; display: flex; flex-direction: column; justify-content: center; }
 
         .slot { margin: 1px; cursor: pointer; transition: 0.2s; background: var(--available); position: relative; }
@@ -194,6 +216,14 @@
         const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
 let Alumno = JSON.parse(sessionStorage.getItem("persona"));
+        const EMAILS_FINES_DE_SEMANA = [
+            "juanma.2000@hotmail.com",
+            "valedasilvacatela.vdc@gmail.com"
+        ];
+
+        function tieneAccesoFinDeSemana() {
+            return Alumno && EMAILS_FINES_DE_SEMANA.includes(Alumno.correoElectronico);
+        }
         
         // Si no hay sesión, mostrar menú de acceso
         if (!Alumno) {
@@ -421,8 +451,10 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             monday.setHours(0,0,0,0);
 
             const celdasOcupadas = cacheHorarios[weekOffset] || [];
-            const letras = ['B', 'C', 'D', 'E', 'F'];
-            const nombresDias = ['LUN', 'MAR', 'MIE', 'JUE', 'VIE'];
+            const puedeFinDeSemana = tieneAccesoFinDeSemana();
+            container.classList.toggle('weekend-enabled', puedeFinDeSemana);
+            const letras = puedeFinDeSemana ? ['B', 'C', 'D', 'E', 'F', 'G', 'H'] : ['B', 'C', 'D', 'E', 'F'];
+            const nombresDias = puedeFinDeSemana ? ['LUN', 'MAR', 'MIE', 'JUE', 'VIE', 'SÁB', 'DOM'] : ['LUN', 'MAR', 'MIE', 'JUE', 'VIE'];
 
             letras.forEach((letra, i) => {
                 const colDate = new Date(monday);
@@ -617,10 +649,16 @@ async function gestionarReserva() {
                 precioTotal = precioPorPersona * integrantes.length;
             }
 
-            const letras = ['B', 'C', 'D', 'E', 'F'], diasNombres = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
+            const puedeFinDeSemana = tieneAccesoFinDeSemana();
+            const letras = puedeFinDeSemana ? ['B', 'C', 'D', 'E', 'F', 'G', 'H'] : ['B', 'C', 'D', 'E', 'F'];
+            const diasNombres = puedeFinDeSemana
+                ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
+                : ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
             const [fecha0, hora0] = selectedSlots[0].split(' ');
             const d0 = new Date(fecha0 + 'T00:00:00');
-            const diaNombre = diasNombres[d0.getDay() - 1].charAt(0).toUpperCase() + diasNombres[d0.getDay() - 1].slice(1);
+            const dayOfWeek0 = d0.getDay(); // 0=Domingo, 1=Lunes,...6=Sábado
+            const idx0 = dayOfWeek0 === 0 ? 6 : dayOfWeek0 - 1;
+            const diaNombre = diasNombres[idx0].charAt(0).toUpperCase() + diasNombres[idx0].slice(1);
             const fechaStr = `${d0.getDate()}/${(d0.getMonth()+1).toString().padStart(2,'0')}`;
             const horas = selectedSlots.map(id => id.split(' ')[1]).sort();
             const horaInicio = horas[0];
@@ -658,8 +696,10 @@ async function gestionarReserva() {
                 selectedSlots.forEach(id => {
                     const [fecha, hora] = id.split(' ');
                     const d = new Date(fecha + 'T00:00:00');
-                    celdasExcel.push(`${letras[d.getDay()-1]}${parseInt(hora)-5}`);
-                    nuevosHorarios.push(`${diasNombres[d.getDay()-1]}, ${d.getDate()}/${d.getMonth()+1} ${parseInt(hora)}:00`);
+                    const dayOfWeek = d.getDay(); // 0=Domingo, 1=Lunes,...6=Sábado
+                    const idx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    celdasExcel.push(`${letras[idx]}${parseInt(hora)-5}`);
+                    nuevosHorarios.push(`${diasNombres[idx]}, ${d.getDate()}/${d.getMonth()+1} ${parseInt(hora)}:00`);
                 });
 
                 const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre };
