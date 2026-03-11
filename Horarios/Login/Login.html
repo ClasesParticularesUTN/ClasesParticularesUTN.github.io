@@ -224,8 +224,13 @@
 
         form.addEventListener('submit', function (event) {
             event.preventDefault();
-            const correo = emailInput.value.trim().toLowerCase();
+            let correo = emailInput.value.trim().toLowerCase();
             const contrasenia = passInput.value;
+
+            if (correo && !correo.includes('@')) {
+                correo = `${correo}@gmail.com`;
+                emailInput.value = correo;
+            }
 
             submitBtn.disabled = true;
             btnText.style.display = 'none';
