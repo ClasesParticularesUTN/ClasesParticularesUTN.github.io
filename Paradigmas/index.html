@@ -19,6 +19,221 @@
     <br>
     <button id="calcularTotal">Calcular Total</button>
     <h4 id="Total">Total = </h4>
+
+
+    <script>
+        class Cliente {
+    id;
+    nombre;
+    apellido;
+    dni;
+    sexo;
+    carrito; // tipo Carrito
+
+    constructor(id, nombre, apellido, dni, sexo) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.dni = dni;
+        this.sexo = sexo;
+    }
+
+    setId(id){
+        this.id = id;
+    }
+
+    getId(){
+        return this.id;
+    }
+
+    setNombre(nombre){
+        this.nombre = nombre;
+    }
+
+    getNombre(){
+        return this.nombre;
+    }
+
+    setApellido(apellido){
+        this.apellido = apellido;
+    }
+
+    getApellido(){
+        return this.apellido;
+    }
+
+    setDni(dni){
+        this.dni = dni;
+    }
+
+    getDni(){
+        return this.dni;
+    }
+
+    setSexo(sexo){
+        this.sexo = sexo;
+    }
+
+    getSexo(){
+        return this.sexo;
+    }
+
+    setCarrito(carrito){
+        this.carrito = carrito;
+    }
+
+    getCarrito(){
+        return this.carrito;
+    }
+
+    agregarProducto(producto){
+        this.carrito.agregarProducto(producto);
+    }
+
+    totalCarrito(){
+        return this.carrito.calcularTotal();
+    }
+}
+
+        let c1 = new Cliente(123, "Joel","Vogt", 42332166);
+        let c2 = new Cliente(124, "Valentin", "Da Silva", 43647177);
+
+        c1.sexo = 'T';
+
+        let nombre = c1.getNombre();
+        let apellido = c1.getApellido();
+
+        let agregarContenido = (elemento, texto)=>document.getElementById(elemento).innerHTML+=texto;
+
+        agregarContenido("nombreCliente", c1.getNombre());
+        agregarContenido("apellidoCliente", c1.getApellido());
+
+
+        class Producto {
+            id;
+            nombre;
+            precioUnitario;
+
+            constructor(nombre, id, precioUnitario) {
+                this.id = id;
+                this.nombre = nombre;
+                this.precioUnitario = precioUnitario;
+            }
+
+            setId(id){
+                this.id = id;
+            }
+
+            getId(){
+                return this.id;
+            }
+
+            setNombre(nombre){
+                this.nombre = nombre;
+            }
+
+            getNombre(){
+                return this.nombre;
+            }
+
+            setPrecioUnitario(precioUnitario){
+                this.precioUnitario = precioUnitario;
+            }
+
+            getPrecioUnitario(){
+                return this.precioUnitario;
+            }
+        }
+
+        let banana = new Producto("Banana", 200, 1);
+        let manzana = new Producto("Manzana", 150, 2);
+        let naranja = new Producto("Naranja", 180, 3);
+        let fresa = new Producto("Fresa", 250, 4);
+        let uva = new Producto("Uva", 220, 5);
+
+        agregarProducto = (producto) => {
+            document.getElementById("listaProductos").innerHTML += `<li>${producto.getNombre()} - $${producto.getPrecioUnitario()}</li>`;
+        }
+
+        agregarProducto(banana);
+        agregarProducto(manzana);
+        agregarProducto(naranja);
+        agregarProducto(fresa);
+        agregarProducto(uva);
+
+        class Carrito {
+            total;
+            productos = []; //tipo Producto
+            constructor() {
+                
+            }
+
+            calcularTotal(){
+                let acumulador = 0;
+                for(let i = 0; i < this.productos.length; i++){
+                    acumulador += this.productos[i].getPrecioUnitario();
+                }
+
+                return acumulador;
+            }
+
+            getTotal(){
+                return this.calcularTotal();
+            }
+
+            agregarProducto(producto){
+                this.productos.push(producto);
+            }
+        }
+
+        
+        let carrito1 = new Carrito();
+        c1.setCarrito(carrito1);
+
+        let alHacerClick = (producto, funcion) => {
+            let elementos = document.querySelectorAll("li");
+            elementos.forEach(el => {
+                if(el.textContent.includes(producto.getNombre())) {
+                    el.addEventListener("click", () => funcion(producto));
+                }
+            });
+        };
+
+        alHacerClick(banana, () => {
+            c1.agregarProducto(banana);
+            alert("Seleccionaste banana");
+        });
+
+        alHacerClick(manzana, () => {
+            c1.agregarProducto(manzana);
+            alert("Seleccionaste manzana");
+        });
+
+        alHacerClick(naranja, () => {
+            c1.agregarProducto(naranja);
+            alert("Seleccionaste naranja");
+        });
+
+        alHacerClick(fresa, () => {
+            c1.agregarProducto(fresa);
+            alert("Seleccionaste fresa");
+        });
+
+        alHacerClick(uva, () => {
+            c1.agregarProducto(uva);
+        });
+
+        
+        document.getElementById("calcularTotal").addEventListener("click", ()=> {
+            document.getElementById("Total").innerHTML += c1.totalCarrito();
+        })
+
+        
+
+
+    </script>
+
+<!-- 
     <script>
         class Cliente {
             carrito = null;
@@ -153,6 +368,6 @@
             document.getElementById("Total").innerHTML += cliente1.totalCarrito();;
         })
              
-    </script>
+    </script> -->
 </body>
 </html>
