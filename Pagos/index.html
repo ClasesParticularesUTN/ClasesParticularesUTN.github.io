@@ -138,6 +138,11 @@ const sessionData=sessionStorage.getItem("persona");
 const Alumno=sessionData?JSON.parse(sessionData):null;
 const correo=Alumno?.correoElectronico;
 
+if(!Alumno || !Alumno.correoElectronico){
+   alert("Sesión expirada");
+   location.href="/Horarios/Login/Login.html";
+}
+
 function esCelular(){
 return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
