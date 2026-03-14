@@ -141,22 +141,39 @@ const correo=Alumno?.correoElectronico;
 function esCelular(){
 return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
-
 async function cargar(){
 
-const r=await fetch(`${GAS}?funcion=devolverDeuda&correo=${correo}`);
-const data=await r.json();
+try{
 
-clases=data.map((c,i)=>({
-id:i,
-title:c.modalidad+" "+c.fecha,
-price:Number(c.precio),
-codigo:c.codigo
+const r = await fetch(`${GAS}?funcion=devolverDeuda&correo=${encodeURIComponent(correo)}`);
+const data = await r.json();
+
+console.log("Deuda recibida:", data);
+
+if(!Array.isArray(data) || data.length === 0){
+document.getElementById("productos").innerHTML =
+"<h3 style='text-align:center;margin-top:40px'>No tenés clases pendientes</h3>";
+return;
+}
+
+clases = data.map((c,i)=>({
+
+id: i,
+title: `${c.modalidad} (${c.fecha})`,
+price: Number(c.total || 0),   // 🔥 ACA ESTÁ LA CLAVE
+codigo: c.codigo
+
 }));
 
 render();
+
+}catch(e){
+console.error(e);
+alert("Error cargando deuda");
 }
 
+}
+  
 function render(){
 
 const cont=document.getElementById("productos");
