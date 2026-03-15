@@ -1,245 +1,379 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Clases Particulares UTN</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <title>Clases Particulares UTN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #f3a661; 
+            --primary-dark: #d48b45;
+            --warning: #e67e22;
+            --bg: #1a1a24;
+            --header-bg: rgba(37, 37, 51, 0.95);
+            --card-bg: #252533;
+            --text-main: #e2e2e8;
+            --text-muted: #b0b0b8;
+            --glass-border: rgba(243, 166, 97, 0.25);
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+            --footer-bg: rgba(37, 37, 51, 0.98);
+        }
 
-<style>
-/* ====== TODO TU CSS ORIGINAL INTACTO ====== */
-:root {
---primary:#f3a661; 
---primary-dark:#d48b45;
---warning:#e67e22;
---bg:#1a1a24;
---header-bg:rgba(37,37,51,0.95);
---card-bg:#252533;
---text-main:#e2e2e8;
---text-muted:#b0b0b8;
---glass-border:rgba(243,166,97,0.25);
---shadow:0 4px 12px rgba(0,0,0,0.3);
---footer-bg:rgba(37,37,51,0.98);
-}
-body.light-mode {
---bg:#f0f4f8;
---header-bg:rgba(255,255,255,0.95);
---card-bg:#fff;
---text-main:#1a1a24;
---text-muted:#64748b;
---glass-border:rgba(243,166,97,0.4);
---shadow:0 4px 12px rgba(0,0,0,0.08);
---footer-bg:rgba(255,255,255,0.98);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text-main);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
-header{background:var(--header-bg);backdrop-filter:blur(15px);padding:20px;text-align:center;border-bottom:1px solid var(--glass-border);position:sticky;top:0;z-index:1000;display:flex;align-items:center;}
-header h1{flex-grow:1;}
-.theme-toggle{background:rgba(243,166,97,0.1);border:1px solid var(--glass-border);color:var(--primary);width:40px;height:40px;border-radius:12px;cursor:pointer;}
-.loader{position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;gap:20px;}
-.loader.hidden{display:none;}
-.spinner{border:4px solid rgba(243,166,97,0.1);border-top:4px solid var(--primary);border-radius:50%;width:50px;height:50px;animation:spin 1s linear infinite;}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.container{max-width:600px;margin:0 auto;padding:0 15px 140px;}
-.card{display:flex;justify-content:space-between;background:var(--card-bg);border-radius:18px;padding:18px;border:1px solid var(--glass-border);margin-top:15px;box-shadow:var(--shadow);}
-.footer-bar{position:fixed;bottom:0;left:0;width:100%;background:var(--footer-bg);padding:15px 0 35px;display:none;border-top:1px solid var(--glass-border);}
-.footer-content{max-width:600px;margin:0 auto;padding:0 25px;display:flex;justify-content:space-between;align-items:center;}
-button.btn-pago{background:var(--primary);color:#1a1a24;border:none;border-radius:16px;padding:14px 28px;font-size:1rem;font-weight:700;cursor:pointer;transition:.3s;}
-button.btn-pago:hover{transform:scale(1.05);}
+        body.light-mode {
+            --bg: #f0f4f8;
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: #ffffff;
+            --text-main: #1a1a24;
+            --text-muted: #64748b;
+            --glass-border: rgba(243, 166, 97, 0.4);
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --footer-bg: rgba(255, 255, 255, 0.98);
+        }
 
-/* ===== MODAL QR NUEVO ===== */
-.qr-modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,.85);
-display:none;
-justify-content:center;
-align-items:center;
-z-index:99999;
-}
-.qr-box{
-background:var(--card-bg);
-padding:30px;
-border-radius:20px;
-text-align:center;
-max-width:320px;
-}
-.qr-box img{width:230px;margin:15px 0;}
-</style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background-color: var(--bg); 
+            color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(15px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        header h1 { font-size: 1.2rem; font-weight: 700; flex-grow: 1; }
+
+        .theme-toggle {
+            background: rgba(243, 166, 97, 0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--primary);
+            width: 40px; height: 40px; border-radius: 12px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: 0.3s;
+        }
+
+        .loader {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background: var(--bg);
+            display:flex; justify-content:center; align-items:center;
+            z-index:9999; flex-direction: column; gap:20px;
+            text-align: center; padding: 20px;
+        }
+        .loader.hidden { display:none; }
+
+        .spinner {
+            border: 4px solid rgba(243, 166, 97, 0.1);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%; width:50px; height:50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .progress-container {
+            width: 80%; max-width: 300px; height: 6px;
+            background: rgba(128,128,128,0.2); border-radius: 10px; overflow: hidden;
+        }
+        .progress-bar {
+            width: 0%; height: 100%; background: var(--primary);
+            animation: progress 45s linear forwards;
+        }
+        @keyframes progress { 0% { width: 0%; } 100% { width: 95%; } }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 0 15px 180px; }
+
+        .card {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); border-radius: 18px; padding: 18px;
+            border: 1px solid var(--glass-border); margin-bottom: 12px;
+            margin-top: 15px; box-shadow: var(--shadow);
+        }
+
+        .info strong { font-size: 1.1rem; color: var(--primary); display: block; }
+        .info .details { font-size: 0.85rem; color: var(--text-muted); display: block; }
+
+        .controles { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+        
+        .pago-checkbox {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 0.85rem; font-weight: 700; color: var(--text-main);
+            cursor: pointer; background: rgba(128,128,128,0.1);
+            padding: 8px 16px; border-radius: 12px; transition: 0.2s;
+        }
+        .pago-checkbox:has(input:checked) { background: var(--primary); color: #1a1a24; }
+
+        .price-display { font-size: 1.2rem; font-weight: 800; color: var(--text-main); }
+        .old-price { font-size: 0.85rem; color: var(--text-muted); text-decoration: line-through; margin-right: 5px; }
+
+        .footer-bar {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--footer-bg); padding: 15px 0 25px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.15);
+            display: none; z-index: 1000;
+            border-top-left-radius: 25px; border-top-right-radius: 25px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .metodo-selector {
+            display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;
+        }
+        .metodo-btn {
+            background: rgba(128,128,128,0.1); border: 1px solid var(--glass-border);
+            padding: 8px 15px; border-radius: 10px; color: var(--text-muted);
+            font-size: 0.8rem; font-weight: 600; cursor: pointer; flex: 1; max-width: 140px;
+        }
+        .metodo-btn.active { background: var(--primary); color: #1a1a24; border-color: var(--primary); }
+
+        .footer-content {
+            max-width: 600px; margin: 0 auto; padding: 0 25px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        button.btn-pago {
+            background: var(--primary); color: #1a1a24; border: none;
+            border-radius: 16px; padding: 14px 28px; font-size: 1rem;
+            font-weight: 700; cursor: pointer; transition: 0.3s;
+        }
+
+        #modalQR {
+            position: fixed; top:0; left:0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none;
+            justify-content: center; align-items: center; z-index: 10001; padding: 20px;
+        }
+        .qr-container {
+            background: white; padding: 25px; border-radius: 20px; text-align: center;
+            max-width: 350px; width: 100%;
+        }
+        .qr-container img { width: 100%; height: auto; margin-bottom: 15px; }
+        .qr-container p { color: #1a1a24; font-weight: 700; margin-bottom: 20px; }
+        .btn-cerrar-qr {
+            background: #e74c3c; color: white; border: none; padding: 10px 20px;
+            border-radius: 10px; font-weight: 700; cursor: pointer;
+        }
+
+        @media (max-width: 450px) {
+            .card { flex-direction: column; align-items: flex-start; }
+            .controles { width: 100%; flex-direction: row; justify-content: space-between; margin-top: 12px; border-top: 1px solid var(--glass-border); padding-top: 12px; }
+        }
+    </style>
 </head>
-
 <body>
 
 <header>
-<div style="width:40px;"></div>
-<h1>Registro de pagos</h1>
-<button class="theme-toggle" onclick="toggleTheme()">
-<i id="theme-icon" class="fas fa-sun"></i>
-</button>
+    <div style="width: 40px;"></div> <h1>Registro de pagos</h1>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i id="theme-icon" class="fas fa-sun"></i>
+    </button>
 </header>
 
 <div class="container">
+    <div id="loaderClases" class="loader">
+        <div class="spinner"></div>
+        <p>Buscando clases pendientes...</p>
+    </div>
 
-<div id="loaderClases" class="loader">
-<div class="spinner"></div>
-<p>Buscando clases pendientes...</p>
+    <div id="loaderPago" class="loader hidden">
+        <div class="spinner"></div>
+        <div style="font-weight: 800; font-size: 1.1rem;">Procesando orden...</div>
+        <div class="progress-container"><div class="progress-bar"></div></div>
+    </div>
+
+    <div class="productos" id="productos"></div>
 </div>
 
-<div id="loaderPago" class="loader hidden">
-<div class="spinner"></div>
-<p>Generando pago...</p>
-</div>
-
-<div id="productos"></div>
-
+<div id="modalQR">
+    <div class="qr-container">
+        <p>Escaneá este código para pagar</p>
+        <div id="qrImgContainer"></div>
+        <button class="btn-cerrar-qr" onclick="cerrarQR()">Cerrar</button>
+    </div>
 </div>
 
 <div class="footer-bar" id="totalContainer">
-<div class="footer-content">
-<div>
-<div style="font-size:.8rem;color:var(--text-muted);font-weight:600;">TOTAL</div>
-<div style="font-size:1.5rem;font-weight:900;">$<span id="total">0</span></div>
-</div>
-
-<div style="display:flex;gap:8px">
-<button class="btn-pago" onclick="pagarSeleccion()">MercadoPago</button>
-<button class="btn-pago" onclick="pagarQR()">QR</button>
-</div>
-
-</div>
-</div>
-
-<!-- MODAL QR -->
-<div class="qr-modal" id="qrModal">
-<div class="qr-box">
-<h2>Escaneá para pagar</h2>
-<img id="qrImg">
-<div style="font-weight:800">Total: $<span id="qrTotal"></span></div>
-<button class="btn-pago" onclick="cerrarQR()" style="margin-top:15px">Cerrar</button>
-</div>
+    <div class="metodo-selector">
+        <button class="metodo-btn active" onclick="setMetodo('online')" id="btnOnline">
+            <i class="fas fa-credit-card"></i> Online
+        </button>
+        <button class="metodo-btn" onclick="setMetodo('qr')" id="btnQR">
+            <i class="fas fa-qrcode"></i> QR UTN
+        </button>
+    </div>
+    <div class="footer-content">
+        <div class="total-text">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">TOTAL</div>
+            <div style="font-size: 1.5rem; font-weight: 900;">$<span id="total">0,00</span></div>
+        </div>
+        <button class="btn-pago" id="btnAccion" onclick="pagarSeleccion()">Pagar Online</button>
+    </div>
 </div>
 
 <script>
-const sessionData=sessionStorage.getItem("persona");
-let Alumno=sessionData?JSON.parse(sessionData):null;
-if(!Alumno) location.href="/Horarios/Login/Login.html";
+const sessionData = sessionStorage.getItem("persona");
+let Alumno = sessionData ? JSON.parse(sessionData) : null;
 
-const correoAlumno=Alumno.correoElectronico;
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec";
+const BASE_BACKEND = "https://mercadopago-di7q.onrender.com";
 
-const GAS_URL="https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec";
-const BACKEND="https://mercadopago-di7q.onrender.com";
+let clases = [];
+let metodoPago = 'online'; 
 
-let clases=[];
-
-function toggleTheme(){
-document.body.classList.toggle("light-mode");
-}
-
-async function cargarClases(){
-document.getElementById("loaderClases").classList.remove("hidden");
-const res=await fetch(`${GAS_URL}?funcion=devolverDeuda&correo=${correoAlumno}`);
-const data=await res.json();
-
-clases=data.map((c,i)=>({
-id:i,
-fecha:c.fecha,
-modalidad:c.modalidad,
-horas:c.horas,
-precioEditado:parseFloat(c.precio),
-codigo:c.codigo
-}));
-
-mostrarClases();
-document.getElementById("loaderClases").classList.add("hidden");
-}
-
-function mostrarClases(){
-const cont=document.getElementById("productos");
-cont.innerHTML="";
-clases.forEach(c=>{
-const card=document.createElement("div");
-card.className="card";
-card.innerHTML=`
-<div>
-<strong>${c.modalidad}</strong>
-<div>${c.fecha} | ${c.horas} hs</div>
-</div>
-<div>
-<div>$${c.precioEditado}</div>
-<input type="checkbox" value="${c.id}" onchange="actualizarTotal()">
-</div>`;
-cont.appendChild(card);
+window.addEventListener("DOMContentLoaded", () => {
+    fetch(`${BASE_BACKEND}/ping`).catch(() => {});
+    if (!Alumno || !Alumno.correoElectronico) {
+        window.location.href = "/Horarios/Login/Login.html";
+    }
+    cargarClases();
 });
+
+function toggleTheme() {
+    const body = document.body;
+    const icon = document.getElementById('theme-icon');
+    body.classList.toggle('light-mode');
+    icon.classList.toggle('fa-sun');
+    icon.classList.toggle('fa-moon');
 }
 
-function actualizarTotal(){
-let total=0,sel=false;
-clases.forEach(c=>{
-const cb=document.querySelector(`input[value="${c.id}"]`);
-if(cb.checked){total+=c.precioEditado;sel=true;}
-});
-document.getElementById("total").textContent=total.toLocaleString('es-AR');
-document.getElementById("totalContainer").style.display=sel?"block":"none";
+function setMetodo(metodo) {
+    metodoPago = metodo;
+    document.getElementById('btnOnline').classList.toggle('active', metodo === 'online');
+    document.getElementById('btnQR').classList.toggle('active', metodo === 'qr');
+    document.getElementById('btnAccion').textContent = metodo === 'online' ? 'Pagar Online' : 'Generar QR';
 }
 
-function obtenerItems(){
-const items=[];
-clases.forEach(c=>{
-const cb=document.querySelector(`input[value="${c.id}"]`);
-if(cb.checked){
-items.push({title:`${c.modalidad} (${c.fecha})`,price:c.precioEditado,codigo:c.codigo});
-}
-});
-return items;
-}
+async function cargarClases() {
+    try {
+        document.getElementById("loaderClases").classList.remove("hidden");
+        const res = await fetch(`${GAS_URL}?funcion=devolverDeuda&correo=${encodeURIComponent(Alumno.correoElectronico)}`);
+        const data = await res.json();
 
-async function pagarSeleccion(){
-const items=obtenerItems();
-if(items.length===0) return alert("Seleccioná clases");
-
-document.getElementById("loaderPago").classList.remove("hidden");
-
-const res=await fetch(BACKEND+"/crear-preferencia",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({items,email:correoAlumno})
-});
-const data=await res.json();
-location.href=data.init_point;
-}
-
-async function pagarQR(){
-const items=obtenerItems();
-if(items.length===0) return alert("Seleccioná clases");
-
-document.getElementById("loaderPago").classList.remove("hidden");
-
-const res=await fetch(BACKEND+"/crear-qr",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({items,email:correoAlumno})
-});
-const data=await res.json();
-
-document.getElementById("loaderPago").classList.add("hidden");
-
-const qrURL="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+encodeURIComponent(data.qr_data);
-
-document.getElementById("qrImg").src=qrURL;
-document.getElementById("qrTotal").textContent=data.total.toLocaleString('es-AR');
-document.getElementById("qrModal").style.display="flex";
+        clases = data.map((c, index) => {
+            const precioBase = parseFloat(c.precio) || 0;
+            const recargoValor = parseFloat(c.recargo) || 0;
+            const recargoFinal = (Alumno.condicionPago === 'Libre') ? 0 : recargoValor;
+            return {
+                id: index,
+                fecha: c.fecha,
+                modalidad: c.modalidad,
+                horas: c.horas,
+                precioOriginal: precioBase,
+                recargoAplicado: recargoFinal,
+                precioEditado: precioBase + recargoFinal,
+                codigo: c.codigo 
+            };
+        });
+        mostrarClases();
+    } catch(e) {
+        alert("Error al cargar deuda.");
+    } finally {
+        document.getElementById("loaderClases").classList.add("hidden");
+    }
 }
 
-function cerrarQR(){
-document.getElementById("qrModal").style.display="none";
+function mostrarClases() {
+    const contenedor = document.getElementById("productos");
+    contenedor.innerHTML = clases.length === 0 ? `
+        <div class="empty-state" style="text-align:center; padding:50px;">
+            <span style="font-size:50px;">✨</span>
+            <h2>¡Estás al día!</h2>
+        </div>` : "";
+
+    clases.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+        const tieneRecargo = c.recargoAplicado > 0;
+        card.innerHTML = `
+            <div class="info">
+                <strong>${c.modalidad}</strong>
+                <span class="details">📅 ${c.fecha} | ⏱️ ${c.horas} hs</span>
+            </div>
+            <div class="controles">
+                <div style="text-align:right">
+                    ${tieneRecargo ? `<span class="old-price">$${c.precioOriginal.toFixed(2)}</span>` : ""}
+                    <span class="price-display">$${c.precioEditado.toFixed(2)}</span>
+                </div>
+                <label class="pago-checkbox">
+                    <input type="checkbox" value="${c.id}" onchange="actualizarTotal()"> Pagar
+                </label>
+            </div>`;
+        contenedor.appendChild(card);
+    });
 }
 
-cargarClases();
+function actualizarTotal() {
+    let total = 0;
+    let seleccionados = false;
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        total += clases[cb.value].precioEditado;
+        seleccionados = true;
+    });
+    document.getElementById("totalContainer").style.display = seleccionados ? "block" : "none";
+    document.getElementById("total").textContent = total.toFixed(2).replace('.', ',');
+}
+
+async function pagarSeleccion() {
+    const items = [];
+    document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+        const c = clases[cb.value];
+        items.push({ 
+            title: `${c.modalidad} (${c.fecha})`, 
+            price: Number(c.precioEditado.toFixed(2)), 
+            codigo: c.codigo 
+        });
+    });
+
+    if (items.length === 0) return alert("Seleccioná al menos una clase");
+
+    const endpoint = metodoPago === 'online' ? '/crear-preferencia' : '/crear-qr';
+    
+    try {
+        document.getElementById("loaderPago").classList.remove("hidden");
+        const res = await fetch(BASE_BACKEND + endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items, email: Alumno.correoElectronico })
+        });
+        const data = await res.json();
+
+        if (metodoPago === 'online' && data.init_point) {
+            window.location.href = data.init_point;
+        } else if (metodoPago === 'qr' && data.qr_data) {
+            mostrarModalQR(data.qr_data);
+        } else {
+            throw new Error();
+        }
+    } catch(e) {
+        alert("Error al conectar con Mercado Pago. Reintentá en un momento.");
+    } finally {
+        document.getElementById("loaderPago").classList.add("hidden");
+    }
+}
+
+function mostrarModalQR(qrData) {
+    const qrContainer = document.getElementById("qrImgContainer");
+    qrContainer.innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=250x250" alt="QR de Pago">`;
+    document.getElementById("modalQR").style.display = "flex";
+}
+
+function cerrarQR() {
+    document.getElementById("modalQR").style.display = "none";
+}
 </script>
-
 </body>
 </html>
