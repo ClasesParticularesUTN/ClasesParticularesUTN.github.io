@@ -144,7 +144,7 @@
         button.btn-pago:active { transform: translateY(0); }
 
         /* Modal overlay */
-        #modalQR, #modalExito { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10001; padding: 24px; animation: fadeIn 0.25s ease; }
+        #modalQR, #modalExito, #modalInfoQR { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10001; padding: 24px; animation: fadeIn 0.25s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         #modalQR .modal-inner, #modalExito .modal-inner { animation: modalIn 0.35s ease; }
         @keyframes modalIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
@@ -168,6 +168,16 @@
         .exito-container i { font-size: 3.5rem; color: #2ecc71; margin-bottom: 16px; display: block; filter: drop-shadow(0 4px 12px rgba(46, 204, 113, 0.4)); }
         .exito-container h2 { font-size: 1.35rem; margin-bottom: 8px; font-weight: 700; }
         .exito-container .exito-msg { margin-bottom: 24px; color: var(--text-muted); font-size: 0.95rem; }
+        
+        /* Info QR modal */
+        .infoqr-container { background: var(--card-bg); padding: 28px 24px; border-radius: 24px; text-align: left; max-width: 420px; width: 100%; border: 1px solid var(--glass-border); box-shadow: 0 24px 56px rgba(0,0,0,0.45); }
+        .infoqr-container h2 { font-size: 1.25rem; margin-bottom: 10px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .infoqr-container h2 i { color: var(--primary); }
+        .infoqr-container p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; }
+        .infoqr-container ul { margin: 8px 0 16px 18px; color: var(--text-muted); font-size: 0.9rem; }
+        .infoqr-container ul li { margin-bottom: 6px; }
+        .infoqr-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+        .infoqr-actions button { flex: 1; min-width: 140px; }
 
         /* Rechazo modal */
         #modalRechazo { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10001; padding: 24px; animation: fadeIn 0.25s ease; }
@@ -258,6 +268,22 @@
             </div>
             <p class="qr-hint">Abr&#237; la app de tu banco o billetera y escane&#225; el c&#243;digo</p>
             <button class="btn-cerrar" onclick="cerrarQR()"><i class="fas fa-times"></i> Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalInfoQR">
+    <div class="infoqr-container">
+        <h2><i class="fas fa-info-circle"></i> ¿Cómo usar el QR?</h2>
+        <p>Para pagar con este QR, es importante que abras esta p&aacute;gina desde una <strong>computadora u otro dispositivo</strong> distinto a tu celular.</p>
+        <ul>
+            <li>Abr&iacute; esta p&aacute;gina en tu compu (o notebook).</li>
+            <li>Con tu <strong>celular</strong>, abr&iacute; la <strong>app de tu banco o billetera virtual</strong> y eleg&iacute; la opci&oacute;n de escanear c&oacute;digo QR.</li>
+            <li>Apunt&aacute; la c&aacute;mara al c&oacute;digo QR que se va a mostrar en la pantalla.</li>
+        </ul>
+        <p>Si quer&eacute;s conservar el QR, pod&eacute;s <strong>mantenerlo apretado con el mouse</strong> (o clic derecho) para <strong>descargarlo o compartirlo</strong>, por ejemplo por <strong>WhatsApp Web</strong>, y as&iacute; tenerlo guardado en tu computadora.</p>
+        <div class="infoqr-actions">
+            <button class="btn-pago" onclick="aceptarInfoQR()">Entendido, mostrar QR</button>
         </div>
     </div>
 </div>
@@ -593,7 +619,11 @@ async function pagarSeleccion() {
         } else if (metodoPago === 'qr' && data.qr_data) {
             setProcessingUI(false);
             document.getElementById("qrImgContainer").innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
-            document.getElementById("modalQR").style.display = "flex";
+            if (!localStorage.getItem("qrInfoShown")) {
+                document.getElementById("modalInfoQR").style.display = "flex";
+            } else {
+                document.getElementById("modalQR").style.display = "flex";
+            }
         } else {
             throw new Error(data.error || "Error al procesar el pago");
         }
@@ -631,7 +661,11 @@ async function generarQRAdmin() {
         if (data.qr_data) {
             setProcessingUI(false);
             document.getElementById("qrImgContainer").innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
-            document.getElementById("modalQR").style.display = "flex";
+            if (!localStorage.getItem("qrInfoShown")) {
+                document.getElementById("modalInfoQR").style.display = "flex";
+            } else {
+                document.getElementById("modalQR").style.display = "flex";
+            }
         } else {
             throw new Error(data.error || "Error al generar QR");
         }
@@ -648,6 +682,13 @@ function cerrarQR() {
 function cerrarRechazo() {
         document.getElementById("modalRechazo").style.display = "none";
         setProcessingUI(false);
+    }
+function aceptarInfoQR() {
+        localStorage.setItem("qrInfoShown", "true");
+        const infoModal = document.getElementById("modalInfoQR");
+        if (infoModal) infoModal.style.display = "none";
+        const qrModal = document.getElementById("modalQR");
+        if (qrModal) qrModal.style.display = "flex";
     }
 function toggleTheme() { document.body.classList.toggle('light-mode'); }
 </script>
