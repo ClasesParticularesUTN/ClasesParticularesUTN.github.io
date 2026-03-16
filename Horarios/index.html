@@ -93,7 +93,21 @@
         /* Sólo para usuarios habilitados a ver SÁB–DOM */
         .days-container.weekend-enabled { 
             overflow-x: auto;
-            scrollbar-width: thin;
+            scrollbar-width: thin; /* Firefox */
+        }
+        /* Scrollbar minimalista solo para la tabla de días (PC) */
+        .days-container.weekend-enabled::-webkit-scrollbar {
+            height: 4px; /* barra muy fina */
+        }
+        .days-container.weekend-enabled::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .days-container.weekend-enabled::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 999px;
+        }
+        .days-container.weekend-enabled::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
         }
         /* En modo fines de semana, todas las columnas mantienen el ancho de un layout de 5 días:
            LUN–VIE entran completos, SÁB–DOM quedan hacia la derecha y se acceden con scroll */
@@ -401,12 +415,12 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             document.getElementById('user-initial').innerText = Alumno.nombre.charAt(0).toUpperCase();
             document.getElementById('sb-nombre-completo').innerText = `${Alumno.nombre} ${Alumno.apellido}`;
             document.getElementById('sb-correo').innerText = Alumno.correoElectronico;
-            document.getElementById('sb-deuda').innerText = Alumno.dineroQueDebe;
+            document.getElementById('sb-deuda').innerText = `$${Alumno.dineroQueDebe}`;
             document.getElementById('sb-horas').innerText = Alumno.horasAFavor + " hs";
             const container = document.getElementById('sb-lista-horarios');
             container.innerHTML = Alumno.horarios?.length > 0 
                 ? Alumno.horarios.map(h => `<div class="horario-tag"><i class="fa-regular fa-calendar-check"></i> ${h}</div>`).join('')
-                : '<p style="font-size:0.7rem; opacity:0.5; padding-left:5px;">Sin turnos reservados.</p>';
+                : '<div class="horario-tag"><i class="fa-regular fa-calendar-xmark"></i> Sin turnos reservados.</div>';
         }
 
         async function toggleAdmin() {
