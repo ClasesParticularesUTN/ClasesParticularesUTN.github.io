@@ -17,6 +17,43 @@
             --border: rgba(255, 255, 255, 0.08);
             --available: rgba(243, 166, 97, 0.07);
             --danger: #ff5f5f;
+            --scrollbar-track: transparent;
+            --scrollbar-thumb: rgba(255, 255, 255, 0.14);
+            --scrollbar-thumb-hover: rgba(255, 255, 255, 0.26);
+            --scrollbar-size: 5px;
+        }
+
+        /* Scrollbars minimalistas (global): track transparente, thumb fino — Firefox + WebKit */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+        }
+        *::-webkit-scrollbar {
+            width: var(--scrollbar-size);
+            height: var(--scrollbar-size);
+        }
+        *::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        *::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 999px;
+        }
+        *::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+        *::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+        /* Modales claros (swal-modal-light): thumb oscuro para contraste sobre fondo blanco */
+        .swal-modal-light .swal2-popup * {
+            scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+        }
+        .swal-modal-light .swal2-popup *::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.18);
+        }
+        .swal-modal-light .swal2-popup *::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.3);
         }
 
         /* Ajuste de prioridad para que SweetAlert esté sobre el sidebar */
@@ -135,25 +172,7 @@
             border-right: 1px solid var(--border); 
         }
         /* Sólo para usuarios habilitados a ver SÁB–DOM */
-        .days-container.weekend-enabled { 
-            overflow-x: auto;
-            scrollbar-width: thin; /* Firefox: barra fina */
-            scrollbar-color: rgba(255, 255, 255, 0.15) transparent; /* thumb suave sobre track invisible */
-        }
-        /* Scrollbar minimalista solo para la tabla de días (PC) */
-        .days-container.weekend-enabled::-webkit-scrollbar {
-            height: 4px; /* barra muy fina */
-        }
-        .days-container.weekend-enabled::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .days-container.weekend-enabled::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 999px;
-        }
-        .days-container.weekend-enabled::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
+        .days-container.weekend-enabled { overflow-x: auto; }
         /* En modo fines de semana, todas las columnas mantienen el ancho de un layout de 5 días:
            LUN–VIE entran completos, SÁB–DOM quedan hacia la derecha y se acceden con scroll */
         .days-container.weekend-enabled .day-column { 
