@@ -62,7 +62,17 @@
         .info-label { font-size: 0.65rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; display: block; }
         
         .horario-tag { display: flex; align-items: center; background: rgba(243, 166, 97, 0.1); border: 1px solid rgba(243, 166, 97, 0.2); padding: 8px 12px; border-radius: 8px; margin-bottom: 6px; font-size: 0.75rem; color: #ddd; }
+        .horario-tag.horario-tag-row { justify-content: space-between; gap: 10px; align-items: flex-start; }
+        .horario-tag-text { display: flex; align-items: flex-start; flex: 1; min-width: 0; line-height: 1.35; }
+        .horario-tag-text i { color: var(--primary); margin-right: 10px; font-size: 0.8rem; flex-shrink: 0; margin-top: 2px; }
         .horario-tag i { color: var(--primary); margin-right: 10px; font-size: 0.8rem; }
+        .btn-cancelar-horario {
+            flex-shrink: 0; padding: 6px 10px; border-radius: 6px; border: 1px solid rgba(255, 95, 95, 0.45);
+            background: rgba(255, 95, 95, 0.12); color: var(--danger); font-size: 0.65rem; font-weight: 700;
+            cursor: pointer; text-transform: uppercase; transition: 0.2s;
+        }
+        .btn-cancelar-horario:hover { background: rgba(255, 95, 95, 0.25); border-color: var(--danger); }
+        .btn-cancelar-horario:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .sidebar-footer { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border); }
         .btn-footer { padding: 12px; border-radius: 8px; border: 1px solid #444; cursor: pointer; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; transition: 0.2s; }
@@ -239,6 +249,116 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
 
         function tieneAccesoFinDeSemana() {
             return Alumno && EMAILS_FINES_DE_SEMANA.includes(Alumno.correoElectronico);
+        }
+
+        /** Horarios: antes string; ahora { fecha, codigo }. Mantiene compatibilidad con datos viejos. */
+        function textoHorarioReserva(h) {
+            if (h == null) return '';
+            if (typeof h === 'string') return h;
+            return h.fecha != null ? String(h.fecha) : '';
+        }
+
+        function codigoHorarioReserva(h) {
+            if (h == null || typeof h === 'string') return '';
+            const c = h.codigo;
+            return c != null && String(c).trim() !== '' ? String(c).trim() : '';
+        }
+
+        function escapeAttr(s) {
+            return String(s)
+                .replace(/&/g, '&amp;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;')
+                .replace(/</g, '&lt;');
+        }
+
+        async function cancelarClase(codigo) {
+            if (!Alumno || !Alumno.correoElectronico || !codigo) {
+                return Swal.fire({
+                    icon: 'warning',
+                    title: 'No se puede cancelar',
+                    text: 'No hay código de clase o sesión. Volvé a iniciar sesión.',
+                    background: '#1a1a1a',
+                    color: '#fff'
+                });
+            }
+            const { isConfirmed } = await Swal.fire({
+                title: '¿Cancelar esta clase?',
+                text: 'Se enviará la solicitud al servidor.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cancelar',
+                cancelButtonText: 'Volver',
+                confirmButtonColor: '#ff5f5f',
+                background: '#151517',
+                color: '#fff'
+            });
+            if (!isConfirmed) return;
+
+            document.getElementById('loader-overlay').style.display = 'flex';
+            document.getElementById('loader-text').textContent = 'Cancelando clase...';
+            try {
+                const url = `${URLUsuarios}?funcion=cancelarClase&correo=${encodeURIComponent(Alumno.correoElectronico)}&codigo=${encodeURIComponent(codigo)}`;
+                const res = await fetch(url);
+                const text = await res.text();
+                let data = {};
+                try {
+                    data = text ? JSON.parse(text) : {};
+                } catch {
+                    data = {};
+                }
+                if (data.error) {
+                    document.getElementById('loader-overlay').style.display = 'none';
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'No se pudo cancelar',
+                        text: String(data.error),
+                        background: '#1a1a1a',
+                        color: '#fff'
+                    });
+                }
+                if (data.ok === false) {
+                    document.getElementById('loader-overlay').style.display = 'none';
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'No se pudo cancelar',
+                        text: data.mensaje ? String(data.mensaje) : 'Intentá de nuevo más tarde.',
+                        background: '#1a1a1a',
+                        color: '#fff'
+                    });
+                }
+                if (!res.ok && !data.sesion) {
+                    document.getElementById('loader-overlay').style.display = 'none';
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Error del servidor',
+                        text: text.slice(0, 200) || `Código HTTP ${res.status}`,
+                        background: '#1a1a1a',
+                        color: '#fff'
+                    });
+                }
+                if (Alumno.contrasenia) {
+                    await actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
+                }
+                document.getElementById('loader-overlay').style.display = 'none';
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Clase cancelada',
+                    background: '#151517',
+                    color: '#fff',
+                    confirmButtonColor: '#f3a661'
+                });
+                location.reload();
+            } catch (err) {
+                document.getElementById('loader-overlay').style.display = 'none';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: err.message || 'Intentá de nuevo.',
+                    background: '#1a1a1a',
+                    color: '#fff'
+                });
+            }
         }
         
         // Si no hay sesión, mostrar menú de acceso
@@ -419,8 +539,16 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             document.getElementById('sb-deuda').innerText = `$${Alumno.dineroQueDebe}`;
             document.getElementById('sb-horas').innerText = Alumno.horasAFavor + " hs";
             const container = document.getElementById('sb-lista-horarios');
-            container.innerHTML = Alumno.horarios?.length > 0 
-                ? Alumno.horarios.map(h => `<div class="horario-tag"><i class="fa-regular fa-calendar-check"></i> ${h}</div>`).join('')
+            const lista = Alumno.horarios || [];
+            container.innerHTML = lista.length > 0 
+                ? lista.map(h => {
+                    const texto = textoHorarioReserva(h);
+                    const cod = codigoHorarioReserva(h);
+                    const btnCancel = cod
+                        ? `<button type="button" class="btn-cancelar-horario" data-codigo="${escapeAttr(cod)}" title="Cancelar esta clase" aria-label="Cancelar clase"><i class="fa-solid fa-xmark"></i></button>`
+                        : '';
+                    return `<div class="horario-tag horario-tag-row"><span class="horario-tag-text"><i class="fa-regular fa-calendar-check"></i> ${texto}</span>${btnCancel}</div>`;
+                }).join('')
                 : '<div class="horario-tag"><i class="fa-regular fa-calendar-xmark"></i> Sin turnos reservados.</div>';
         }
 
@@ -543,7 +671,7 @@ async function gestionarReserva() {
                 });
             }
 
-            if (!isAdmin && Alumno.horarios?.length >= 2) return Swal.fire({ icon: 'error', title: 'Límite de Reservas', text: 'Solo puedes tener 2 reservas activas. Si quieres mas, comunicate por whatsapp' });
+            if (!isAdmin && (Alumno.horarios || []).length >= 2) return Swal.fire({ icon: 'error', title: 'Límite de Reservas', text: 'Solo puedes tener 2 reservas activas. Si quieres mas, comunicate por whatsapp' });
 
             const nHoras = selectedSlots.length;
             const precioInd = (nHoras === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2) * nHoras;
@@ -715,7 +843,8 @@ async function gestionarReserva() {
                     const dayOfWeek = d.getDay(); // 0=Domingo, 1=Lunes,...6=Sábado
                     const idx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
                     celdasExcel.push(`${letras[idx]}${parseInt(hora)-5}`);
-                    nuevosHorarios.push(`${diasNombres[idx]}, ${d.getDate()}/${d.getMonth()+1} ${parseInt(hora)}:00`);
+                    const fechaLinea = `${diasNombres[idx]}, ${d.getDate()}/${d.getMonth()+1} ${parseInt(hora)}:00`;
+                    nuevosHorarios.push({ fecha: fechaLinea, codigo: '' });
                 });
 
                 const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre };
@@ -818,6 +947,15 @@ async function gestionarReserva() {
             overlay.addEventListener('mousedown', startDrag);
             overlay.addEventListener('touchstart', startDrag, { passive: true });
         })();
+
+        document.getElementById('sb-lista-horarios').addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-cancelar-horario');
+            if (!btn) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const codigo = btn.getAttribute('data-codigo');
+            if (codigo) cancelarClase(codigo);
+        });
 
         init();
     </script>

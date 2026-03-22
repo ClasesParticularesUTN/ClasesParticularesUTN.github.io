@@ -1,4 +1,12 @@
 let Alumno;
+
+/** Horarios: string legacy o { fecha, codigo } desde el backend */
+function textoHorarioReserva(h) {
+    if (h == null) return '';
+    if (typeof h === 'string') return h;
+    return h.fecha != null ? String(h.fecha) : '';
+}
+
 document.addEventListener("DOMContentLoaded", async ()=>{
     // Primero: intentar restaurar sesión desde almacenamiento persistente (localStorage) si existe y no expiró
     try {
@@ -68,13 +76,14 @@ function colocarDatos(){
         document.querySelector(".usuarioCorreo").innerHTML = "Correo: " + Alumno.correoElectronico;
         document.querySelector(".usuarioTelefono").innerHTML= "Telefono: " + Alumno.telefono;
         document.querySelector(".listaHorarios").innerHTML = '';
-        Alumno.horarios.forEach(horario => {
+        const horarios = Alumno.horarios || [];
+        horarios.forEach(horario => {
             let li = document.createElement("li");
             li.className = "usuarioHorarios";
-            li.innerHTML = horario;
+            li.innerHTML = textoHorarioReserva(horario);
             document.querySelector(".listaHorarios").appendChild(li);
         });
-        if(Object.keys(Alumno.horarios).length == 0){
+        if(horarios.length === 0){
             let li = document.createElement("li");
             li.className = "usuarioHorarios";
             li.innerHTML = "(Sin Horarios Reservados)";
