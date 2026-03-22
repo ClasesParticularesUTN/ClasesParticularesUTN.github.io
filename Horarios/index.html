@@ -351,7 +351,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             document.getElementById('loader-overlay').style.display = 'flex';
             document.getElementById('loader-text').textContent = 'Cancelando clase...';
             try {
-                const url = `${URLUsuarios}?funcion=cancelarClase&correo=${encodeURIComponent(Alumno.correoElectronico)}&codigo=${encodeURIComponent(codigo)}`;
+                const url = `${URLUsuarios}?funcion=cancelarReserva&correo=${encodeURIComponent(Alumno.correoElectronico)}&codigo=${encodeURIComponent(codigo)}`;
                 const res = await fetch(url);
                 const text = await res.text();
                 let data = {};
