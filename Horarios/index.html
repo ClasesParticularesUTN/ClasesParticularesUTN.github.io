@@ -326,6 +326,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         }
 
         async function cancelarClase(codigo) {
+            console.log("codigo: ", codigo);
             if (!Alumno || !Alumno.correoElectronico || !codigo) {
                 return Swal.fire({
                     icon: 'warning',
@@ -595,6 +596,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             const lista = Alumno.horarios || [];
             container.innerHTML = lista.length > 0 
                 ? lista.map(h => {
+                    console.log("h: ", h);
                     const texto = textoHorarioReserva(h);
                     const cod = codigoHorarioReserva(h);
                     const btnCancel = cod
