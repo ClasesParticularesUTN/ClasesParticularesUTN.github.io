@@ -242,6 +242,67 @@
         #loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); display: none; flex-direction: column; justify-content: center; align-items: center; z-index: 5000; }
         .spinner { width: 40px; height: 40px; border: 3px solid rgba(243, 166, 97, 0.1); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Modal términos y condiciones (sobre SweetAlert de confirmación) */
+        .terms-modal {
+            position: fixed; inset: 0; z-index: 11000;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .terms-modal.is-open { display: flex; }
+        .terms-modal-backdrop {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+        }
+        .terms-modal-panel {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 420px; max-height: min(85vh, 560px);
+            background: var(--glass); border: 1px solid var(--border);
+            border-radius: 16px; box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .terms-modal-header {
+            padding: 16px 44px 12px 18px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+        .terms-modal-header h2 {
+            font-size: 1rem; font-weight: 700; color: var(--primary);
+            margin: 0; letter-spacing: 0.02em;
+        }
+        .terms-modal-close {
+            position: absolute; top: 10px; right: 10px;
+            width: 36px; height: 36px; border: none; border-radius: 10px;
+            background: rgba(255,255,255,0.06); color: #fff;
+            font-size: 1.35rem; line-height: 1; cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .terms-modal-close:hover { background: rgba(255,255,255,0.12); color: var(--primary); }
+        .terms-modal-body {
+            padding: 14px 18px 18px;
+            overflow-y: auto;
+            font-size: 0.82rem; line-height: 1.55; color: rgba(255,255,255,0.88);
+        }
+        .terms-modal-body h3 {
+            font-size: 0.78rem; font-weight: 700; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin: 14px 0 8px;
+        }
+        .terms-modal-body h3:first-child { margin-top: 0; }
+        .terms-modal-body p { margin: 0 0 10px; }
+        .terms-modal-body p:last-child { margin-bottom: 0; }
+        .swal-tyc-row {
+            display: flex; align-items: flex-start; gap: 10px;
+            margin-top: 16px; text-align: left; font-size: 0.9rem; color: #333;
+            line-height: 1.45;
+        }
+        .swal-tyc-row input { margin-top: 4px; flex-shrink: 0; accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer; }
+        .swal-tyc-link {
+            background: none; border: none; padding: 0; margin: 0;
+            font: inherit; color: #c56a1a; font-weight: 600;
+            text-decoration: underline; cursor: pointer;
+        }
+        .swal-tyc-link:hover { color: #a05212; }
     </style>
 </head>
 <body>
@@ -290,6 +351,22 @@
         <button class="btn-reserve" id="btnConfirm" onclick="gestionarReserva()">Confirmar Reserva</button>
     </div>
 
+    <div id="terms-modal" class="terms-modal" aria-hidden="true" role="dialog" aria-labelledby="terms-modal-title">
+        <div class="terms-modal-backdrop" role="button" tabindex="-1" aria-label="Cerrar" onclick="cerrarModalTerminos()"></div>
+        <div class="terms-modal-panel">
+            <button type="button" class="terms-modal-close" onclick="cerrarModalTerminos()" aria-label="Cerrar">&times;</button>
+            <div class="terms-modal-header">
+                <h2 id="terms-modal-title">Términos y condiciones</h2>
+            </div>
+            <div class="terms-modal-body">
+                <h3>Tema de pagos</h3>
+                <p>Pueden abonar la clase cuando deseen, pero deben tener en cuenta que se cobrarán aranceles por demora y no podrán reservar nuevas clases si deben dinero. Luego de finalizar la clase disponen de <strong>24 horas</strong> para pagar, en las cuales no se les cobrará ningún recargo. Pasadas las 24 horas se les aplicará un recargo del <strong>5&nbsp;%</strong> y, luego de completar las 48 horas, se les cobrará sobre el monto total acumulado un <strong>1&nbsp;% diario</strong>.</p>
+                <h3>Tema cancelaciones</h3>
+                <p>Se pueden cancelar las clases en el menú de usuario. Si faltan más de 24 horas para la clase no se generará recargo. Si faltan entre 24 horas y menos de 1 hora para la clase se cobra un <strong>25&nbsp;%</strong>. Si falta menos de 1 hora o ya pasó la clase se cobra el <strong>monto total</strong>.</p>
+            </div>
+        </div>
+    </div>
+
     <script>
         const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
@@ -323,6 +400,21 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;')
                 .replace(/</g, '&lt;');
+        }
+
+        function abrirModalTerminos(ev) {
+            if (ev) ev.preventDefault();
+            const el = document.getElementById('terms-modal');
+            if (!el) return;
+            el.classList.add('is-open');
+            el.setAttribute('aria-hidden', 'false');
+        }
+
+        function cerrarModalTerminos() {
+            const el = document.getElementById('terms-modal');
+            if (!el) return;
+            el.classList.remove('is-open');
+            el.setAttribute('aria-hidden', 'true');
         }
 
         async function cancelarClase(codigo) {
@@ -883,6 +975,12 @@ async function gestionarReserva() {
                         <b>Resumen de la reserva</b><br>
                         <span style="margin-top: 6px; display: inline-block;">${textoResumen}</span>
                     </p>
+                    <div class="swal-tyc-row">
+                        <input type="checkbox" id="swal-acepto-tyc" autocomplete="off">
+                        <div style="margin: 0;">
+                            <label for="swal-acepto-tyc" style="cursor: pointer;">Acepto los </label><button type="button" class="swal-tyc-link" id="swal-link-tyc">términos y condiciones</button>.
+                        </div>
+                    </div>
                 </div>
             `;
 
@@ -893,7 +991,20 @@ async function gestionarReserva() {
                 confirmButtonText: 'Confirmar',
                 cancelButtonText: 'Cancelar',
                 confirmButtonColor: '#f3a661',
-                customClass: { container: 'swal-modal-light' }
+                customClass: { container: 'swal-modal-light' },
+                focusConfirm: false,
+                preConfirm: () => {
+                    const chk = document.getElementById('swal-acepto-tyc');
+                    if (!chk || !chk.checked) {
+                        Swal.showValidationMessage('Debés aceptar los términos y condiciones para confirmar la reserva.');
+                        return false;
+                    }
+                    return true;
+                },
+                didOpen: () => {
+                    const btnTyc = document.getElementById('swal-link-tyc');
+                    if (btnTyc) btnTyc.addEventListener('click', abrirModalTerminos);
+                }
             });
 
             if (result.isConfirmed) {
