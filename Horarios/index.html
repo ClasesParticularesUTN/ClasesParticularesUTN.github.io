@@ -256,7 +256,7 @@
         }
         .terms-modal-panel {
             position: relative; z-index: 1;
-            width: 100%; max-width: 420px; max-height: min(85vh, 560px);
+            width: 100%; max-width: 440px; max-height: min(88vh, 640px);
             background: var(--glass); border: 1px solid var(--border);
             border-radius: 16px; box-shadow: 0 24px 48px rgba(0,0,0,0.45);
             display: flex; flex-direction: column; overflow: hidden;
@@ -291,6 +291,68 @@
         .terms-modal-body h3:first-child { margin-top: 0; }
         .terms-modal-body p { margin: 0 0 10px; }
         .terms-modal-body p:last-child { margin-bottom: 0; }
+        .terms-modal-body .terms-intro {
+            margin: 0 0 12px;
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        .terms-modal-body ul.terms-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 4px;
+        }
+        .terms-modal-body ul.terms-list > li {
+            position: relative;
+            padding-left: 1.05em;
+            margin-bottom: 11px;
+            line-height: 1.52;
+        }
+        .terms-modal-body ul.terms-list > li:last-child { margin-bottom: 0; }
+        .terms-modal-body ul.terms-list > li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.55em;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 0 2px rgba(243, 166, 97, 0.2);
+        }
+        .terms-modal-body .terms-block {
+            background: rgba(243, 166, 97, 0.09);
+            border: 1px solid rgba(243, 166, 97, 0.22);
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin: 12px 0 6px;
+        }
+        .terms-modal-body .terms-block-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.055em;
+            margin: 0 0 10px;
+        }
+        .terms-modal-body ul.terms-list--tight > li { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 10px; padding-left: 0; }
+        .terms-modal-body ul.terms-list--tight > li::before { display: none; }
+        .terms-modal-body .terms-step {
+            flex-shrink: 0;
+            min-width: 1.85rem;
+            height: 1.85rem;
+            border-radius: 8px;
+            background: rgba(243, 166, 97, 0.2);
+            color: var(--primary);
+            font-size: 0.68rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            margin-top: 1px;
+        }
+        .terms-modal-body .terms-step-text { flex: 1; min-width: 0; }
         .swal-tyc-row {
             display: flex; align-items: flex-start; gap: 10px;
             margin-top: 16px; text-align: left; font-size: 0.9rem; color: #333;
@@ -359,10 +421,36 @@
                 <h2 id="terms-modal-title">Términos y condiciones</h2>
             </div>
             <div class="terms-modal-body">
-                <h3>Tema de pagos</h3>
-                <p>Pueden abonar la clase cuando deseen, pero deben tener en cuenta que se cobrarán aranceles por demora y no podrán reservar nuevas clases si deben dinero. Luego de finalizar la clase disponen de <strong>24 horas</strong> para pagar, en las cuales no se les cobrará ningún recargo. Pasadas las 24 horas se les aplicará un recargo del <strong>5&nbsp;%</strong> y, luego de completar las 48 horas, se les cobrará sobre el monto total acumulado un <strong>1&nbsp;% diario</strong>.</p>
-                <h3>Tema cancelaciones</h3>
-                <p>Se pueden cancelar las clases en el menú de usuario. Si faltan más de 24 horas para la clase no se generará recargo. Si faltan entre 24 horas y menos de 1 hora para la clase se cobra un <strong>25&nbsp;%</strong>. Si falta menos de 1 hora o ya pasó la clase se cobra el <strong>monto total</strong>.</p>
+                <h3>Pagos</h3>
+                <ul class="terms-list">
+                    <li>Podés pagar la clase cuando quieras, pero si demorás pueden aplicarse <strong>recargos por demora</strong>.</li>
+                    <li>Si debés dinero, <strong>no vas a poder reservar</strong> nuevas clases hasta regularizar la deuda.</li>
+                </ul>
+                <div class="terms-block">
+                    <p class="terms-block-title">Plazos después de la clase</p>
+                    <ul class="terms-list terms-list--tight">
+                        <li>
+                            <span class="terms-step" aria-hidden="true">1</span>
+                            <span class="terms-step-text"><strong>Primeras 24 horas:</strong> podés pagar <strong>sin recargo</strong>.</span>
+                        </li>
+                        <li>
+                            <span class="terms-step" aria-hidden="true">2</span>
+                            <span class="terms-step-text"><strong>Pasadas las 24 horas:</strong> se suma un recargo del <strong>5&nbsp;%</strong>.</span>
+                        </li>
+                        <li>
+                            <span class="terms-step" aria-hidden="true">3</span>
+                            <span class="terms-step-text"><strong>A partir de las 48 horas:</strong> sobre el <strong>monto total acumulado</strong> se cobra un <strong>1&nbsp;% adicional por cada día</strong> de demora.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <h3>Cancelaciones</h3>
+                <p class="terms-intro">Podés cancelar desde el <strong>menú de usuario</strong> (tocá el ícono de perfil arriba a la derecha y revisá tus horarios reservados).</p>
+                <ul class="terms-list">
+                    <li><strong>Faltan más de 24 horas</strong> para la clase → <strong>sin costo</strong> (no hay recargo).</li>
+                    <li><strong>Faltan entre 24 horas y 1 hora</strong> (pero todavía no empezó) → se cobra el <strong>25&nbsp;%</strong>.</li>
+                    <li><strong>Falta menos de 1 hora</strong> o <strong>la clase ya pasó</strong> → se cobra el <strong>monto completo</strong> (100&nbsp;%).</li>
+                </ul>
             </div>
         </div>
     </div>
