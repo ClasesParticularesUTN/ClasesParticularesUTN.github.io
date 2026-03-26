@@ -1,0 +1,2494 @@
+<!-- Guarda esto como index.html y probalo en tu navegador -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ejercicios de Programación</title>
+
+  <!-- Fonts & Highlight -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/vs2015.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script>hljs.highlightAll();</script>
+
+  <!-- CodeMirror -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+
+  <!-- Addons para funcionalidades avanzadas -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+  <!-- 1. Plegado de código -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/foldgutter.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/brace-fold.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/fold/comment-fold.min.js"></script>
+  <!-- 3. Resaltado de ocurrencias -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/match-highlighter.min.js"></script>
+  <!-- 4. Autocompletado inteligente (ya tienes anyword, agrego show-hint y hint c-like) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/clang-hint.min.js"></script>
+  <!-- 13. Linter básico (lint y show lint) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.js"></script>
+  <!-- 16. Edición en múltiples selecciones -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/mark-selection.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/selection-pointer.min.js"></script>
+
+  <!-- CodeMirror Addons: matchbrackets para resaltar corchetes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/anyword-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+
+  <!-- Estilos personalizados -->
+  <style>
+    #resultado-validacion{
+      max-height: 150px;
+    }
+    #resultado-validacion.maximizado {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9999;
+      background: white;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      max-height: 100dvh;
+    }
+    /* Estilo personalizado para corchetes resaltados en CodeMirror */
+    
+    * { box-sizing: border-box; }
+    /* Fondo personalizado para la línea activa de CodeMirror */
+    .CodeMirror-activeline-background {
+      background: rgba(128, 128, 128, 0.705) !important; /* azul claro, puedes cambiarlo si prefieres otro color */
+      opacity: 0.1 !important;
+    }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #74ebd5, #9face6);
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    #contenedor {
+      background: white;
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      max-width: 1000px;
+      width: 100%;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 1.8rem;
+      color: #333;
+    }
+
+    .botones {
+      margin-top: 1.5rem;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    button {
+      padding: 0.8rem 1.4rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    pre {
+      background: #f7f9fc;
+      border-left: 5px solid #007bff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      white-space: pre-wrap;
+      overflow-x: auto;
+    }
+
+    .extra { margin-top: 1.5rem; }
+
+    #pista, #solucion { margin-top: 1rem; }
+
+    #abrir-editor {
+      position: fixed;
+      top: 20px;
+      right: 60px;
+      z-index: 1000;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      background-color: #28a745;
+    }
+
+    #abrir-editor:hover { background-color: #218838; }
+
+    #editor-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(20, 20, 20, 0.98);
+      display: none;
+      flex-direction: column;
+      padding: 1rem;
+      z-index: 999;
+    }
+
+    #editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    #editor {
+      height: 100%;
+      flex: 1;
+    }
+
+    .CodeMirror {
+      height: 100%;
+      border-radius: 8px;
+      font-size: 125%;
+    }
+
+    #restaurar-btn {
+      background-color: #dc3545;
+    }
+
+    #restaurar-btn:hover {
+      background-color: #c82333;
+    }
+
+    #input-area, #output {
+      margin-top: 1rem;
+      width: 100%;
+      min-height: 60px;
+      padding: 0.8rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    #output {
+      position: relative;
+      background-color: #1e1e1e;
+      color: #00ffcc;
+      white-space: pre-wrap;
+      overflow: auto;
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 60px;
+      max-height: 300px;
+      transition: max-height 0.3s ease;
+    }
+
+    /* Animación para el texto de estado (Ejecutando...) */
+    @keyframes pulseOpacity {
+      0% { opacity: 0.4; }
+      50% { opacity: 1; }
+      100% { opacity: 0.4; }
+    }
+
+    .loading-pulse {
+      animation: pulseOpacity 1s ease-in-out infinite;
+      /* Asegura que la transición de color/visibilidad se vea bien sobre el fondo oscuro */
+      will-change: opacity;
+    }
+
+    #output button#toggleOutputSize {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      color: #00ffcc;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 30px;
+      height: 30px;
+      line-height: 24px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background 0.2s ease;
+    }
+
+    #output button#toggleOutputSize:hover {
+      background: rgba(0,255,204,0.7);
+    }
+
+    #output.maximized {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      max-height: none !important;
+      padding: 1rem !important;
+      border-radius: 0 !important;
+      z-index: 2000 !important;
+      overflow: auto !important;
+    }
+
+    #cargar-ejercicios {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: none;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #333;
+      z-index: 999;
+      padding: 0px;
+    }
+
+    #cargar-ejercicios:hover { color: #007bff; }
+
+    #archivo-ejercicios { display: none; }
+
+    #contador-ejercicio {
+      text-align: center;
+      font-weight: bold;
+      color: #444;
+    }
+
+    #input-ejercicio {
+      width: 60px;
+      text-align: center;
+      font-size: 1rem;
+      padding: 0.2rem;
+    }
+
+    #output-content {
+      position: absolute;
+      top: 20px;
+    }
+
+    
+    .cm-matchhighlight {
+  background-color: rgba(0, 217, 255, 0.4); /* amarillo suave */
+  color:#111 !important
+}
+
+.CodeMirror-matchingbracket {
+      /* background: #ffe066b6 !important; */
+      color: violet !important;
+      /* font-weight: bold; */
+      border-radius: 2px;
+      box-shadow: 0 0 2px 1px #ffd700;
+      /* padding: 0 1px; */
+      transition: background 0.2s;
+    }
+    .editor-maximizado {
+      flex: 1 !important;
+    }
+
+    .editor-oculto {
+      display: none !important;
+    }
+
+    /* Modo pantalla completa para el editor */
+    .fullscreen-editor {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      z-index: 99999 !important;
+      background: #222 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      border-radius: 0 !important;
+    }
+    .fullscreen-editor #editor-header {
+      display: none !important;
+    }
+    .fullscreen-editor #editor {
+      height: 100vh !important;
+      min-height: 100vh !important;
+      max-height: 100vh !important;
+      width: 100vw !important;
+      border-radius: 0 !important;
+    }
+    .fullscreen-editor #input-area,
+    .fullscreen-editor #output {
+      display: none !important;
+    }
+/* Estilo cuando está deshabilitado */
+    button:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  </style>
+  <style>
+/* Scrollbar general (para todo el documento) */
+::-webkit-scrollbar {
+  width: 6px;              /* ancho de la barra vertical */
+  height: 6px;             /* alto de la barra horizontal */
+}
+
+/* Fondo de la barra (canal) */
+::-webkit-scrollbar-track {
+  background: transparent; /* o un color sutil tipo #f1f1f1 */
+}
+
+/* La parte que se mueve (thumb) */
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.3); /* gris suave y semitransparente */
+  border-radius: 10px;
+}
+
+/* Hover sobre el thumb */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 100, 100, 0.5);
+}
+
+/* Firefox (usa pseudo-clase distinta) */
+* {
+  scrollbar-width: thin;              /* más delgado */
+  scrollbar-color: rgba(100, 100, 100, 0.3) transparent;
+}
+</style>
+
+</head>
+
+<body>
+  <!-- Loader Spinner -->
+  <div id="loader-spinner" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(255,255,255,0.7);z-index:3000;justify-content:center;align-items:center;">
+    <div style="border: 8px solid #f3f3f3; border-top: 8px solid #007bff; border-radius: 50%; width: 70px; height: 70px; animation: spin 1s linear infinite;"></div>
+  </div>
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+  <!-- Botones fijos -->
+  <button id="abrir-editor" onclick="toggleEditor()">Editor</button>
+  <button id="cargar-ejercicios" title="Cargar ejercicios 📂" onclick="document.getElementById('archivo-ejercicios').click()">📂</button>
+  <input type="file" id="archivo-ejercicios" accept=".js" />
+
+  <!-- Contenedor de ejercicios -->
+  <div id="contenedor">
+    <h2 id="titulo">Ejercicios de Programación</h2>
+    <p id="contador-ejercicio">
+      <input id="input-ejercicio" type="number" min="1" value="1" /> /
+      <span id="total-ejercicios">0</span>
+      <br>
+      <br>
+      <span  style="margin: 50px;" id="cantiddad-ejercicios">Total Ejercicios = </span>
+    </p>
+    <pre id="ejercicio">Presioná "Iniciar" para comenzar</pre>
+    <div class="botones">
+      <button onclick="iniciar()">Iniciar</button>
+      <button onclick="siguiente()" style="display: none;">Siguiente</button>
+      <button onclick="mostrarPista()">Mostrar pista</button>
+      <!-- <button onclick="mostrarSolucion()">Mostrar solución</button> -->
+      <button onclick="corregirCasosPrueba()" id="btn-corregir-casos" style="display: none;">Corregir casos de prueba</button>
+    </div>
+
+    <div class="extra">
+      <div id="pista"></div>
+      <pre id="solucion" style="display: none;"><code class="language-cpp hljs" id="codigo-solucion"></code></pre>
+    </div>
+  </div>
+
+  <!-- Editor de código (superpuesto) -->
+  <div id="editor-overlay">
+    <div id="editor-header">
+      <h2 style="color: white;">Editor de Código</h2>
+      <div>
+        <button id="maximizarSoloEditor" title="Maximizar solo el editor" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">🗖</button>
+        <button id="atajos-btn" title="Ver atajos de teclado" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">⌨️</button>
+        <button id="copiar-codigo-btn" title="Copiar código" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">📋</button>
+        
+        <button id="crear-funcion-btn" title="Crear función" style="display:none; background: none;color: white;font-size: 2rem;cursor: pointer;border: none;">\</button>
+        
+        <button id="crear-funcion-btn2" title="Validar Codigo" style="background: none;color: white;font-size: 2rem;cursor: pointer;border: none;" onclick="modalValidarCodigo()"><img src="auditoria.png" style="width: 35px; height: 35px; margin: 0; transform: translateY(5px);" alt=""></button>
+        <button onclick="restaurarPlantilla()" id="restaurar-btn">Restaurar plantilla(F4)</button>
+        <button onclick="ejecutarCodigo()" style="background-color:#007bff">Ejecutar (F9)</button>
+        <button onclick="toggleEditor()">Minimizar editor (F10)</button>
+      </div>
+  <!-- Formulario para crear función C++ -->
+  <div id="formulario-funcion" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#222;padding:2rem;border-radius:10px;z-index:4000;color:white;min-width:300px;">
+    <h3>Crear función C++</h3>
+    <label>Tipo de retorno:<br><input id="tipo-retorno" type="text" value="" style="width:100%;margin-bottom:8px;"></label><br>
+    <label>Nombre:<br><input id="nombre-funcion" type="text" style="width:100%;margin-bottom:8px;"></label><br>
+    <label>Parámetros (ej: int x, float y):<br><input id="parametros-funcion" type="text" style="width:100%;margin-bottom:8px;"></label><br>
+    <label>¿Agregar comentario arriba?<br><input id="comentario-funcion" type="text" style="width:100%;margin-bottom:8px;" placeholder="Ejemplo: Calcula el área"></label><br>
+    <div style="margin-top:1rem;text-align:right;">
+      <button id="insertar-funcion-btn" style="background-color:#007bff;color:white;padding:0.5rem 1rem;border:none;border-radius:5px;">Insertar</button>
+      <button id="cancelar-funcion-btn" style="background-color:darkred;color:white;padding:0.5rem 1rem;border:none;border-radius:5px;margin-left:8px;">Cancelar</button>
+    </div>
+  </div>
+    </div>
+
+    <textarea id="editor"></textarea>
+    <textarea id="input-area" placeholder="Escribí la entrada estándar aquí..."></textarea>
+
+    <!-- Menú de autocompletado personalizado -->
+    <div id="autocomplete-menu" style="display:none;position:absolute;z-index:5000;background:white;border:1px solid #007bff;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-family:monospace;font-size:1rem;max-height:200px;overflow-y:auto;"></div>
+
+    <div id="output">
+      <button id="toggleOutputSize" title="Maximizar salida">🗗</button>
+      <div id="output-content">Esperando ejecución...</div>
+    </div>
+  </div>
+
+  <!-- Modal de validación (emergente) -->
+  <div id="validacion-modal" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: sans-serif;
+    ">
+    <div style="background:#222;padding:2rem;border-radius:10px;max-width:600px;width:90%">
+      <h3>Validar ejercicio antes de continuar</h3>
+      <p id="caso-enunciado"></p>
+      <textarea id="codigo-validacion" placeholder="Pegá tu código acá..." style="padding:10px;width:100%;height:150px;font-family:monospace;margin-bottom:1rem;"></textarea>
+      <button id="probar" onclick="probarValidacion()">Probar</button>
+      <button onclick="cerrarModalValidacion()" style="background-color:darkred;">Cancelar</button>
+      <pre id="resultado-validacion" style="
+  margin-top: 1rem;
+  white-space: pre-wrap;
+  background-color: #111;
+  color: #00ffcc;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow: auto;
+  font-size: 0.9rem;
+">
+<button id="toggleOutputSize" title="Maximizar salida">🗗</button>
+</pre>
+    </div>
+  </div>
+
+  <!-- Modal para corregir casos de prueba -->
+  <div id="modal-corregir-casos" style="
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    z-index: 3000;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-family: sans-serif;
+    overflow-y: auto;
+    padding: 2rem 0;
+    ">
+    <div style="background:#222;padding:2rem;border-radius:10px;max-width:800px;width:90%;max-height:90vh;overflow-y:auto;">
+      <h3>Corregir casos de prueba - Ejercicio #<span id="numero-ejercicio-corregir"></span></h3>
+      <p style="margin-bottom:1rem;color:#aaa;">Modificá los casos de prueba del ejercicio actual:</p>
+      <div id="contenedor-casos-prueba" style="margin-bottom:1rem;"></div>
+      <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1rem;">
+        <button onclick="agregarCasoPrueba()" style="background-color:#28a745;">+ Agregar caso</button>
+        <button onclick="guardarCasosPrueba()" style="background-color:#007bff;">Guardar cambios</button>
+        <button onclick="cerrarModalCorregirCasos()" style="background-color:darkred;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <div id="modal-atajos" style="
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  z-index: 3000;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-family: sans-serif;
+">
+  <div style="background:#222;padding:2rem;border-radius:10px;max-width:600px;width:90%">
+    <h3>Atajos de teclado disponibles</h3>
+    <ul style="line-height: 1.8; overflow: auto;">
+      <li><b>F2</b>: Generar una funcion</li>
+      <li><b>F3</b>: Mazimizar/Minimizar editor de codigo</li>
+      <li><b>F4</b>: Restaurar plantilla inicial</li>
+      <li><b>F6</b>: Generar Prototipos</li>
+      <li><b>F7</b>: Enviar prueba de validacion</li>
+      <li><b>F8</b>: Maximizar/Minimizar Salida</li>
+      <li><b>F9</b>: Ejecutar código</li>
+      <li><b>F10</b>: Minimizar editor</li>
+      <li><b>Ctrl + Alt + ↑</b> o <b>Alt + T</b>: Mover línea arriba</li>
+      <li><b>Ctrl + Alt + ↓</b> o <b>Alt + R</b>: Mover línea abajo</li>
+      <li><b>Ctrl + Shift + ↑</b> o <b>Alt + V</b>: Duplicar línea arriba</li>
+      <li><b>Ctrl + Shift + ↓</b> o <b>Alt + C</b>: Duplicar línea abajo</li>
+      <li><b>Ctrl + D</b>: Seleccionar varias lineas en simultaneoasd (multi-cursor)</li>
+      <li><b>Alt + H</b>: Borrar historial del editor (no se puede deshacer)</li>
+    </ul>
+    <div style="text-align: right;">
+      <button onclick="document.getElementById('modal-atajos').style.display='none'" style="margin-top:1rem;">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+  <script>
+   let COMPILER_API = "https://servidortareas-847c.onrender.com/compile";
+
+	
+
+    // Variables globales
+  let ejercicios = [];
+  let indice = -1;
+  
+  // Referencias DOM
+  const inputArchivo = document.getElementById("archivo-ejercicios");
+  const contenedorCargaManual = document.getElementById("cargar-ejercicios");
+  //const btnIniciar = document.querySelector('button[onclick="iniciar()"]');
+
+  // Inicialmente oculto input file y contenedor manual
+  if(inputArchivo) inputArchivo.style.display = "none";
+  if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
+
+  // Intentar cargar ejercicios.js desde servidor localhost
+  // Reemplaza TU_WEBAPP_URL por la URL de tu deployment en GAS (Deploy → Web app)
+let GAS_WEBAPP_URL ="https://script.google.com/macros/s/AKfycbwKHW5c4UeOOl18dWq2i0bhstPFrZpaSsWpjDrBpAc2EdaBJxs_JxDbBG0L1r4j_kG8/exec";
+	  
+let nombre = localStorage.getItem("Nombre"), apellido = localStorage.getItem("Apellido");
+  function cargarEjerciciosDesdeServidor() {
+    return new Promise(async (resolve, reject) => {
+      const loader = document.getElementById("loader-spinner");
+      if (loader) loader.style.display = "flex";
+      let URL = GAS_WEBAPP_URL + `?funcion=devolverTarea&nombre=${nombre}&apellido=${apellido}`;
+      //console.log(URL);
+      try {
+        const res = await fetch(URL);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} al pedir ejercicios`);
+        }
+        
+        const obj = await res.json();
+        //console.log("objeto retorno", obj);
+        if (!obj) {
+          throw new Error("La respuesta no contiene 'tarea' como array");
+        }
+        if(obj.resultado === false){
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No tenes ninguna tarea cargada',
+            confirmButtonText: 'Entendido'
+          });
+        }
+        //console.log(obj);
+        // Asignás el array que te manda GAS a tu variable global
+        ejercicios = obj.tarea;
+        document.getElementById("titulo").innerHTML = obj.titulo;
+        document.getElementById("cantiddad-ejercicios").innerHTML += `${obj.totalEjercicios} ( ${obj.cantGuias} Guias )`;
+        pasarEjercicio = obj.pasarEjercicio;
+        console.log("Cantidad de guias " + obj.cantGuias)
+        
+        console.log("Indice: " + obj.indice)
+        if(obj.indice < ejercicios.length) sessionStorage.setItem("indice", obj.indice);
+
+        if (ejercicios.length === 0) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Sin tareas',
+            text: 'No tienes tarea cargada',
+            confirmButtonText: 'Entendido'
+          });
+          if (loader) loader.style.display = "none";
+          return;
+        }
+
+        if (loader) loader.style.display = "none";
+        if (typeof btnIniciar !== "undefined" && btnIniciar) btnIniciar.click();
+        
+        resolve();
+      } catch (err) {
+        if (loader) loader.style.display = "none";
+        console.warn("No se pudo cargar ejercicios desde GAS:", err.message);
+        reject(err);
+      } finally {
+        iniciar();
+      }
+
+    });
+  }
+
+
+    cargarEjerciciosDesdeServidor()
+      .then(() => {
+        if(inputArchivo) inputArchivo.style.display = "none";
+        if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
+        if(btnIniciar) btnIniciar.disabled = false;
+      })
+      .catch(() => {
+        if(inputArchivo) inputArchivo.style.display = "none";
+        if(contenedorCargaManual) contenedorCargaManual.style.display = "block";
+      });
+  
+
+  // Carga manual desde archivo seleccionado
+  if(inputArchivo) {
+    inputArchivo.addEventListener("change", function (event) {
+      const archivo = event.target.files[0];
+      if (!archivo) return;
+
+      const lector = new FileReader();
+      lector.onload = function (e) {
+          try {
+            const contenido = e.target.result;
+            // Ejecutamos contenido para obtener array ejercicios
+            const modulo = new Function(contenido + "; return ejercicios;");
+            ejercicios = modulo();
+
+            if(btnIniciar) btnIniciar.disabled = false;
+            if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
+            document.getElementById('total-ejercicios').textContent = ejercicios.length;
+            console.log("Cantidad de ejercicios = ", ejercicios.length)
+            // ✅ Guardar en localStorage el contenido del archivo para restaurar después
+            sessionStorage.setItem("archivoEjercicios", contenido);
+
+          } catch (err) {
+            alert("Error al cargar el archivo: " + err.message);
+          }
+      };
+
+      lector.readAsText(archivo);
+    });
+  }
+
+  // --- Restaurar ejercicios guardados si existen ---
+window.addEventListener("DOMContentLoaded", async () => {
+	fetch("https://servidortareas-847c.onrender.com/ping")
+    .catch(() => {}); // ignoramos cualquier error
+	if(localStorage.getItem("Nombre") == undefined){
+	   window.location = "/Horarios/Login/Login.html";
+	   //console.log("No ha iniciado sesion")
+	}
+
+
+  const guardado = sessionStorage.getItem("archivoEjercicios");
+  if (guardado) {
+    try {
+      const modulo = new Function(guardado + "; return ejercicios;");
+      ejercicios = modulo();
+
+      if(btnIniciar) btnIniciar.disabled = false;
+      if(contenedorCargaManual) contenedorCargaManual.style.display = "none";
+      document.getElementById('total-ejercicios').textContent = ejercicios.length;
+      await iniciar();
+      indice = parseInt(sessionStorage.getItem("indice"));
+      console.log(indice);
+      mostrarEjercicio();
+    } catch (err) {
+      console.error("❌ Error al restaurar ejercicios guardados:", err);
+      sessionStorage.removeItem("archivoEjercicios"); // Limpio si está corrupto
+    }
+
+  }
+});
+
+    function iniciar() {
+      
+      if (typeof ejercicios == "undefined" || ejercicios.length === 0) {
+        document.getElementById('archivo-ejercicios').click();
+        return;
+      }
+      indice = sessionStorage.getItem("indice")? parseInt(sessionStorage.getItem("indice")) : 0;
+      document.querySelector('button[onclick="siguiente()"]').style.display = "inline-block";
+      document.querySelector('button[onclick="iniciar()"]').outerHTML = '<button style="background-color: #F7421E" onclick="noMeSale()">No me sale, me rindo!</button>';
+       navigator.clipboard.readText().catch(() => {});
+       pegadoAutomatico = true;
+      
+      mostrarEjercicio();
+    }
+  
+    function siguiente() {
+      if (indice < ejercicios.length) {
+        // Antes de avanzar, validamos el código del usuario con los casos de prueba
+        abrirModalValidacion();
+      } else if (indice === ejercicios.length -1) {
+        indice++;
+        document.getElementById('ejercicio').textContent = "¡Has llegado al final de los ejercicios!";
+        document.getElementById('pista').textContent = "";
+        document.getElementById('codigo-solucion').innerHTML = "";
+        document.getElementById('solucion').style.display = "none";
+        document.querySelector('button[onclick="siguiente()"]').style.display = "none";
+      }
+    }
+
+    const mensajes = [
+        "¿Rendirte? Eso sí que no te va a enseñar nada 🤔. ¡Intentalo otra vez!",
+        "Si te rendís ahora, nunca vas a saber qué tan cerca estabas de lograrlo 🚀",
+        "Recordá: rendirse es el único error que realmente te frena ❌",
+        "Estás a punto de rendirte… pero ¿sabías que los mejores programadores se equivocaron mil veces antes de lograrlo? 💻",
+        "Rendirse es fácil, mejorar no… ¿cuál de los dos caminos querés elegir? 😉",
+        "Si dejás este ejercicio ahora, le estás regalando la victoria al problema en vez de ganar vos 💪",
+        "No te olvides: cada vez que te rendís, perdés una chance de crecer como programador 🌱",
+        "La próxima vez que pienses en rendirte, acordate de por qué empezaste 💡",
+        "Rendirse es una decisión, seguir intentando también. ¿Cuál elegís? 🔥",
+        "¿Te vas a rendir tan rápido? El código no muerde 😏"
+      ];
+    let pasarEjercicio;
+    function noMeSale() {
+        const mensajes = [
+        "¿Rendirte? Eso no te va a enseñar nada 🤔. Recordá que también tenés un botón de pistas.",
+        "Si te rendís ahora, nunca vas a saber qué tan cerca estabas 🚀. ¡Probá con una pista antes!",
+        "El único error real es rendirse ❌. Dale una mirada al botón de pistas 😉",
+        "Estás a punto de rendirte… pero los grandes programadores primero usan todas las pistas antes de dejarlo 💡",
+        "Rendirse es fácil, pero mejorar no. Tenés un botón de pistas que puede ayudarte 🔥",
+        "Si dejás este ejercicio ahora, le estás regalando la victoria al problema 💻. ¿Ya revisaste las pistas?",
+        "No olvides: cada vez que te rendís, perdés una chance de crecer 🌱. ¡Mirá las pistas primero!",
+        "Rendirse es una decisión. Usar pistas también. ¿Cuál elegís? 😉"
+      ];
+
+      // Elegir mensaje aleatorio
+      const mensaje = mensajes[Math.floor(Math.random() * mensajes.length)];
+
+      // Mostrar con SweetAlert2
+      Swal.fire({
+        title: "¡Ey, espera!",
+        text: mensaje,
+        icon: "warning",
+        showDenyButton: true,
+        confirmButtonText: "Seguir intentando 💻",
+        denyButtonText: "Ir al siguiente ➡️",
+        confirmButtonColor: "#3085d6",
+        denyButtonColor: "#d33"
+      }).then((result) => {
+          if (result.isDenied && !(titulo().esAvanzado)) {
+            Swal.fire({
+              title: "Confirmación",
+              text: "Para continuar, ingresá la contraseña (solicitela al profesor):",
+              input: "text",
+              inputPlaceholder: "Contraseña",
+              inputAttributes: {
+                autocapitalize: "off",
+                autocorrect: "off"
+              },
+              showCancelButton: true,
+              confirmButtonText: "Aceptar",
+              cancelButtonText: "Cancelar",
+              preConfirm: (value) => {
+                if (value.toString() !== pasarEjercicio.toString()) {
+                  //console.log(value)
+                  Swal.showValidationMessage("Contraseña incorrecta.");
+                  
+                  return false;
+                }else{
+
+                  ejercicioTerminado();
+                  cambiarContrasenia();
+                  indice++;
+                  mostrarEjercicio();  
+                
+                }
+              }
+            });
+          }else if(result.isDenied && (titulo().esAvanzado)){
+                
+                  ejercicioTerminado();  
+                cambiarContrasenia();
+                  indice++;
+                  mostrarEjercicio();
+          }
+      });
+
+    }
+  
+    function mostrarPista() {
+      if (indice >= 0 && indice < ejercicios.length) {
+        const pista = ejercicios[indice].pista;
+        document.getElementById('pista').innerHTML = pista && pista.trim() ? "Pista: " + pista : "Este ejercicio no tiene pista.";
+      }
+    }
+    let  totalEjercicios = 0;
+    function mostrarEjercicio() {
+      if (indice >= 0 && indice < ejercicios.length) {
+        const actual = ejercicios[indice];
+        document.getElementById('ejercicio').innerHTML = actual.enunciado;
+        document.getElementById('pista').textContent = "";
+        document.getElementById('codigo-solucion').innerHTML = "";
+        document.getElementById('solucion').style.display = "none";
+        document.getElementById('input-ejercicio').value = indice + 1;
+        document.getElementById('total-ejercicios').textContent = `${ejercicios.length}`;
+        sessionStorage.setItem("indice", indice);
+        // Mostrar botón de corregir casos si el ejercicio tiene casos de prueba
+        const btnCorregir = document.getElementById('btn-corregir-casos');
+        if (btnCorregir && actual.casosDePrueba && actual.casosDePrueba.length > 0) {
+          btnCorregir.style.display = "inline-block";
+        } else if (btnCorregir) {
+          btnCorregir.style.display = "none";
+        }
+      }else if(indice == ejercicios.length){
+         document.getElementById('ejercicio').textContent = "Fin de esta guia de ejercicios" + document.getElementById("titulo").innerHTML + ", recargue la pagina y si tiene otra guia cargada podra seguir haciendo ejercicios";
+        document.getElementById('pista').textContent = "";
+        document.getElementById('codigo-solucion').innerHTML = "";
+        document.getElementById('solucion').style.display = "none";
+        setTimeout(() => {
+          location.reload();
+        }, 10000);
+      }
+    }
+  
+    function mostrarSolucion() {
+      if (indice >= 0 && indice < ejercicios.length) {
+        const ahora = new Date();
+        const horas = String(ahora.getHours()).padStart(2, '0');
+        const minutos = String(ahora.getMinutes()).padStart(2, '0');
+        const ejercicioNumero = (indice + 1).toString();
+        const contrasenaEsperada = ejercicioNumero + horas + minutos;
+  
+        const ingreso = prompt(`Solicitar la contraseña al profesor: `);
+  
+        if (ingreso.toString() !== pasarEjercicio.toString()) {
+          alert("Contraseña incorrecta. Intentá de nuevo.");
+          cambiarContrasenia();
+          return;
+        }
+  
+        const solucion = ejercicios[indice].solucion;
+        const codeBlock = document.getElementById('codigo-solucion');
+        const preBlock = document.getElementById('solucion');
+  
+        if (solucion && solucion.trim()) {
+          codeBlock.innerHTML = hljs.highlight(solucion, { language: 'cpp' }).value;
+        } else {
+          codeBlock.textContent = "Este ejercicio no tiene solución cargada.";
+        }
+  
+        preBlock.style.display = "block";
+      }
+    }
+  
+    // Control del input para cambiar el ejercicio por número
+    const inputEjercicio = document.getElementById("input-ejercicio");
+
+
+let valorAnterior = "";
+
+  inputEjercicio.addEventListener("focus", () => {
+    valorAnterior = inputEjercicio.value;
+  });
+inputEjercicio.addEventListener("change", () => {
+  
+  const nuevo = parseInt(inputEjercicio.value, 10);
+  
+  if(!admin){
+    alert("Solo el profesor puede adelantar ejercicios");
+    let valor = document.getElementById('input-ejercicio').value;
+    if(valor > valorAnterior)  document.getElementById('input-ejercicio').value = valor - 1;
+    else document.getElementById('input-ejercicio').value = parseInt(valor) + 1;
+    return ;
+  }
+  if (!isNaN(nuevo) && nuevo >= 1 && nuevo <= ejercicios.length) {
+    indice = nuevo - 1;
+    mostrarEjercicio();
+  } else {
+    alert(`El número debe estar entre 1 y ${ejercicios.length}`);
+    ///inputEjercicio.value = indice + 1;
+  }
+});
+
+document.addEventListener("keydown", (e) => {
+  // Verifico si el editor está cerrado (display distinto de 'flex')
+  const editorOverlay = document.getElementById("editor-overlay");
+  const editorAbierto = editorOverlay.style.display === "flex";
+
+  if (editorAbierto || document.getElementById("validacion-modal").style.display === "flex") {
+    // Si el editor o el modal de validación están abiertos, no hago nada para estas teclas
+    return;
+  }
+
+  if (e.key === "ArrowRight") {
+    if(!admin) return;
+    e.preventDefault();
+    let val = parseInt(inputEjercicio.value, 10);
+    const max = parseInt(document.getElementById("total-ejercicios").textContent, 10);
+    if (!isNaN(val) && val < max) {
+      inputEjercicio.value = val + 1;
+      inputEjercicio.dispatchEvent(new Event("change"));
+    }
+  }
+  if (e.key === "ArrowLeft") {
+    if(!admin) return;
+    e.preventDefault();
+    let val = parseInt(inputEjercicio.value, 10);
+    if (!isNaN(val) && val > 1) {  // corregí aquí para que no baje de 1
+      inputEjercicio.value = val - 1;
+      inputEjercicio.dispatchEvent(new Event("change"));
+    }
+  }
+});
+
+// Indice de plantilla: 0 = CPP básico, 1 = Vector, 2 = Matriz
+let plantillaIndex = 0;
+  
+    // Plantilla básica C++
+    const PLANTILLA_CPP = `#include <iostream>
+using namespace std;
+  
+int main(){
+
+    return 0;
+}`;
+
+const PLANTILLA_VECTOR = `#include <iostream>
+#include <ctime>
+#define TF 100
+using namespace std;
+
+void mostrarVector(int [], int);
+void cargarAleatorio(int[], int, int = 100);
+
+int main(){
+    
+    return 0;
+}
+
+
+
+
+
+
+void cargarAleatorio(int v[], int TL, int maximo){
+    int minimo = maximo / 10; // ejemplo: si maximo = 100 → minimo = 10
+    
+    for(int i = 0; i < TL; i++){
+        v[i] = minimo + rand() % (maximo - minimo);
+    }
+}
+
+void mostrarVector(int v[], int TL) {
+    cout<<"[ ";
+    for(int i = 0; i < TL; i++) {
+        cout << v[i] << " ";
+    }
+    cout << "]"<<endl;
+}`;
+
+// Plantilla de matrices (nueva)
+const PLANTILLA_MATRIZ = `#include <iostream>
+#include <iomanip>
+#define TF 100
+using namespace std;
+
+void cargarMatriz(int[][TF], int, int);
+void mostrarMatriz(int[][TF], int, int);
+
+int main() {
+  int matriz[TF][TF];
+  int TLFilas, TLColumnas;
+
+  cin >> TLFilas;
+  cin >> TLColumnas;
+
+  cargarMatriz(matriz, TLFilas, TLColumnas);
+
+  mostrarMatriz(matriz, TLFilas, TLColumnas);
+
+  return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void cargarMatriz(int matriz[TF][TF], int TLFilas, int TLColumnas) {
+  for (int i = 0; i < TLFilas; i++) {
+    for (int j = 0; j < TLColumnas; j++) {
+      cin >> matriz[i][j];
+    }
+  }
+}
+
+void mostrarMatriz(int matriz[TF][TF], int TLFilas, int TLColumnas) {
+    int anchoMax = 0;
+
+    for (int i = 0; i < TLFilas; i++) {
+        for (int j = 0; j < TLColumnas; j++) {
+            int longitud = to_string(matriz[i][j]).length();
+            if (longitud > anchoMax) anchoMax = longitud;
+        }
+    }
+
+    for (int i = 0; i < TLFilas; i++) {
+		cout<<"[";
+        for (int j = 0; j < TLColumnas; j++) {
+            cout << right << setw(anchoMax + 2) << matriz[i][j];
+        }
+        cout << right << setw(anchoMax + 2)<<"]"<< endl;
+    }
+}
+`;
+  
+    // Configuración y creación del editor CodeMirror
+    let editorInstance;
+    let editorIniciado = false;
+  
+    window.onload = () => {
+      // Restaurar estado del editor y texto si corresponde
+      const editorWasOpen = localStorage.getItem('editorAbierto') === 'true';
+      const editorText = localStorage.getItem('editorTexto') || '';
+      const guardadoTimestamp = parseInt(localStorage.getItem('editorGuardadoHora'), 10);
+      const ahora = Date.now();
+      const unaHoraMs = 60 * 60 * 1000;
+      const dentroDeUnaHora = guardadoTimestamp && (ahora - guardadoTimestamp < unaHoraMs);
+
+      // Palabras clave de C++ para autocompletado
+      const cppKeywords = [
+        "if", "else", "while", "for", "do", "switch", "case", "break", "continue", "return", "struct", "class", "public", "private", "protected", "void", "int", "float", "double", "char", "bool", "true", "false", "namespace", "using", "include", "cout", "cin", "endl", "const", "static", "virtual", "override", "template", "typename", "try", "catch", "throw", "new", "delete", "this", "operator", "friend", "enum", "typedef", "sizeof", "main"
+      ];
+
+      // Hint personalizado que combina anyword y palabras clave
+      function cppHint(cm) {
+        const cursor = cm.getCursor();
+        const token = cm.getTokenAt(cursor);
+        const start = token.start;
+        const end = cursor.ch;
+        const currentWord = token.string.slice(0, end - start);
+        let list = [];
+
+        // Sugerencias de palabras clave
+        if (currentWord.length > 0) {
+          list = cppKeywords.filter(k => k.startsWith(currentWord));
+        } else {
+          list = cppKeywords.slice();
+        }
+
+        // Sugerencias de anyword
+        const anyword = CodeMirror.hint.anyword(cm) || {list:[]};
+        // Unir y filtrar duplicados
+        let all = [...new Set([...list, ...anyword.list])];
+
+        // Snippet especial para coutcin
+        if (currentWord === "coutcin") {
+          all = [
+            {
+              text: 'cout<<"$0";  cin>>$1;',
+              displayText: 'cout<<"$0";  cin>>$1;',
+              hint: function(cm, data, completion) {
+                cm.replaceRange('cout<<"";  cin>>;',
+                  {line: cursor.line, ch: start},
+                  {line: cursor.line, ch: end}
+                );
+                // Colocar el cursor dentro de las comillas
+                cm.setCursor({line: cursor.line, ch: start + 7});
+              }
+            },
+            ...all.filter(x => x !== "coutcin")
+          ];
+        } else if (currentWord === "cout") {
+          all = [
+            {
+              text: 'cout<<""<<endl;',
+              displayText: 'cout<<""<<endl;',
+              hint: function(cm, data, completion) {
+                // Insertar el snippet
+                cm.replaceRange('cout<<""<<endl;',
+                  {line: cursor.line, ch: start},
+                  {line: cursor.line, ch: end}
+                );
+                // Colocar el cursor dentro de las comillas
+                const pos = {line: cursor.line, ch: start + 7};
+                cm.setCursor(pos);
+              }
+            },
+            ...all.filter(x => x !== "cout")
+          ];
+        }
+
+        return {
+          list: all,
+          from: CodeMirror.Pos(cursor.line, start),
+          to: CodeMirror.Pos(cursor.line, end)
+        };
+      }
+
+      editorInstance = CodeMirror.fromTextArea(document.getElementById("editor"), {
+        mode: "text/x-c++src",
+        theme: "material",
+        lineNumbers: true,
+        indentUnit: 4,
+        tabSize: 4,
+    autoCloseBrackets: true,
+        matchBrackets: true, // Habilita el resaltado de corchetes
+        styleActiveLine: true, // Resalta la línea activa
+        foldGutter: true, // Plegado de código
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        lint: true, // Linter básico (solo sintaxis, no errores de compilación C++)
+        highlightSelectionMatches: true, // Activar resaltado simple
+        extraKeys: {
+          "Shift-Space": "autocomplete", // Autocompletado manual (ahora Shift+Espacio)
+          // Selección múltiple tipo VS Code mejorada
+          "Ctrl-D": function(cm) {
+            let selections = cm.listSelections();
+            let lastSel = selections[selections.length - 1];
+            let selText = cm.getRange(lastSel.anchor, lastSel.head);
+            let isEmpty = selText.length === 0;
+            let word = selText;
+            let from = lastSel.anchor, to = lastSel.head;
+            // Si no hay selección, selecciona la palabra bajo el cursor
+            if (isEmpty) {
+              let cursor = lastSel.head;
+              let line = cm.getLine(cursor.line);
+              // Busca la palabra bajo el cursor
+              let start = cursor.ch, end = cursor.ch;
+              while (start > 0 && /\w/.test(line.charAt(start - 1))) start--;
+              while (end < line.length && /\w/.test(line.charAt(end))) end++;
+              if (start === end) return; // No hay palabra
+              from = {line: cursor.line, ch: start};
+              to = {line: cursor.line, ch: end};
+              word = line.slice(start, end);
+              // Selecciona la palabra bajo el cursor
+              cm.replaceSelection(word, "around");
+              // Actualiza la selección
+              selections = cm.listSelections();
+              lastSel = selections[selections.length - 1];
+            }
+            // Buscar la siguiente ocurrencia de la palabra
+            let searchCursor = cm.getSearchCursor(word, lastSel.head);
+            // Evita seleccionar ocurrencias ya seleccionadas
+            let found = false;
+            while (searchCursor.findNext()) {
+              let alreadySelected = selections.some(sel =>
+                CodeMirror.cmpPos(sel.anchor, searchCursor.from()) === 0 &&
+                CodeMirror.cmpPos(sel.head, searchCursor.to()) === 0
+              );
+              if (!alreadySelected) {
+                cm.addSelection(searchCursor.from(), searchCursor.to());
+                found = true;
+                break;
+              }
+            }
+            // Si no encuentra más, no hace nada
+          },
+          "Alt-Click": function(cm) { cm.addSelection(cm.getCursor()); }, // Selección múltiple con Alt+Click
+          // "Enter": función eliminada para evitar el autocompletado de llaves
+        },
+
+        hintOptions: {
+          hint: cppHint
+        }
+      });
+
+
+      // Personalizamos el resaltado de ocurrencias para palabras completas
+      //editorInstance.setOption("highlightSelectionMatches", {showToken: /\w/, annotateScrollbar: true, wordsOnly: true});
+      editorInstance.setSize("100%", "100%");
+
+     // Restaurar texto si fue guardado hace menos de una hora
+if (editorText && dentroDeUnaHora) {
+  editorInstance.setValue(editorText);
+  editorIniciado = true;
+  //console.log("paso menos de una hora , coloco el codigo");
+}else{
+  //console.log("paso mas de una hora", dentroDeUnaHora);
+}
+
+// Si el editor estaba abierto y fue dentro de la hora, lo abrimos
+if (editorWasOpen && dentroDeUnaHora) {
+  setTimeout(() => {
+    toggleEditor();
+  }, 100); // Espera breve para asegurar que el editor esté inicializado
+}
+
+      // Guardar automáticamente el texto y estado del editor en cada cambio
+      editorInstance.on('change', function() {
+        localStorage.setItem('editorTexto', editorInstance.getValue());
+        localStorage.setItem('editorGuardadoHora', Date.now()); // guarda la hora en milisegundos
+      });
+
+      // Botón para abrir el formulario de función
+      document.getElementById('crear-funcion-btn').addEventListener('click', function() {
+        document.getElementById('formulario-funcion').style.display = 'block';
+        document.getElementById('tipo-retorno').focus();
+        // Permitir Enter para insertar función desde cualquier input
+        const form = document.getElementById('formulario-funcion');
+        if (!form._enterListenerAdded) {
+          form.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              reiniciarFormularioFuncion();
+              document.getElementById('insertar-funcion-btn').click();
+            }
+          });
+          form._enterListenerAdded = true;
+        }
+      });
+
+
+      // Cancelar formulario
+      document.getElementById('cancelar-funcion-btn').addEventListener('click', function() {
+        document.getElementById('formulario-funcion').style.display = 'none';
+      });
+
+      // Insertar función en el editor
+      document.getElementById('insertar-funcion-btn').addEventListener('click', function() {
+  const tipo = document.getElementById('tipo-retorno').value.trim() || 'int';
+  const nombre = document.getElementById('nombre-funcion').value.trim() || 'miFuncion';
+  const params = document.getElementById('parametros-funcion').value.trim();
+  const comentario = document.getElementById('comentario-funcion').value.trim();
+  let funcion = '';
+  if (comentario) {
+    funcion += `// ${comentario}\n`;
+  }
+  funcion += `${tipo} ${nombre}(${params}) {\n    \n}\n\n`;
+
+  const cursorPos = editorInstance.getCursor();
+  editorInstance.replaceRange(funcion, cursorPos);
+
+  const lineas = funcion.split('\n');
+  let offsetLinea = 0;
+  for (let i = 0; i < lineas.length; i++) {
+    if (lineas[i].trim() === '' && i > 0 && lineas[i-1].includes('{')) {
+      offsetLinea = i;
+      break;
+    }
+  }
+
+  editorInstance.setCursor({
+    line: cursorPos.line + offsetLinea,
+    ch: 4
+  });
+
+  document.getElementById('formulario-funcion').style.display = 'none';
+
+  // ✅ Copiar el nombre de la función
+  navigator.clipboard.writeText(nombre).then(() => {
+    //console.log("Nombre de la función copiado al portapapeles:", nombre);
+  }).catch(err => {
+    console.warn("No se pudo copiar el nombre al portapapeles:", err);
+  });
+
+  setTimeout(() => {
+    editorInstance.focus();
+  }, 50);
+});
+
+    };
+  
+let editorMaximizado = false;
+function toggleEditor() {
+  const overlay = document.getElementById("editor-overlay");
+  const editorBtn = document.getElementById("abrir-editor");
+  const inputArea = document.getElementById("input-area");
+  const output = document.getElementById("output");
+
+  if (overlay.style.display === "flex") {
+    // 💾 Guardar foco antes de minimizar
+    if (document.activeElement === editorInstance.getInputField()) {
+      focoAnterior = "editor";
+      posicionCursorEditor = editorInstance.getCursor();
+    } else if (document.activeElement === inputArea) {
+      focoAnterior = "input";
+    } else {
+      focoAnterior = null;
+    }
+    //console.log("Llegue hasta aca")
+    if(overlay.classList.contains("fullscreen-editor")) overlay.classList.remove("fullscreen-editor");
+    if(output.classList.contains("maximized"))output.classList.remove("maximized");
+    overlay.style.display = "none";
+    editorBtn.style.display = "inline-block";
+    localStorage.setItem('editorAbierto', 'false');
+
+  } else {
+    overlay.style.display = "flex";
+    if(editorMaximizado) overlay.classList.add("fullscreen-editor");
+    editorBtn.style.display = "none";
+    editorInstance.refresh();
+
+    if (!editorIniciado || editorInstance.getValue().trim() === "" || editorInstance.getValue().startsWith("// Escribí")) {
+      // Al abrir por primera vez, seleccionar plantilla según plantillaIndex
+      if (plantillaIndex === 1) editorInstance.setValue(PLANTILLA_VECTOR);
+      else if (plantillaIndex === 2) editorInstance.setValue(PLANTILLA_MATRIZ);
+      else editorInstance.setValue(PLANTILLA_CPP);
+      editorIniciado = true;
+      editorInstance.setCursor({ line: 4, ch: 0 });
+    } else if (focoAnterior === "editor" && posicionCursorEditor) {
+      editorInstance.setCursor(posicionCursorEditor);
+    }
+
+    // Restaurar foco al volver a abrir
+    if (focoAnterior === "editor") {
+      editorInstance.focus();
+    } else if (focoAnterior === "input") {
+      inputArea.focus();
+    }
+
+    focoAnterior = null;
+    localStorage.setItem('editorAbierto', 'true');
+  }
+}
+
+  
+    function restaurarPlantilla() {
+      // Establece la plantilla según plantillaIndex
+      if (plantillaIndex === 1) editorInstance.setValue(PLANTILLA_VECTOR);
+      else if (plantillaIndex === 2) editorInstance.setValue(PLANTILLA_MATRIZ);
+      else editorInstance.setValue(PLANTILLA_CPP);
+      document.getElementById("input-area").value = "";
+      document.getElementById("output-content").textContent = "Esperando ejecución...";
+    }
+  
+    // Ejecución de código llamando al backend que compila C++
+    function ejecutarCodigo() {
+  const sourceCode = editorInstance.getValue();
+  const input = document.getElementById("input-area").value;
+  const outputContent = document.getElementById("output-content");
+  const outputDiv = document.getElementById("output");
+  const toggleBtn = document.getElementById("toggleOutputSize");
+
+  // 1. Contar cantidad de variables que esperan ser ingresadas (por cin)
+  const cinRegex = /cin\s*>>([^;]+)/g;
+  let totalEntradasEsperadas = 0;
+  let match;
+  while ((match = cinRegex.exec(sourceCode)) !== null) {
+    const variables = match[1].split(">>").map(v => v.trim()).filter(Boolean);
+    totalEntradasEsperadas += variables.length;
+  }
+
+  // 2. Contar entradas proporcionadas por el usuario
+  const entradasUsuario = input.trim().split(/\s+/).filter(e => e.length > 0);
+  const totalEntradasUsuario = entradasUsuario.length;
+
+  // 3. Validar
+  if (totalEntradasEsperadas > 0 && totalEntradasUsuario !== totalEntradasEsperadas) {
+    alert(`⚠️ Advertencia: el código espera ${totalEntradasEsperadas} entradas, pero se ingresaron ${totalEntradasUsuario}.
+Esto puede causar errores si las entradas son insuficientes o sobran.\n\nSe ejecutará igual.`);
+  }
+
+  // Mostrar mensaje de ejecución
+  // Mostrar mensaje de ejecución: pulso + puntos animados
+  outputContent.textContent = "Ejecutando";
+  outputContent.classList.add('loading-pulse');
+  let dotCount = 0;
+  const maxDots = 3;
+  const dotIntervalId = setInterval(() => {
+    dotCount = (dotCount + 1) % (maxDots + 1); // 0..3
+    outputContent.textContent = 'Ejecutando' + '.'.repeat(dotCount);
+  }, 400);
+
+  fetch(COMPILER_API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: sourceCode,
+            input: input
+          })
+        })
+  .then(res => res.json())
+  .then(data => {
+    const output = data.output || "Sin salida";
+    const partes = output.split("Mensaje original de compilador:");
+  // Limpiar animación de puntos y pulso al recibir respuesta
+  if (typeof dotIntervalId !== 'undefined') clearInterval(dotIntervalId);
+  outputContent.classList.remove('loading-pulse');
+    if (partes.length === 2) {
+      // Si hay mensaje del compilador, maximiza la salida
+      outputDiv.classList.add("maximized");
+      toggleBtn.textContent = "🗗";
+      toggleBtn.title = "Minimizar salida";
+      outputContent.innerHTML =
+        `<div style="color: darkgreen; font-weight: bold; margin-bottom: 1em;">${partes[0].trim()}</div>` +
+        `<pre style="color: white; background: inherit; padding: 10px; border-radius: 5px;">${partes[1].trim()}</pre>`;
+        console.log(1);
+    } else if (/error|Error|compilador|compilation/i.test(output)) {
+      // Si detecta la palabra error, también maximiza
+      outputDiv.classList.add("maximized");
+      toggleBtn.textContent = "🗗";
+      toggleBtn.title = "Minimizar salida";
+      outputContent.textContent = output;
+      console.log(2);
+    } else {
+      // Salida normal
+      outputContent.textContent = output;
+      console.log(3)
+    }
+  })
+  .catch(err => {
+  // Limpiar animación de puntos y pulso en caso de error
+  if (typeof dotIntervalId !== 'undefined') clearInterval(dotIntervalId);
+  outputContent.classList.remove('loading-pulse');
+    outputDiv.classList.add("maximized");
+    toggleBtn.textContent = "🗗";
+    toggleBtn.title = "Minimizar salida";
+    outputContent.textContent = "Error al ejecutar: " + "El servidor esta caído, comuniquese con el profesor.";
+    console.log(4);
+  });
+}
+
+  
+    // Teclas rápidas para ejecutar, cerrar editor y restaurar plantilla
+    document.addEventListener("keydown", function (e) {
+      if ((e.key === "F9" || e.code === "F9") && document.getElementById("editor-overlay").style.display === "flex") {
+        e.preventDefault();
+        ejecutarCodigo();
+      }
+      if (e.key === "F10" || e.code === "F10") {
+        e.preventDefault();
+        toggleEditor();
+      }
+      if ((e.key === "F8" || e.code === "F8") && document.getElementById("editor-overlay").style.display === "flex") {
+        e.preventDefault();
+        document.getElementById("toggleOutputSize").click();
+      }
+      // F4: Restaurar plantilla si el editor está abierto
+      if ((e.key === "F4" || e.code === "F4") && document.getElementById("editor-overlay").style.display === "flex") {
+        e.preventDefault();
+        restaurarPlantilla();
+      }
+    });
+  
+    // Botón para maximizar/minimizar salida
+    const toggleBtn = document.getElementById("toggleOutputSize");
+    const outputDiv = document.getElementById("output");
+  
+    toggleBtn.addEventListener("click", () => {
+      outputDiv.classList.toggle("maximized");
+  
+      if (outputDiv.classList.contains("maximized")) {
+        toggleBtn.textContent = "🗗";  // icono minimizar
+        toggleBtn.title = "Minimizar salida";
+      } else {
+        toggleBtn.textContent = "🗗";  // icono maximizar
+        toggleBtn.title = "Maximizar salida";
+      }
+    });
+  
+    // ---- VALIDACIÓN ANTES DE PASAR AL SIGUIENTE EJERCICIO ----
+    let pegadoAutomatico = false;
+    // Abre modal con textarea para pegar código y validar
+    function abrirModalValidacion() {
+        if (indice < 0 || indice >= ejercicios.length) return;
+
+        const actual = ejercicios[indice];
+        if (!actual.casosDePrueba) {
+          indice++;
+          mostrarEjercicio();
+          return;
+        }
+      
+        //document.getElementById('caso-enunciado').textContent = actual.enunciado;
+      
+        const areaCodigo = document.getElementById('codigo-validacion');
+        areaCodigo.value = "";
+      
+        if (pegadoAutomatico && navigator.clipboard) {
+            navigator.clipboard.readText().then(texto => {
+              if (texto.trim().startsWith("#include")) {
+                areaCodigo.value = texto;
+              }else{
+                areaCodigo.focus();
+              }
+            }).catch(err => {
+            console.warn("No se pudo acceder al portapapeles:", err);
+            });
+        }else{
+          areaCodigo.focus();
+        }
+      
+        document.getElementById('resultado-validacion').textContent = "";
+        
+        document.getElementById('validacion-modal').style.display = "flex";
+        
+  }
+
+  
+    // Cierra modal validación
+    function cerrarModalValidacion() {
+      document.getElementById('validacion-modal').style.display = "none";
+    }
+  
+    // Probar el código del usuario contra los casos de prueba
+    function probarValidacion() {
+      console.log("entro a validacion");
+      document.getElementById("probar").disabled = true;
+      const codigoUsuario = document.getElementById('codigo-validacion').value.trim();
+      const resultadoArea = document.getElementById('resultado-validacion');
+  
+      if (!codigoUsuario) {
+        alert("Por favor, pegá tu código antes de probar.");
+        return;
+      }
+  
+      if (indice < 0 || indice >= ejercicios.length) {
+        alert("Ejercicio inválido.");
+        return;
+      }
+  
+      const ejercicioActual = ejercicios[indice];
+  
+      if (!ejercicioActual.casosDePrueba || ejercicioActual.casosDePrueba.length === 0) {
+        alert("Este ejercicio no tiene casos de prueba definidos.");
+        return;
+      }
+  
+      resultadoArea.textContent = "Probando casos de prueba...";
+  
+      // Ejecutar cada caso uno por uno
+      let errores = [];
+      
+      let promesas = ejercicioActual.casosDePrueba.map((caso, i) => {
+        //console.log(caso.entrada,i);
+        return fetch(COMPILER_API, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            code: codigoUsuario,
+            input: caso.entrada
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+      document.getElementById("probar").disabled = false;
+
+          let salidaObtenida = (data.output || "").trim();
+          let salidaEsperada = (caso.salida || "").trim();
+          //console.log(salidaObtenida);
+          //console.log(salidaEsperada);
+          // Limpio espacios y saltos para comparar más fácilmente
+          const normalizar = str => str.replace(/\r/g, "").trim();
+          salidaObtenida = normalizar(salidaObtenida);
+          salidaEsperada = normalizar(salidaEsperada);
+  
+          if (salidaObtenida !== salidaEsperada) {
+            errores.push({
+              indice: i + 1,
+              entrada: caso.entrada,
+              esperado: salidaEsperada,
+              obtenido: salidaObtenida
+            });
+            //console.log("la salida fue distinta");
+          }else console.log("las salidas coinciden")
+        })
+        .catch(err => {
+                document.getElementById("probar").disabled = false;
+
+          errores.push({
+            indice: i + 1,
+            entrada: caso.entrada,
+            esperado: "(error en compilación o ejecución)",
+            obtenido: err.message || err.toString()
+          });
+        });
+      });
+  
+      Promise.all(promesas).then(() => {
+        // VALIDAR PALABRAS CLAVE
+
+        if (errores.length === 0) {
+          // Primero cerramos el modal de validación y el editor para
+          // asegurar que el Swal quede visible por encima.
+          cerrarModalValidacion();
+          const overlay = document.getElementById("editor-overlay");
+          if (overlay && overlay.style.display === "flex") {
+            toggleEditor();
+          }
+
+          // Mostramos la alerta de éxito; al confirmar avanzamos.
+          Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'Todos los casos de prueba pasaron correctamente. Avanzando al siguiente ejercicio.',
+            confirmButtonText: 'Continuar'
+          }).then(() => {
+            subirCodigo(true);
+            ejercicioTerminado();
+            indice++;
+            mostrarEjercicio();
+            restaurarPlantilla();
+          });
+        } else {
+          subirCodigo(false);
+          let mensaje = "Algunos casos fallaron:\n\n";
+          errores.forEach(err => {
+            mensaje += `<span style="color:orange">Caso ${err.indice} (entrada: "${err.entrada}"):\nEsperado:</span>\n${err.esperado}\n<span style="color:white">Obtenido:</span>\n${err.obtenido}\n\n`;
+          });
+          resultadoArea.innerHTML = mensaje;
+        }
+      });
+    }
+    // Función para copiar el contenido del editor
+document.getElementById("copiar-codigo-btn").addEventListener("click", () => {
+  const btn = document.getElementById("copiar-codigo-btn");
+  const texto = editorInstance.getValue();
+
+  navigator.clipboard.writeText(texto).then(() => {
+    btn.textContent = "✅";
+    setTimeout(() => {
+      btn.textContent = "📋";
+    }, 500);
+  }).catch(() => {
+    alert("No se pudo copiar el código.");
+  });
+});
+
+let admin = false; // Cambiar a true para habilitar modo admin
+
+document.addEventListener("keydown", function (e) {
+  const ahora = new Date();
+  const minutos = ahora.getMinutes();
+  const ultimaCifra = minutos % 10;
+
+  // Verificamos si se presionó Alt (con o sin Shift) + la tecla numérica correspondiente
+  const presionoAlt = e.altKey;
+  const presionoShift = e.shiftKey;
+  const codigoCorrecto = e.code === `Digit${ultimaCifra}`;
+
+  if (presionoAlt && codigoCorrecto) {
+    admin = true;
+    //console.log("Modo admin activado por 10 segundos.");
+    setTimeout(() => {
+      admin = false;
+      //console.log("Modo admin desactivado.");
+    }, 10000);
+  }
+});
+
+function descargarCodigo() {
+  const contenido = editorInstance.getValue();
+  const blob = new Blob([contenido], { type: 'text/plain' });
+  const enlace = document.createElement('a');
+  enlace.href = URL.createObjectURL(blob);
+  enlace.download = 'codigo.cpp';
+  document.body.appendChild(enlace);
+  enlace.click();
+  document.body.removeChild(enlace);
+}
+
+
+
+function subirCodigo(aceptado) {
+  //Subir codigo con el enunciado
+  if(aceptado == undefined) aceptado = false;
+  const codigo = document.getElementById('codigo-validacion').value;
+  const ahora = new Date();
+  const fecha = ahora.toISOString().slice(0,10).replace(/-/g,"/");
+  const hora = String(ahora.getHours()).padStart(2, '0') + ":" + String(ahora.getMinutes()).padStart(2, '0');
+  const nombreArchivo = `${aceptado? 'A-':'R-'}Ejercicio${indice+1}_${hora}_${fecha}.cpp`;
+
+  // 👇 Obtenemos el enunciado actual y lo agregamos arriba del código
+  const enunciado = ejercicios[indice]?.enunciado || "";
+  const contenidoConEnunciado = `// EJERCICIO ${indice + 1}:\n// ${enunciado.replace(/\n/g, '\n// ')}\n\n${codigo}`;
+  fetch(GAS_WEBAPP_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      funcion: "subirCodigo",
+      nombreArchivo: nombreArchivo,
+      contenido: contenidoConEnunciado,
+      nombre,
+      apellido,
+    })
+  }).then(() => {
+    //console.log("Código enviado correctamente a GAS");
+    //console.log(contenidoConEnunciado);
+  }).catch((err) => {
+    console.error("Error al enviar el código:", err);
+  });
+}
+
+function moverLinea(cm, direccion) {
+  //console.log("estoy moviendo linea");
+  const rango = cm.listSelections();
+  cm.operation(() => {
+    rango.forEach(sel => {
+      const linea = sel.head.line;
+      const otraLinea = linea + direccion;
+      if (otraLinea < 0 || otraLinea >= cm.lineCount()) return;
+
+      const textoActual = cm.getLine(linea);
+      const textoOtra = cm.getLine(otraLinea);
+
+      cm.replaceRange(textoOtra, { line: linea, ch: 0 }, { line: linea, ch: textoActual.length });
+      cm.replaceRange(textoActual, { line: otraLinea, ch: 0 }, { line: otraLinea, ch: textoOtra.length });
+
+      cm.setCursor({ line: otraLinea, ch: sel.head.ch });
+    });
+  });
+}
+
+function duplicarLinea(cm, direccion) {
+  const cursor = cm.getCursor();
+  const line = cursor.line;
+  const textActual = cm.getLine(line);
+  const destino = direccion > 0 ? line + 1 : line;
+
+  cm.operation(() => {
+    cm.replaceRange(textActual + "\n", { line: destino, ch: 0 });
+    cm.setCursor({ line: destino, ch: cursor.ch });
+    cm.focus(); // <- mantener el foco
+  });
+}
+
+document.addEventListener("keydown", function(e) {
+  //if (!editorInstance) return;
+  if (
+    (e.ctrlKey && e.altKey && e.key === "ArrowUp") ||
+    (e.altKey && e.key.toLowerCase() === "t")
+  ) {
+    e.preventDefault();
+    e.stopPropagation();
+    moverLinea(editorInstance, -1);
+  }
+
+  if (
+    (e.ctrlKey && e.altKey && e.key === "ArrowDown") ||
+    (e.altKey && e.key.toLowerCase() === "r")
+  )  {
+    e.preventDefault();
+    e.stopPropagation();
+    moverLinea(editorInstance, 1);
+  }
+
+  // Duplicar línea arriba
+  if ((e.ctrlKey && e.shiftKey && e.key === "ArrowUp") || e.altKey && e.key.toLowerCase() === "v") {
+    e.preventDefault();
+    e.stopPropagation();
+    duplicarLinea(editorInstance, -1);
+  }
+
+  // Duplicar línea abajo
+  if ((e.ctrlKey && e.shiftKey && e.key === "ArrowDown") || e.altKey && e.key.toLowerCase() === "c") {
+    e.preventDefault();
+    e.stopPropagation();
+    duplicarLinea(editorInstance, 1);
+  }
+});
+
+document.getElementById("atajos-btn").addEventListener("click", () => {
+  document.getElementById("modal-atajos").style.display = "flex";
+});
+
+let focoAnterior = null;
+let posicionCursorEditor = null;
+
+document.addEventListener("keydown", function(e) {
+  if (e.key === "F11" || e.code === "F11") {
+    e.preventDefault();
+    // Ciclar entre 0,1,2
+    plantillaIndex = (plantillaIndex + 1) % 3;
+    // Si el editor está abierto, actualizar su contenido con la plantilla seleccionada
+    const overlay = document.getElementById("editor-overlay");
+    if (overlay.style.display === "flex" && typeof editorInstance !== 'undefined' && editorInstance) {
+      if (plantillaIndex === 1) editorInstance.setValue(PLANTILLA_VECTOR);
+      else if (plantillaIndex === 2) editorInstance.setValue(PLANTILLA_MATRIZ);
+      else editorInstance.setValue(PLANTILLA_CPP);
+      // posicionar cursor aproximadamente dentro del main
+      editorInstance.setCursor({ line: 4, ch: 0 });
+      editorInstance.focus();
+    }
+  }
+});
+
+
+function modalValidarCodigo() {
+
+    const overlay = document.getElementById("editor-overlay");
+    if (overlay.style.display === "flex") {
+
+      // 3. Esperar un pequeño tiempo para que el editor se cierre antes de abrir el modal
+      
+        // 4. Maximizar el modal de validación
+        abrirModalValidacion();
+
+        // 5. Pegar automáticamente el código del editor
+        const codigo = editorInstance.getValue();
+        const areaValidacion = document.getElementById("codigo-validacion");
+
+        if (codigo && codigo.trim()) {
+          areaValidacion.value = codigo;
+        }
+
+        const btnProbar = document.querySelector("#validacion-modal button");
+          if (btnProbar) {
+            btnProbar.click();
+          }
+      
+    }
+}
+document.addEventListener("keydown", function(e) {
+  if (e.key === "F7" || e.code === "F7") {
+    e.preventDefault();
+    modalValidarCodigo();
+  }
+  if (event.key === 'F6') {
+    event.preventDefault(); // Evita que el navegador use F6 para otra cosa
+
+    const codigo = editorInstance.getValue(); // Obtené el código del editor
+    const nuevoCodigo = agregarPrototiposCpp(codigo); // Agregá prototipos
+    editorInstance.setValue(nuevoCodigo); // Reemplazá el código actual
+  }
+});
+
+function agregarPrototiposCpp(codigo) {
+  const lineas = codigo.split('\n');
+  const regexFuncion = /^(\w[\w\s:*&<>]*?)\s+(\w+)\s*\(([^)]*)\)\s*{/;
+  const regexPrototipo = /^(\w[\w\s:*&<>]*?)\s+(\w+)\s*\(([^)]*)\)\s*;/;
+  const funciones = [];
+  let indiceMain = -1;
+
+  // Buscar el índice donde comienza el main
+  for (let i = 0; i < lineas.length; i++) {
+    if (/int\s+main\s*\(/.test(lineas[i])) {
+      indiceMain = i;
+      break;
+    }
+  }
+
+  if (indiceMain === -1) {
+    alert("No se encontró la función main().");
+    return codigo;
+  }
+
+  // Buscar definiciones de funciones fuera del main
+  for (let i = 0; i < lineas.length; i++) {
+    const linea = lineas[i].trim();
+    const match = linea.match(regexFuncion);
+    if (match) {
+      const tipoRetorno = match[1].trim();
+      const nombreFuncion = match[2].trim();
+      const parametros = match[3].trim();
+
+      if (nombreFuncion === 'main') continue;
+
+      const tiposParams = parametros
+        ? parametros
+            .split(',')
+            .map(p => {
+              // Ejemplo: "int v[]", "float x", "char nombre[20]"
+              let partes = p.trim().split(/\s+/);
+              let tipo = partes.slice(0, -1).join(' ');
+              let nombre = partes[partes.length - 1] || '';
+              // Si el nombre termina con [] o [algo], agregarlo al tipo
+              let arrayMatch = nombre.match(/(\[.*\])/);
+              if (arrayMatch) {
+                tipo += arrayMatch[1];
+              }
+              // Si solo hay un elemento, puede ser "int[]" o "int"
+              if (partes.length === 1) {
+                tipo = partes[0];
+              }
+              return tipo;
+            })
+            .join(', ')
+        : '';
+
+      funciones.push(`${tipoRetorno} ${nombreFuncion}(${tiposParams});`);
+    }
+  }
+
+  // Obtener todos los prototipos ya presentes antes del main (normalizados)
+  function normalizarPrototipo(str) {
+    return str.replace(/\s+/g, '').replace(/;$/, '');
+  }
+  const prototiposExistentes = new Set();
+  for (let i = 0; i < indiceMain; i++) {
+    const linea = lineas[i].trim();
+    if (regexPrototipo.test(linea)) {
+      prototiposExistentes.add(normalizarPrototipo(linea));
+    }
+  }
+
+  // Filtrar solo los prototipos que no están presentes (comparando normalizados)
+  const prototiposFinales = funciones.filter(p => !prototiposExistentes.has(normalizarPrototipo(p)));
+
+  if (prototiposFinales.length > 0) {
+    // Buscar el último prototipo antes del main
+    let ultimaLineaPrototipo = -1;
+    for (let i = 0; i < indiceMain; i++) {
+      if (regexPrototipo.test(lineas[i].trim())) {
+        ultimaLineaPrototipo = i;
+      }
+    }
+    let nuevasLineas;
+    if (ultimaLineaPrototipo >= 0) {
+      // Insertar los nuevos prototipos justo después del último prototipo
+      nuevasLineas = [
+        ...lineas.slice(0, ultimaLineaPrototipo + 1),
+        ...prototiposFinales,
+        ...lineas.slice(ultimaLineaPrototipo + 1)
+      ];
+    } else {
+      // Si no hay prototipos, insertarlos antes del main y dejar una línea en blanco
+      nuevasLineas = [
+        ...lineas.slice(0, indiceMain),
+        ...prototiposFinales,
+        '',
+        ...lineas.slice(indiceMain)
+      ];
+    }
+    return nuevasLineas.join('\n');
+  }
+
+  return codigo;
+}
+
+const btnMaximizarSoloEditor = document.getElementById("maximizarSoloEditor");
+const editorTextArea = document.getElementById("editor");
+const inputArea = document.getElementById("input-area");
+const outputArea = document.getElementById("output");
+
+let editorSoloMax = false;
+
+btnMaximizarSoloEditor.addEventListener("click", () => {
+  editorSoloMax = !editorSoloMax;
+  const overlay = document.getElementById("editor-overlay");
+  if (editorSoloMax) {
+    overlay.classList.add("fullscreen-editor");
+    btnMaximizarSoloEditor.textContent = "🗗";
+    btnMaximizarSoloEditor.title = "Restaurar vista completa";
+  } else {
+    overlay.classList.remove("fullscreen-editor");
+    btnMaximizarSoloEditor.textContent = "🗖";
+    btnMaximizarSoloEditor.title = "Maximizar solo el editor";
+  }
+  editorInstance.refresh(); // redibuja el editor
+});
+document.addEventListener("keydown", function(e) {
+  if (e.key === "F3") {
+    e.preventDefault();
+    btnMaximizarSoloEditor.click();
+    editorMaximizado = !editorMaximizado;
+  }else if(e.key == "F2"){
+    document.getElementById('crear-funcion-btn').click();
+  }else if(e.key == "Escape" &&  document.getElementById('formulario-funcion').style.display == 'block'){
+     document.getElementById('cancelar-funcion-btn').click();
+  }else if(e.key == "Escape" && document.getElementById("modal-atajos").style.display == "flex"){
+    document.getElementById('modal-atajos').style.display='none';
+  }
+});
+
+
+    function reiniciarFormularioFuncion() {
+  document.getElementById('nombre-funcion').value = '';
+  document.getElementById('tipo-retorno').value = '';
+  document.getElementById('parametros-funcion').value = '';
+  document.getElementById('comentario-funcion').value = '';
+}
+
+
+  </script>  
+  <script>
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'F8') {
+        const resultado = document.getElementById('resultado-validacion');
+        if (resultado) {
+          resultado.classList.toggle('maximizado');
+        }
+      }
+    });
+  </script>
+  <script>
+
+  // --- Autocompletado personalizado Shift+Espacio ---
+  function inicializarAutocompletadoPersonalizado() {
+    let autocompleteMenu = document.getElementById('autocomplete-menu');
+    let autocompleteOptions = [];
+    let autocompleteIndex = 0;
+    let navegandoConShiftEspacio = false;
+
+    function getWordsFromEditor() {
+      const text = editorInstance.getValue();
+      const words = Array.from(new Set(text.match(/\b\w{2,}\b/g)));
+      
+      // Lista de palabras clave de C++ que queremos ignorar
+      const cppKeywords = [
+        "if", "else", "while", "for", "do", "switch", "case", "break", "continue", "return", 
+        "struct", "class", "public", "private", "protected", "void", "int", "float", "double", 
+        "char", "bool", "true", "false", "namespace", "using", "include", "cout", "cin", "endl", 
+        "const", "static", "virtual", "override", "template", "typename", "try", "catch", "throw", 
+        "new", "delete", "this", "operator", "friend", "enum", "typedef", "sizeof", "main",
+        "auto", "register", "extern", "mutable", "inline", "explicit", "volatile", "signed", 
+        "unsigned", "short", "long", "default", "goto", "union", "inline", "noexcept", "nullptr",
+        "override", "final", "decltype", "constexpr", "alignas", "alignof", "char16_t", "char32_t",
+        "thread_local", "static_assert", "typeid", "typename", "concept", "requires", "co_await",
+        "co_return", "co_yield", "import", "module", "export", "iostream", "std"
+      ];
+      
+      // Filtrar las palabras clave de C++
+      const filteredWords = words.filter(word => !cppKeywords.includes(word));
+      return filteredWords || [];
+    }
+
+    function showAutocompleteMenu(options, coords) {
+      autocompleteMenu.innerHTML = '';
+      options.forEach((opt, i) => {
+        const div = document.createElement('div');
+        div.textContent = opt;
+        div.style.padding = '4px 12px';
+        div.style.cursor = 'pointer';
+        div.style.background = (i === autocompleteIndex) ? '#e3f2fd' : 'white';
+        div.onclick = () => selectAutocomplete(i);
+        autocompleteMenu.appendChild(div);
+      });
+      autocompleteMenu.style.display = 'block';
+      autocompleteMenu.style.left = coords.left + 'px';
+      autocompleteMenu.style.top = coords.top + 'px';
+      autocompleteMenu.style.minWidth = '120px';
+    }
+
+    function hideAutocompleteMenu() {
+      autocompleteMenu.style.display = 'none';
+      autocompleteOptions = [];
+    }
+
+    function selectAutocomplete(idx) {
+      if (!autocompleteOptions.length) return;
+      const word = autocompleteOptions[idx];
+      const doc = editorInstance.getDoc();
+      const cursor = doc.getCursor();
+      const line = doc.getLine(cursor.line);
+      const before = line.slice(0, cursor.ch);
+      const match = before.match(/(\w+)$/);
+      if (match) {
+        const start = { line: cursor.line, ch: cursor.ch - match[1].length };
+        doc.replaceRange(word, start, cursor);
+      } else {
+        doc.replaceRange(word, cursor);
+      }
+      hideAutocompleteMenu();
+      editorInstance.focus();
+    }
+
+    // Detectar Shift+Espacio en el editor
+    editorInstance.on('keydown', function(cm, e) {
+      // Shift+Espacio: mostrar menú o navegar entre opciones
+      if (e.shiftKey && e.code === 'Space') {
+        e.preventDefault();
+        const doc = cm.getDoc();
+        const cursor = doc.getCursor();
+        const line = doc.getLine(cursor.line);
+        const before = line.slice(0, cursor.ch);
+        const match = before.match(/(\w+)$/);
+        let prefix = match ? match[1] : '';
+        let words = getWordsFromEditor().filter(w => w.startsWith(prefix) && w !== prefix);
+        if (words.length === 0) {
+          hideAutocompleteMenu();
+          navegandoConShiftEspacio = false;
+          return;
+        }
+        if (words.length === 1) {
+          autocompleteOptions = words;
+          autocompleteIndex = 0;
+          autocompleteMenu.style.display = 'none'; // No mostrar menú
+          selectAutocomplete(0); // Autocompletar inmediatamente
+          navegandoConShiftEspacio = false;
+          return;
+        }
+        // Si ya está el menú abierto y estamos navegando, avanzar a la siguiente opción SOLO si mantengo Shift
+        if (autocompleteMenu.style.display === 'block' && navegandoConShiftEspacio) {
+          autocompleteIndex = (autocompleteIndex + 1) % autocompleteOptions.length;
+          showAutocompleteMenu(autocompleteOptions, autocompleteMenu.getBoundingClientRect());
+        } else {
+          autocompleteOptions = words;
+          autocompleteIndex = 0;
+          const coords = cm.cursorCoords(cursor, 'page');
+          showAutocompleteMenu(words, coords);
+          navegandoConShiftEspacio = true;
+        }
+      } else if (autocompleteMenu.style.display === 'block') {
+        // Navegación con flechas y Enter
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          autocompleteIndex = (autocompleteIndex + 1) % autocompleteOptions.length;
+          showAutocompleteMenu(autocompleteOptions, autocompleteMenu.getBoundingClientRect());
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          autocompleteIndex = (autocompleteIndex - 1 + autocompleteOptions.length) % autocompleteOptions.length;
+          showAutocompleteMenu(autocompleteOptions, autocompleteMenu.getBoundingClientRect());
+        } else if (e.key === 'Enter') {
+          e.preventDefault();
+          selectAutocomplete(autocompleteIndex);
+          navegandoConShiftEspacio = false;
+        } else if (e.key === 'Escape') {
+          hideAutocompleteMenu();
+          navegandoConShiftEspacio = false;
+        }
+      }
+    });
+
+    // Detectar cuando se suelta Shift+Espacio para autocompletar con la opción seleccionada
+    editorInstance.on('keyup', function(cm, e) {
+      // Al soltar Shift, autocompletar si corresponde (una o varias opciones)
+      if (navegandoConShiftEspacio && e.key === 'Shift') {
+        selectAutocomplete(autocompleteIndex);
+        navegandoConShiftEspacio = false;
+      }
+    });
+
+    document.addEventListener('mousedown', function(e) {
+      if (autocompleteMenu.style.display === 'block' && !autocompleteMenu.contains(e.target)) {
+        hideAutocompleteMenu();
+      }
+    });
+  }
+
+  // Esperar a que editorInstance esté definido
+  window.addEventListener('load', () => {
+    if (typeof editorInstance !== 'undefined' && editorInstance) {
+      inicializarAutocompletadoPersonalizado();
+    } else {
+      // Si el editor se inicializa de forma asíncrona, observar hasta que esté disponible
+      let intentos = 0;
+      const intervalo = setInterval(() => {
+        if (typeof editorInstance !== 'undefined' && editorInstance) {
+          clearInterval(intervalo);
+          inicializarAutocompletadoPersonalizado();
+        } else if (++intentos > 50) {
+          clearInterval(intervalo);
+          console.warn('No se pudo inicializar el autocompletado personalizado: editorInstance no está disponible.');
+        }
+      }, 100);
+    }
+  });
+  document.getElementById("formulario-funcion").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        
+        document.getElementById("insertar-funcion-btn").click();
+      }
+  }
+)
+
+
+function ejercicioTerminado() {
+    return new Promise(async (resolve, reject) => {
+    let URL = GAS_WEBAPP_URL + `?funcion=ejercicioTerminado&nombre=${encodeURIComponent(nombre)}&apellido=${encodeURIComponent(apellido)}&indice=${indice}&finalizado=${indice+1 == ejercicios.length}`;
+      try {
+        const res = await fetch(URL);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} al pedir ejercicios`);
+        }
+
+        const obj = await res.json();
+        //console.log("objeto retorno", obj);
+        if (!obj) {
+          throw new Error("Fallo al acutualizar el indice");
+        }else{
+          console.log("datos enviados");
+        }
+        
+        resolve();
+      } catch (err) {
+        console.warn("No se pudo cargar ejercicios desde GAS:", err.message);
+        reject(err);
+      }
+
+    });
+  }
+
+  function cambiarContrasenia() {
+    return new Promise(async (resolve, reject) => {
+      let URL = GAS_WEBAPP_URL + `?funcion=cambiarContrasenia&nombre=${nombre}&apellido=${apellido}&titulo=${document.getElementById("titulo").innerHTML}&indice=${indice}`;
+      //console.log(URL);
+      try {
+        const res = await fetch(URL);
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} al pedir ejercicios`);
+        }
+
+        const obj = await res.json();
+        //console.log("objeto retorno", obj);
+        if (!obj) {cambiarContrasenia
+          throw new Error("La respuesta no contiene 'tarea' como array");
+        }
+        if(obj.resultado === false){
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No tenes ninguna tarea cargada',
+            confirmButtonText: 'Entendido'
+          });
+        }
+        //console.log(obj);
+        // Asignás el array que te manda GAS a tu variable global
+        pasarEjercicio = obj;
+        resolve();
+      } catch (err) {
+        console.warn("No se pudo cargar ejercicios desde GAS:", err.message);
+        reject(err);
+      } 
+
+    });
+  }
+
+  function cambiarURL() {
+     COMPILER_API = 'http://localhost:3000/compile';
+  }
+
+  function titulo() {
+    const titulo = document.getElementById("titulo").innerHTML.trim();
+    return {
+      esBasico: titulo === "Ejercicios Basicos",
+      esBasicoMedio: titulo === "Ejercicios Basico-Medio",
+      esIntermedio: titulo === "Ejercicios Intermedio",
+      esAvanzado: titulo === "Ejercicios Avanzados",
+      esRecursivoBasico: titulo === "Ejercicios Recursivos Basicos",
+      esRecursivoAvanzado: titulo === "Ejercicios Recursivos Avanzados",
+      esVectoresBasico: titulo === "Ejercicios Vectores Basicos Iterativos",
+      esVectoresAvanzado: titulo === "Ejercicios Vectores Avanzados Iterativos"
+    };
+  }
+  function cerrarSesion() {
+    // Elimina los datos de sesión del usuario
+    localStorage.removeItem("Nombre");
+    localStorage.removeItem("Apellido");
+    sessionStorage.clear();
+    // Redirige al usuario a la página de inicio de sesión
+    window.location.href = "/Horarios/Login/Login.html";
+  }
+
+  // Función para abrir modal de corrección de casos de prueba
+  function corregirCasosPrueba() {
+    if (indice < 0 || indice >= ejercicios.length) {
+      alert("Ejercicio inválido.");
+      return;
+    }
+
+    const ejercicioActual = ejercicios[indice];
+    if (!ejercicioActual.casosDePrueba || ejercicioActual.casosDePrueba.length === 0) {
+      alert("Este ejercicio no tiene casos de prueba definidos.");
+      return;
+    }
+
+    // Solicitar contraseña
+    Swal.fire({
+      title: "Confirmación",
+      text: "Para corregir casos de prueba, ingresá la contraseña (solicitela al profesor):",
+      input: "text",
+      inputPlaceholder: "Contraseña",
+      inputAttributes: {
+        autocapitalize: "off",
+        autocorrect: "off"
+      },
+      showCancelButton: true,
+      confirmButtonText: "Aceptar",
+      cancelButtonText: "Cancelar",
+      preConfirm: (value) => {
+        if (value.toString() !== pasarEjercicio.toString()) {
+          Swal.showValidationMessage("Contraseña incorrecta.");
+          return false;
+        } else {
+          abrirModalCorregirCasos();
+        }
+      }
+    });
+  }
+
+  // Función para abrir el modal de edición de casos de prueba
+  function abrirModalCorregirCasos() {
+    if (indice < 0 || indice >= ejercicios.length) return;
+
+    const ejercicioActual = ejercicios[indice];
+    const contenedor = document.getElementById('contenedor-casos-prueba');
+    const numeroEjercicio = document.getElementById('numero-ejercicio-corregir');
+    
+    numeroEjercicio.textContent = indice + 1;
+    contenedor.innerHTML = '';
+
+    // Crear campos para cada caso de prueba
+    ejercicioActual.casosDePrueba.forEach((caso, i) => {
+      const casoDiv = document.createElement('div');
+      casoDiv.style.marginBottom = '1.5rem';
+      casoDiv.style.padding = '1rem';
+      casoDiv.style.background = '#333';
+      casoDiv.style.borderRadius = '8px';
+      casoDiv.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+          <strong style="color:#00ffcc;">Caso de prueba #${i + 1}</strong>
+          <button onclick="eliminarCasoPrueba(${i})" style="background-color:#dc3545;padding:0.3rem 0.8rem;font-size:0.9rem;">Eliminar</button>
+        </div>
+        <label style="display:block;margin-bottom:0.5rem;color:#aaa;">Entrada:</label>
+        <textarea id="caso-entrada-${i}" style="width:100%;padding:0.5rem;font-family:monospace;background:#111;color:#00ffcc;border:none;border-radius:4px;min-height:60px;resize:vertical;" placeholder="Entrada del caso de prueba">${caso.entrada || ''}</textarea>
+        <label style="display:block;margin-top:0.8rem;margin-bottom:0.5rem;color:#aaa;">Salida esperada:</label>
+        <textarea id="caso-salida-${i}" style="width:100%;padding:0.5rem;font-family:monospace;background:#111;color:#00ffcc;border:none;border-radius:4px;min-height:60px;resize:vertical;" placeholder="Salida esperada">${caso.salida || ''}</textarea>
+      `;
+      contenedor.appendChild(casoDiv);
+    });
+
+    document.getElementById('modal-corregir-casos').style.display = 'flex';
+  }
+
+  // Función para cerrar el modal de corrección
+  function cerrarModalCorregirCasos() {
+    document.getElementById('modal-corregir-casos').style.display = 'none';
+  }
+
+  // Función para agregar un nuevo caso de prueba
+  function agregarCasoPrueba() {
+    if (indice < 0 || indice >= ejercicios.length) return;
+
+    const ejercicioActual = ejercicios[indice];
+    if (!ejercicioActual.casosDePrueba) {
+      ejercicioActual.casosDePrueba = [];
+    }
+
+    // Agregar nuevo caso vacío al array
+    ejercicioActual.casosDePrueba.push({ entrada: '', salida: '' });
+
+    // Reabrir el modal para mostrar el nuevo caso
+    abrirModalCorregirCasos();
+  }
+
+  // Función para eliminar un caso de prueba
+  function eliminarCasoPrueba(indiceCaso) {
+    if (indice < 0 || indice >= ejercicios.length) return;
+
+    const ejercicioActual = ejercicios[indice];
+    if (ejercicioActual.casosDePrueba && ejercicioActual.casosDePrueba.length > indiceCaso) {
+      ejercicioActual.casosDePrueba.splice(indiceCaso, 1);
+      abrirModalCorregirCasos(); // Refrescar la vista
+    }
+  }
+
+  // Función para guardar los cambios en los casos de prueba
+  function guardarCasosPrueba() {
+    if (indice < 0 || indice >= ejercicios.length) {
+      alert("Ejercicio inválido.");
+      return;
+    }
+
+    const ejercicioActual = ejercicios[indice];
+    if (!ejercicioActual.casosDePrueba) {
+      ejercicioActual.casosDePrueba = [];
+    }
+
+    // Recopilar todos los casos de prueba editados
+    const nuevosCasos = [];
+    const contenedor = document.getElementById('contenedor-casos-prueba');
+    const casosDivs = contenedor.querySelectorAll('div[style*="background:#333"]');
+
+    casosDivs.forEach((casoDiv) => {
+      // Buscar los textareas dentro de este div
+      const textareas = casoDiv.querySelectorAll('textarea');
+      if (textareas.length >= 2) {
+        const entrada = textareas[0].value || '';
+        const salida = textareas[1].value || '';
+        
+        if (entrada.trim() || salida.trim()) {
+          nuevosCasos.push({
+            entrada: entrada,
+            salida: salida
+          });
+        }
+      }
+    });
+
+    if (nuevosCasos.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Advertencia',
+        text: 'Debe haber al menos un caso de prueba con entrada o salida.',
+        confirmButtonText: 'Entendido'
+      });
+      return;
+    }
+
+    // Actualizar el array de casos de prueba
+    ejercicioActual.casosDePrueba = nuevosCasos;
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Casos de prueba actualizados',
+      text: 'Los casos de prueba han sido modificados correctamente.',
+      confirmButtonText: 'Entendido'
+    });
+
+    cerrarModalCorregirCasos();
+  }
+  document.addEventListener("keydown", function(e) {
+    if (e.altKey && (e.key === "s" || e.key === "S")) {
+      e.preventDefault();
+      cerrarSesion();
+    }
+   });
+   let contador = 1;
+
+   setInterval(()=>{
+    contador++;
+    if(contador > 60) location.reload();
+   }, 10000);
+   
+  document.addEventListener('keydown', function() {
+      contador = 0;
+  });
+
+  // Función para borrar el historial del editor
+  function limpiarHistorialEditor() {
+    if (typeof editorInstance !== 'undefined' && editorInstance) {
+      // Limpiar el historial de deshacer/rehacer
+      editorInstance.clearHistory();
+      console.log("Historial del editor borrado");
+    }
+  }
+
+  // Listener para Alt + H
+  document.addEventListener("keydown", function(e) {
+    if (e.altKey && (e.key === "h" || e.key === "H")) {
+      e.preventDefault();
+      limpiarHistorialEditor();
+    }
+  });
+  </script>  
+</body>
+</html>
