@@ -862,10 +862,6 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                     slot.onclick = () => {
                         mostrarAvisoPackTerminadoSiCorresponde();
                         if (isOccupied && !isAdmin) return Swal.fire({ icon: 'error', title: 'Turno Ocupado', text: 'Esta hora ya ha sido reservada.', background: '#1a1a1a', color: '#fff' });
-                        if (!isAdmin && selectedSlots.length > 0) {
-                            const primerDia = selectedSlots[0].split(' ')[0];
-                            if (isoDate !== primerDia) return Swal.fire({ icon: 'warning', title: 'Un día a la vez', text: 'Solo puedes elegir horas del mismo día.', background: '#1a1a1a', color: '#fff' });
-                        }
                         if (!isAdmin && slotTime < limit12) {
                             return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 12 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
                         }
@@ -1042,20 +1038,36 @@ async function gestionarReserva() {
             const diasNombres = puedeFinDeSemana
                 ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
                 : ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
-            const [fecha0, hora0] = selectedSlots[0].split(' ');
-            const d0 = new Date(fecha0 + 'T00:00:00');
-            const dayOfWeek0 = d0.getDay(); // 0=Domingo, 1=Lunes,...6=Sábado
-            const idx0 = dayOfWeek0 === 0 ? 6 : dayOfWeek0 - 1;
-            const diaNombre = diasNombres[idx0].charAt(0).toUpperCase() + diasNombres[idx0].slice(1);
-            const fechaStr = `${d0.getDate()}/${(d0.getMonth()+1).toString().padStart(2,'0')}`;
             const horas = selectedSlots.map(id => id.split(' ')[1]).sort();
             const horaInicio = horas[0];
             const horaFinSlot = horas[horas.length - 1];
             const horaFinHasta = horaFinSlot.replace(':00', ':59');
-            const textoRango = horaInicio === horaFinSlot
-                ? `a las ${horaInicio} hs`
-                : `de ${horaInicio} a ${horaFinHasta} hs`;
-            const textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}`;
+            const fechas = selectedSlots.map(id => id.split(' ')[0]);
+            const fechasUnicas = [...new Set(fechas)];
+            const formatearDia = (d) => {
+                const dayOfWeek = d.getDay(); // 0=Domingo, 1=Lunes,...6=Sábado
+                const idx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                const diaNombre = diasNombres[idx].charAt(0).toUpperCase() + diasNombres[idx].slice(1);
+                const fechaStr = `${d.getDate()}/${(d.getMonth()+1).toString().padStart(2,'0')}`;
+                return { diaNombre, fechaStr };
+            };
+
+            let textoResumen = "";
+            if (fechasUnicas.length === 1) {
+                const d0 = new Date(fechasUnicas[0] + 'T00:00:00');
+                const { diaNombre, fechaStr } = formatearDia(d0);
+                const textoRango = horaInicio === horaFinSlot
+                    ? `a las ${horaInicio} hs`
+                    : `de ${horaInicio} a ${horaFinHasta} hs`;
+                textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}`;
+            } else {
+                const fechasOrdenadas = [...fechasUnicas].sort();
+                const dMin = new Date(fechasOrdenadas[0] + 'T00:00:00');
+                const dMax = new Date(fechasOrdenadas[fechasOrdenadas.length - 1] + 'T00:00:00');
+                const { diaNombre: diaMin, fechaStr: fechaMin } = formatearDia(dMin);
+                const { diaNombre: diaMax, fechaStr: fechaMax } = formatearDia(dMax);
+                textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}`;
+            }
 
             const htmlConfirmacion = `
                 <div style="text-align: left; font-size: 0.95rem; color: #333;">
