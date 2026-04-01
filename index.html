@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C/S | Clases Particulares</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         :root {
             --primary: #f3a661;
@@ -385,6 +385,21 @@
                 nav.classList.remove('scrolled');
             }
         });
+        function descargarLogo() {
+  const logo = document.querySelector(".logo-box");
+
+  html2canvas(logo, {
+    backgroundColor: null, // 🔥 fondo transparente
+    scale: 4 // 🔥 mejor calidad (importantísimo)
+  }).then(canvas => {
+
+    const link = document.createElement("a");
+    link.download = "logo.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+  });
+}
     </script>
 </body>
 </html>
