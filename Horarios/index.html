@@ -458,6 +458,12 @@
     <script>
         const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
+        const MATERIAS_RESERVA = [
+            'Algoritmos y Estructuras de Datos',
+            'Arquitectura de Computadoras',
+            'Paradigmas de Programacion',
+            'Sintaxis y Semantica'
+        ];
 let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         const EMAILS_FINES_DE_SEMANA = [
             "juanma.2000@hotmail.com",
@@ -1033,6 +1039,41 @@ async function gestionarReserva() {
                 precioTotal = precioPorPersona * integrantes.length;
             }
 
+            const htmlMateria = `
+                <input type="hidden" id="materiaValue" value="" />
+                <p style="margin:0 0 12px; font-size:0.9rem; color:#333; text-align:center;">¿A qué materia vas a asistir?</p>
+                <div class="mod-selector" style="flex-direction:column; width:100%; gap:10px;">
+                    ${MATERIAS_RESERVA.map((m, i) => `<div class="mod-card materia-card" data-materia-idx="${i}" style="max-width:none; min-width:0; text-align:left;"><div class="mod-title" style="font-size:0.85rem; line-height:1.35;">${m}</div></div>`).join('')}
+                </div>
+            `;
+
+            const { value: materia } = await Swal.fire({
+                title: 'Materia',
+                html: htmlMateria,
+                customClass: { container: 'swal-modal-light' },
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Continuar',
+                confirmButtonColor: '#f3a661',
+                preConfirm: () => {
+                    const v = document.getElementById('materiaValue').value;
+                    if (!v) { Swal.showValidationMessage('Elegí una materia'); return false; }
+                    return v;
+                },
+                didOpen: () => {
+                    document.querySelectorAll('.materia-card').forEach(card => {
+                        card.addEventListener('click', () => {
+                            document.querySelectorAll('.materia-card').forEach(c => c.classList.remove('selected'));
+                            card.classList.add('selected');
+                            const idx = parseInt(card.getAttribute('data-materia-idx'), 10);
+                            document.getElementById('materiaValue').value = MATERIAS_RESERVA[idx] || '';
+                        });
+                    });
+                }
+            });
+
+            if (!materia) return;
+
             const puedeFinDeSemana = tieneAccesoFinDeSemana();
             const letras = puedeFinDeSemana ? ['B', 'C', 'D', 'E', 'F', 'G', 'H'] : ['B', 'C', 'D', 'E', 'F'];
             const diasNombres = puedeFinDeSemana
@@ -1059,14 +1100,14 @@ async function gestionarReserva() {
                 const textoRango = horaInicio === horaFinSlot
                     ? `a las ${horaInicio} hs`
                     : `de ${horaInicio} a ${horaFinHasta} hs`;
-                textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}`;
+                textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''} · ${materia}`;
             } else {
                 const fechasOrdenadas = [...fechasUnicas].sort();
                 const dMin = new Date(fechasOrdenadas[0] + 'T00:00:00');
                 const dMax = new Date(fechasOrdenadas[fechasOrdenadas.length - 1] + 'T00:00:00');
                 const { diaNombre: diaMin, fechaStr: fechaMin } = formatearDia(dMin);
                 const { diaNombre: diaMax, fechaStr: fechaMax } = formatearDia(dMax);
-                textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}`;
+                textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''} · ${materia}`;
             }
 
             const htmlConfirmacion = `
@@ -1122,7 +1163,7 @@ async function gestionarReserva() {
                     nuevosHorarios.push({ fecha: fechaLinea, codigo: '' });
                 });
 
-                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre };
+                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia };
 
                 try {
                     await fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
