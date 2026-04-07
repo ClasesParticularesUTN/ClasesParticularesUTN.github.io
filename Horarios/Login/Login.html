@@ -272,11 +272,34 @@
             }
         });
 
+        function getReferrerFolderName(ref) {
+            if (!ref) return 'Horarios';
+            try {
+                const u = new URL(ref);
+                if ((u.hostname || '').toLowerCase().includes('algoritmos.clasesparticularesutn.com.ar')) {
+                    return 'Sitio Juez';
+                }
+                const parts = (u.pathname || '')
+                    .split('/')
+                    .filter(Boolean);
+
+                if (parts.length === 0) return 'Horarios';
+
+                const last = parts[parts.length - 1];
+                if (/\.[a-z0-9]+$/i.test(last) && parts.length >= 2) {
+                    return parts[parts.length - 2];
+                }
+                return last;
+            } catch {
+                return 'Horarios';
+            }
+        }
+
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             let correo = emailInput.value.trim().toLowerCase();
             const contrasenia = passInput.value;
-            const referrer = document.referrer || '/Horarios';
+            const referrer = getReferrerFolderName(document.referrer);
 
             if (correo && !correo.includes('@')) {
                 correo = `${correo}@gmail.com`;
