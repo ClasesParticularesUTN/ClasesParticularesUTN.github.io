@@ -154,6 +154,25 @@
         .metodo-btn { background: rgba(128,128,128,0.12); border: 1px solid var(--glass-border); padding: 10px 16px; border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; flex: 1; max-width: 150px; transition: 0.2s; }
         .metodo-btn:hover { color: var(--text-main); background: rgba(128,128,128,0.2); }
         .metodo-btn.active { background: var(--primary); color: #1a1a24; border-color: var(--primary); }
+        .select-all-mini {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
+            background: rgba(128,128,128,0.08);
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .select-all-mini:hover { background: rgba(128,128,128,0.14); color: var(--text-main); }
+        .select-all-mini input { width: 16px; height: 16px; accent-color: var(--primary); }
+        .select-all-mini.is-visible { display: inline-flex; }
+        .select-all-mini.is-visible:has(input:disabled) { opacity: 0.55; cursor: not-allowed; }
         .footer-content { max-width: 600px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
         .total-text .total-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
         .total-text .total-value { font-size: 1.6rem; font-weight: 900; letter-spacing: 0.02em; }
@@ -237,6 +256,10 @@
         <button class="metodo-btn active" onclick="setModoPago('clases')" id="btnModoClases"><i class="fas fa-list"></i> Clases pendientes</button>
         <button class="metodo-btn" onclick="setModoPago('pack')" id="btnModoPack"><i class="fas fa-box"></i> Pagar Pack</button>
         <button class="metodo-btn" onclick="setModoPago('admin')" id="btnModoAdmin" style="display:none;"><i class="fas fa-user-shield"></i> Admin</button>
+        <label id="selectAllClasesWrap" class="select-all-mini" title="Seleccionar todas las clases pendientes">
+            <input id="selectAllClases" type="checkbox" onchange="toggleSelectAllClases()">
+            <span>Todas</span>
+        </label>
     </div>
     <div id="loaderClases" class="loader hidden" role="status" aria-live="polite" aria-busy="true">
         <div class="loader-card">
@@ -481,6 +504,8 @@ function setModoPago(modo) {
     document.getElementById("adminContainer").style.display = modo === 'admin' ? 'block' : 'none';
     document.getElementById("totalContainer").style.display = 'none';
     document.querySelectorAll('.packs-container input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.querySelectorAll('.productos input[type="checkbox"]').forEach(cb => cb.checked = false);
+    syncSelectAllClasesState();
     actualizarUIAdmin();
 }
 
@@ -551,7 +576,9 @@ async function cargarClases() {
 
 function mostrarClases() {
     const contenedor = document.getElementById("productos");
-    contenedor.innerHTML = clases.length === 0 ? `<div style="text-align:center; padding:50px;"><h2>\u00a1Est\u00e1s al d\u00eda!</h2></div>` : "";
+    contenedor.innerHTML = clases.length === 0
+        ? `<div style="text-align:center; padding:50px;"><h2>\u00a1Est\u00e1s al d\u00eda!</h2></div>`
+        : "";
     clases.forEach(c => {
         const card = document.createElement("div");
         card.className = "card";
@@ -577,12 +604,56 @@ function mostrarClases() {
             </div>`;
         contenedor.appendChild(card);
     });
+
+    // Inicializar estado del "Seleccionar todas" después de renderizar
+    syncSelectAllClasesState();
+}
+
+function getClaseCheckboxes() {
+    return Array.from(document.querySelectorAll('.productos input[type="checkbox"]'));
+}
+
+function syncSelectAllClasesState() {
+    const wrap = document.getElementById("selectAllClasesWrap");
+    const selectAll = document.getElementById("selectAllClases");
+    if (!wrap || !selectAll) return;
+
+    const isVisible = modoPago === 'clases' && clases.length > 0;
+    wrap.classList.toggle("is-visible", isVisible);
+    if (!isVisible) {
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+        selectAll.disabled = true;
+        return;
+    }
+
+    const cbs = getClaseCheckboxes();
+    if (cbs.length === 0) {
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+        selectAll.disabled = true;
+        return;
+    }
+    selectAll.disabled = false;
+
+    const checkedCount = cbs.filter(cb => cb.checked).length;
+    selectAll.checked = checkedCount === cbs.length;
+    selectAll.indeterminate = checkedCount > 0 && checkedCount < cbs.length;
+}
+
+function toggleSelectAllClases() {
+    const selectAll = document.getElementById("selectAllClases");
+    if (!selectAll) return;
+    const shouldCheck = !!selectAll.checked;
+    getClaseCheckboxes().forEach(cb => { cb.checked = shouldCheck; });
+    actualizarTotal();
 }
 
 function actualizarTotal() {
     let total = 0, sel = false;
     if (modoPago === 'clases') {
         document.querySelectorAll('.productos input[type="checkbox"]:checked').forEach(cb => { total += clases[cb.value].precioEditado; sel = true; });
+        syncSelectAllClasesState();
     } else {
         document.querySelectorAll('.packs-container input[type="checkbox"]:checked').forEach(cb => { total += parseFloat(cb.dataset.precio) || 0; sel = true; });
     }
