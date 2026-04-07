@@ -30,6 +30,36 @@
             color: #fff;
         }
 
+        .back-button {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .back-button:hover {
+            background: rgba(0, 0, 0, 0.85);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+        }
+
+        .back-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+        }
+
         .login-container {
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
@@ -142,6 +172,10 @@
 </head>
 <body>
 
+    <button type="button" class="back-button" id="btnBack" aria-label="Volver">
+        <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
     <div class="login-container">
         <div class="logo-box">
             <div class="logo-circle">
@@ -191,6 +225,7 @@
         const loader = document.getElementById('loginLoader');
         const btnForgot = document.getElementById('btnForgot');
         const toggleEye = document.getElementById('toggleEye');
+        const btnBack = document.getElementById('btnBack');
 
         // CORRECCIÓN PARA MÓVILES DEL OJO
         toggleEye.addEventListener('click', function(e) {
@@ -222,10 +257,26 @@
             window.location.href = '/Horarios/Login/RecuperarContraseña.html';
         });
 
+        btnBack.addEventListener('click', () => {
+            try {
+                sessionStorage.clear();
+                localStorage.clear();
+            } catch (e) {
+                // ignorar errores de storage (modo privado, etc.)
+            }
+            const ref = document.referrer || '';
+            if (ref && ref !== window.location.href) {
+                window.location.href = ref;
+            } else {
+                window.location.href = '/Horarios';
+            }
+        });
+
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             let correo = emailInput.value.trim().toLowerCase();
             const contrasenia = passInput.value;
+            const referrer = document.referrer || '/Horarios';
 
             if (correo && !correo.includes('@')) {
                 correo = `${correo}@gmail.com`;
@@ -236,7 +287,7 @@
             btnText.style.display = 'none';
             loader.style.display = 'block';
             
-            const urlFinal = `${URLUsuarios}?correo=${encodeURIComponent(correo)}&contrasenia=${encodeURIComponent(contrasenia)}&funcion=validarUsuario`;
+            const urlFinal = `${URLUsuarios}?correo=${encodeURIComponent(correo)}&contrasenia=${encodeURIComponent(contrasenia)}&referrer=${encodeURIComponent(referrer)}&funcion=validarUsuario`;
             
             fetch(urlFinal)
                 .then(response => response.json())
