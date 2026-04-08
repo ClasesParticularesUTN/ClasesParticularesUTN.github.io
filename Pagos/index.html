@@ -12,6 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="precios.js" charset="UTF-8"></script>
+    <script src="personalizado.js" charset="UTF-8"></script>
     <style>
         :root {
             --primary: #f3a661; --primary-dark: #d48b45; --primary-glow: rgba(243, 166, 97, 0.35);
@@ -45,6 +46,9 @@
         }
         /* loader de "procesando orden" debe ir arriba de TODO (incluye modales) */
         .loader.loader--processing { z-index: 40000; }
+        .loader.loader--processing .loader-card {
+            transform: translateY(-6vh);
+        }
         .loader.hidden { display:none; }
         body.is-busy { overflow: hidden; }
 
@@ -195,9 +199,27 @@
         .qr-container .qr-frame { background: #fff; border-radius: 16px; padding: 20px; margin: 0 auto 20px; width: fit-content; box-shadow: 0 8px 24px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(0,0,0,0.06); }
         .qr-container #qrImgContainer { line-height: 0; }
         .qr-container #qrImgContainer img { width: 220px; height: 220px; display: block; border-radius: 8px; }
-        .qr-container .qr-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 22px; font-weight: 500; }
+        .qr-container .qr-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 22px; margin-top: 22px; font-weight: 500; }
         .qr-container .btn-cerrar { background: rgba(128,128,128,0.15); color: var(--text-main); border: 1px solid var(--glass-border); width: 100%; border-radius: 14px; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .qr-container .btn-cerrar:hover { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border-color: rgba(231, 76, 60, 0.4); }
+
+        /* Layout lateral QR + sugerencia (solo packs) */
+        .qr-pack-layout { display: block; }
+        .qr-container.has-pack-note { max-width: 620px; }
+        @media (min-width: 720px) {
+            .qr-container.has-pack-note .qr-pack-layout {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 14px;
+                align-items: start;
+                justify-content: center;
+                margin-bottom: 16px;
+            }
+            .qr-container.has-pack-note .qr-frame { margin: 0; }
+        }
+        @media (max-width: 719px) {
+            .qr-container.has-pack-note .qr-frame { margin: 0 auto 14px; }
+        }
 
         /* Éxito modal */
         .exito-container { background: var(--card-bg); padding: 32px 28px; border-radius: 24px; text-align: center; max-width: 340px; width: 100%; border: 1px solid var(--glass-border); box-shadow: 0 24px 56px rgba(0,0,0,0.45); }
@@ -240,6 +262,45 @@
             button, .metodo-btn, .pago-checkbox { transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease; }
             button:active, .metodo-btn:active, .pago-checkbox:active { transform: scale(0.97); }
         }
+
+        /* Packs: mantener listado centrado (sin columnas laterales) */
+        .packs-layout { display: block; }
+
+        /* Nota discreta dentro del modal QR (solo packs) */
+        .qr-pack-note {
+            width: 100%;
+            margin-top: 0;
+            padding: 12px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(243, 166, 97, 0.28);
+            background: rgba(243, 166, 97, 0.10);
+            text-align: left;
+        }
+        .qr-pack-note.hidden { display: none; }
+        .qr-pack-note .note-title {
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: center;
+        }
+        .qr-pack-note .note-text {
+            color: #ff4d4d;
+            font-size: 0.8rem;
+            font-weight: 800;
+            line-height: 1.5;
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.18);
+        }
+        .qr-pack-note .note-pill {
+            margin-top: 8px;
+            font-size: 0.72rem;
+            padding: 7px 10px;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -279,7 +340,9 @@
     <div class="productos" id="productos"></div>
     <div class="packs-container" id="packsContainer" style="display: none;">
         <h3 style="margin-bottom: 12px; color: var(--primary); font-size: 1rem;">Packs disponibles (precios seg&#250;n tu perfil)</h3>
-        <div id="packsList"></div>
+        <div class="packs-layout">
+            <div id="packsList"></div>
+        </div>
     </div>
     <div class="packs-container" id="adminContainer" style="display: none;">
         <h3 style="margin-bottom: 12px; color: var(--primary); font-size: 1rem;">Generar QR manual (Admin)</h3>
@@ -304,8 +367,17 @@
                 <i class="fas fa-qrcode"></i>
                 <span>Escane&#225; para pagar</span>
             </div>
-            <div class="qr-frame">
-                <div id="qrImgContainer"></div>
+            <div class="qr-pack-layout">
+                <div class="qr-frame">
+                    <div id="qrImgContainer"></div>
+                </div>
+                <div id="qrPackNote" class="qr-pack-note hidden" aria-live="polite">
+                    <div class="note-title"><i class="fas fa-wallet" aria-hidden="true"></i> Sugerencia</div>
+                    <div class="note-text">
+                        Preferiblemente, para pagar <strong style="display: inline;">packs</strong> evitá <strong>Mercado Pago</strong> y usá otra billetera, así no me cobra impuestos :)
+                    </div>
+                    <span class="note-pill"><i class="fas fa-lightbulb" aria-hidden="true"></i> Tip: Sirve cualquiera: Ualá, Lemon, Modo, BNA, NaranjaX, etc</span>
+                </div>
             </div>
             <p class="qr-hint">Abr&#237; la app de tu banco o billetera y escane&#225; el c&#243;digo</p>
             <button class="btn-cerrar" onclick="cerrarQR()"><i class="fas fa-times"></i> Cerrar</button>
@@ -372,6 +444,7 @@ let clases = [];
 let metodoPago = 'qr';
 let modoPago = 'clases'; // 'clases' | 'pack' | 'admin'
 let isAdmin = false;
+let isPersonalizado = false;
 
 function setProcessingUI(isProcessing) {
     const loaderPago = document.getElementById("loaderPago");
@@ -448,10 +521,94 @@ window.addEventListener("DOMContentLoaded", () => {
         isAdmin = Alumno?.admin === true;
         actualizarUIAdmin();
 
+        // Si el correo está configurado en personalizado.js, saltear UI normal
+        if (tryIniciarPagoPersonalizado()) {
+            return;
+        }
+
         cargarClases();
         renderizarPacks();
     }
 });
+
+function normalizarCorreo(correo) {
+    return String(correo || "").trim().toLowerCase();
+}
+
+function getConfigPersonalizadoPorCorreo(correo) {
+    const list = Array.isArray(window.PERSONALIZADO_PAGOS) ? window.PERSONALIZADO_PAGOS : [];
+    const key = normalizarCorreo(correo);
+    return list.find(p => normalizarCorreo(p?.correo) === key) || null;
+}
+
+function tryIniciarPagoPersonalizado() {
+    const correo = Alumno?.correoElectronico;
+    const cfg = getConfigPersonalizadoPorCorreo(correo);
+    if (!cfg) return false;
+
+    const precio = Number(cfg.precio);
+    if (!Number.isFinite(precio) || precio <= 0) return false;
+
+    isPersonalizado = true;
+
+    // Ocultar toda la UI normal (incluye botones/modos/listas/footer)
+    const container = document.querySelector(".container");
+    const header = document.querySelector("header");
+    if (container) container.style.display = "none";
+    if (header) header.style.display = "none";
+
+    // Asegurar que no quede nada "seleccionado" y que no se vea el footer
+    document.getElementById("totalContainer").style.display = "none";
+
+    // Generar QR directo
+    generarQRPersonalizado({
+        precio,
+        titulo: cfg.titulo || "Pago personalizado",
+        referencia: cfg.referencia || `personalizado_${normalizarCorreo(correo)}`
+    });
+    return true;
+}
+
+async function generarQRPersonalizado({ precio, titulo, referencia }) {
+    // Siempre usar una orden nueva
+    generarNuevaOrdenId();
+
+    const payload = {
+        items: [{ title: titulo, price: precio }],
+        email: Alumno?.correoElectronico,
+        referencias: [referencia],
+        external_reference: miOrdenId,
+        tipoPago: "personalizado"
+    };
+
+    try {
+        setProcessingUI(true);
+        const res = await fetch(`${BASE_BACKEND}/crear-qr`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.qr_data) {
+            setProcessingUI(false);
+            document.getElementById("qrImgContainer").innerHTML =
+                `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
+            const note = document.getElementById("qrPackNote");
+            if (note) note.classList.remove("hidden");
+            const qrContainer = document.querySelector("#modalQR .qr-container");
+            if (qrContainer) qrContainer.classList.add("has-pack-note");
+
+            // En personalizado, mostramos directo el QR (sin la pantalla informativa).
+            document.getElementById("modalInfoQR").style.display = "none";
+            document.getElementById("modalQR").style.display = "flex";
+        } else {
+            throw new Error(data.error || "Error al generar QR");
+        }
+    } catch (e) {
+        setProcessingUI(false);
+        alert("Error: " + e.message);
+    }
+}
 
 window.addEventListener("keydown", (e) => {
     if (e.altKey && (e.key === "s" || e.key === "S")) {
@@ -711,6 +868,10 @@ async function pagarSeleccion() {
         } else if (metodoPago === 'qr' && data.qr_data) {
             setProcessingUI(false);
             document.getElementById("qrImgContainer").innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
+            const note = document.getElementById("qrPackNote");
+            if (note) note.classList.toggle("hidden", tipoPago !== "pack");
+            const qrContainer = document.querySelector("#modalQR .qr-container");
+            if (qrContainer) qrContainer.classList.toggle("has-pack-note", tipoPago === "pack");
             if (!localStorage.getItem("qrInfoShown")) {
                 document.getElementById("modalInfoQR").style.display = "flex";
             } else {
@@ -770,6 +931,10 @@ async function generarQRAdmin() {
 function cerrarQR() {
         document.getElementById("modalQR").style.display = "none";
         document.getElementById("loaderPago").classList.add("hidden");
+        const note = document.getElementById("qrPackNote");
+        if (note) note.classList.add("hidden");
+        const qrContainer = document.querySelector("#modalQR .qr-container");
+        if (qrContainer) qrContainer.classList.remove("has-pack-note");
     }
 function cerrarRechazo() {
         document.getElementById("modalRechazo").style.display = "none";
