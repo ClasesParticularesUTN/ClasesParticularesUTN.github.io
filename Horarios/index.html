@@ -868,7 +868,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                     slot.onclick = () => {
                         mostrarAvisoPackTerminadoSiCorresponde();
                         if (isOccupied && !isAdmin) return Swal.fire({ icon: 'error', title: 'Turno Ocupado', text: 'Esta hora ya ha sido reservada.', background: '#1a1a1a', color: '#fff' });
-                        if (!isAdmin && slotTime < limit12) {
+                        if (Alumno.condicionPago != "Libre" && !isAdmin && slotTime < limit12) {
                             return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 12 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
                         }
                         if (selectedSlots.includes(fullId)) {
