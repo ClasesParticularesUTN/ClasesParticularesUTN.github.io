@@ -118,26 +118,48 @@ Esto puede tardar unos segundos si el servidor estaba dormido
 
 <script>
 
-const url = "https://algoritmos.clasesparticularesutn.com.ar";
+const nuevaUrl = "https://servidormultiusuario-production.up.railway.app/";
+const antiguaUrl = "https://algoritmos.clasesparticularesutn.com.ar";
 
 async function checkServer(){
 
 try{
 
-const res = await fetch(url,{
+document.getElementById("status").innerText = "Verificando nuevo servidor...";
+
+const resNueva = await fetch(nuevaUrl,{
 mode:"no-cors"
 });
 
 document.getElementById("status").innerText = "Servidor listo. Redirigiendo...";
 
 setTimeout(()=>{
-window.location.href = url;
+window.location.href = nuevaUrl;
 },1000);
 
 }
 catch(e){
 
+try{
+
+document.getElementById("status").innerText = "Verificando servidor alternativo...";
+
+const resAntigua = await fetch(antiguaUrl,{
+mode:"no-cors"
+});
+
+document.getElementById("status").innerText = "Servidor listo. Redirigiendo...";
+
+setTimeout(()=>{
+window.location.href = antiguaUrl;
+},1000);
+
+}
+catch(e2){
+
 document.getElementById("status").innerText = "Iniciando servidor...";
+
+}
 
 }
 
