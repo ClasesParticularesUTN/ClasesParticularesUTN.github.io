@@ -923,11 +923,22 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
 async function gestionarReserva() {
             // --- NUEVA RESTRICCIÓN: cantidadDebe ---
             // Se usa el string hexadecimal directamente para evitar errores de sintaxis
-            if (!isAdmin && (Alumno.condicionPago != "Libre" && Alumno.cantidadDebe >= 2)) {
+            if (!isAdmin && (Alumno.condicionPago == "Normal" && Alumno.cantidadDebe >= 2)) {
                 return Swal.fire({
                     icon: 'error',
                     title: 'Permiso Denegado',
                     text: 'No puedes reservar nuevos horarios porque tienes 2 o más clases pendientes de pago.',
+                    background: '#1a1a1a',
+                    color: '#fff',
+                    confirmButtonColor: '#ff5f5f' 
+                });
+            }
+
+            if (!isAdmin && (Alumno.condicionPago == "Regular" && Alumno.cantidadDebe >= 2 && Alumno.deudaMasVieja > 6)) {
+                return Swal.fire({
+                    icon: 'error',
+                    title: 'Permiso Denegado',
+                    text: 'No puedes reservar nuevos horarios porque tienes 2 o más clases pendientes de pago y hace mas de una semana que no abona.',
                     background: '#1a1a1a',
                     color: '#fff',
                     confirmButtonColor: '#ff5f5f' 
