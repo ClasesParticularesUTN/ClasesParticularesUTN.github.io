@@ -15,12 +15,13 @@
       font-family: Arial, sans-serif;
     }
 
-    /* VIDEO oculto al inicio */
+    /* VIDEO */
     #video {
       width: 100vw;
-      height: 100vh;
+      height: 100dvh; /* FIX móvil moderno */
       object-fit: cover;
       display: none;
+      background: black;
     }
 
     /* BOTÓN PLAY */
@@ -37,7 +38,6 @@
       border-radius: 8px;
       background: white;
       color: black;
-      display: none;
     }
 
     /* ROTACIÓN */
@@ -96,7 +96,7 @@
 <button id="playBtn">▶ Play</button>
 
 <!-- VIDEO -->
-<video id="video" muted controls>
+<video id="video" controls playsinline>
   <source src="/assets/video/Pago Online.mp4" type="video/mp4">
 </video>
 
@@ -105,32 +105,29 @@
   const rotateScreen = document.getElementById("rotateScreen");
   const playBtn = document.getElementById("playBtn");
 
-  video.muted = true;
-  video.volume = 0;
-
   function checkOrientation() {
     const isLandscape = window.innerWidth > window.innerHeight;
 
     if (isLandscape) {
       rotateScreen.style.display = "none";
-
-      // Mostrar botón pero NO video todavía
       playBtn.style.display = "block";
-      video.style.display = "none";
     } else {
       rotateScreen.style.display = "flex";
-
       playBtn.style.display = "none";
-      video.style.display = "none";
-
       video.pause();
+      video.style.display = "none";
     }
   }
 
-  playBtn.addEventListener("click", () => {
-    video.style.display = "block";   // recién aparece el video
-    video.play();
+  playBtn.addEventListener("click", async () => {
     playBtn.style.display = "none";
+    video.style.display = "block";
+
+    try {
+      await video.play();
+    } catch (err) {
+      console.log("Error reproduciendo video:", err);
+    }
   });
 
   window.addEventListener("load", checkOrientation);
