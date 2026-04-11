@@ -926,7 +926,7 @@ async function gestionarReserva() {
             if (!isAdmin && (Alumno.condicionPago != "Libre" && Alumno.cantidadDebe >= 2)) {
                 return Swal.fire({
                     icon: 'error',
-                    title: 'Acceso Denegado',
+                    title: 'Permiso Denegado',
                     text: 'No puedes reservar nuevos horarios porque tienes 2 o más clases pendientes de pago.',
                     background: '#1a1a1a',
                     color: '#fff',

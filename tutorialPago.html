@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tutorial Pago</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: black;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    /* VIDEO oculto al inicio */
+    #video {
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      display: none;
+    }
+
+    /* BOTÓN PLAY */
+    #playBtn {
+      position: absolute;
+      z-index: 10;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 15px 25px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background: white;
+      color: black;
+      display: none;
+    }
+
+    /* ROTACIÓN */
+    #rotateScreen {
+      position: fixed;
+      inset: 0;
+      background: black;
+      color: white;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 999;
+    }
+
+    .phone {
+      width: 80px;
+      height: 140px;
+      border: 4px solid white;
+      border-radius: 15px;
+      position: relative;
+      animation: rotateAnim 1.5s infinite ease-in-out;
+      margin-bottom: 20px;
+    }
+
+    .phone::after {
+      content: "";
+      position: absolute;
+      width: 30px;
+      height: 5px;
+      background: white;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+    }
+
+    @keyframes rotateAnim {
+      0%   { transform: rotate(0deg); }
+      50%  { transform: rotate(90deg); }
+      100% { transform: rotate(0deg); }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ROTACIÓN -->
+<div id="rotateScreen">
+  <div class="phone"></div>
+  <h2>Rotá tu teléfono para continuar</h2>
+</div>
+
+<!-- BOTÓN PLAY -->
+<button id="playBtn">▶ Play</button>
+
+<!-- VIDEO -->
+<video id="video" playsinline muted>
+  <source src="/assets/video/Pago Online.mp4" type="video/mp4">
+</video>
+
+<script>
+  const video = document.getElementById("video");
+  const rotateScreen = document.getElementById("rotateScreen");
+  const playBtn = document.getElementById("playBtn");
+
+  video.muted = true;
+  video.volume = 0;
+
+  function checkOrientation() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+
+    if (isLandscape) {
+      rotateScreen.style.display = "none";
+
+      // Mostrar botón pero NO video todavía
+      playBtn.style.display = "block";
+      video.style.display = "none";
+    } else {
+      rotateScreen.style.display = "flex";
+
+      playBtn.style.display = "none";
+      video.style.display = "none";
+
+      video.pause();
+    }
+  }
+
+  playBtn.addEventListener("click", () => {
+    video.style.display = "block";   // recién aparece el video
+    video.play();
+    playBtn.style.display = "none";
+  });
+
+  window.addEventListener("load", checkOrientation);
+  window.addEventListener("resize", checkOrientation);
+  window.addEventListener("orientationchange", checkOrientation);
+</script>
+
+</body>
+</html>
