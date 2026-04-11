@@ -622,10 +622,10 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '/Horarios/Login/Login.html';
+                    window.location.href = './Login/Login.html';
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
                     // Cambia esta ruta si tu archivo de registro se llama distinto
-                    window.location.href = '/Horarios/Registro/Registro.html'; 
+                    window.location.href = './Registro/Registro.html'; 
                 }
             });
             
@@ -720,7 +720,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             if (!Alumno || !Alumno.correoElectronico) return;
             const fechaPago = Alumno.fechaPago;
             const horasAFavor = Alumno.horasAFavor;
-            if (fechaPago == null || fechaPago === '' || horasAFavor > 0) return;
+            if (fechaPago == "NULL" || fechaPago == null || fechaPago == "" || horasAFavor > 0) return;
             if (localStorage.getItem(AVISO_PACK_KEY) === String(fechaPago)) return;
             Swal.fire({
                 icon: 'info',
@@ -802,11 +802,27 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 </div>`;
         }
 
+        function mostrarToastAdmin(activado) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: activado ? 'success' : 'info',
+                title: activado ? 'Admin activado' : 'Admin desactivado',
+                showConfirmButton: false,
+                timer: 2800,
+                timerProgressBar: true,
+                background: '#151517',
+                color: '#fff',
+                iconColor: '#f3a661'
+            });
+        }
+
         async function toggleAdmin() {
             if(isAdmin) {
                 isAdmin = false;
                 document.getElementById('adminToggle').innerText = "Habilitar Admin";
                 document.getElementById('adminToggle').classList.remove('active');
+                mostrarToastAdmin(false);
                 return;
             }
             const { value: pass } = await Swal.fire({ 
@@ -818,6 +834,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 isAdmin = true;
                 document.getElementById('adminToggle').innerText = "MODO ADMIN ACTIVO";
                 document.getElementById('adminToggle').classList.add('active');
+                mostrarToastAdmin(true);
             } else if (pass) {
                 Swal.fire({ icon: 'error', title: 'Incorrecta' });
             }
@@ -918,6 +935,30 @@ async function gestionarReserva() {
             }
 
             if (!isAdmin && (Alumno.horarios || []).length >= 2) return Swal.fire({ icon: 'error', title: 'Límite de Reservas', text: 'Solo puedes tener 2 reservas activas. Si quieres mas, comunicate por whatsapp' });
+
+            if (!isAdmin && Alumno.condicionPago !== 'Libre') {
+                const debeClases = Number(Alumno.cantidadDebe) || 0;
+                const rawDinero = Alumno.dineroQueDebe != null && Alumno.dineroQueDebe !== ''
+                    ? String(Alumno.dineroQueDebe).replace(/[^\d.-]/g, '')
+                    : '0';
+                const dineroPendiente = parseFloat(rawDinero) || 0;
+                const debePeroPuedeReservar = debeClases >= 1 || dineroPendiente > 0;
+                if (debePeroPuedeReservar && localStorage.getItem("avisoDeuda") == undefined) {
+                    const avisoDeuda = await Swal.fire({
+                        icon: 'warning',
+                        title: 'Cuidado, tenés deuda pendiente',
+                        html: 'Podés seguir sacando horarios, pero <strong>se te están cobrando intereses por día</strong>.',
+                        background: '#1a1a1a',
+                        color: '#fff',
+                        confirmButtonColor: '#f3a661',
+                        showCancelButton: true,
+                        confirmButtonText: 'Continuar',
+                        cancelButtonText: 'Cancelar'
+                    });
+                    if (!avisoDeuda.isConfirmed) return;
+                    localStorage.setItem("avisoDeuda", "true");
+                }
+            }
 
             const nHoras = selectedSlots.length;
             const precioInd = (nHoras === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2) * nHoras;
@@ -1189,6 +1230,18 @@ async function gestionarReserva() {
         }
 
         function toggleSidebar() { document.getElementById('user-sidebar').classList.toggle('active'); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'F10') {
+                e.preventDefault();
+                toggleSidebar();
+                return;
+            }
+            if (e.key === 'F9') {
+                e.preventDefault();
+                toggleAdmin();
+            }
+        }, true);
 
         (function setupControlsDrag() {
             const overlay = document.getElementById('controlsOverlay');
