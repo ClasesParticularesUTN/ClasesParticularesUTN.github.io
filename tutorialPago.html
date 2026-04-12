@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Tutorial Pago</title>
+  <title>Tutoriales</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
@@ -10,21 +10,20 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      background: black;
-      overflow: hidden;
+      background: #0f0f0f;
       font-family: Arial, sans-serif;
+      color: white;
     }
 
     /* VIDEO */
     #video {
       width: 100vw;
-      height: 100dvh; /* FIX móvil moderno */
+      height: 100dvh;
       object-fit: contain;
       display: none;
       background: black;
     }
 
-    /* BOTÓN PLAY */
     #playBtn {
       position: absolute;
       z-index: 10;
@@ -35,12 +34,13 @@
       font-size: 18px;
       cursor: pointer;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       background: white;
       color: black;
+      display: none;
     }
 
-    /* ROTACIÓN */
+    /* ROTACIÓN (MEJORADA) */
     #rotateScreen {
       position: fixed;
       inset: 0;
@@ -60,8 +60,8 @@
       border: 4px solid white;
       border-radius: 15px;
       position: relative;
-      animation: rotateAnim 1.5s infinite ease-in-out;
       margin-bottom: 20px;
+      animation: rotateAnim 1.5s infinite ease-in-out;
     }
 
     .phone::after {
@@ -81,6 +81,78 @@
       50%  { transform: rotate(90deg); }
       100% { transform: rotate(0deg); }
     }
+
+    /* MENU */
+    #menu {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      gap: 30px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, 280px);
+      justify-content: center;
+      gap: 25px;
+      width: 100%;
+    }
+
+    .card {
+      background: #1c1c1c;
+      border-radius: 15px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px) scale(1.02);
+    }
+
+    .thumbCustom {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-weight: bold;
+    }
+
+    .pago .thumbCustom {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+    }
+
+    .cancelacion .thumbCustom {
+      background: linear-gradient(135deg, #ff4e50, #c0392b);
+    }
+
+    .label {
+      font-size: 28px;
+    }
+
+    .playIcon {
+      position: absolute;
+      font-size: 40px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 50%;
+      padding: 10px 15px;
+    }
+
+    .content {
+      padding: 15px;
+    }
   </style>
 </head>
 
@@ -89,24 +161,84 @@
 <!-- ROTACIÓN -->
 <div id="rotateScreen">
   <div class="phone"></div>
-  <h2>Rotá tu teléfono para continuar</h2>
+  <h2>Rotá tu teléfono para ver el video</h2>
 </div>
 
-<!-- BOTÓN PLAY -->
-<button id="playBtn">▶ Play</button>
+<button id="playBtn">▶ Reproducir</button>
+
+<!-- MENU -->
+<div id="menu">
+  <h1>Elegí un tutorial</h1>
+
+  <div class="grid">
+    <div class="card pago" onclick="goTo('#TutorialPago')">
+      <div class="thumbCustom">
+        <div class="playIcon">▶</div>
+        <div class="label">PAGOS</div>
+      </div>
+      <div class="content">Cómo pagar online</div>
+    </div>
+
+    <div class="card cancelacion" onclick="goTo('#TutorialCancelacion')">
+      <div class="thumbCustom">
+        <div class="playIcon">▶</div>
+        <div class="label">CANCELACIÓN</div>
+      </div>
+      <div class="content">Cancelar una clase</div>
+    </div>
+  </div>
+</div>
 
 <!-- VIDEO -->
 <video id="video" controls playsinline>
-  <source src="/assets/video/Pago Online.mp4" type="video/mp4">
+  <source id="videoSource" src="" type="video/mp4">
 </video>
 
 <script>
   const video = document.getElementById("video");
+  const source = document.getElementById("videoSource");
   const rotateScreen = document.getElementById("rotateScreen");
   const playBtn = document.getElementById("playBtn");
+  const menu = document.getElementById("menu");
+
+  function loadVideoByHash() {
+    const hash = window.location.hash;
+
+    if (hash === "#TutorialPago") {
+      source.src = "/assets/video/Pago Online.mp4";
+      showVideo();
+    } 
+    else if (hash === "#TutorialCancelacion") {
+      source.src = "/assets/video/CancelacionClase.mp4";
+      showVideo();
+    } 
+    else {
+      menu.style.display = "flex";
+      video.style.display = "none";
+      playBtn.style.display = "none";
+      rotateScreen.style.display = "none"; // 🔥 oculto en menú
+    }
+  }
+
+  function showVideo() {
+    menu.style.display = "none";
+    video.style.display = "none";
+    playBtn.style.display = "block";
+    video.load();
+  }
+
+  function goTo(hash) {
+    window.location.hash = hash;
+  }
 
   function checkOrientation() {
     const isLandscape = window.innerWidth > window.innerHeight;
+    const hasVideo = !!window.location.hash;
+
+    if (!hasVideo) {
+      rotateScreen.style.display = "none";
+      return;
+    }
 
     if (isLandscape) {
       rotateScreen.style.display = "none";
@@ -126,11 +258,20 @@
     try {
       await video.play();
     } catch (err) {
-      console.log("Error reproduciendo video:", err);
+      console.log(err);
     }
   });
 
-  window.addEventListener("load", checkOrientation);
+  window.addEventListener("hashchange", () => {
+    loadVideoByHash();
+    checkOrientation();
+  });
+
+  window.addEventListener("load", () => {
+    loadVideoByHash();
+    checkOrientation();
+  });
+
   window.addEventListener("resize", checkOrientation);
   window.addEventListener("orientationchange", checkOrientation);
 </script>
