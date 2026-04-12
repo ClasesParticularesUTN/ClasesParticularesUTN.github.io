@@ -23,14 +23,14 @@ const PRECIOS_BASE = {
         estandar2h: 9000,
         precioPorHora1: 5000,
         precioPorHora2: 4500,
-        packExamen: 72000,
-        packMateria: 120000
+        packExamen: 9000 * 8,
+        packMateria: 9000 * 14
     },
     grupal: {
         estandar2h: 6000,
         precioPorHora: 3000,
         packExamen: 6000 * 8,
-        packMateria: 6000 * 16
+        packMateria: 6000 * 14
     },
     tp: {
         individual: 15000,
@@ -64,8 +64,12 @@ const PRECIOS_ESPECIALES = {
     },
     "Vogt Joel": {
         individual: {
-            packExamen: 75000,
-            packMateria: 145000
+            expres1h: 5500,
+            estandar2h: 10000,
+            precioPorHora1: 5000,
+            precioPorHora2: 10000,
+            packExamen: 80000,
+            packMateria: 160000,
         }
     }
 };
