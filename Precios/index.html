@@ -320,6 +320,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            if(localStorage.getItem("Nombre") == undefined) window.location.href = "/Login/Login.html";
             if (typeof PRECIOS !== 'undefined') {
                 document.getElementById('precio-ind-expres').textContent = '$' + PRECIOS.individual.expres1h.toLocaleString('es-AR');
                 document.getElementById('precio-ind-estandar').textContent = '$' + PRECIOS.individual.estandar2h.toLocaleString('es-AR');
