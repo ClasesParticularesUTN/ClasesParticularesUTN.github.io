@@ -71,6 +71,16 @@ const PRECIOS_ESPECIALES = {
             packExamen: 80000,
             packMateria: 160000,
         }
+    },
+    "Bertoia Delfina": {
+        individual: {
+            expres1h: 5500,
+            estandar2h: 10000,
+            precioPorHora1: 5000,
+            precioPorHora2: 10000,
+            packExamen: 80000,
+            packMateria: 140000,
+        }
     }
 };
 
