@@ -66,8 +66,8 @@ const PRECIOS_ESPECIALES = {
         individual: {
             expres1h: 5500,
             estandar2h: 10000,
-            precioPorHora1: 5000,
-            precioPorHora2: 10000,
+            precioPorHora1: 5500,
+            precioPorHora2: 5000,
             packExamen: 80000,
             packMateria: 160000,
         }
@@ -76,10 +76,10 @@ const PRECIOS_ESPECIALES = {
         individual: {
             expres1h: 5500,
             estandar2h: 10000,
-            precioPorHora1: 5000,
-            precioPorHora2: 10000,
+            precioPorHora1: 5500,
+            precioPorHora2: 5000,
             packExamen: 80000,
-            packMateria: 140000,
+            packMateria: 160000,
         }
     }
 };
