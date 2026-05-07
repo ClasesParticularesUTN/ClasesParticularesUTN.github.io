@@ -46,6 +46,16 @@ const PRECIOS_BASE = {
  * ============================================
  */
 const PRECIOS_ESPECIALES = {
+    "Martin Sofia": {
+        individual: {
+            expres1h: 5500,
+            estandar2h: 10000,
+            precioPorHora1: 5500,
+            precioPorHora2: 5000,
+            packExamen: 80000,
+            packMateria: 160000,
+        }
+    },
     "Mosquen Valentin Ignacio": {
         grupal: {
             estandar2h: 7000,
