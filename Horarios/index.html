@@ -752,7 +752,10 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
 
             const hCol = document.getElementById('hoursCol');
             hCol.innerHTML = '<div style="height:45px"></div>';
-            for (let h = 8; h <= 19; h++) hCol.innerHTML += `<div class="hour-cell">${h}:00</div>`;
+            for (let h = 8; h <= 19; h++) {
+                const etiquetaHora = h === 8 ? '8:15' : `${h}:00`;
+                hCol.innerHTML += `<div class="hour-cell">${etiquetaHora}</div>`;
+            }
             await Promise.all([fetchSemana(0), fetchSemana(1)]);
             render();
             document.getElementById('loader-overlay').style.display = 'none';
@@ -876,8 +879,9 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 col.innerHTML = `<div class="day-header"><span style="font-size:0.6rem; color:var(--primary); font-weight:800">${nombresDias[i]}</span><span style="font-size:0.7rem">${colDate.getDate()}/${(colDate.getMonth()+1).toString().padStart(2,'0')}</span></div>`;
 
                 for (let h = 8; h <= 19; h++) {
-                    const fullId = `${isoDate} ${h.toString().padStart(2, '0')}:00`;
-                    const slotTime = new Date(`${isoDate}T${h.toString().padStart(2, '0')}:00:00`);
+                    const horaSlot = h === 8 ? '08:15' : `${h.toString().padStart(2, '0')}:00`;
+                    const fullId = `${isoDate} ${horaSlot}`;
+                    const slotTime = new Date(`${isoDate}T${horaSlot}:00`);
                     const isOccupied = celdasOcupadas.includes(`${letra}${h-5}`);
                     const slot = document.createElement('div');
                     slot.className = `slot ${isOccupied ? 'occupied' : ''} ${selectedSlots.includes(fullId) ? 'selected' : ''}`;
@@ -895,6 +899,15 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                         } else {
                             selectedSlots.push(fullId);
                             slot.classList.add('selected');
+                            if (horaSlot === '08:15') {
+                                Swal.fire({
+                                    icon: 'info',
+                                    title: 'Horario especial',
+                                    text: 'Esta clase arranca 15 minutos desfasada y dura hasta las 9:15.',
+                                    background: '#1a1a1a',
+                                    color: '#fff'
+                                });
+                            }
                             if (selectedSlots.length === 1 && !yaMostroHintMoverBarra) mostrarHintMoverBarra();
                         }
                         const btn = document.getElementById('btnConfirm');
@@ -1134,7 +1147,9 @@ async function gestionarReserva() {
             const horas = selectedSlots.map(id => id.split(' ')[1]).sort();
             const horaInicio = horas[0];
             const horaFinSlot = horas[horas.length - 1];
-            const horaFinHasta = horaFinSlot.replace(':00', ':59');
+            const horaFinHasta = horaFinSlot === '08:15'
+                ? '09:15'
+                : horaFinSlot.replace(':00', ':59');
             const fechas = selectedSlots.map(id => id.split(' ')[0]);
             const fechasUnicas = [...new Set(fechas)];
             const formatearDia = (d) => {
@@ -1211,7 +1226,8 @@ async function gestionarReserva() {
                     const dayOfWeek = d.getDay(); // 0=Domingo, 1=Lunes,...6=Sábado
                     const idx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
                     celdasExcel.push(`${letras[idx]}${parseInt(hora)-5}`);
-                    const fechaLinea = `${diasNombres[idx]}, ${d.getDate()}/${d.getMonth()+1} ${parseInt(hora)}:00`;
+                    const horaTexto = hora === '08:15' ? '8:15' : `${parseInt(hora)}:00`;
+                    const fechaLinea = `${diasNombres[idx]}, ${d.getDate()}/${d.getMonth()+1} ${horaTexto}`;
                     nuevosHorarios.push({ fecha: fechaLinea, codigo: '' });
                 });
 
