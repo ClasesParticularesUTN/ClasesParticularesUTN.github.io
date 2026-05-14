@@ -453,6 +453,15 @@ function redondearPrecio(valor) {
     return Math.round(n * 100) / 100;
 }
 
+/**
+ * Monto tal como va en el JSON al backend: string con 2 decimales ("1.00").
+ * Así los enteros no se serializan como `1` (sin punto), que suele romper código
+ * del servidor que hace price.toString().split(".")[1] sin validar.
+ */
+function precioParaBackend(valor) {
+    return redondearPrecio(valor).toFixed(2);
+}
+
 function setProcessingUI(isProcessing) {
     const loaderPago = document.getElementById("loaderPago");
     const footer = document.getElementById("totalContainer");
@@ -581,7 +590,7 @@ async function generarQRPersonalizado({ precio, titulo, referencia }) {
     generarNuevaOrdenId();
 
     const payload = {
-        items: [{ title: titulo, price: redondearPrecio(precio) }],
+        items: [{ title: titulo, price: precioParaBackend(precio) }],
         email: Alumno?.correoElectronico,
         referencias: [referencia],
         external_reference: miOrdenId,
@@ -839,7 +848,7 @@ async function pagarSeleccion() {
     if (modoPago === 'clases') {
         document.querySelectorAll('.productos input[type="checkbox"]:checked').forEach(cb => {
             const c = clases[cb.value];
-            items.push({ title: c.modalidad, price: redondearPrecio(c.precioEditado), codigo: c.codigo });
+            items.push({ title: c.modalidad, price: precioParaBackend(c.precioEditado), codigo: c.codigo });
             referencias.push(c.codigo);
         });
     } else {
@@ -847,7 +856,7 @@ async function pagarSeleccion() {
             const titulo = cb.dataset.titulo || 'Pack';
             const precio = parseFloat(cb.dataset.precio) || 0;
             const key = cb.dataset.packKey || '';
-            items.push({ title: titulo, price: redondearPrecio(precio), packKey: key });
+            items.push({ title: titulo, price: precioParaBackend(precio), packKey: key });
             referencias.push(key);
         });
     }
@@ -907,7 +916,7 @@ async function generarQRAdmin() {
     generarNuevaOrdenId();
 
     const payload = {
-        items: [{ title: "Pago manual (Admin)", price: redondearPrecio(precio) }],
+        items: [{ title: "Pago manual (Admin)", price: precioParaBackend(precio) }],
         email: Alumno?.correoElectronico,
         referencias: ["admin_manual"],
         external_reference: miOrdenId,
