@@ -446,6 +446,13 @@ let modoPago = 'clases'; // 'clases' | 'pack' | 'admin'
 let isAdmin = false;
 let isPersonalizado = false;
 
+/** Monto con 2 decimales (evita basura de float al enviar al backend / MP). */
+function redondearPrecio(valor) {
+    const n = Number(valor);
+    if (!Number.isFinite(n)) return 0;
+    return Math.round(n * 100) / 100;
+}
+
 function setProcessingUI(isProcessing) {
     const loaderPago = document.getElementById("loaderPago");
     const footer = document.getElementById("totalContainer");
@@ -574,7 +581,7 @@ async function generarQRPersonalizado({ precio, titulo, referencia }) {
     generarNuevaOrdenId();
 
     const payload = {
-        items: [{ title: titulo, price: precio }],
+        items: [{ title: titulo, price: redondearPrecio(precio) }],
         email: Alumno?.correoElectronico,
         referencias: [referencia],
         external_reference: miOrdenId,
@@ -713,16 +720,20 @@ async function cargarClases() {
         document.getElementById("loaderClases").classList.remove("hidden");
         const res = await fetch(`${GAS_URL}?funcion=devolverDeuda&correo=${encodeURIComponent(Alumno.correoElectronico)}`);
         const data = await res.json();
-        clases = data.map((c, index) => ({
-            id: index,
-            fecha: c.fecha,
-            modalidad: c.modalidad,
-            horas: c.horas,
-            precioBase: parseFloat(c.precio) || 0,
-            precioEditado: (parseFloat(c.precio) || 0) + ((Alumno.condicionPago === 'Libre') ? 0 : (parseFloat(c.recargo) || 0)),
-            codigo: c.codigo,
-            cancelada: c.cancelada === true || String(c.cancelada).toLowerCase() === 'true'
-        }));
+        clases = data.map((c, index) => {
+            const base = parseFloat(c.precio) || 0;
+            const recargo = (Alumno.condicionPago === 'Libre') ? 0 : (parseFloat(c.recargo) || 0);
+            return {
+                id: index,
+                fecha: c.fecha,
+                modalidad: c.modalidad,
+                horas: c.horas,
+                precioBase: redondearPrecio(base),
+                precioEditado: redondearPrecio(base + recargo),
+                codigo: c.codigo,
+                cancelada: c.cancelada === true || String(c.cancelada).toLowerCase() === 'true'
+            };
+        });
         mostrarClases();
     } catch(e) { alert("Error al cargar deuda."); }
     finally {
@@ -828,7 +839,7 @@ async function pagarSeleccion() {
     if (modoPago === 'clases') {
         document.querySelectorAll('.productos input[type="checkbox"]:checked').forEach(cb => {
             const c = clases[cb.value];
-            items.push({ title: c.modalidad, price: c.precioEditado, codigo: c.codigo });
+            items.push({ title: c.modalidad, price: redondearPrecio(c.precioEditado), codigo: c.codigo });
             referencias.push(c.codigo);
         });
     } else {
@@ -836,7 +847,7 @@ async function pagarSeleccion() {
             const titulo = cb.dataset.titulo || 'Pack';
             const precio = parseFloat(cb.dataset.precio) || 0;
             const key = cb.dataset.packKey || '';
-            items.push({ title: titulo, price: precio, packKey: key });
+            items.push({ title: titulo, price: redondearPrecio(precio), packKey: key });
             referencias.push(key);
         });
     }
@@ -896,7 +907,7 @@ async function generarQRAdmin() {
     generarNuevaOrdenId();
 
     const payload = {
-        items: [{ title: "Pago manual (Admin)", price: precio }],
+        items: [{ title: "Pago manual (Admin)", price: redondearPrecio(precio) }],
         email: Alumno?.correoElectronico,
         referencias: ["admin_manual"],
         external_reference: miOrdenId,
