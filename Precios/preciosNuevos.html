@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C/S | Precios por tipo de materia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="/preciosNuevos.js"></script>
+
+    <style>
+        :root {
+            --primary: #f3a661;
+            --accent: #a35a2d;
+            --bg: #0f172a;
+            --nav-bg: rgba(15, 23, 42, 0.9);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(243, 166, 97, 0.15);
+            --text-main: #ffffff;
+            --text-subtitle: #94a3b8;
+            --item-bg: rgba(255, 255, 255, 0.02);
+            --footer-border: #1e293b;
+            --math-accent: #7dd3fc;
+            --math-border: rgba(125, 211, 252, 0.35);
+        }
+
+        body.light-mode {
+            --bg: #f0f4f8;
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --card-bg: #ffffff;
+            --glass-border: rgba(243, 166, 97, 0.3);
+            --text-main: #1a1a24;
+            --text-subtitle: #64748b;
+            --item-bg: #f8fafc;
+            --footer-border: #cbd5e1;
+            --math-border: rgba(14, 165, 233, 0.35);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 5%; position: fixed; width: 100%; top: 0; z-index: 1000;
+            background: var(--nav-bg); backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .logo-box { text-align: center; }
+        .logo-circle { display: inline-block; border: 2px solid var(--primary); border-radius: 50%; padding: 8px; transition: 0.3s; }
+        .logo-text { font-family: 'Inter', sans-serif; color: var(--text-main); font-size: 1.2rem; font-weight: 700; border-bottom: 2px solid var(--primary); line-height: 1; display: inline-block; }
+        .logo-sub { font-family: 'Inter', sans-serif; font-size: 0.45rem; text-transform: uppercase; letter-spacing: 2px; color: var(--primary); margin-top: 3px; }
+
+        nav ul { display: flex; list-style: none; align-items: center; }
+        nav ul li { margin-left: 20px; }
+        nav ul li a { text-decoration: none; color: var(--text-subtitle); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; transition: 0.3s; }
+        nav ul li a:hover { color: var(--primary); }
+
+        .theme-toggle {
+            background: rgba(243, 166, 97, 0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--primary);
+            width: 35px; height: 35px; border-radius: 10px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.3s; margin-left: 15px;
+        }
+
+        /* --- Selector de tipo (dos cuadrados) --- */
+        .selector-section {
+            min-height: 100vh;
+            padding: 120px 5% 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .selector-section h1 {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            margin-bottom: 10px;
+            color: var(--text-main);
+            max-width: 640px;
+        }
+        .selector-section .lead {
+            color: var(--text-subtitle);
+            font-weight: 300;
+            font-size: 1rem;
+            margin-bottom: 48px;
+            max-width: 520px;
+            line-height: 1.6;
+        }
+
+        .tipo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(140px, 320px));
+            gap: 24px;
+            max-width: 720px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .tipo-card {
+            aspect-ratio: 1;
+            max-width: 320px;
+            width: 100%;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 28px 22px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.3s;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        .tipo-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+            border-color: var(--primary);
+        }
+        .tipo-card.math:hover {
+            border-color: var(--math-accent);
+        }
+
+        .tipo-card .icon-wrap {
+            width: 64px; height: 64px;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 16px;
+        }
+        .tipo-card.sistemas .icon-wrap {
+            background: rgba(243, 166, 97, 0.15);
+            color: var(--primary);
+            border: 1px solid var(--glass-border);
+        }
+        .tipo-card.math .icon-wrap {
+            background: rgba(125, 211, 252, 0.12);
+            color: var(--math-accent);
+            border: 1px solid var(--math-border);
+        }
+
+        .tipo-card h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            line-height: 1.25;
+        }
+        .tipo-card ul {
+            list-style: none;
+            font-size: 0.72rem;
+            color: var(--text-subtitle);
+            line-height: 1.55;
+            text-align: center;
+            width: 100%;
+            padding: 0 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .tipo-card ul li {
+            padding-left: 0;
+            margin-bottom: 4px;
+            text-align: center;
+            width: 100%;
+        }
+        .tipo-card ul li::before {
+            content: "·";
+            display: inline-block;
+            margin-right: 6px;
+            color: var(--primary);
+            font-weight: 800;
+        }
+        .tipo-card.math ul li::before {
+            color: var(--math-accent);
+        }
+        .tipo-card .tap-hint {
+            margin-top: 14px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--primary);
+        }
+        .tipo-card.math .tap-hint {
+            color: var(--math-accent);
+        }
+
+        @media (max-width: 600px) {
+            .tipo-grid {
+                grid-template-columns: 1fr;
+                max-width: 340px;
+            }
+            .tipo-card {
+                aspect-ratio: auto;
+                min-height: 200px;
+            }
+        }
+
+        /* --- Sección precios --- */
+        .pricing-section { padding: 120px 5% 60px; text-align: center; display: none; }
+        .pricing-section.is-visible { display: block; }
+
+        .pricing-section .solo-matematica {
+            display: none !important;
+        }
+        .pricing-section.tipo-precios-matematica .solo-matematica {
+            display: flex !important;
+        }
+        .pricing-section.tipo-precios-matematica .price-item-virtual,
+        .pricing-section.tipo-precios-matematica .price-item-virtual-grupal {
+            border: 1px solid var(--math-border);
+            background: rgba(125, 211, 252, 0.14);
+            box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.06);
+        }
+        .pricing-section.tipo-precios-matematica .price-item-virtual .price-label,
+        .pricing-section.tipo-precios-matematica .price-item-virtual-grupal .price-label {
+            color: var(--text-main);
+        }
+        .pricing-section.tipo-precios-matematica .price-item-virtual .price-label small,
+        .pricing-section.tipo-precios-matematica .price-item-virtual-grupal .price-label small {
+            color: rgba(125, 211, 252, 0.95);
+        }
+        .pricing-section.tipo-precios-matematica .price-item-virtual .price-value,
+        .pricing-section.tipo-precios-matematica .price-item-virtual-grupal .price-value {
+            color: var(--math-accent);
+        }
+        .pricing-section.tipo-precios-matematica .pricing-card-tp {
+            display: none !important;
+        }
+        .pricing-header-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .pricing-section h2 { font-size: 2.2rem; color: var(--text-main); }
+        .badge-tipo {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid var(--glass-border);
+            color: var(--primary);
+            background: rgba(243, 166, 97, 0.1);
+        }
+        .badge-tipo.math {
+            color: var(--math-accent);
+            border-color: var(--math-border);
+            background: rgba(125, 211, 252, 0.1);
+        }
+        .btn-cambiar-tipo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            margin-bottom: 32px;
+            padding: 10px 18px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-subtitle);
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-cambiar-tipo:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+        .pricing-section p.subtitle { color: var(--text-subtitle); margin-bottom: 40px; font-weight: 300; font-size: 1rem; }
+
+        .pricing-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 25px;
+            transition: all 0.4s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .pricing-card h3 { font-size: 1.7rem; margin-bottom: 15px; color: var(--primary); font-weight: 700; }
+
+        .group-disclaimer {
+            font-size: 0.85rem;
+            color: var(--text-subtitle);
+            margin-bottom: 25px;
+            line-height: 1.5;
+            padding: 0 5px;
+        }
+        .group-disclaimer strong { color: var(--primary); font-weight: 600; }
+
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 12px;
+            background: var(--item-bg);
+            border-radius: 14px;
+            border: 1px solid rgba(128,128,128,0.1);
+        }
+
+        .price-label { font-size: 0.9rem; text-align: left; color: var(--text-main); line-height: 1.3; }
+        .price-label small { color: var(--text-subtitle); font-size: 0.75rem; display: block; margin-top: 2px; }
+        .price-value { font-weight: 700; color: var(--text-main); font-size: 1.1rem; margin-left: 5px; }
+
+        .highlight-pack { border: 1px solid rgba(243, 166, 97, 0.4); background: rgba(243, 166, 97, 0.07); }
+
+        .badge {
+            position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: #1a1a24;
+            font-size: 0.7rem; font-weight: 800; padding: 5px 18px;
+            border-radius: 20px; text-transform: uppercase; white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .no-price { color: var(--text-subtitle); font-style: italic; font-size: 0.8rem; }
+
+        .btn-select {
+            display: block; width: 100%; padding: 16px; margin-top: auto;
+            background: transparent; color: var(--primary);
+            text-decoration: none; border-radius: 12px; font-weight: 700;
+            border: 2px solid var(--primary);
+            transition: 0.3s; font-size: 1rem;
+            text-align: center;
+        }
+        .btn-select:hover { background: var(--primary); color: #1a1a24; }
+        .btn-select:not([href]) { cursor: pointer; border: 2px solid var(--primary); }
+
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(6px);
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.is-open { opacity: 1; visibility: visible; }
+
+        .modal-box {
+            background: var(--card-bg); border: 1px solid var(--glass-border);
+            border-radius: 24px; padding: 40px 32px; max-width: 420px; width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+            position: relative; transform: scale(0.95); transition: transform 0.3s ease;
+        }
+        .modal-overlay.is-open .modal-box { transform: scale(1); }
+
+        .modal-close {
+            position: absolute; top: 16px; right: 16px;
+            width: 36px; height: 36px; border-radius: 10px;
+            border: 1px solid var(--glass-border); background: var(--item-bg);
+            color: var(--text-subtitle); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: 0.3s;
+        }
+        .modal-close:hover { color: var(--primary); border-color: var(--primary); }
+
+        .modal-icon {
+            width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 50%;
+            background: rgba(243, 166, 97, 0.15); border: 2px solid var(--glass-border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: var(--primary);
+        }
+        .modal-box h4 { font-size: 1.35rem; color: var(--text-main); margin-bottom: 12px; text-align: center; }
+        .modal-box p { color: var(--text-subtitle); text-align: center; line-height: 1.6; font-size: 0.95rem; margin-bottom: 24px; }
+        .modal-box .btn-whatsapp {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 14px 20px; border-radius: 12px;
+            background: #25d366; color: #fff; font-weight: 700; text-decoration: none;
+            border: none; font-size: 1rem; cursor: pointer; transition: 0.3s;
+        }
+        .modal-box .btn-whatsapp:hover { background: #20bd5a; transform: translateY(-1px); }
+        .modal-box .btn-whatsapp i { font-size: 1.3rem; }
+
+        footer { padding: 50px 20px; text-align: center; font-size: 0.85rem; color: var(--text-subtitle); border-top: 1px solid var(--footer-border); margin-top: 60px; }
+
+        @media (max-width: 768px) {
+            nav ul li:not(:last-child) { display: none; }
+            .pricing-section { padding-top: 110px; }
+            .pricing-section h2 { font-size: 1.8rem; }
+            .pricing-container { gap: 45px; padding: 0 10px; }
+            .pricing-card { padding: 40px 18px 25px; }
+        }
+
+        .selector-section.is-hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo-box" onclick="window.location.href='/'">
+            <div class="logo-circle">
+                <div class="logo-text">C/S</div>
+                <div class="logo-sub">Ing. en Sistemas</div>
+            </div>
+        </div>
+        <ul>
+            <li><a href="/Materias">Materias</a></li>
+            <li><a href="https://wa.me/543425271005">Contacto</a></li>
+            <li><a href="/Horarios">Horarios</a></li>
+            <li>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar modo">
+                    <i id="theme-icon" class="fas fa-sun"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="selector-section" id="vista-selector">
+        <h1>Elegí el tipo de materia</h1>
+        <p class="lead">Los valores varían según la categoría. Podés volver a cambiar cuando quieras.</p>
+        <div class="tipo-grid">
+            <div class="tipo-card sistemas" role="button" tabindex="0" onclick="elegirTipo('sistemas')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();elegirTipo('sistemas');}">
+                <div class="icon-wrap"><i class="fas fa-laptop-code"></i></div>
+                <h2>Materias de Sistemas (ISI)</h2>
+                <ul>
+                    <li>Algoritmos y Estructuras de Datos</li>
+                    <li>Arquitectura de Computadoras</li>
+                    <li>Sintaxis y Semántica</li>
+                    <li>Paradigmas de Programación</li>
+                </ul>
+                <span class="tap-hint">Ver precios</span>
+            </div>
+            <div class="tipo-card math" role="button" tabindex="0" onclick="elegirTipo('matematica')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();elegirTipo('matematica');}">
+                <div class="icon-wrap"><i class="fas fa-calculator"></i></div>
+                <h2>Materias básicas</h2>
+                <ul>
+                    <li>Análisis Matemático I</li>
+                    <li>Análisis Matemático II</li>
+                </ul>
+                <span class="tap-hint">Ver precios</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing-section" id="vista-precios">
+        <div class="pricing-header-row">
+            <h2>Elegí tu Plan de Éxito</h2>
+            <span class="badge-tipo" id="badge-tipo-activo"></span>
+        </div>
+        <button type="button" class="btn-cambiar-tipo" onclick="volverAElegirTipo()">
+            <i class="fas fa-arrow-left"></i> Cambiar tipo de materia
+        </button>
+        <p class="subtitle" id="precios-subtitulo">Inversión en tu formación académica con Ingenieros profesionales.</p>
+
+        <div class="pricing-container">
+            <div class="pricing-card">
+                <span class="badge">Más Personalizado</span>
+                <h3>Individual</h3>
+                <p class="group-disclaimer">
+                    Clases exclusivas diseñadas <strong>para tu ritmo</strong> y tus objetivos personales.
+                </p>
+
+                <div class="price-item">
+                    <span class="price-label">Clase Express<small>1 hora de clase</small></span>
+                    <span class="price-value" id="precio-ind-expres">$5.000</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-label">Clase Estándar<small>2 horas de clase</small></span>
+                    <span class="price-value" id="precio-ind-estandar">$9.000</span>
+                </div>
+                <div class="price-item solo-matematica price-item-virtual">
+                    <span class="price-label">Clase Estándar Virtual<small>Individual · 2 horas · modalidad online</small></span>
+                    <span class="price-value" id="precio-ind-estandar-virtual">$12.000</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label"><strong>Pack Preparación Examen</strong><small>10 clases (20hs totales)</small></span>
+                    <span class="price-value" id="precio-ind-pack-examen">$72.000</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label"><strong>Pack Preparación De Materia</strong><small>20 clases (40hs totales)</small></span>
+                    <span class="price-value" id="precio-ind-pack-materia">$120.000</span>
+                </div>
+                <a href="/Horarios" class="btn-select">Agendar Individual</a>
+            </div>
+
+            <div class="pricing-card">
+                <span class="badge" style="background: #94a3b8; color: white;">Ahorro Grupal</span>
+                <h3>Grupal</h3>
+                <p class="group-disclaimer">
+                    Los grupos deben ser <strong>armados por los alumnos</strong>, con el objetivo de que asistas con un amigo o compañero de clase.
+                </p>
+
+                <div class="price-item">
+                    <span class="price-label">Clase Express<small>No disponible en grupo</small></span>
+                    <span class="no-price">No se puede</span>
+                </div>
+                <div class="price-item">
+                    <span class="price-label">Clase Estándar<small>2 horas de clase</small></span>
+                    <span class="price-value" id="precio-grup-estandar">$6.000 c/u</span>
+                </div>
+                <div class="price-item solo-matematica price-item-virtual-grupal">
+                    <span class="price-label">Clase Estándar Virtual<small>Grupal · 2 horas · modalidad online</small></span>
+                    <span class="price-value" id="precio-grup-estandar-virtual">$8.000 c/u</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label"><strong>Pack Preparación Examen</strong><small>10 clases (20hs totales)</small></span>
+                    <span class="price-value" id="precio-grup-pack-examen">$48.000 c/u</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label"><strong>Pack Preparación De Materia</strong><small>20 clases (40hs totales)</small></span>
+                    <span class="price-value" id="precio-grup-pack-materia">$80.000 c/u</span>
+                </div>
+                <a href="/Horarios" class="btn-select">Agendar Grupal</a>
+            </div>
+
+            <div class="pricing-card pricing-card-tp">
+                <span class="badge" style="background: #a35a2d; color: white;">Trabajos Prácticos</span>
+                <h3>Preparación de TPs</h3>
+                <p class="group-disclaimer">
+                    Modalidad de <strong>resolución guiada</strong>: se desarrolla el trabajo práctico consigna por consigna durante la clase (2 horas) y se entrega al alumno la resolución elaborada para estudio y presentación.
+                </p>
+
+                <div class="price-item">
+                    <span class="price-label">Clase individual<small>2 horas</small></span>
+                    <span class="price-value" id="precio-tp-individual">$15.000</span>
+                </div>
+                <div class="price-item highlight-pack">
+                    <span class="price-label">Clase grupal<small>2 horas · Precio total del grupo</small></span>
+                    <span class="price-value" id="precio-tp-grupal">$20.000 total</span>
+                </div>
+                <button type="button" class="btn-select" onclick="openTpModal()">Agendar Preparación TP</button>
+            </div>
+        </div>
+    </section>
+
+    <div class="modal-overlay" id="tp-modal" onclick="if(event.target === this) closeTpModal()">
+        <div class="modal-box">
+            <button type="button" class="modal-close" onclick="closeTpModal()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+            <div class="modal-icon"><i class="fab fa-whatsapp"></i></div>
+            <h4>Preparación de Trabajos Prácticos</h4>
+            <p>Para esta modalidad es necesario coordinar por <strong>WhatsApp de forma privada</strong>. Escribinos y te respondemos a la brevedad.</p>
+            <a href="https://wa.me/543425271005?text=Hola,%20quiero%20consultar%20por%20la%20modalidad%20de%20Preparación%20de%20TPs" class="btn-whatsapp" target="_blank" rel="noopener">
+                <i class="fab fa-whatsapp"></i> Consultar por WhatsApp
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 C/S Ingeniería en Sistemas - Santa Fe, Argentina</p>
+    </footer>
+
+    <script>
+        function actualizarDOMPrecios() {
+            if (typeof PRECIOS === 'undefined') return;
+            document.getElementById('precio-ind-expres').textContent = '$' + PRECIOS.individual.expres1h.toLocaleString('es-AR');
+            document.getElementById('precio-ind-estandar').textContent = '$' + PRECIOS.individual.estandar2h.toLocaleString('es-AR');
+            var elVirtual = document.getElementById('precio-ind-estandar-virtual');
+            if (elVirtual && PRECIOS.individual.estandar2hVirtual != null) {
+                elVirtual.textContent = '$' + PRECIOS.individual.estandar2hVirtual.toLocaleString('es-AR');
+            }
+            document.getElementById('precio-ind-pack-examen').textContent = '$' + PRECIOS.individual.packExamen.toLocaleString('es-AR');
+            document.getElementById('precio-ind-pack-materia').textContent = '$' + PRECIOS.individual.packMateria.toLocaleString('es-AR');
+            document.getElementById('precio-grup-estandar').textContent = '$' + PRECIOS.grupal.estandar2h.toLocaleString('es-AR') + ' c/u';
+            var elGrupVirt = document.getElementById('precio-grup-estandar-virtual');
+            if (elGrupVirt && PRECIOS.grupal.estandar2hVirtual != null) {
+                elGrupVirt.textContent = '$' + PRECIOS.grupal.estandar2hVirtual.toLocaleString('es-AR') + ' c/u';
+            }
+            document.getElementById('precio-grup-pack-examen').textContent = '$' + PRECIOS.grupal.packExamen.toLocaleString('es-AR') + ' c/u';
+            document.getElementById('precio-grup-pack-materia').textContent = '$' + PRECIOS.grupal.packMateria.toLocaleString('es-AR') + ' c/u';
+            if (PRECIOS.tp) {
+                document.getElementById('precio-tp-individual').textContent = '$' + PRECIOS.tp.individual.toLocaleString('es-AR');
+                document.getElementById('precio-tp-grupal').textContent = '$' + PRECIOS.tp.grupal.toLocaleString('es-AR') + ' total';
+            }
+        }
+
+        function mostrarVistaPrecios(tipo) {
+            document.getElementById('vista-selector').classList.add('is-hidden');
+            var sec = document.getElementById('vista-precios');
+            sec.classList.add('is-visible');
+            var badge = document.getElementById('badge-tipo-activo');
+            var sub = document.getElementById('precios-subtitulo');
+            if (tipo === 'matematica') {
+                sec.classList.add('tipo-precios-matematica');
+                badge.textContent = 'Materias básicas · Matemática';
+                badge.classList.add('math');
+                sub.textContent = 'Precios para Análisis Matemático I y II.';
+            } else {
+                sec.classList.remove('tipo-precios-matematica');
+                badge.textContent = 'Materias de Sistemas (ISI)';
+                badge.classList.remove('math');
+                sub.textContent = 'Precios para Algoritmos, Arquitectura, Sintaxis y Paradigmas.';
+            }
+            actualizarDOMPrecios();
+        }
+
+        function mostrarVistaSelector() {
+            document.getElementById('vista-selector').classList.remove('is-hidden');
+            document.getElementById('vista-precios').classList.remove('is-visible');
+        }
+
+        function elegirTipo(tipo) {
+            establecerTipoMateriaYPrecios(tipo);
+            mostrarVistaPrecios(tipo);
+        }
+
+        function volverAElegirTipo() {
+            localStorage.removeItem('preciosNuevos_tipo');
+            mostrarVistaSelector();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var guardado = typeof obtenerTipoMateriaGuardado === 'function' ? obtenerTipoMateriaGuardado() : null;
+            if (guardado) {
+                mostrarVistaPrecios(guardado);
+            }
+        });
+
+        function openTpModal() {
+            document.getElementById('tp-modal').classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeTpModal() {
+            document.getElementById('tp-modal').classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeTpModal();
+        });
+
+        function toggleTheme() {
+            var body = document.body;
+            var icon = document.getElementById('theme-icon');
+            body.classList.toggle('light-mode');
+            if (body.classList.contains('light-mode')) {
+                icon.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+        }
+    </script>
+</body>
+</html>
