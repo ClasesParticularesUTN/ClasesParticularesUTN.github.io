@@ -454,12 +454,26 @@ function redondearPrecio(valor) {
 }
 
 /**
- * Monto tal como va en el JSON al backend: string con 2 decimales ("1.00").
- * Así los enteros no se serializan como `1` (sin punto), que suele romper código
- * del servidor que hace price.toString().split(".")[1] sin validar.
+ * MP exige total_amount con ≤2 decimales. Si el backend suma precios en float,
+ * mezclas como 1.14 + 1 dan 2.139999… y MP responde invalid_total_amount.
+ * Sumamos en centavos; si hay más de una línea, enviamos un solo ítem con ese total
+ * (referencias / detalle siguen en su array; el QR cobra el total exacto).
  */
-function precioParaBackend(valor) {
-    return redondearPrecio(valor).toFixed(2);
+function itemsYTotalParaMercadoPago(lineas) {
+    if (!lineas.length) return { items: [], total_amount: 0 };
+    const cents = lineas.reduce((acc, L) => acc + Math.round(redondearPrecio(L.precio) * 100), 0);
+    const total_amount = cents / 100;
+    if (lineas.length === 1) {
+        const L = lineas[0];
+        const item = { title: L.title, price: redondearPrecio(L.precio) };
+        if (L.codigo != null && L.codigo !== "") item.codigo = L.codigo;
+        if (L.packKey != null && L.packKey !== "") item.packKey = L.packKey;
+        return { items: [item], total_amount };
+    }
+    return {
+        items: [{ title: lineas.map(L => L.title).join(" + "), price: total_amount }],
+        total_amount
+    };
 }
 
 function setProcessingUI(isProcessing) {
@@ -589,8 +603,10 @@ async function generarQRPersonalizado({ precio, titulo, referencia }) {
     // Siempre usar una orden nueva
     generarNuevaOrdenId();
 
+    const { items, total_amount } = itemsYTotalParaMercadoPago([{ title: titulo, precio: Number(precio) }]);
     const payload = {
-        items: [{ title: titulo, price: precioParaBackend(precio) }],
+        items,
+        total_amount,
         email: Alumno?.correoElectronico,
         referencias: [referencia],
         external_reference: miOrdenId,
@@ -838,7 +854,7 @@ function actualizarTotal() {
     document.getElementById("total").textContent = total.toFixed(2).replace('.', ',');
 }
 async function pagarSeleccion() {
-    let items = [];
+    const lineas = [];
     let referencias = [];
     const tipoPago = modoPago === 'pack' ? 'pack' : 'clase';
 
@@ -848,7 +864,7 @@ async function pagarSeleccion() {
     if (modoPago === 'clases') {
         document.querySelectorAll('.productos input[type="checkbox"]:checked').forEach(cb => {
             const c = clases[cb.value];
-            items.push({ title: c.modalidad, price: precioParaBackend(c.precioEditado), codigo: c.codigo });
+            lineas.push({ title: c.modalidad, precio: c.precioEditado, codigo: c.codigo });
             referencias.push(c.codigo);
         });
     } else {
@@ -856,15 +872,18 @@ async function pagarSeleccion() {
             const titulo = cb.dataset.titulo || 'Pack';
             const precio = parseFloat(cb.dataset.precio) || 0;
             const key = cb.dataset.packKey || '';
-            items.push({ title: titulo, price: precioParaBackend(precio), packKey: key });
+            lineas.push({ title: titulo, precio, packKey: key });
             referencias.push(key);
         });
     }
 
-    if (items.length === 0) return;
+    if (lineas.length === 0) return;
+
+    const { items, total_amount } = itemsYTotalParaMercadoPago(lineas);
 
     const payload = { 
         items, 
+        total_amount,
         email: Alumno.correoElectronico, 
         referencias, 
         external_reference: miOrdenId,
@@ -915,8 +934,10 @@ async function generarQRAdmin() {
     // Para QR admin, tambi&#233;n usar siempre una orden nueva
     generarNuevaOrdenId();
 
+    const { items, total_amount } = itemsYTotalParaMercadoPago([{ title: "Pago manual (Admin)", precio }]);
     const payload = {
-        items: [{ title: "Pago manual (Admin)", price: precioParaBackend(precio) }],
+        items,
+        total_amount,
         email: Alumno?.correoElectronico,
         referencias: ["admin_manual"],
         external_reference: miOrdenId,
