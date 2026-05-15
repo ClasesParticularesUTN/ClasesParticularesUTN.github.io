@@ -27,10 +27,10 @@ const PRECIOS_BASE = {
             packMateria: 140000,
         },
     grupal: {
-        estandar2h: 6000,
-        precioPorHora: 3000,
-        packExamen: 6000 * 8,
-        packMateria: 6000 * 14
+        estandar2h: 7000,
+        precioPorHora: 3500,
+        packExamen: 7000 * 8,
+        packMateria: 7000 * 14
     },
     tp: {
         individual: 15000,
