@@ -27,10 +27,10 @@ const PRECIOS_BASE = {
             packMateria: 140000,
         },
     grupal: {
-        estandar2h: 6000,
-        precioPorHora: 3000,
-        packExamen: 6000 * 8,
-        packMateria: 6000 * 14
+        estandar2h: 7000,
+        precioPorHora: 3500,
+        packExamen: 7000 * 8,
+        packMateria: 7000 * 14
     },
     tp: {
         individual: 15000,
@@ -46,14 +46,14 @@ const PRECIOS_BASE = {
  * ============================================
  */
 const PRECIOS_ESPECIALES = {
-    "Martin Sofia": {
+    "Villa Camila": {
         individual: {
-            expres1h: 5500,
-            estandar2h: 10000,
-            precioPorHora1: 5500,
-            precioPorHora2: 5000,
-            packExamen: 80000,
-            packMateria: 160000,
+            expres1h: 50000,
+            estandar2h: 9000,
+            precioPorHora1: 5000,
+            precioPorHora2: 4500,
+            packExamen: 72000,
+            packMateria: 4500 * 14,
         }
     },
     "Mosquen Valentin Ignacio": {
