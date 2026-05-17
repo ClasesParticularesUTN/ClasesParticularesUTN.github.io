@@ -475,6 +475,35 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             return Alumno && EMAILS_FINES_DE_SEMANA.includes(Alumno.correoElectronico);
         }
 
+        function fechaDeSlot(slotId) {
+            return slotId.split(' ')[0];
+        }
+
+        function contarHorasPorDia(slots) {
+            const porDia = {};
+            for (const s of slots) {
+                const f = fechaDeSlot(s);
+                porDia[f] = (porDia[f] || 0) + 1;
+            }
+            return porDia;
+        }
+
+        function contarDiasUnicos(slots) {
+            return new Set(slots.map(fechaDeSlot)).size;
+        }
+
+        function tienePackActivo() {
+            return Number(Alumno?.horasAFavor) > 0;
+        }
+
+        function superaLimiteClasesImpagas(slots) {
+            if (isAdmin || tienePackActivo()) return false;
+            const reservadas = Number(Alumno?.reservadasSinPagar) || 0;
+            return reservadas + contarDiasUnicos(slots) > 2;
+        }
+
+        const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases impagas. Si quiere reservar mas clases, debe pagar las que ya reservo';
+
         /** Horarios: antes string; ahora { fecha, codigo }. Mantiene compatibilidad con datos viejos. */
         function textoHorarioReserva(h) {
             if (h == null) return '';
@@ -897,6 +926,27 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                             slot.classList.remove('selected');
                             if (selectedSlots.length === 0) ocultarHintMoverBarra();
                         } else {
+                            const fechaSlot = fechaDeSlot(fullId);
+                            const horasEseDia = selectedSlots.filter(s => fechaDeSlot(s) === fechaSlot).length;
+                            if (!isAdmin && horasEseDia >= 3) {
+                                return Swal.fire({
+                                    icon: 'error',
+                                    title: 'Límite diario',
+                                    text: 'Solo podés reservar hasta 3 horas por día.',
+                                    background: '#1a1a1a',
+                                    color: '#fff'
+                                });
+                            }
+                            const slotsConNuevo = [...selectedSlots, fullId];
+                            if (!isAdmin && superaLimiteClasesImpagas(slotsConNuevo)) {
+                                return Swal.fire({
+                                    icon: 'error',
+                                    title: 'Límite de clases impagas',
+                                    text: MSG_LIMITE_IMPAGAS,
+                                    background: '#1a1a1a',
+                                    color: '#fff'
+                                });
+                            }
                             selectedSlots.push(fullId);
                             slot.classList.add('selected');
                             if (horaSlot === '08:15') {
@@ -934,6 +984,28 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         }
 
 async function gestionarReserva() {
+            if (!isAdmin) {
+                const porDia = contarHorasPorDia(selectedSlots);
+                if (Object.values(porDia).some(h => h > 3)) {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Límite diario',
+                        text: 'Solo podés reservar hasta 3 horas por día.',
+                        background: '#1a1a1a',
+                        color: '#fff'
+                    });
+                }
+                if (superaLimiteClasesImpagas(selectedSlots)) {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Límite de clases impagas',
+                        text: MSG_LIMITE_IMPAGAS,
+                        background: '#1a1a1a',
+                        color: '#fff'
+                    });
+                }
+            }
+
             // --- NUEVA RESTRICCIÓN: cantidadDebe ---
             // Se usa el string hexadecimal directamente para evitar errores de sintaxis
             if (!isAdmin && (Alumno.condicionPago == "Normal" && Alumno.cantidadDebe >= 2)) {
