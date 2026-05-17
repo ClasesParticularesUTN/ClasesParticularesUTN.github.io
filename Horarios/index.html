@@ -502,7 +502,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             return reservadas + contarDiasUnicos(slots) > 2;
         }
 
-        const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases impagas. Si quiere reservar mas clases, debe pagar las que ya reservo';
+        const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases reservadas. Si quiere reservar mas clases, podes pagar las que ya reservaste y luego sacar mas turnos';
 
         /** Horarios: antes string; ahora { fecha, codigo }. Mantiene compatibilidad con datos viejos. */
         function textoHorarioReserva(h) {
