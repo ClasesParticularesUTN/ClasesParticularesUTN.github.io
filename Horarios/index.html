@@ -971,6 +971,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         }
 
         function calcularMensaje(data) {
+            console.log("data: ", data);
             let msg = "";
             if (data.faltantes) {
                 let textoFaltantes = Array.isArray(data.faltantes) ? data.faltantes.join(', ') : data.faltantes;
@@ -978,6 +979,10 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             }
             if (data.deudores) {
                 let textoDeudores = Array.isArray(data.deudores) ? data.deudores.join(', ') : data.deudores;
+                msg += `<br>${textoDeudores}`;
+            }
+            if(data.impagas){
+                let textoDeudores = Array.isArray(data.deudores) ? data.impagas.join(', ') : data.impagas;
                 msg += `<br>${textoDeudores}`;
             }
             return msg;
