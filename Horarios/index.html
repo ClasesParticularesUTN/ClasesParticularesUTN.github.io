@@ -1035,6 +1035,23 @@ async function gestionarReserva() {
                 });
             }
 
+            if (!isAdmin && Alumno.condicionPago == "Deudor") {
+                const rawDineroDeudor = Alumno.dineroQueDebe != null && Alumno.dineroQueDebe !== ''
+                    ? String(Alumno.dineroQueDebe).replace(/[^\d.-]/g, '')
+                    : '0';
+                const dineroPendienteDeudor = parseFloat(rawDineroDeudor) || 0;
+                if (dineroPendienteDeudor > 0) {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Permiso Denegado',
+                        text: 'No puedes reservar nuevos horarios porque debés dinero. Regularizá tu deuda antes de sacar más turnos.',
+                        background: '#1a1a1a',
+                        color: '#fff',
+                        confirmButtonColor: '#ff5f5f'
+                    });
+                }
+            }
+
             if (!isAdmin && (Alumno.horarios || []).length >= 2) return Swal.fire({ icon: 'error', title: 'Límite de Reservas', text: 'Solo puedes tener 2 reservas activas. Si quieres mas, comunicate por whatsapp' });
 
             if (!isAdmin && Alumno.condicionPago !== 'Libre') {
