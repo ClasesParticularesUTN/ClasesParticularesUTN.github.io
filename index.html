@@ -295,6 +295,75 @@
             .services { padding: 80px 5%; flex-wrap: wrap; gap: 20px; }
             .card { width: 100%; max-width: 100%; min-width: 0; }
         }
+
+        /* Modal primera vez — reservar horario */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: rgba(5, 5, 10, 0.75);
+            backdrop-filter: blur(8px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-bienvenida {
+            background: var(--dark-surface);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 36px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
+            transform: translateY(20px) scale(0.97);
+            transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .modal-overlay.active .modal-bienvenida {
+            transform: translateY(0) scale(1);
+        }
+        .modal-bienvenida .modal-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+        .modal-bienvenida h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: white;
+        }
+        .modal-bienvenida p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 28px;
+        }
+        .modal-bienvenida .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .modal-bienvenida .modal-actions .btn {
+            width: 100%;
+            padding: 14px 24px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+        @media (min-width: 480px) {
+            .modal-bienvenida .modal-actions {
+                flex-direction: row;
+            }
+        }
     </style>
 </head>
 <body>
@@ -351,12 +420,24 @@
             <p>Consultá por planes individuales o grupales.</p>
         </div>
 
-        <div class="card" onclick="window.location.href = '/Horarios'">
+        <div class="card" id="card-horarios" role="button" tabindex="0">
             <span class="icon">📅</span>
             <h3>Horarios</h3>
             <p>Elegí la fecha y hora de tu clase con anticipación</p>
         </div>
     </section>
+
+    <div id="modal-primera-vez" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-primera-vez-titulo">
+        <div class="modal-bienvenida">
+            <span class="modal-icon" aria-hidden="true">🎬</span>
+            <h2 id="modal-primera-vez-titulo">¿Es tu primera vez?</h2>
+            <p>Si es la primera vez que entrás, podés consultar los video tutoriales sobre cómo sacar horarios, cancelar clases o pagar clases.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="btn-ir-tutorial">Ir a tutoriales</button>
+                <button type="button" class="btn btn-primary" id="btn-reservar-horario">Reservar horario</button>
+            </div>
+        </div>
+    </div>
 
     <footer>
         <p>© 2026 C/S Ingeniería en Sistemas - Clases Particulares</p>
@@ -401,6 +482,59 @@
 
   });
 }
+
+        const STORAGE_MODAL_HORARIOS = 'modalReservarHorarioVisto';
+        const URL_HORARIOS = '/Horarios';
+        const URL_TUTORIALES = 'Tutoriales.html';
+
+        const cardHorarios = document.getElementById('card-horarios');
+        const modalPrimeraVez = document.getElementById('modal-primera-vez');
+
+        function marcarModalHorariosVisto() {
+            localStorage.setItem(STORAGE_MODAL_HORARIOS, 'true');
+        }
+
+        function irAHorarios() {
+            window.location.href = URL_HORARIOS;
+        }
+
+        function abrirModalPrimeraVez() {
+            modalPrimeraVez.classList.add('active');
+        }
+
+        function cerrarModalPrimeraVez() {
+            modalPrimeraVez.classList.remove('active');
+        }
+
+        function onClickReservarHorario() {
+            if (localStorage.getItem(STORAGE_MODAL_HORARIOS) === 'true') {
+                irAHorarios();
+                return;
+            }
+            abrirModalPrimeraVez();
+        }
+
+        cardHorarios.addEventListener('click', onClickReservarHorario);
+        cardHorarios.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClickReservarHorario();
+            }
+        });
+
+        document.getElementById('btn-ir-tutorial').addEventListener('click', () => {
+            marcarModalHorariosVisto();
+            window.location.href = URL_TUTORIALES;
+        });
+
+        document.getElementById('btn-reservar-horario').addEventListener('click', () => {
+            marcarModalHorariosVisto();
+            irAHorarios();
+        });
+
+        modalPrimeraVez.addEventListener('click', (e) => {
+            if (e.target === modalPrimeraVez) cerrarModalPrimeraVez();
+        });
     </script>
 </body>
 </html>
