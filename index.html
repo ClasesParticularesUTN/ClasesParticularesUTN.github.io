@@ -347,6 +347,10 @@
             line-height: 1.65;
             margin-bottom: 28px;
         }
+        .modal-bienvenida .modal-keyword {
+            color: var(--primary);
+            font-weight: 600;
+        }
         .modal-bienvenida .modal-actions {
             display: flex;
             flex-direction: column;
@@ -431,7 +435,7 @@
         <div class="modal-bienvenida">
             <span class="modal-icon" aria-hidden="true">🎬</span>
             <h2 id="modal-primera-vez-titulo">¿Es tu primera vez?</h2>
-            <p>Si es la primera vez que entrás, podés consultar los video tutoriales sobre cómo sacar horarios, cancelar clases o pagar clases.</p>
+            <p>Si es la <span class="modal-keyword">primera vez</span> que entrás, podés consultar los <span class="modal-keyword">video tutoriales</span> sobre cómo <span class="modal-keyword">sacar horarios</span>, <span class="modal-keyword">cancelar clases</span> o <span class="modal-keyword">pagar clases</span>.</p>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" id="btn-ir-tutorial">Ir a tutoriales</button>
                 <button type="button" class="btn btn-primary" id="btn-reservar-horario">Reservar horario</button>

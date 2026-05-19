@@ -48,7 +48,7 @@ const PRECIOS_BASE = {
 const PRECIOS_ESPECIALES = {
     "Villa Camila": {
         individual: {
-            expres1h: 50000,
+            expres1h: 5000,
             estandar2h: 9000,
             precioPorHora1: 5000,
             precioPorHora2: 4500,
