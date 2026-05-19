@@ -55,42 +55,6 @@ const PRECIOS_ESPECIALES = {
             packExamen: 72000,
             packMateria: 9000 * 14,
         }
-    },
-    "Mosquen Valentin Ignacio": {
-        grupal: {
-            estandar2h: 7000,
-            precioPorHora: 3500,
-            packExamen: 7000 * 8,
-            packMateria: 7000 * 16
-        }
-    },
-    "Benitez Juan Martin": {
-        grupal: {
-            estandar2h: 7000,
-            precioPorHora: 3500,
-            packExamen: 7000 * 8,
-            packMateria: 7000 * 16
-        }
-    },
-    "Vogt Joel": {
-        individual: {
-            expres1h: 5500,
-            estandar2h: 10000,
-            precioPorHora1: 5500,
-            precioPorHora2: 5000,
-            packExamen: 80000,
-            packMateria: 160000,
-        }
-    },
-    "Bertoia Delfina": {
-        individual: {
-            expres1h: 5500,
-            estandar2h: 10000,
-            precioPorHora1: 5500,
-            precioPorHora2: 5000,
-            packExamen: 80000,
-            packMateria: 160000,
-        }
     }
 };
 
