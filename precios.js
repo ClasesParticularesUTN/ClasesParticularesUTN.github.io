@@ -53,7 +53,7 @@ const PRECIOS_ESPECIALES = {
             precioPorHora1: 5000,
             precioPorHora2: 4500,
             packExamen: 72000,
-            packMateria: 4500 * 14,
+            packMateria: 9000 * 14,
         }
     },
     "Mosquen Valentin Ignacio": {
