@@ -1052,7 +1052,6 @@ async function gestionarReserva() {
                 }
             }
 
-            if (!isAdmin && (Alumno.horarios || []).length >= 2) return Swal.fire({ icon: 'error', title: 'Límite de Reservas', text: 'Solo puedes tener 2 reservas activas. Si quieres mas, comunicate por whatsapp' });
 
             if (!isAdmin && Alumno.condicionPago !== 'Libre') {
                 const debeClases = Number(Alumno.cantidadDebe) || 0;
