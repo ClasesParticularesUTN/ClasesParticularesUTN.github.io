@@ -365,6 +365,14 @@
             text-decoration: underline; cursor: pointer;
         }
         .swal-tyc-link:hover { color: #a05212; }
+        .swal-tyc-hint {
+            margin: 10px 0 0;
+            font-size: 0.82rem;
+            color: #8a5a20;
+            line-height: 1.4;
+        }
+        .swal-tyc-row input:disabled { cursor: not-allowed; opacity: 0.45; }
+        .swal-tyc-row input:disabled + div label { cursor: not-allowed; opacity: 0.65; }
     </style>
 </head>
 <body>
@@ -525,10 +533,29 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 .replace(/</g, '&lt;');
         }
 
+        const TYC_HORARIOS_LS_KEY = 'tycHorariosVisto';
+        let tycModalAbiertoEnConfirmacion = false;
+
+        function yaVioTerminosHorarios() {
+            try { return localStorage.getItem(TYC_HORARIOS_LS_KEY) === '1'; } catch (e) { return false; }
+        }
+
+        function marcarTerminosHorariosVistos() {
+            try { localStorage.setItem(TYC_HORARIOS_LS_KEY, '1'); } catch (e) { console.warn('No se pudo guardar tycHorariosVisto:', e); }
+        }
+
+        function habilitarCheckboxTyCConfirmacion() {
+            const chk = document.getElementById('swal-acepto-tyc');
+            if (chk) chk.disabled = false;
+            const hint = document.getElementById('swal-tyc-hint');
+            if (hint) hint.textContent = 'Ya podés marcar la casilla para confirmar la reserva.';
+        }
+
         function abrirModalTerminos(ev) {
             if (ev) ev.preventDefault();
             const el = document.getElementById('terms-modal');
             if (!el) return;
+            tycModalAbiertoEnConfirmacion = true;
             el.classList.add('is-open');
             el.setAttribute('aria-hidden', 'false');
         }
@@ -536,8 +563,13 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         function cerrarModalTerminos() {
             const el = document.getElementById('terms-modal');
             if (!el) return;
+            const estabaAbierto = el.classList.contains('is-open');
             el.classList.remove('is-open');
             el.setAttribute('aria-hidden', 'true');
+            if (estabaAbierto && tycModalAbiertoEnConfirmacion) {
+                marcarTerminosHorariosVistos();
+                habilitarCheckboxTyCConfirmacion();
+            }
         }
 
         async function cancelarClase(codigo) {
@@ -1270,6 +1302,7 @@ async function gestionarReserva() {
                 textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''} · ${materia}`;
             }
 
+            const esPrimeraVezTyC = !yaVioTerminosHorarios();
             const htmlConfirmacion = `
                 <div style="text-align: left; font-size: 0.95rem; color: #333;">
                     <p style="margin: 0; padding: 12px 14px; background: rgba(243, 166, 97, 0.12); border-radius: 10px; border-left: 4px solid #f3a661; line-height: 1.5;">
@@ -1277,9 +1310,10 @@ async function gestionarReserva() {
                         <span style="margin-top: 6px; display: inline-block;">${textoResumen}</span>
                     </p>
                     <div class="swal-tyc-row">
-                        <input type="checkbox" id="swal-acepto-tyc" autocomplete="off">
+                        <input type="checkbox" id="swal-acepto-tyc" autocomplete="off"${esPrimeraVezTyC ? ' disabled' : ''}>
                         <div style="margin: 0;">
                             <label for="swal-acepto-tyc" style="cursor: pointer;">Acepto los </label><button type="button" class="swal-tyc-link" id="swal-link-tyc">términos y condiciones</button>.
+                            ${esPrimeraVezTyC ? '<p id="swal-tyc-hint" class="swal-tyc-hint">La primera vez debés abrir y leer los términos para poder confirmar.</p>' : ''}
                         </div>
                     </div>
                 </div>
@@ -1295,6 +1329,10 @@ async function gestionarReserva() {
                 customClass: { container: 'swal-modal-light' },
                 focusConfirm: false,
                 preConfirm: () => {
+                    if (!yaVioTerminosHorarios()) {
+                        Swal.showValidationMessage('Debés abrir y leer los términos y condiciones antes de confirmar.');
+                        return false;
+                    }
                     const chk = document.getElementById('swal-acepto-tyc');
                     if (!chk || !chk.checked) {
                         Swal.showValidationMessage('Debés aceptar los términos y condiciones para confirmar la reserva.');
@@ -1303,8 +1341,19 @@ async function gestionarReserva() {
                     return true;
                 },
                 didOpen: () => {
+                    tycModalAbiertoEnConfirmacion = false;
                     const btnTyc = document.getElementById('swal-link-tyc');
                     if (btnTyc) btnTyc.addEventListener('click', abrirModalTerminos);
+                    const chk = document.getElementById('swal-acepto-tyc');
+                    if (chk && chk.disabled) {
+                        chk.addEventListener('click', (e) => {
+                            if (chk.disabled) {
+                                e.preventDefault();
+                                Swal.showValidationMessage('Primero abrí y leé los términos y condiciones.');
+                            }
+                        });
+                        abrirModalTerminos();
+                    }
                 }
             });
 
