@@ -1425,28 +1425,8 @@ async function gestionarReserva() {
                     document.getElementById('loader-text').textContent = 'Reservando celdas en grilla...';
                     await fetch(URLHorarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) });
                     document.getElementById('loader-overlay').style.display = 'none';
-                    const { value } = await Swal.fire({
-                        icon: 'success',
-                        title: 'Reserva completada',
-                        html: `
-                            <span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span><br><br>
-                            <button id="btnIrAPagar" class="swal2-styled" style="background:#0a0a0b; color:white; margin:6px 0; width:100%;"><i class="fa-solid fa-credit-card"></i> Ir a pagar</button>
-                            <button id="btnPagarDespues" class="swal2-styled" style="background:#f3a661; color:#0a0a0b; margin:6px 0; width:100%;">Pagar después de la clase</button>
-                        `,
-                        showConfirmButton: false,
-                        allowOutsideClick: false,
-                        didRender: () => {
-                            document.getElementById('btnIrAPagar').onclick = () => {
-                                // Reemplazar este link con la URL real de pago
-                                window.open('/Pagos', '_blank');
-                                location.reload();
-                            };
-                            document.getElementById('btnPagarDespues').onclick = () => {
-                                location.reload();
-                            };
-                        }
-                    });
-            
+                    await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
+                    location.reload();
                 } catch (e) {
                     document.getElementById('loader-overlay').style.display = 'none';
                     Swal.fire({ icon: 'error', title: 'Error de red' });
