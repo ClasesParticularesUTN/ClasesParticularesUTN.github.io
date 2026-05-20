@@ -535,6 +535,23 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
 
         const TYC_HORARIOS_LS_KEY = 'tycHorariosVisto';
         let tycModalAbiertoEnConfirmacion = false;
+        let cancelacionEnCurso = false;
+
+        /** Reintenta fetch a Apps Script (el primer request suele fallar por CORS/cold start). */
+        async function fetchConReintentos(url, opciones = {}, intentos = 3) {
+            let ultimoError;
+            for (let i = 0; i < intentos; i++) {
+                try {
+                    return await fetch(url, opciones);
+                } catch (err) {
+                    ultimoError = err;
+                    if (i < intentos - 1) {
+                        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+                    }
+                }
+            }
+            throw ultimoError;
+        }
 
         function yaVioTerminosHorarios() {
             try { return localStorage.getItem(TYC_HORARIOS_LS_KEY) === '1'; } catch (e) { return false; }
@@ -573,7 +590,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         }
 
         async function cancelarClase(codigo) {
-            console.log("codigo: ", codigo);
+            if (cancelacionEnCurso) return;
             if (!Alumno || !Alumno.correoElectronico || !codigo) {
                 return Swal.fire({
                     icon: 'warning',
@@ -596,11 +613,12 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             });
             if (!isConfirmed) return;
 
+            cancelacionEnCurso = true;
             document.getElementById('loader-overlay').style.display = 'flex';
             document.getElementById('loader-text').textContent = 'Cancelando clase...';
             try {
                 const url = `${URLUsuarios}?funcion=cancelarReserva&correo=${encodeURIComponent(Alumno.correoElectronico)}&codigo=${encodeURIComponent(codigo)}`;
-                const res = await fetch(url);
+                const res = await fetchConReintentos(url);
                 const text = await res.text();
                 let data = {};
                 try {
@@ -608,22 +626,26 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 } catch {
                     data = {};
                 }
-                if (data.error) {
+                const cancelacionFallida = data.error
+                    || data.ok === false
+                    || data.exito === false
+                    || data.exio === false;
+                if (cancelacionFallida) {
                     document.getElementById('loader-overlay').style.display = 'none';
                     return Swal.fire({
                         icon: 'error',
                         title: 'No se pudo cancelar',
-                        text: String(data.error),
+                        text: data.mensaje ? String(data.mensaje) : (data.error ? String(data.error) : 'Intentá de nuevo más tarde.'),
                         background: '#1a1a1a',
                         color: '#fff'
                     });
                 }
-                if (data.ok === false) {
+                if (data.exito !== true && !data.mensaje) {
                     document.getElementById('loader-overlay').style.display = 'none';
                     return Swal.fire({
                         icon: 'error',
                         title: 'No se pudo cancelar',
-                        text: data.mensaje ? String(data.mensaje) : 'Intentá de nuevo más tarde.',
+                        text: 'Respuesta inesperada del servidor.',
                         background: '#1a1a1a',
                         color: '#fff'
                     });
@@ -645,6 +667,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 await Swal.fire({
                     icon: 'success',
                     title: 'Clase cancelada',
+                    text: data.mensaje ? String(data.mensaje) : undefined,
                     background: '#151517',
                     color: '#fff',
                     confirmButtonColor: '#f3a661'
@@ -659,6 +682,8 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                     background: '#1a1a1a',
                     color: '#fff'
                 });
+            } finally {
+                cancelacionEnCurso = false;
             }
         }
         
