@@ -373,6 +373,13 @@
         }
         .swal-tyc-row input:disabled { cursor: not-allowed; opacity: 0.45; }
         .swal-tyc-row input:disabled + div label { cursor: not-allowed; opacity: 0.65; }
+        .swal-cancel-msg {
+            text-align: left;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: #e8e8e8;
+        }
+        .swal-cancel-msg strong { color: #f3a661; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -664,14 +671,27 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                     await actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
                 }
                 document.getElementById('loader-overlay').style.display = 'none';
+                const htmlCancelacion = data.mensaje
+                    ? `<div class="swal-cancel-msg" style="text-align: center;">${String(data.mensaje)}</div>`
+                    : undefined;
+                const showGoToPay = data?.cobroInteres || (data?.mensaje && (String(data.mensaje).toLowerCase().includes('debe') || String(data.mensaje).toLowerCase().includes('deuda')));
                 await Swal.fire({
-                    icon: 'success',
-                    title: 'Clase cancelada',
-                    text: data.mensaje ? String(data.mensaje) : undefined,
+                    icon: data.cobroInteres ? 'warning' : 'success',
+                    title: data.cobroInteres ? 'Cancelada con recargo' : 'Clase cancelada',
+                    html: htmlCancelacion,
                     background: '#151517',
                     color: '#fff',
-                    confirmButtonColor: '#f3a661'
+                    confirmButtonColor: '#f3a661',
+                    showCancelButton: showGoToPay,
+                    cancelButtonText: '<i class="fa-solid fa-credit-card"></i> Ir a pagar',
+                    cancelButtonColor: '#c56a1a',
+                }).then(result => {
+                    if (showGoToPay && result.dismiss === Swal.DismissReason.cancel) {
+                        window.location.href = '/Pagos';
+                    }
                 });
+           
+           
                 location.reload();
             } catch (err) {
                 document.getElementById('loader-overlay').style.display = 'none';
