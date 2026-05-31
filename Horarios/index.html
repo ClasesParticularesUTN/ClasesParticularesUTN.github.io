@@ -541,8 +541,34 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         }
 
         const TYC_HORARIOS_LS_KEY = 'tycHorariosVisto';
+        const RESERVA_PREFS_LS_PREFIX = 'reservaPrefs_';
         let tycModalAbiertoEnConfirmacion = false;
         let cancelacionEnCurso = false;
+
+        function clavePreferenciasReserva() {
+            const email = Alumno?.correoElectronico;
+            return email ? `${RESERVA_PREFS_LS_PREFIX}${email}` : `${RESERVA_PREFS_LS_PREFIX}anon`;
+        }
+
+        function cargarPreferenciasReserva() {
+            try {
+                const raw = localStorage.getItem(clavePreferenciasReserva());
+                if (!raw) return {};
+                const data = JSON.parse(raw);
+                return data && typeof data === 'object' ? data : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function guardarPreferenciasReserva(partial) {
+            try {
+                const actual = cargarPreferenciasReserva();
+                localStorage.setItem(clavePreferenciasReserva(), JSON.stringify({ ...actual, ...partial }));
+            } catch (e) {
+                console.warn('No se pudieron guardar preferencias de reserva:', e);
+            }
+        }
 
         /** Reintenta fetch a Apps Script (el primer request suele fallar por CORS/cold start). */
         async function fetchConReintentos(url, opciones = {}, intentos = 3) {
@@ -1154,6 +1180,7 @@ async function gestionarReserva() {
                 }
             }
 
+            const prefsReserva = cargarPreferenciasReserva();
             const nHoras = selectedSlots.length;
             const precioInd = (nHoras === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2) * nHoras;
             const precioGrpHora = PRECIOS.grupal.precioPorHora * nHoras;
@@ -1200,10 +1227,19 @@ async function gestionarReserva() {
                             document.getElementById('modValue').value = card.dataset.mod;
                         });
                     });
+                    if (prefsReserva.modalidad) {
+                        const guardada = document.querySelector(`.mod-card[data-mod="${prefsReserva.modalidad}"]`);
+                        if (guardada) {
+                            cards.forEach(c => c.classList.remove('selected'));
+                            guardada.classList.add('selected');
+                            document.getElementById('modValue').value = prefsReserva.modalidad;
+                        }
+                    }
                 }
             });
 
             if (!mod) return;
+            guardarPreferenciasReserva({ modalidad: mod });
             if (!isAdmin && mod === 'grupal' && selectedSlots.length < 2) return Swal.fire({ icon: 'warning', title: 'Atención', text: 'Mínimo 2 horas para grupales.' });
 
             let integrantes = [Alumno.correoElectronico]; 
@@ -1216,6 +1252,7 @@ async function gestionarReserva() {
                     html:'Cantidad incluyendote',
                     input: 'number',
                     inputAttributes: { min: 2 },
+                    inputValue: prefsReserva.numIntegrantes ? String(prefsReserva.numIntegrantes) : '',
                     confirmButtonColor: '#f3a661'
                 });
 
@@ -1228,6 +1265,7 @@ async function gestionarReserva() {
                     const { value: email } = await Swal.fire({
                         title: `Email integrante ${i+1}`,
                         input: 'email',
+                        inputValue: (prefsReserva.emailsIntegrantes && prefsReserva.emailsIntegrantes[i - 1]) || '',
                         confirmButtonColor: '#f3a661',
                         inputValidator: (value) => {
                             console.log(value);
@@ -1252,6 +1290,10 @@ async function gestionarReserva() {
                     integrantes.push(email);
                 }
 
+                guardarPreferenciasReserva({
+                    numIntegrantes,
+                    emailsIntegrantes: integrantes.slice(1)
+                });
 
                 // Validación de correos (integrantes registrados y sin deuda) siempre, también en modo admin
                 document.getElementById('loader-overlay').style.display = 'flex';
@@ -1304,10 +1346,22 @@ async function gestionarReserva() {
                             document.getElementById('materiaValue').value = MATERIAS_RESERVA[idx] || '';
                         });
                     });
+                    if (prefsReserva.materia) {
+                        const idxGuardada = MATERIAS_RESERVA.indexOf(prefsReserva.materia);
+                        if (idxGuardada >= 0) {
+                            const cardGuardada = document.querySelector(`.materia-card[data-materia-idx="${idxGuardada}"]`);
+                            if (cardGuardada) {
+                                document.querySelectorAll('.materia-card').forEach(c => c.classList.remove('selected'));
+                                cardGuardada.classList.add('selected');
+                                document.getElementById('materiaValue').value = prefsReserva.materia;
+                            }
+                        }
+                    }
                 }
             });
 
             if (!materia) return;
+            guardarPreferenciasReserva({ materia });
 
             const puedeFinDeSemana = tieneAccesoFinDeSemana();
             const letras = puedeFinDeSemana ? ['B', 'C', 'D', 'E', 'F', 'G', 'H'] : ['B', 'C', 'D', 'E', 'F'];
