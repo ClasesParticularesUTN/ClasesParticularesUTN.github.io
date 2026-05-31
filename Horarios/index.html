@@ -117,9 +117,18 @@
             color: var(--primary); font-size: 0.95rem;
         }
         .horario-item-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+        .horario-item-meta {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; min-width: 0;
+        }
         .horario-item-fecha {
             margin: 0; font-size: 0.8rem; font-weight: 500; color: rgba(255, 255, 255, 0.92);
             line-height: 1.45; letter-spacing: 0.01em;
+            flex: 1; min-width: 0;
+        }
+        .horario-item-horas {
+            margin: 0; font-size: 0.72rem; font-weight: 600; color: var(--primary);
+            letter-spacing: 0.02em; white-space: nowrap; flex-shrink: 0;
         }
         .horario-item-cancel {
             align-self: flex-start;
@@ -398,7 +407,7 @@
             <div class="info-card"><span class="info-label">Deuda Actual</span><div class="info-value" id="sb-deuda"></div></div>
             <div class="info-card"><span class="info-label">Horas a Favor</span><div class="info-value" id="sb-horas"></div></div>
             <div class="info-card" style="border:none; background:transparent; padding:5px 0;">
-                <span class="info-label">Mis Horarios Reservados</span>
+                <span class="info-label" id="sb-horarios-label">Mis Horarios Reservados</span>
                 <div id="sb-lista-horarios"></div>
             </div>
         </div>
@@ -519,11 +528,17 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
 
         const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases reservadas. Si quiere reservar mas clases, podes pagar las que ya reservaste y luego sacar mas turnos';
 
-        /** Horarios: antes string; ahora { fecha, codigo }. Mantiene compatibilidad con datos viejos. */
+        /** Horarios: antes string; ahora { fecha, codigo, cantidadHoras }. Mantiene compatibilidad con datos viejos. */
         function textoHorarioReserva(h) {
             if (h == null) return '';
             if (typeof h === 'string') return h;
             return h.fecha != null ? String(h.fecha) : '';
+        }
+
+        function cantidadHorasHorarioReserva(h) {
+            if (h == null || typeof h === 'string') return null;
+            const n = Number(h.cantidadHoras);
+            return Number.isFinite(n) && n > 0 ? n : null;
         }
 
         function codigoHorarioReserva(h) {
@@ -915,18 +930,31 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             document.getElementById('sb-horas').innerText = Alumno.horasAFavor + " hs";
             const container = document.getElementById('sb-lista-horarios');
             const lista = Alumno.horarios || [];
+            const totalHorasReservadas = lista.reduce((acc, h) => acc + (cantidadHorasHorarioReserva(h) || 0), 0);
+            const labelHorarios = document.getElementById('sb-horarios-label');
+            if (labelHorarios) {
+                labelHorarios.textContent = totalHorasReservadas > 0
+                    ? `Mis Horarios Reservados (${totalHorasReservadas} hs)`
+                    : 'Mis Horarios Reservados';
+            }
             container.innerHTML = lista.length > 0 
                 ? lista.map(h => {
-                    console.log("h: ", h);
                     const texto = textoHorarioReserva(h);
                     const cod = codigoHorarioReserva(h);
+                    const cantHoras = cantidadHorasHorarioReserva(h);
+                    const textoHoras = cantHoras
+                        ? `<span class="horario-item-horas">${cantHoras} ${cantHoras === 1 ? 'hora' : 'horas'}</span>`
+                        : '';
                     const btnCancel = cod
                         ? `<button type="button" class="horario-item-cancel" data-codigo="${escapeAttr(cod)}" title="Cancelar esta reserva">Cancelar reserva</button>`
                         : '';
                     return `<div class="horario-item">
                         <div class="horario-item-icon" aria-hidden="true"><i class="fa-regular fa-calendar-check"></i></div>
                         <div class="horario-item-body">
-                            <p class="horario-item-fecha">${texto}</p>
+                            <div class="horario-item-meta">
+                                <p class="horario-item-fecha">${texto}</p>
+                                ${textoHoras}
+                            </div>
                             ${btnCancel}
                         </div>
                     </div>`;
