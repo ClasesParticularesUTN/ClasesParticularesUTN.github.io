@@ -200,7 +200,7 @@
         <span class="sr-only">Inicio</span>
       </a>
       <h1>Horarios de Clases por Dar</h1>
-    </header>
+    </header>Ca
 
     <div class="buttons">
       <button onclick="cargarHorarios()">Cargar Horarios</button>
@@ -242,24 +242,33 @@
           return;
         }
         console.log(datos)
+        const grupos = [];
         datos.forEach(item => {
+          const partes = item.split(" ");
+          const horario = partes.slice(0, 3).join(" ");
+          const persona = partes.slice(3).join(" ");
+          const ultimo = grupos[grupos.length - 1];
+          if (ultimo && ultimo.horario === horario) {
+            ultimo.personas.push(persona);
+          } else {
+            grupos.push({ horario, personas: [persona] });
+          }
+        });
+
+        grupos.forEach(({ horario, personas }) => {
           const fila = document.createElement("tr");
           const celdaHorario = document.createElement("td");
           const celdaPersona = document.createElement("td");
           const celdaBoton = document.createElement("td");
 
-          const partes = item.split(" ");
-          const horario = partes.slice(0, 3).join(" ");
-          const persona = partes.slice(3).join(" ");
-
           celdaHorario.textContent = horario;
-          celdaPersona.textContent = persona;
+          celdaPersona.textContent = personas.join(", ");
 
           const boton = document.createElement("button");
           boton.textContent = "Registrar Pago";
-          boton.onclick = () => RegistrarPago(horario, persona, boton);
-
+          boton.onclick = () => RegistrarPago(horario, personas, boton);
           celdaBoton.appendChild(boton);
+
           fila.appendChild(celdaHorario);
           fila.appendChild(celdaPersona);
           fila.appendChild(celdaBoton);
@@ -291,24 +300,33 @@
           return;
         }
 
+        const grupos = [];
         datos.forEach(item => {
+          const partes = item.split(" ");
+          const horario = partes.slice(0, 3).join(" ");
+          const persona = partes.slice(3).join(" ");
+          const ultimo = grupos[grupos.length - 1];
+          if (ultimo && ultimo.horario === horario) {
+            ultimo.personas.push(persona);
+          } else {
+            grupos.push({ horario, personas: [persona] });
+          }
+        });
+
+        grupos.forEach(({ horario, personas }) => {
           const fila = document.createElement("tr");
           const celdaHorario = document.createElement("td");
           const celdaPersona = document.createElement("td");
           const celdaBoton = document.createElement("td");
 
-          const partes = item.split(" ");
-          const horario = partes.slice(0, 3).join(" ");
-          const persona = partes.slice(3).join(" ");
-
           celdaHorario.textContent = horario;
-          celdaPersona.textContent = persona;
+          celdaPersona.textContent = personas.join(", ");
 
           const boton = document.createElement("button");
           boton.textContent = "Registrar Pago";
-          boton.onclick = () => RegistrarPago(horario, persona, boton);
-
+          boton.onclick = () => RegistrarPago(horario, personas, boton);
           celdaBoton.appendChild(boton);
+
           fila.appendChild(celdaHorario);
           fila.appendChild(celdaPersona);
           fila.appendChild(celdaBoton);
@@ -322,26 +340,26 @@
       }
     }
 
-    async function RegistrarPago(horario, persona, boton) {
+    async function RegistrarPago(horario, personas, boton) {
       boton.disabled = true;
       const textoOriginal = boton.textContent;
       boton.innerHTML = '<div class="spinner"></div>';
 
-      const datos = {
-        funcion: "registrarPago",
-        horario,
-        persona,
-      };
-
       try {
-        await fetch(URLUsuarios, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(datos)
-        });
+        for (const persona of personas) {
+          await fetch(URLUsuarios, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              funcion: "registrarPago",
+              horario,
+              persona,
+            })
+          });
+        }
 
         console.log("Pago registrado");
 
@@ -350,8 +368,10 @@
       } catch (error) {
         console.error('Error al enviar datos:', error);
       } finally {
-        boton.disabled = false;
-        boton.textContent = textoOriginal;
+        if (boton.isConnected) {
+          boton.disabled = false;
+          boton.textContent = textoOriginal;
+        }
       }
     }
 
