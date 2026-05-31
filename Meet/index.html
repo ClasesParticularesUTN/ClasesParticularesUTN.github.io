@@ -1,33 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <script src="https://8x8.vc/vpaas-magic-cookie-fa0d7ced674443e38a582f8ff7e0e41f/external_api.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-        }
+<title>Videollamada Jitsi</title>
 
-        #jaas-container {
-            width: 100vw;
-            height: 100vh;
-        }
-    </style>
+<script src="https://8x8.vc/vpaas-magic-cookie-fa0d7ced674443e38a582f8ff7e0e41f/external_api.js"></script>
+
+<style>
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#jaas-container {
+    width: 100vw;
+    height: 100vh;
+}
+</style>
 </head>
 
 <body>
-    <div id="jaas-container"></div>
 
-    <script>
-        window.onload = () => {
-            new JitsiMeetExternalAPI("8x8.vc", {
-                roomName: "vpaas-magic-cookie-fa0d7ced674443e38a582f8ff7e0e41f/SampleAppVisualVacuumsSlashForward",
-                parentNode: document.getElementById("jaas-container")
-            });
-        };
-    </script>
+<div id="jaas-container"></div>
+
+<script>
+window.onload = () => {
+    new JitsiMeetExternalAPI("8x8.vc", {
+        roomName: "vpaas-magic-cookie-fa0d7ced674443e38a582f8ff7e0e41f/SampleAppVisualVacuumsSlashForward",
+
+        parentNode: document.getElementById("jaas-container"),
+
+        configOverwrite: {
+            defaultLanguage: "es"
+        },
+
+        userInfo: {
+            displayName: "Invitado"
+        }
+    });
+};
+</script>
+
 </body>
 </html>
