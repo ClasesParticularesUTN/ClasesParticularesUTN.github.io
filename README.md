@@ -59,6 +59,21 @@ Este repositorio sigue el patrón **`usuario.github.io`**: GitHub Pages suele se
 2. En el repositorio: **Settings → Pages** y elegí la rama/origen correctos.
 3. El archivo `CNAME` define el dominio personalizado; el DNS del dominio debe apuntar a GitHub Pages según [la documentación oficial](https://docs.github.com/pages/configuring-a-custom-domain-for-your-github-pages-site).
 
+### Rutas insensibles a mayúsculas
+
+GitHub Pages distingue mayúsculas y minúsculas en las URLs (como en Linux). El archivo `404.html` cumple dos funciones:
+
+- **Ruta con mayúsculas distintas** (`/horarios` → `/Horarios`): redirección automática vía `JS/canonical-path.js` y `JS/canonical-routes.js`.
+- **Ruta inexistente** (`/no-existe`): página de error con el estilo del sitio (`css/404.css`), enlaces útiles y la ruta que se intentó abrir.
+
+Al agregar páginas `.html` nuevas, regenerá el mapa de rutas:
+
+```bash
+node scripts/generate-canonical-routes.mjs
+```
+
+> Los archivos estáticos (`.css`, `.js`, imágenes, etc.) siguen siendo sensibles a mayúsculas; solo se normalizan las rutas de páginas incluidas en el mapa.
+
 ---
 
 ## Estructura general (resumen)

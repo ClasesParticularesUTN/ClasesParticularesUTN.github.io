@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Página no encontrada | C/S</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/404.css">
+  <script src="/JS/canonical-routes.js"></script>
+  <script src="/JS/canonical-path.js"></script>
+  <script>
+    (function () {
+      var target = CanonicalPath.resolve(location.pathname);
+      if (target && CanonicalPath.needsRedirect(location.pathname)) {
+        location.replace(target + location.search + location.hash);
+        return;
+      }
+      document.addEventListener('DOMContentLoaded', function () {
+        var pathEl = document.getElementById('requested-path');
+        if (pathEl) {
+          pathEl.textContent = location.pathname || '/';
+        }
+        document.body.classList.remove('is-loading');
+        document.body.classList.add('is-ready');
+      });
+    })();
+  </script>
+</head>
+<body class="is-loading">
+
+  <p id="page-loading" aria-live="polite">Cargando…</p>
+
+  <div id="page-404">
+    <nav>
+      <a href="/" class="logo-box" aria-label="Ir al inicio">
+        <div class="logo-circle">
+          <div class="logo-text">C/S</div>
+          <div class="logo-sub">Ing. en Sistemas</div>
+        </div>
+      </a>
+      <ul>
+        <li><a href="/Materias">Materias</a></li>
+        <li><a href="/Precios">Precios</a></li>
+        <li><a href="/Horarios">Horarios</a></li>
+        <li><a href="/Pagos">Pagos</a></li>
+      </ul>
+    </nav>
+
+    <main class="not-found">
+      <p class="code" aria-hidden="true">404</p>
+      <h1>Esta página no existe</h1>
+      <p>
+        La dirección que ingresaste no corresponde a ninguna sección del sitio.
+        Puede haber un error de tipeo o el enlace estar desactualizado.
+      </p>
+      <p class="path-hint">
+        Ruta solicitada: <code id="requested-path">…</code>
+      </p>
+
+      <div class="actions">
+        <a href="/" class="btn btn-primary">Volver al inicio</a>
+        <a href="https://wa.me/3425271005" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">Contactar por WhatsApp</a>
+      </div>
+
+      <section class="quick-links" aria-label="Secciones del sitio">
+        <h2>Tal vez buscabas</h2>
+        <ul>
+          <li><a href="/Horarios">Reservar horarios</a></li>
+          <li><a href="/Materias">Materias</a></li>
+          <li><a href="/Precios">Precios</a></li>
+          <li><a href="/Pagos">Pagos</a></li>
+          <li><a href="/Tutoriales.html">Tutoriales</a></li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+</body>
+</html>
