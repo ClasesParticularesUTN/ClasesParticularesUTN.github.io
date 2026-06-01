@@ -19,9 +19,9 @@ function normalizarTexto(texto) {
  */
 const PRECIOS_BASE = {
     individual: {
-            expres1h: 6000,
+            expres1h: 6500,
             estandar2h: 10000,
-            precioPorHora1: 6000,
+            precioPorHora1: 6500,
             precioPorHora2: 5000,
             packExamen: 10000 * 8,
             packMateria: 10000 *14,
