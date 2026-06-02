@@ -512,6 +512,17 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             return porDia;
         }
 
+        /** Tarifa individual: 2.ª hora bonificada solo si hay 2+ hs el mismo día. */
+        function calcularPrecioIndividualReserva(slots) {
+            const porDia = contarHorasPorDia(slots);
+            return Object.values(porDia).reduce((total, nHorasDia) => {
+                const rate = nHorasDia === 1
+                    ? PRECIOS.individual.precioPorHora1
+                    : PRECIOS.individual.precioPorHora2;
+                return total + rate * nHorasDia;
+            }, 0);
+        }
+
         function contarDiasUnicos(slots) {
             return new Set(slots.map(fechaDeSlot)).size;
         }
@@ -1227,7 +1238,7 @@ async function gestionarReserva() {
 
             const prefsReserva = cargarPreferenciasReserva();
             const nHoras = selectedSlots.length;
-            const precioInd = (nHoras === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2) * nHoras;
+            const precioInd = calcularPrecioIndividualReserva(selectedSlots);
             const precioGrpHora = PRECIOS.grupal.precioPorHora * nHoras;
 
             const htmlModalidad = `
@@ -1288,7 +1299,7 @@ async function gestionarReserva() {
             if (!isAdmin && mod === 'grupal' && selectedSlots.length < 2) return Swal.fire({ icon: 'warning', title: 'Atención', text: 'Mínimo 2 horas para grupales.' });
 
             let integrantes = [Alumno.correoElectronico]; 
-            let precioTotal = (selectedSlots.length === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2) * selectedSlots.length;
+            let precioTotal = calcularPrecioIndividualReserva(selectedSlots);
             let precioPorPersona = precioTotal;
 
             if (mod === 'grupal') {

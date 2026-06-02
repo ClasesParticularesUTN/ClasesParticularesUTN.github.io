@@ -55,6 +55,26 @@ const PRECIOS_ESPECIALES = {
             packExamen: 72000,
             packMateria: 9000 * 14,
         }
+    },
+    "Trancaso Nicolas": {
+        individual: {
+            expres1h: 7500,
+            estandar2h: 12000,
+            precioPorHora1: 7500,
+            precioPorHora2: 6000,
+            packExamen: 12000 * 8,
+            packMateria: 12000 * 14,
+        }
+    },
+    "Da Silva Valentin": {
+        individual: {
+            expres1h: 10,
+            estandar2h: 10,
+            precioPorHora1: 10,
+            precioPorHora2: 10,
+            packExamen: 10,
+            packMateria: 20,
+        }
     }
 };
 

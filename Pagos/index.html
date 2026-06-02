@@ -263,8 +263,45 @@
             button:active, .metodo-btn:active, .pago-checkbox:active { transform: scale(0.97); }
         }
 
-        /* Packs: mantener listado centrado (sin columnas laterales) */
+        /* Compra de horas */
         .packs-layout { display: block; }
+        .horas-compra-card { flex-direction: column; align-items: stretch; gap: 18px; }
+        .horas-compra-card .info { width: 100%; }
+        .horas-modalidad { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .horas-mod-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 14px 10px; border-radius: var(--radius-sm);
+            border: 2px solid var(--glass-border); background: rgba(128,128,128,0.08);
+            color: var(--text-muted); font-family: inherit; cursor: pointer; transition: 0.2s;
+        }
+        .horas-mod-btn i { font-size: 1.2rem; color: var(--primary); }
+        .horas-mod-btn strong { font-size: 0.9rem; color: var(--text-main); }
+        .horas-mod-btn span { font-size: 0.72rem; text-align: center; line-height: 1.3; }
+        .horas-mod-btn.active { border-color: var(--primary); background: rgba(243, 166, 97, 0.14); color: var(--text-main); }
+        .horas-input-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+        .horas-input-row label { font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+        .horas-input-row input[type="number"] {
+            flex: 1; min-width: 80px; max-width: 120px;
+            padding: 12px 14px; border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border); background: rgba(128,128,128,0.12);
+            color: var(--text-main); font-weight: 700; font-size: 1rem; font-family: inherit;
+        }
+        .horas-desglose {
+            margin-top: 4px; padding: 12px 14px; border-radius: var(--radius-sm);
+            background: rgba(128,128,128,0.08); border: 1px solid var(--glass-border);
+            font-size: 0.82rem; color: var(--text-muted); line-height: 1.55;
+        }
+        .horas-desglose .desglose-linea { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+        .horas-desglose .desglose-linea:last-child { margin-bottom: 0; }
+        .horas-desglose .desglose-linea strong { color: var(--text-main); font-weight: 700; }
+        .horas-desglose .desglose-total { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--glass-border); font-weight: 800; color: var(--primary); display: flex; justify-content: space-between; }
+        .horas-aviso { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; }
+        .pack-directo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .pack-directo-btn { width: 100%; padding: 16px 12px; font-size: 0.95rem; }
+        .horas-custom-section { padding-top: 18px; border-top: 1px solid var(--glass-border); }
+        .horas-custom-section > strong { display: block; font-size: 0.9rem; color: var(--text-main); margin-bottom: 12px; }
+        .horas-aceptar-row { margin-top: 16px; }
+        .horas-aceptar-row .btn-pago { width: 100%; }
 
         /* Nota discreta dentro del modal QR (solo packs) */
         .qr-pack-note {
@@ -315,7 +352,7 @@
 <div class="container">
     <div class="modo-selector">
         <button class="metodo-btn active" onclick="setModoPago('clases')" id="btnModoClases"><i class="fas fa-list"></i> Clases pendientes</button>
-        <button class="metodo-btn" onclick="setModoPago('pack')" id="btnModoPack"><i class="fas fa-box"></i> Pagar Pack</button>
+        <button class="metodo-btn" onclick="setModoPago('pack')" id="btnModoPack"><i class="fas fa-clock"></i> Comprar Horas / Packs</button>
         <button class="metodo-btn" onclick="setModoPago('admin')" id="btnModoAdmin" style="display:none;"><i class="fas fa-user-shield"></i> Admin</button>
         <label id="selectAllClasesWrap" class="select-all-mini" title="Seleccionar todas las clases pendientes">
             <input id="selectAllClases" type="checkbox" onchange="toggleSelectAllClases()">
@@ -339,9 +376,35 @@
     </div>
     <div class="productos" id="productos"></div>
     <div class="packs-container" id="packsContainer" style="display: none;">
-        <h3 style="margin-bottom: 12px; color: var(--primary); font-size: 1rem;">Packs disponibles (precios seg&#250;n tu perfil)</h3>
         <div class="packs-layout">
-            <div id="packsList"></div>
+            <div class="card horas-compra-card" id="horasCompraCard">
+                <div class="horas-modalidad" role="group" aria-label="Modalidad">
+                    <button type="button" class="horas-mod-btn active" data-mod="individual" onclick="setHorasModalidad('individual')">
+                        <i class="fas fa-user"></i>
+                        <strong>Individual</strong>
+                    </button>
+                    <button type="button" class="horas-mod-btn" data-mod="grupal" onclick="setHorasModalidad('grupal')">
+                        <i class="fas fa-users"></i>
+                        <strong>Grupal</strong>
+                    </button>
+                </div>
+                <div class="pack-directo-row">
+                    <button type="button" class="btn-pago pack-directo-btn" onclick="pagarPackDirecto('examen')">Pack Examen</button>
+                    <button type="button" class="btn-pago pack-directo-btn" onclick="pagarPackDirecto('materia')">Pack Materia</button>
+                </div>
+                <div class="horas-custom-section">
+                    <strong>Otra cantidad de horas</strong>
+                    <div class="horas-input-row">
+                        <label for="horasCompraInput">Horas</label>
+                        <input id="horasCompraInput" type="number" min="1" step="1" value="1" inputmode="numeric" oninput="onHorasCompraInput()">
+                    </div>
+                    <p class="horas-aviso" id="horasCompraAviso"></p>
+                    <div id="horasDesglose" class="horas-desglose" aria-live="polite"></div>
+                    <div class="horas-aceptar-row">
+                        <button type="button" class="btn-pago" id="btnAceptarHoras" onclick="aceptarCompraHoras()">Aceptar</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="packs-container" id="adminContainer" style="display: none;">
@@ -445,6 +508,11 @@ let metodoPago = 'qr';
 let modoPago = 'clases'; // 'clases' | 'pack' | 'admin'
 let isAdmin = false;
 let isPersonalizado = false;
+let horasCompraModalidad = 'individual';
+let horasCompraConfirmada = false;
+
+const HORAS_PACK_EXAMEN = 20;
+const HORAS_PACK_MATERIA = 40;
 
 /** Monto con 2 decimales (evita basura de float al enviar al backend / MP). */
 function redondearPrecio(valor) {
@@ -557,7 +625,7 @@ window.addEventListener("DOMContentLoaded", () => {
         }
 
         cargarClases();
-        renderizarPacks();
+        initCompraHoras();
     }
 });
 
@@ -692,8 +760,10 @@ function setModoPago(modo) {
     document.getElementById("packsContainer").style.display = modo === 'pack' ? 'block' : 'none';
     document.getElementById("adminContainer").style.display = modo === 'admin' ? 'block' : 'none';
     document.getElementById("totalContainer").style.display = 'none';
-    document.querySelectorAll('.packs-container input[type="checkbox"]').forEach(cb => cb.checked = false);
     document.querySelectorAll('.productos input[type="checkbox"]').forEach(cb => cb.checked = false);
+    if (modo === 'pack') {
+        resetCompraHoras();
+    }
     syncSelectAllClasesState();
     actualizarUIAdmin();
 }
@@ -709,34 +779,184 @@ function setMetodo(metodo) {
     document.getElementById('btnAccion').textContent = metodo === 'online' ? 'Pagar Online' : 'Generar QR';
 }
 
-function renderizarPacks() {
-    if (typeof PRECIOS === 'undefined') return;
-    const list = document.getElementById("packsList");
-    list.innerHTML = '';
-    const packs = [
-        { key: 'individual_packExamen', titulo: 'Pack Examen (Individual)', precio: PRECIOS.individual?.packExamen, tipo: 'individual', pack: 'packExamen' },
-        { key: 'individual_packMateria', titulo: 'Pack Materia (Individual)', precio: PRECIOS.individual?.packMateria, tipo: 'individual', pack: 'packMateria' },
-        { key: 'grupal_packExamen', titulo: 'Pack Examen (Grupal)', precio: PRECIOS.grupal?.packExamen, tipo: 'grupal', pack: 'packExamen' },
-        { key: 'grupal_packMateria', titulo: 'Pack Materia (Grupal)', precio: PRECIOS.grupal?.packMateria, tipo: 'grupal', pack: 'packMateria' }
-    ];
+function initCompraHoras() {
+    resetCompraHoras();
+}
 
-    // Opcion extra solo visible en modo Admin
-    if (isAdmin) {
-        packs.push({ key: 'individual_packExamen', titulo: 'Pack Examen (Individual) [Admin]', precio: 100, tipo: 'individual', pack: 'packExamen' });
+function resetCompraHoras() {
+    horasCompraConfirmada = false;
+    const input = document.getElementById('horasCompraInput');
+    if (input) input.value = '1';
+    setHorasModalidad('individual', { skipReset: true });
+    actualizarVistaCompraHoras();
+}
+
+function invalidarCompraHoras() {
+    if (!horasCompraConfirmada) return;
+    horasCompraConfirmada = false;
+    document.getElementById("totalContainer").style.display = "none";
+}
+
+function onHorasCompraInput() {
+    invalidarCompraHoras();
+    actualizarVistaCompraHoras();
+}
+
+function getLineaPack(tipoPack) {
+    if (typeof PRECIOS === 'undefined') return null;
+    const modalidad = horasCompraModalidad;
+    const precios = PRECIOS[modalidad];
+    const esMateria = tipoPack === 'materia';
+    const precio = redondearPrecio(esMateria ? precios?.packMateria : precios?.packExamen);
+    if (!precio || precio <= 0) return null;
+    const key = `${modalidad}_${esMateria ? 'packMateria' : 'packExamen'}`;
+    const modLabel = modalidad === 'grupal' ? 'Grupal' : 'Individual';
+    const titulo = esMateria ? `Pack Materia (${modLabel})` : `Pack Examen (${modLabel})`;
+    return { title: titulo, precio, packKey: key, referencia: key };
+}
+
+async function pagarPackDirecto(tipoPack) {
+    const linea = getLineaPack(tipoPack);
+    if (!linea) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'No hay precio cargado para este pack.', confirmButtonColor: '#f3a661' });
+        return;
+    }
+    await ejecutarPago({
+        lineas: [linea],
+        referencias: [linea.referencia],
+        tipoPago: 'pack'
+    });
+}
+
+function setHorasModalidad(modalidad, opts = {}) {
+    horasCompraModalidad = modalidad;
+    document.querySelectorAll('.horas-mod-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mod === modalidad);
+    });
+    if (!opts.skipReset) invalidarCompraHoras();
+    actualizarVistaCompraHoras();
+}
+
+function actualizarVistaCompraHoras() {
+    const horas = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+    const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
+    renderizarDesgloseHoras(calc);
+    if (modoPago === 'pack') {
+        const footer = document.getElementById("totalContainer");
+        if (horasCompraConfirmada && calc) {
+            footer.style.display = "block";
+            document.getElementById("total").textContent = calc.total.toFixed(2).replace('.', ',');
+        } else {
+            footer.style.display = "none";
+        }
+    }
+}
+
+function aceptarCompraHoras() {
+    const horas = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+    const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
+    if (!calc) {
+        const msg = horasCompraModalidad === 'grupal' && horas < 2
+            ? 'Grupal: mínimo 2 horas.'
+            : 'Ingresá una cantidad válida de horas.';
+        Swal.fire({ icon: 'warning', title: 'Revisá la compra', text: msg, confirmButtonColor: '#f3a661' });
+        return;
+    }
+    horasCompraConfirmada = true;
+    actualizarVistaCompraHoras();
+    document.getElementById("totalContainer")?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function calcularPrecioHorasSueltas(horas, modalidad) {
+    const h = Math.floor(Number(horas));
+    if (h < 1) return 0;
+    if (modalidad === 'individual') {
+        const rate = h === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2;
+        return redondearPrecio(rate * h);
+    }
+    return redondearPrecio(PRECIOS.grupal.precioPorHora * h);
+}
+
+function calcularPrecioCompraHoras(horas, modalidad) {
+    if (typeof PRECIOS === 'undefined') return null;
+    const h = Math.floor(Number(horas));
+    if (h < 1) return null;
+    if (modalidad === 'grupal' && h < 2) return null;
+
+    const precios = PRECIOS[modalidad];
+    if (!precios?.packExamen || !precios?.packMateria) return null;
+
+    let resto = h;
+    const nMateria = Math.floor(resto / HORAS_PACK_MATERIA);
+    resto %= HORAS_PACK_MATERIA;
+    const nExamen = Math.floor(resto / HORAS_PACK_EXAMEN);
+    resto %= HORAS_PACK_EXAMEN;
+    const sueltas = resto;
+
+    const lineas = [];
+    const referencias = [];
+    const desglose = [];
+
+    if (nMateria > 0) {
+        const precio = redondearPrecio(precios.packMateria * nMateria);
+        const key = `${modalidad}_packMateria`;
+        const titulo = `Pack Materia (${modalidad === 'grupal' ? 'Grupal' : 'Individual'})${nMateria > 1 ? ` x${nMateria}` : ''}`;
+        lineas.push({ title: titulo, precio, packKey: key });
+        desglose.push({ label: `${nMateria} pack${nMateria > 1 ? 's' : ''} materia (40 hs c/u)`, precio });
+        for (let i = 0; i < nMateria; i++) referencias.push(key);
+    }
+    if (nExamen > 0) {
+        const precio = redondearPrecio(precios.packExamen * nExamen);
+        const key = `${modalidad}_packExamen`;
+        const titulo = `Pack Examen (${modalidad === 'grupal' ? 'Grupal' : 'Individual'})${nExamen > 1 ? ` x${nExamen}` : ''}`;
+        lineas.push({ title: titulo, precio, packKey: key });
+        desglose.push({ label: `${nExamen} pack${nExamen > 1 ? 's' : ''} examen (20 hs c/u)`, precio });
+        for (let i = 0; i < nExamen; i++) referencias.push(key);
+    }
+    if (sueltas > 0) {
+        const precio = calcularPrecioHorasSueltas(sueltas, modalidad);
+        const ref = { tipo: 'horas_sueltas', modalidad, cantidad: sueltas };
+        const modLabel = modalidad === 'grupal' ? 'Grupal' : 'Individual';
+        lineas.push({ title: `${sueltas} hs ${modLabel} (por separado)`, precio, horasSueltas: ref });
+        desglose.push({ label: `${sueltas} hs por separado`, precio });
+        referencias.push(ref);
     }
 
-    const visibles = packs.filter(p => p.precio != null && p.precio > 0);
-    visibles.forEach(p => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `<div class="info"><strong>${p.titulo}</strong><span class="details">Pago de pack seg\u00fan precios vigentes</span></div>
-            <div class="controles">
-                <span class="price-display">$${Number(p.precio).toFixed(2)}</span>
-                <label class="pago-checkbox"><input type="checkbox" data-pack-key="${p.key}" data-precio="${p.precio}" data-titulo="${p.titulo}" onchange="actualizarTotal()"> Pagar</label>
-            </div>`;
-        list.appendChild(card);
-    });
-    if (visibles.length === 0) list.innerHTML = '<p style="color: var(--text-muted); text-align: center;">No hay packs con precios cargados.</p>';
+    const total = redondearPrecio(lineas.reduce((acc, L) => acc + L.precio, 0));
+    return {
+        total,
+        lineas,
+        referencias,
+        desglose,
+        horas: h,
+        modalidad,
+        tienePacks: nMateria + nExamen > 0,
+        tieneSueltas: sueltas > 0
+    };
+}
+
+function getTipoPagoCompraHoras(calc) {
+    if (!calc.tieneSueltas) return 'pack';
+    if (!calc.tienePacks) return 'horas';
+    return 'pack_horas';
+}
+
+function renderizarDesgloseHoras(calc) {
+    const box = document.getElementById('horasDesglose');
+    const aviso = document.getElementById('horasCompraAviso');
+    if (!box) return;
+
+    if (!calc) {
+        box.innerHTML = '<span style="color: var(--text-muted);">Ingresá una cantidad válida de horas.</span>';
+        if (aviso) aviso.textContent = horasCompraModalidad === 'grupal' ? 'Grupal: mínimo 2 horas.' : '';
+        return;
+    }
+
+    const lineasHtml = calc.desglose.map(d =>
+        `<div class="desglose-linea"><span>${d.label}</span><strong>$${d.precio.toFixed(2)}</strong></div>`
+    ).join('');
+    box.innerHTML = `${lineasHtml}<div class="desglose-total"><span>Total (${calc.horas} hs)</span><span>$${calc.total.toFixed(2)}</span></div>`;
+    if (aviso) aviso.textContent = horasCompraModalidad === 'grupal' ? 'Grupal: mínimo 2 horas. Precio por persona.' : '';
 }
 
 async function cargarClases() {
@@ -843,51 +1063,31 @@ function toggleSelectAllClases() {
 }
 
 function actualizarTotal() {
+    if (modoPago === 'pack') {
+        actualizarVistaCompraHoras();
+        return;
+    }
     let total = 0, sel = false;
     if (modoPago === 'clases') {
         document.querySelectorAll('.productos input[type="checkbox"]:checked').forEach(cb => { total += clases[cb.value].precioEditado; sel = true; });
         syncSelectAllClasesState();
-    } else {
-        document.querySelectorAll('.packs-container input[type="checkbox"]:checked').forEach(cb => { total += parseFloat(cb.dataset.precio) || 0; sel = true; });
     }
     document.getElementById("totalContainer").style.display = sel ? "block" : "none";
     document.getElementById("total").textContent = total.toFixed(2).replace('.', ',');
 }
-async function pagarSeleccion() {
-    const lineas = [];
-    let referencias = [];
-    const tipoPago = modoPago === 'pack' ? 'pack' : 'clase';
 
-    // Cada intento de pago debe tener un external_reference nuevo
+async function ejecutarPago({ lineas, referencias, tipoPago }) {
+    if (!lineas?.length) return;
+
     generarNuevaOrdenId();
-
-    if (modoPago === 'clases') {
-        document.querySelectorAll('.productos input[type="checkbox"]:checked').forEach(cb => {
-            const c = clases[cb.value];
-            lineas.push({ title: c.modalidad, precio: c.precioEditado, codigo: c.codigo });
-            referencias.push(c.codigo);
-        });
-    } else {
-        document.querySelectorAll('.packs-container input[type="checkbox"]:checked').forEach(cb => {
-            const titulo = cb.dataset.titulo || 'Pack';
-            const precio = parseFloat(cb.dataset.precio) || 0;
-            const key = cb.dataset.packKey || '';
-            lineas.push({ title: titulo, precio, packKey: key });
-            referencias.push(key);
-        });
-    }
-
-    if (lineas.length === 0) return;
-
     const { items, total_amount } = itemsYTotalParaMercadoPago(lineas);
-
-    const payload = { 
-        items, 
+    const payload = {
+        items,
         total_amount,
-        email: Alumno.correoElectronico, 
-        referencias, 
+        email: Alumno.correoElectronico,
+        referencias,
         external_reference: miOrdenId,
-        tipoPago  // 'clase' = pago de clases pendientes | 'pack' = pago de pack (acciones distintas en servidor)
+        tipoPago
     };
 
     console.log("[FRONTEND] Datos enviados al servidor:", JSON.stringify(payload, null, 2));
@@ -899,18 +1099,18 @@ async function pagarSeleccion() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
         });
-        
+
         const data = await res.json();
         if (metodoPago === 'online' && data.init_point) {
-            // En online redirigimos, no hace falta restaurar UI porque cambia de página
             window.location.href = data.init_point;
         } else if (metodoPago === 'qr' && data.qr_data) {
             setProcessingUI(false);
             document.getElementById("qrImgContainer").innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
             const note = document.getElementById("qrPackNote");
-            if (note) note.classList.toggle("hidden", tipoPago !== "pack");
+            const esPack = tipoPago === "pack" || tipoPago === "pack_horas";
+            if (note) note.classList.toggle("hidden", !esPack);
             const qrContainer = document.querySelector("#modalQR .qr-container");
-            if (qrContainer) qrContainer.classList.toggle("has-pack-note", tipoPago === "pack");
+            if (qrContainer) qrContainer.classList.toggle("has-pack-note", esPack);
             if (!localStorage.getItem("qrInfoShown")) {
                 document.getElementById("modalInfoQR").style.display = "flex";
             } else {
@@ -919,10 +1119,34 @@ async function pagarSeleccion() {
         } else {
             throw new Error(data.error || "Error al procesar el pago");
         }
-    } catch(e) { 
-        alert("Error: " + e.message); 
+    } catch (e) {
+        alert("Error: " + e.message);
         setProcessingUI(false);
     }
+}
+
+async function pagarSeleccion() {
+    const lineas = [];
+    let referencias = [];
+    let tipoPago = 'clase';
+
+    if (modoPago === 'clases') {
+        document.querySelectorAll('.productos input[type="checkbox"]:checked').forEach(cb => {
+            const c = clases[cb.value];
+            lineas.push({ title: c.modalidad, precio: c.precioEditado, codigo: c.codigo });
+            referencias.push(c.codigo);
+        });
+    } else if (modoPago === 'pack') {
+        if (!horasCompraConfirmada) return;
+        const horas = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+        const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
+        if (!calc) return;
+        lineas.push(...calc.lineas);
+        referencias = calc.referencias;
+        tipoPago = getTipoPagoCompraHoras(calc);
+    }
+
+    await ejecutarPago({ lineas, referencias, tipoPago });
 }
 
 async function generarQRAdmin() {
