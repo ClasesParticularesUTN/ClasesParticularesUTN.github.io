@@ -528,6 +528,28 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
 
         const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases reservadas. Si quiere reservar mas clases, podes pagar las que ya reservaste y luego sacar mas turnos';
 
+        function swalPagoDeuda(options = {}) {
+            const { title, text, html, icon = 'error', background = '#1a1a1a', confirmButtonColor = '#f3a661', ...rest } = options;
+            return Swal.fire({
+                icon,
+                title,
+                text,
+                html,
+                background,
+                color: '#fff',
+                showCancelButton: true,
+                confirmButtonText: 'Pagar',
+                cancelButtonText: '¿Como Pagar?',
+                confirmButtonColor,
+                cancelButtonColor: '#555',
+                ...rest
+            }).then(result => {
+                if (result.isConfirmed) window.location.href = '/Pagos';
+                else if (result.dismiss === Swal.DismissReason.cancel) window.location.href = '/Tutoriales.html';
+                return result;
+            });
+        }
+
         /** Horarios: antes string; ahora { fecha, codigo, cantidadHoras }. Mantiene compatibilidad con datos viejos. */
         function textoHorarioReserva(h) {
             if (h == null) return '';
@@ -716,21 +738,24 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                     ? `<div class="swal-cancel-msg" style="text-align: center;">${String(data.mensaje)}</div>`
                     : undefined;
                 const showGoToPay = data?.cobroInteres || (data?.mensaje && (String(data.mensaje).toLowerCase().includes('debe') || String(data.mensaje).toLowerCase().includes('deuda')));
-                await Swal.fire({
-                    icon: data.cobroInteres ? 'warning' : 'success',
-                    title: data.cobroInteres ? 'Cancelada con recargo' : 'Clase cancelada',
-                    html: htmlCancelacion,
-                    background: '#151517',
-                    color: '#fff',
-                    confirmButtonColor: '#f3a661',
-                    showCancelButton: showGoToPay,
-                    cancelButtonText: '<i class="fa-solid fa-credit-card"></i> Ir a pagar',
-                    cancelButtonColor: '#c56a1a',
-                }).then(result => {
-                    if (showGoToPay && result.dismiss === Swal.DismissReason.cancel) {
-                        window.location.href = '/Pagos';
-                    }
-                });
+                if (showGoToPay) {
+                    const resultPago = await swalPagoDeuda({
+                        icon: data.cobroInteres ? 'warning' : 'success',
+                        title: data.cobroInteres ? 'Cancelada con recargo' : 'Clase cancelada',
+                        html: htmlCancelacion,
+                        background: '#151517'
+                    });
+                    if (resultPago.isConfirmed || resultPago.dismiss === Swal.DismissReason.cancel) return;
+                } else {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Clase cancelada',
+                        html: htmlCancelacion,
+                        background: '#151517',
+                        color: '#fff',
+                        confirmButtonColor: '#f3a661'
+                    });
+                }
            
            
                 location.reload();
@@ -869,17 +894,14 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             const horasAFavor = Alumno.horasAFavor;
             if (fechaPago == "NULL" || fechaPago == null || fechaPago == "" || horasAFavor > 0) return;
             if (localStorage.getItem(AVISO_PACK_KEY) === String(fechaPago)) return;
-            Swal.fire({
+            swalPagoDeuda({
                 icon: 'info',
                 title: 'Pack de horas finalizado',
                 text: 'Tu pack de horas ha terminado. Deberás abonar la clase individualmente.',
-                background: '#151517',
-                color: '#fff',
-                confirmButtonColor: '#f3a661'
+                background: '#151517'
             }).then((result) => {
-                if (result.isConfirmed) {
+                if (!result.isConfirmed && result.dismiss !== Swal.DismissReason.cancel) {
                     localStorage.setItem(AVISO_PACK_KEY, String(fechaPago));
-            
                 }
             });
 
@@ -1070,12 +1092,10 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                             }
                             const slotsConNuevo = [...selectedSlots, fullId];
                             if (!isAdmin && superaLimiteClasesImpagas(slotsConNuevo)) {
-                                return Swal.fire({
+                                return swalPagoDeuda({
                                     icon: 'error',
                                     title: 'Límite de clases impagas',
-                                    text: MSG_LIMITE_IMPAGAS,
-                                    background: '#1a1a1a',
-                                    color: '#fff'
+                                    text: MSG_LIMITE_IMPAGAS
                                 });
                             }
                             selectedSlots.push(fullId);
@@ -1132,37 +1152,40 @@ async function gestionarReserva() {
                     });
                 }
                 if (superaLimiteClasesImpagas(selectedSlots)) {
-                    return Swal.fire({
+                    return swalPagoDeuda({
                         icon: 'error',
                         title: 'Límite de clases impagas',
-                        text: MSG_LIMITE_IMPAGAS,
-                        background: '#1a1a1a',
-                        color: '#fff'
+                        text: MSG_LIMITE_IMPAGAS
                     });
                 }
+            }
+
+            if (!isAdmin && Alumno.condicionPago == 0 && Alumno.dineroQueDebe) {
+                return swalPagoDeuda({
+                    icon: 'error',
+                    title: 'Permiso Denegado',
+                    text: 'No podés reservar nuevos horarios porque debés dinero. Regularizá tu deuda antes de sacar más turnos.',
+                    confirmButtonColor: '#ff5f5f'
+                });
             }
 
             // --- NUEVA RESTRICCIÓN: cantidadDebe ---
             // Se usa el string hexadecimal directamente para evitar errores de sintaxis
             if (!isAdmin && (Alumno.condicionPago == "Normal" && Alumno.cantidadDebe >= 2)) {
-                return Swal.fire({
+                return swalPagoDeuda({
                     icon: 'error',
                     title: 'Permiso Denegado',
                     text: 'No puedes reservar nuevos horarios porque tienes 2 o más clases pendientes de pago.',
-                    background: '#1a1a1a',
-                    color: '#fff',
-                    confirmButtonColor: '#ff5f5f' 
+                    confirmButtonColor: '#ff5f5f'
                 });
             }
 
             if (!isAdmin && (Alumno.condicionPago == "Regular" && Alumno.cantidadDebe >= 2 && Alumno.deudaMasVieja > 6)) {
-                return Swal.fire({
+                return swalPagoDeuda({
                     icon: 'error',
                     title: 'Permiso Denegado',
                     text: 'No puedes reservar nuevos horarios porque tienes 2 o más clases pendientes de pago y hace mas de una semana que no abona.',
-                    background: '#1a1a1a',
-                    color: '#fff',
-                    confirmButtonColor: '#ff5f5f' 
+                    confirmButtonColor: '#ff5f5f'
                 });
             }
 
@@ -1172,12 +1195,10 @@ async function gestionarReserva() {
                     : '0';
                 const dineroPendienteDeudor = parseFloat(rawDineroDeudor) || 0;
                 if (dineroPendienteDeudor > 0) {
-                    return Swal.fire({
+                    return swalPagoDeuda({
                         icon: 'error',
                         title: 'Permiso Denegado',
                         text: 'No puedes reservar nuevos horarios porque debés dinero. Regularizá tu deuda antes de sacar más turnos.',
-                        background: '#1a1a1a',
-                        color: '#fff',
                         confirmButtonColor: '#ff5f5f'
                     });
                 }
@@ -1192,18 +1213,14 @@ async function gestionarReserva() {
                 const dineroPendiente = parseFloat(rawDinero) || 0;
                 const debePeroPuedeReservar = debeClases >= 1 || dineroPendiente > 0;
                 if (debePeroPuedeReservar && localStorage.getItem("avisoDeuda") == undefined) {
-                    const avisoDeuda = await Swal.fire({
+                    const avisoDeuda = await swalPagoDeuda({
                         icon: 'warning',
                         title: 'Cuidado, tenés deuda pendiente',
                         html: 'Podés seguir sacando horarios, pero <strong>se te están cobrando intereses por día</strong>.',
-                        background: '#1a1a1a',
-                        color: '#fff',
-                        confirmButtonColor: '#f3a661',
-                        showCancelButton: true,
-                        confirmButtonText: 'Continuar',
-                        cancelButtonText: 'Cancelar'
+                        allowOutsideClick: true,
+                        showCloseButton: true
                     });
-                    if (!avisoDeuda.isConfirmed) return;
+                    if (avisoDeuda.isConfirmed || avisoDeuda.dismiss === Swal.DismissReason.cancel) return;
                     localStorage.setItem("avisoDeuda", "true");
                 }
             }
@@ -1332,7 +1349,10 @@ async function gestionarReserva() {
                     const dataVerif = await resVerif.json();
                     if (dataVerif.error && dataVerif.error !== false) {
                         document.getElementById('loader-overlay').style.display = 'none';
-                        return Swal.fire({ icon: 'error', title: dataVerif.faltantes ? 'Verificar Integrantes' : 'Deuda Pendiente', html: calcularMensaje(dataVerif) });
+                        if (dataVerif.faltantes) {
+                            return Swal.fire({ icon: 'error', title: 'Verificar Integrantes', html: calcularMensaje(dataVerif) });
+                        }
+                        return swalPagoDeuda({ icon: 'error', title: 'Deuda Pendiente', html: calcularMensaje(dataVerif) });
                     }
                 } catch (err) {
                     document.getElementById('loader-overlay').style.display = 'none';
