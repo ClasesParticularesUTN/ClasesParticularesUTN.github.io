@@ -296,6 +296,15 @@
         .horas-desglose .desglose-linea strong { color: var(--text-main); font-weight: 700; }
         .horas-desglose .desglose-total { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--glass-border); font-weight: 800; color: var(--primary); display: flex; justify-content: space-between; }
         .horas-aviso { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; }
+        .horas-info-msg {
+            display: flex; gap: 10px; align-items: flex-start;
+            padding: 12px 14px; margin-bottom: 4px; border-radius: var(--radius-sm);
+            border: 1px solid rgba(243, 166, 97, 0.28);
+            background: rgba(243, 166, 97, 0.10);
+            font-size: 0.82rem; line-height: 1.5; color: var(--text-main);
+        }
+        .horas-info-msg i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
+        .horas-info-msg strong { color: var(--primary); font-weight: 700; }
         .pack-directo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
         .pack-directo-btn { width: 100%; padding: 16px 12px; font-size: 0.95rem; }
         .horas-custom-section { padding-top: 18px; border-top: 1px solid var(--glass-border); }
@@ -378,6 +387,10 @@
     <div class="packs-container" id="packsContainer" style="display: none;">
         <div class="packs-layout">
             <div class="card horas-compra-card" id="horasCompraCard">
+                <p class="horas-info-msg" role="note">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i>
+                    <span>Podés comprar un <strong>pack</strong> o una <strong>cantidad de horas menor</strong> (por ejemplo, 6) y usarlas después al reservar turnos en Horarios.</span>
+                </p>
                 <div class="horas-modalidad" role="group" aria-label="Modalidad">
                     <button type="button" class="horas-mod-btn active" data-mod="individual" onclick="setHorasModalidad('individual')">
                         <i class="fas fa-user"></i>
