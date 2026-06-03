@@ -531,6 +531,11 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             return Number(Alumno?.horasAFavor) > 0;
         }
 
+        function superaHorasDisponiblesEnPack(slots) {
+            const horasAFavor = Number(Alumno?.horasAFavor) || 0;
+            return horasAFavor > 0 && slots.length > horasAFavor;
+        }
+
         function superaLimiteClasesImpagas(slots) {
             if (isAdmin || tienePackActivo()) return false;
             const reservadas = Number(Alumno?.reservadasSinPagar) || 0;
@@ -559,6 +564,17 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
                 else if (result.dismiss === Swal.DismissReason.cancel) window.location.href = '/Tutoriales.html';
                 return result;
             });
+        }
+
+        function obtenerMontoDeuda() {
+            const raw = Alumno?.dineroQueDebe != null && Alumno.dineroQueDebe !== ''
+                ? String(Alumno.dineroQueDebe).replace(/[^\d.-]/g, '')
+                : '0';
+            return parseFloat(raw) || 0;
+        }
+
+        function formatearMontoDeuda(monto) {
+            return '$' + monto.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
         }
 
         /** Horarios: antes string; ahora { fecha, codigo, cantidadHoras }. Mantiene compatibilidad con datos viejos. */
@@ -918,6 +934,23 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
 
         }
 
+        const RECORDATORIO_DEUDA_KEY = 'recordatorioDeudaHorarios';
+
+        async function mostrarRecordatorioDeudaAlEntrar() {
+            if (isAdmin || !Alumno?.correoElectronico) return;
+            const monto = obtenerMontoDeuda();
+            if (monto <= 0) return;
+            if (sessionStorage.getItem(RECORDATORIO_DEUDA_KEY)) return;
+            sessionStorage.setItem(RECORDATORIO_DEUDA_KEY, '1');
+            await swalPagoDeuda({
+                icon: 'warning',
+                title: 'Recordatorio de deuda',
+                html: `Tenés una deuda pendiente de <strong>${formatearMontoDeuda(monto)}</strong>. Podés regularizarla desde la sección de pagos.`,
+                allowOutsideClick: true,
+                showCloseButton: true
+            });
+        }
+
         async function init() {
             document.getElementById('loader-overlay').style.display = 'flex';
             if (Alumno && Alumno.correoElectronico && Alumno.contrasenia) {
@@ -939,6 +972,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             await Promise.all([fetchSemana(0), fetchSemana(1)]);
             render();
             document.getElementById('loader-overlay').style.display = 'none';
+            await mostrarRecordatorioDeudaAlEntrar();
             setTimeout(() => { if (!yaMostroHintUser) mostrarHintUserIcon(); }, 500);
         }
 
@@ -1168,6 +1202,22 @@ async function gestionarReserva() {
                         title: 'Límite de clases impagas',
                         text: MSG_LIMITE_IMPAGAS
                     });
+                }
+                if (superaHorasDisponiblesEnPack(selectedSlots)) {
+                    const horasAFavor = Number(Alumno.horasAFavor) || 0;
+                    const nHorasReserva = selectedSlots.length;
+                    const avisoPack = await Swal.fire({
+                        icon: 'warning',
+                        title: 'Cantidad de horas en el pack insuficientes',
+                        html: `Tenés <strong>${horasAFavor}</strong> ${horasAFavor === 1 ? 'hora' : 'horas'} a favor en tu pack y seleccionaste <strong>${nHorasReserva}</strong>. Deberás abonar el valor de las clases individualmente.`,
+                        background: '#1a1a1a',
+                        color: '#fff',
+                        showCancelButton: true,
+                        confirmButtonText: 'Continuar',
+                        cancelButtonText: 'Cancelar',
+                        confirmButtonColor: '#f3a661'
+                    });
+                    if (!avisoPack.isConfirmed) return;
                 }
             }
 
