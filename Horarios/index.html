@@ -537,7 +537,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             return reservadas + contarDiasUnicos(slots) > 2;
         }
 
-        const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases reservadas. Si quiere reservar mas clases, podes pagar las que ya reservaste y luego sacar mas turnos';
+        const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases reservadas. Si quiere reservar mas clases, podes pagar las que ya reservaste y luego sacar mas turnos o comprar horas por adelantado';
 
         function swalPagoDeuda(options = {}) {
             const { title, text, html, icon = 'error', background = '#1a1a1a', confirmButtonColor = '#f3a661', ...rest } = options;
