@@ -62,6 +62,13 @@
         .subtitle { text-align: center; color: #ccc; margin-bottom: 40px; font-size: 0.9rem; }
 
         .form-label { display: block; margin-bottom: 8px; font-size: 0.85rem; color: #ddd; }
+        .field-hint {
+            display: block;
+            font-size: 0.72rem;
+            color: #999;
+            margin-top: 4px;
+            line-height: 1.35;
+        }
         .input-control {
             width: 100%;
             padding: 14px 16px;
@@ -127,7 +134,21 @@
         }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .container { padding: 30px 20px; } }
+        .grid-phone {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 5px;
+            margin-bottom: 0;
+        }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr; }
+            .container { padding: 30px 20px; }
+            .grid-phone {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -165,14 +186,16 @@
                     <input type="email" name="correoElectronico" id="input_4" class="input-control" required>
                 </div>
                 <div class="field">
-                    <div class="grid" style="gap:5px; margin-bottom:0;">
-                        <div style="flex:1">
+                    <div class="grid-phone">
+                        <div>
                             <label class="form-label">Área</label>
                             <input type="text" name="Area" id="input_22_area" class="input-control" placeholder="342">
+                            <span class="field-hint">Sin +54 ni 0 al inicio.</span>
                         </div>
-                        <div style="flex:2">
+                        <div>
                             <label class="form-label">Teléfono *</label>
                             <input type="text" name="Telefono" id="input_22_phone" class="input-control" placeholder="5271005" required>
+                            <span class="field-hint">Sin el 15 al inicio.</span>
                         </div>
                     </div>
                 </div>
