@@ -935,9 +935,43 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         }
 
         const RECORDATORIO_DEUDA_KEY = 'recordatorioDeudaHorarios';
+        const CORREOS_RECORDATORIO_DEUDA = [
+            'paulinalisvillanueva@gmail.com',
+            'andresnigorrafac2026@gmail.com'
+        ];
+        const RECORDATORIO_DEUDA_ESPECIFICA_KEY = 'recordatorioDeudaEspecificaHorarios';
+
+        function esCorreoRecordatorioDeudaEspecifico(correo) {
+            const c = String(correo || '').trim().toLowerCase();
+            return CORREOS_RECORDATORIO_DEUDA.some(e => e.toLowerCase() === c);
+        }
+
+        async function mostrarRecordatorioDeudaCorreosEspecificos() {
+            if (isAdmin || !Alumno?.correoElectronico) return;
+            if (!esCorreoRecordatorioDeudaEspecifico(Alumno.correoElectronico)) return;
+            if (sessionStorage.getItem(RECORDATORIO_DEUDA_ESPECIFICA_KEY)) return;
+            sessionStorage.setItem(RECORDATORIO_DEUDA_ESPECIFICA_KEY, '1');
+            await Swal.fire({
+                icon: 'warning',
+                title: 'Recordatorio de deuda',
+                text: 'Recuerde que debe dinero. Por favor, regularice su situación.',
+                background: '#1a1a1a',
+                color: '#fff',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#f3a661',
+                showCancelButton: true,
+                cancelButtonText: 'Ir a pagos',
+                cancelButtonColor: '#555'
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.location.href = '/Pagos';
+                }
+            });
+        }
 
         async function mostrarRecordatorioDeudaAlEntrar() {
             if (isAdmin || !Alumno?.correoElectronico) return;
+            if (esCorreoRecordatorioDeudaEspecifico(Alumno.correoElectronico)) return;
             const monto = obtenerMontoDeuda();
             if (monto <= 0) return;
             if (sessionStorage.getItem(RECORDATORIO_DEUDA_KEY)) return;
@@ -972,6 +1006,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             await Promise.all([fetchSemana(0), fetchSemana(1)]);
             render();
             document.getElementById('loader-overlay').style.display = 'none';
+            await mostrarRecordatorioDeudaCorreosEspecificos();
             await mostrarRecordatorioDeudaAlEntrar();
             setTimeout(() => { if (!yaMostroHintUser) mostrarHintUserIcon(); }, 500);
         }
