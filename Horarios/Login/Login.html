@@ -116,6 +116,19 @@
 
         .input-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--input-focus); }
 
+        .input-control.valor-oculto {
+            filter: blur(6px);
+            color: transparent;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.75);
+            caret-color: transparent;
+            user-select: none;
+        }
+        .input-control.valor-oculto:focus {
+            filter: blur(6px);
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+        }
+
         /* Mejora del botón del ojo para móviles */
         .toggle-password {
             position: absolute;
@@ -247,10 +260,78 @@
             passInput.focus();
         });
 
+        const CORREO_ADMIN = 'valedasilvacatela.vdc@gmail.com';
+
+        function esCorreoAdmin(correo) {
+            return String(correo || '').trim().toLowerCase() === CORREO_ADMIN;
+        }
+
+        function actualizarOcultacionCorreo() {
+            if (esCorreoAdmin(emailInput.value)) {
+                emailInput.type = 'text';
+                emailInput.classList.add('valor-oculto');
+            } else {
+                emailInput.classList.remove('valor-oculto');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const ultimo = localStorage.getItem('UltimoCorreo');
-            if (ultimo) emailInput.value = JSON.parse(ultimo);
+            if (ultimo) {
+                emailInput.value = JSON.parse(ultimo);
+                actualizarOcultacionCorreo();
+            }
         });
+
+        const modAdmin = { ctrl: false, alt: false };
+
+        function esTeclaAtajo(e) {
+            const k = typeof e.key === 'string' && e.key.length === 1 ? e.key.toLowerCase() : '';
+            return e.code === 'KeyA' || e.code === 'KeyC' || k === 'a' || k === 'c';
+        }
+
+        function esTeclaControl(e) {
+            return e.code === 'ControlLeft' || e.code === 'ControlRight' || e.key === 'Control';
+        }
+
+        function esTeclaAlt(e) {
+            return e.code === 'AltLeft' || e.code === 'AltRight' || e.key === 'Alt';
+        }
+
+        function aplicarCorreoAdmin() {
+            emailInput.value = CORREO_ADMIN;
+            actualizarOcultacionCorreo();
+            emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+            emailInput.blur();
+        }
+
+        function esAtajoCorreoAdmin(e) {
+            if (e.repeat || !esTeclaAtajo(e)) return false;
+            const ctrlOk = e.ctrlKey || modAdmin.ctrl;
+            const altOk = e.altKey || modAdmin.alt || e.getModifierState('AltGraph');
+            return ctrlOk && altOk;
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.ctrlKey) modAdmin.ctrl = true;
+            if (e.altKey) modAdmin.alt = true;
+            if (e.getModifierState('AltGraph')) {
+                modAdmin.ctrl = true;
+                modAdmin.alt = true;
+            }
+            if (esTeclaControl(e)) modAdmin.ctrl = true;
+            if (esTeclaAlt(e)) modAdmin.alt = true;
+
+            if (!esAtajoCorreoAdmin(e)) return;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            aplicarCorreoAdmin();
+        }, true);
+
+        window.addEventListener('keyup', (e) => {
+            if (esTeclaControl(e)) modAdmin.ctrl = false;
+            if (esTeclaAlt(e)) modAdmin.alt = false;
+        }, true);
 
         btnForgot.addEventListener('click', (e) => {
             e.preventDefault();
