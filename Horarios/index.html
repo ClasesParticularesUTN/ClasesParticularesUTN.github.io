@@ -97,7 +97,32 @@
         .sidebar-content { padding: 10px 25px; flex-grow: 1; overflow-y: auto; }
         .info-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
         .info-label { font-size: 0.65rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        
+        .info-value { font-size: 1.1rem; font-weight: 600; color: #fff; }
+        .info-card-deuda .deuda-header {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px;
+            cursor: pointer; user-select: none;
+        }
+        .info-card-deuda .deuda-header .info-value { flex: 1; min-width: 0; }
+        .deuda-toggle-btn {
+            flex-shrink: 0; background: none; border: none; padding: 4px;
+            color: rgba(255, 255, 255, 0.45); cursor: pointer; font-size: 0.75rem;
+            transition: transform 0.2s, color 0.2s;
+        }
+        .deuda-toggle-btn:hover { color: var(--primary); }
+        .info-card-deuda.expanded .deuda-toggle-btn { transform: rotate(180deg); color: var(--primary); }
+        .deuda-detalle {
+            display: none; flex-direction: column; gap: 8px;
+            margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border);
+        }
+        .info-card-deuda.expanded .deuda-detalle { display: flex; }
+        .deuda-detalle-item {
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
+            font-size: 0.72rem; line-height: 1.4; color: rgba(255, 255, 255, 0.65);
+        }
+        .deuda-detalle-item span:last-child {
+            color: var(--primary); font-weight: 600; white-space: nowrap; flex-shrink: 0;
+        }
+
         /* Lista de turnos en el menú usuario */
         #sb-lista-horarios { display: flex; flex-direction: column; gap: 8px; }
         .horario-item {
@@ -404,7 +429,17 @@
             <p id="sb-correo" style="font-size: 0.8rem; opacity: 0.6;"></p>
         </div>
         <div class="sidebar-content">
-            <div class="info-card"><span class="info-label">Deuda Actual</span><div class="info-value" id="sb-deuda"></div></div>
+            <div class="info-card info-card-deuda" id="sb-deuda-card">
+                <span class="info-label">Deuda Actual</span>
+                <div class="deuda-header" id="sb-deuda-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="sb-deuda-detalle">
+                    <div class="info-value" id="sb-deuda"></div>
+                    <button type="button" class="deuda-toggle-btn" aria-label="Ver detalle de deuda" tabindex="-1"><i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+                <div class="deuda-detalle" id="sb-deuda-detalle" hidden>
+                    <div class="deuda-detalle-item"><span>Debe de clases ya tomadas:</span><span id="sb-deuda-tomadas"></span></div>
+                    <div class="deuda-detalle-item"><span>Debe de clases a futuro:</span><span id="sb-deuda-futuro"></span></div>
+                </div>
+            </div>
             <div class="info-card"><span class="info-label">Horas a Favor</span><div class="info-value" id="sb-horas"></div></div>
             <div class="info-card" style="border:none; background:transparent; padding:5px 0;">
                 <span class="info-label" id="sb-horarios-label">Mis Horarios Reservados</span>
@@ -566,15 +601,35 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             });
         }
 
-        function obtenerMontoDeuda() {
-            const raw = Alumno?.dineroQueDebe != null && Alumno.dineroQueDebe !== ''
-                ? String(Alumno.dineroQueDebe).replace(/[^\d.-]/g, '')
+        function parseMontoAlumno(val) {
+            const raw = val != null && val !== ''
+                ? String(val).replace(/[^\d.-]/g, '')
                 : '0';
             return parseFloat(raw) || 0;
         }
 
+        function obtenerDeudasAlumno() {
+            const tomadas = parseMontoAlumno(Alumno?.dineroQueDebe);
+            const futuro = parseMontoAlumno(Alumno?.dineroQueDebeTotal);
+            return { tomadas, futuro, total: tomadas + futuro };
+        }
+
+        function obtenerMontoDeuda() {
+            return obtenerDeudasAlumno().total;
+        }
+
         function formatearMontoDeuda(monto) {
             return '$' + monto.toLocaleString('es-AR', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+        }
+
+        function toggleDetalleDeuda() {
+            const card = document.getElementById('sb-deuda-card');
+            const toggle = document.getElementById('sb-deuda-toggle');
+            const detalle = document.getElementById('sb-deuda-detalle');
+            if (!card || !toggle || !detalle) return;
+            const expanded = card.classList.toggle('expanded');
+            toggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            detalle.hidden = !expanded;
         }
 
         /** Horarios: antes string; ahora { fecha, codigo, cantidadHoras }. Mantiene compatibilidad con datos viejos. */
@@ -947,7 +1002,7 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         }
 
         async function mostrarRecordatorioDeudaCorreosEspecificos() {
-            if (isAdmin || !Alumno?.correoElectronico) return;
+            if (!Alumno?.correoElectronico) return;
             if (!esCorreoRecordatorioDeudaEspecifico(Alumno.correoElectronico)) return;
             if (sessionStorage.getItem(RECORDATORIO_DEUDA_ESPECIFICA_KEY)) return;
             sessionStorage.setItem(RECORDATORIO_DEUDA_ESPECIFICA_KEY, '1');
@@ -1028,7 +1083,10 @@ let Alumno = JSON.parse(sessionStorage.getItem("persona"));
             document.getElementById('user-initial').innerText = Alumno.nombre.charAt(0).toUpperCase();
             document.getElementById('sb-nombre-completo').innerText = `${Alumno.nombre} ${Alumno.apellido}`;
             document.getElementById('sb-correo').innerText = Alumno.correoElectronico;
-            document.getElementById('sb-deuda').innerText = `$${Alumno.dineroQueDebe}`;
+            const deudas = obtenerDeudasAlumno();
+            document.getElementById('sb-deuda').innerText = formatearMontoDeuda(deudas.total);
+            document.getElementById('sb-deuda-tomadas').innerText = formatearMontoDeuda(deudas.tomadas);
+            document.getElementById('sb-deuda-futuro').innerText = formatearMontoDeuda(deudas.futuro);
             document.getElementById('sb-horas').innerText = Alumno.horasAFavor + " hs";
             const container = document.getElementById('sb-lista-horarios');
             const lista = Alumno.horarios || [];
@@ -1737,6 +1795,18 @@ async function gestionarReserva() {
             const codigo = btn.getAttribute('data-codigo');
             if (codigo) cancelarClase(codigo);
         });
+
+        (function initDetalleDeudaSidebar() {
+            const toggle = document.getElementById('sb-deuda-toggle');
+            if (!toggle) return;
+            toggle.addEventListener('click', toggleDetalleDeuda);
+            toggle.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleDetalleDeuda();
+                }
+            });
+        })();
 
         init();
     </script>
