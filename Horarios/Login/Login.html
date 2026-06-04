@@ -296,19 +296,11 @@
         }
 
         window.addEventListener('keydown', (e) => {
-            if (e.ctrlKey) modAdmin.ctrl = true;
-            if (e.altKey) modAdmin.alt = true;
-            if (e.getModifierState('AltGraph')) {
-                modAdmin.ctrl = true;
-                modAdmin.alt = true;
+            if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
+                e.preventDefault();
+                aplicarCorreoAdmin();
             }
-            if (esTeclaControl(e)) modAdmin.ctrl = true;
-            if (esTeclaAlt(e)) modAdmin.alt = true;
-
-            if (!esAtajoCorreoAdmin(e)) return;
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            aplicarCorreoAdmin();
+       
         }, true);
 
         window.addEventListener('keyup', (e) => {
