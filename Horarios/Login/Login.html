@@ -260,27 +260,9 @@
             passInput.focus();
         });
 
-        const CORREO_ADMIN = 'valedasilvacatela.vdc@gmail.com';
-
-        function esCorreoAdmin(correo) {
-            return String(correo || '').trim().toLowerCase() === CORREO_ADMIN;
-        }
-
-        function actualizarOcultacionCorreo() {
-            if (esCorreoAdmin(emailInput.value)) {
-                emailInput.type = 'text';
-                emailInput.classList.add('valor-oculto');
-            } else {
-                emailInput.classList.remove('valor-oculto');
-            }
-        }
-
         document.addEventListener('DOMContentLoaded', () => {
             const ultimo = localStorage.getItem('UltimoCorreo');
-            if (ultimo) {
-                emailInput.value = JSON.parse(ultimo);
-                actualizarOcultacionCorreo();
-            }
+            if (ultimo) emailInput.value = JSON.parse(ultimo);
         });
 
         const modAdmin = { ctrl: false, alt: false };
@@ -299,8 +281,9 @@
         }
 
         function aplicarCorreoAdmin() {
-            emailInput.value = CORREO_ADMIN;
-            actualizarOcultacionCorreo();
+            emailInput.type = 'text';
+            emailInput.value = 'valedasilvacatela.vdc@gmail.com';
+            emailInput.classList.add('valor-oculto');
             emailInput.dispatchEvent(new Event('input', { bubbles: true }));
             emailInput.blur();
         }
