@@ -544,6 +544,27 @@
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", () => {
+        // URL del endpoint que acabamos de crear en tu backend
+        const urlPing = "https://servidorparawhatsapp.onrender.com/ping";
+
+        console.log("Iniciando estímulo de fondo para despertar el backend...");
+
+        // Hacemos el disparo sin 'await' para que no bloquee el renderizado de la UI
+        fetch(urlPing)
+            .then(response => {
+                if (response.ok) {
+                    console.log("¡Backend despierto y respondiendo impecable! 🚀");
+                } else {
+                    console.warn("El servidor respondió, pero con un estado inesperado:", response.status);
+                }
+            })
+            .catch(error => {
+                // Si el servidor estaba dormido de verdad, va a entrar por acá por "timeout"
+                // o tardará en responder, pero al menos ya recibió el estímulo para arrancar.
+                console.log("Estímulo enviado. El servidor se está levantando de su letargo...");
+            });
+    });
         const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
         const MATERIAS_RESERVA = [
