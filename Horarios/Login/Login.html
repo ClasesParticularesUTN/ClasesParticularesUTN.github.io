@@ -262,7 +262,18 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const ultimo = localStorage.getItem('UltimoCorreo');
-            if (ultimo && ultimo !== 'valedasilvacatela.vdc@gmail.com') emailInput.value = JSON.parse(ultimo);
+            if (!ultimo) return;
+
+            let correoGuardado;
+            try {
+                correoGuardado = JSON.parse(ultimo);
+            } catch {
+                correoGuardado = ultimo;
+            }
+
+            if (correoGuardado && correoGuardado !== 'valedasilvacatela.vdc@gmail.com') {
+                emailInput.value = correoGuardado;
+            }
         });
 
         const modAdmin = { ctrl: false, alt: false };
