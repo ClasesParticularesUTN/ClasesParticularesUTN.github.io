@@ -1754,8 +1754,13 @@ async function gestionarReserva() {
                     fechasFormateadas.push(fechaFormato);
                 }
                 const textoFechas = fechasFormateadas.map(f => `    • ${f}`).join('\n');
-                console.log(`Enviando recordatorio con fechas:\n${textoFechas}\na ${Alumno.nombre} (${Alumno.telefono})`);
-                enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas);
+                // Solo enviar recordatorio por WhatsApp si fue seleccionado
+                if (recordatorio === 'Whatsapp') {
+                    console.log(`Enviando recordatorio por WhatsApp con fechas:\n${textoFechas}\na ${Alumno.nombre} (${Alumno.telefono})`);
+                    enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas);
+                } else if (recordatorio === 'Correo') {
+                    console.log(`Recordatorio por correo será enviado desde el servidor para ${Alumno.nombre} (${Alumno.correoElectronico})`);
+                }
                 // ==== FIN ENVÍO DE RECORDATORIO ====
 
                 try {
