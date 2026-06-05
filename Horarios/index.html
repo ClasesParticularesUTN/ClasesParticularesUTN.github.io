@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Reserva De Clase</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="/precios.js"></script>
+    <script src="../precios.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -62,7 +62,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-dark) url('/Horarios/assets/fotos/fondo.avif') no-repeat center center fixed;
+            background: var(--bg-dark) url('./assets/fotos/fondo.avif') no-repeat center center fixed;
             background-size: cover; color: #fff; overflow: hidden; height: 100vh;
         }
 
@@ -563,7 +563,7 @@
         const nombreLocal = localStorage.getItem('Nombre');
         const apellidoLocal = localStorage.getItem('apellido') ?? localStorage.getItem('Apellido');
         if (nombreLocal !== 'Valentin' || apellidoLocal !== 'Da Silva') {
-            window.location.href = '/Horarios/Login/Login.html';
+            window.location.href = './Login/Login.html';
         }
         const EMAILS_FINES_DE_SEMANA = [
             //"juanma.2000@hotmail.com",
@@ -636,8 +636,8 @@
                 cancelButtonColor: '#555',
                 ...rest
             }).then(result => {
-                if (result.isConfirmed) window.location.href = '/Pagos';
-                else if (result.dismiss === Swal.DismissReason.cancel) window.location.href = '/Tutoriales.html';
+                if (result.isConfirmed) window.location.href = '../Pagos';
+                else if (result.dismiss === Swal.DismissReason.cancel) window.location.href = '../Tutoriales.html';
                 return result;
             });
         }
@@ -1060,7 +1060,7 @@
                 cancelButtonColor: '#555'
             }).then((result) => {
                 if (result.dismiss === Swal.DismissReason.cancel) {
-                    window.location.href = '/Pagos';
+                    window.location.href = '../Pagos';
                 }
             });
         }
@@ -1204,7 +1204,7 @@
             }
         }
 
-        function logout() { sessionStorage.clear(); window.location.href = '/Horarios/Login/Login.html'; }
+        function logout() { sessionStorage.clear(); window.location.href = './Login/Login.html'; }
 
         async function fetchSemana(off) {
             try {
