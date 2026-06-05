@@ -409,12 +409,14 @@
                             const anterior = document.referrer;
                             const prohibidas = ['Registro', 'RecuperarContraseña', 'Login.html', 'Registro.html'];
                             const esProhibida = prohibidas.some(p => anterior.includes(p));
+                            
+                            window.location.href = '../index.html';
 
-                            if (anterior !== "" && !esProhibida) {
-                                window.location.replace(anterior);
-                            } else {
-                                window.location.replace('../index.html'); 
-                            }
+                            // if (anterior !== "" && !esProhibida) {
+                            //     window.location.replace(anterior);
+                            // } else {
+                            //     window.location.replace('../index.html'); 
+                            // }
                         });
                     } else {
                         throw new Error(data.error || 'Credenciales incorrectas');
