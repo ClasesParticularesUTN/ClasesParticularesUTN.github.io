@@ -1733,7 +1733,7 @@ async function gestionarReserva() {
                     nuevosHorarios.push({ fecha: fechaLinea, codigo: '' });
                 });
 
-                const recordatorio = esPrimeraReserva ? '' : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
+                const recordatorio = (esPrimeraReserva && mod !== 'grupal') ? '' : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
                 const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "recordatorio": recordatorio };
 
                 // ==== ENVIAR RECORDATORIO PRIMERO (FIRE AND FORGET) ====
