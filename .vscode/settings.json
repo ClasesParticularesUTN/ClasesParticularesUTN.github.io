@@ -1,6 +1,6 @@
 {
     // Para 404 y rutas sin mayúsculas: npm start (Live Server muestra "Cannot GET")
-    "liveServer.settings.port": 5506,
+    "liveServer.settings.port": 5507,
     "files.associations": {
         "ostream": "cpp"
     }

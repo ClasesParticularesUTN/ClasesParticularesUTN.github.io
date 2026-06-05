@@ -392,6 +392,35 @@
             margin-top: 16px; text-align: left; font-size: 0.9rem; color: #333;
             line-height: 1.45;
         }
+        .swal-recordatorio-group {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .swal-recordatorio-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 1px solid rgba(243,166,97,0.25);
+            border-radius: 14px;
+            background: rgba(243,166,97,0.08);
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+            color: #1f1f1f;
+        }
+        .swal-recordatorio-option:hover {
+            border-color: rgba(243,166,97,0.55);
+            background: rgba(243,166,97,0.14);
+            transform: translateY(-1px);
+        }
+        .swal-recordatorio-option input[type="radio"] {
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+            margin: 0;
+        }
         .swal-tyc-row input { margin-top: 4px; flex-shrink: 0; accent-color: var(--primary); width: 18px; height: 18px; cursor: pointer; }
         .swal-tyc-link {
             background: none; border: none; padding: 0; margin: 0;
@@ -524,6 +553,11 @@
             'Sintaxis y Semantica'
         ];
 let Alumno = JSON.parse(sessionStorage.getItem("persona"));
+        const nombreLocal = localStorage.getItem('Nombre');
+        const apellidoLocal = localStorage.getItem('apellido') ?? localStorage.getItem('Apellido');
+        if (nombreLocal !== 'Valentin' || apellidoLocal !== 'Da Silva') {
+            window.location.href = '/Horarios/Login/Login.html';
+        }
         const EMAILS_FINES_DE_SEMANA = [
             //"juanma.2000@hotmail.com",
             "valedasilvacatela.vdc@gmail.com",
@@ -1604,12 +1638,29 @@ async function gestionarReserva() {
             }
 
             const esPrimeraVezTyC = !yaVioTerminosHorarios();
+            const esPrimeraReserva = !Alumno?.horarios || Alumno.horarios.length === 0;
+            const htmlRecordatorio = esPrimeraReserva ? '' : `
+                    <div style="margin-top: 18px; padding: 14px; border-radius: 14px; border: 1px solid rgba(243,166,97,0.22); background: rgba(243,166,97,0.08);">
+                        <p style="margin: 0 0 10px; font-weight: 700; color: #322a1f;">Enviar recordatorio por</p>
+                        <div class="swal-recordatorio-group">
+                            <label class="swal-recordatorio-option">
+                                <input type="radio" name="swal-recordatorio" value="Whatsapp" checked>
+                                <span>WhatsApp</span>
+                            </label>
+                            <label class="swal-recordatorio-option">
+                                <input type="radio" name="swal-recordatorio" value="Correo">
+                                <span>Correo</span>
+                            </label>
+                        </div>
+                    </div>
+                `;
             const htmlConfirmacion = `
                 <div style="text-align: left; font-size: 0.95rem; color: #333;">
                     <p style="margin: 0; padding: 12px 14px; background: rgba(243, 166, 97, 0.12); border-radius: 10px; border-left: 4px solid #f3a661; line-height: 1.5;">
                         <b>Resumen de la reserva</b><br>
                         <span style="margin-top: 6px; display: inline-block;">${textoResumen}</span>
                     </p>
+                    ${htmlRecordatorio}
                     <div class="swal-tyc-row">
                         <input type="checkbox" id="swal-acepto-tyc" autocomplete="off"${esPrimeraVezTyC ? ' disabled' : ''}>
                         <div style="margin: 0;">
@@ -1674,7 +1725,8 @@ async function gestionarReserva() {
                     nuevosHorarios.push({ fecha: fechaLinea, codigo: '' });
                 });
 
-                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia };
+                const recordatorio = esPrimeraReserva ? '' : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
+                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "recordatorio": recordatorio };
 
                 try {
                     await fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
@@ -1682,6 +1734,7 @@ async function gestionarReserva() {
                     await fetch(URLHorarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) });
                     document.getElementById('loader-overlay').style.display = 'none';
                     await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
+
                     location.reload();
                 } catch (e) {
                     document.getElementById('loader-overlay').style.display = 'none';
@@ -1809,6 +1862,8 @@ async function gestionarReserva() {
         })();
 
         init();
+
+
     </script>
 </body>
 </html>
