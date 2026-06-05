@@ -552,7 +552,14 @@
             'Paradigmas de Programacion',
             'Sintaxis y Semantica'
         ];
-let Alumno = JSON.parse(sessionStorage.getItem("persona"));
+
+        const __originalFetch = window.fetch.bind(window);
+        window.fetch = async function(...args) {
+            console.log('Enviando petición al servidor:', ...args);
+            return __originalFetch(...args);
+        };
+
+        let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         const nombreLocal = localStorage.getItem('Nombre');
         const apellidoLocal = localStorage.getItem('apellido') ?? localStorage.getItem('Apellido');
         if (nombreLocal !== 'Valentin' || apellidoLocal !== 'Da Silva') {
