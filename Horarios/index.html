@@ -1645,7 +1645,7 @@ async function gestionarReserva() {
             }
 
             const esPrimeraVezTyC = !yaVioTerminosHorarios();
-            const esPrimeraReserva = !Alumno?.horarios || Alumno.horarios.length === 0;
+            const esPrimeraReserva = localStorage.getItem('primeraReserva') === null;
             const htmlRecordatorio = esPrimeraReserva ? '' : `
                     <div style="margin-top: 18px; padding: 14px; border-radius: 14px; border: 1px solid rgba(243,166,97,0.22); background: rgba(243,166,97,0.08);">
                         <p style="margin: 0 0 10px; font-weight: 700; color: #322a1f;">Enviar recordatorio por</p>
@@ -1717,6 +1717,7 @@ async function gestionarReserva() {
             });
 
             if (result.isConfirmed) {
+                localStorage.setItem('primeraReserva', 'false');
                 document.getElementById('loader-overlay').style.display = 'flex';
                 document.getElementById('loader-text').textContent = 'Asignando horario...';
                 
