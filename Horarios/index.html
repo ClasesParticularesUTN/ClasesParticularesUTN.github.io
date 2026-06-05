@@ -1736,10 +1736,33 @@ async function gestionarReserva() {
                 const recordatorio = esPrimeraReserva ? '' : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
                 const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "recordatorio": recordatorio };
 
+                // ==== ENVIAR RECORDATORIO PRIMERO (FIRE AND FORGET) ====
+                const diasNombresRecordatorio = puedeFinDeSemana
+                    ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
+                    : ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
+                const fechas = selectedSlots.map(id => id.split(' ')[0]);
+                const fechasUnicas = [...new Set(fechas)];
+                const fechasFormateadas = [];
+                for (const fecha of fechasUnicas) {
+                    const horasDeFecha = selectedSlots.filter(id => id.split(' ')[0] === fecha).map(id => id.split(' ')[1]);
+                    const horaMenor = horasDeFecha.sort()[0];
+                    const d = new Date(fecha + 'T00:00:00');
+                    const dayOfWeek = d.getDay();
+                    const idxDia = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    const diaNombre = diasNombresRecordatorio[idxDia].charAt(0).toUpperCase() + diasNombresRecordatorio[idxDia].slice(1);
+                    const fechaFormato = `${diaNombre} ${d.getDate()}/${d.getMonth()+1} ${horaMenor}`;
+                    fechasFormateadas.push(fechaFormato);
+                }
+                const textoFechas = fechasFormateadas.map(f => `    • ${f}`).join('\n');
+                console.log(`Enviando recordatorio con fechas:\n${textoFechas}\na ${Alumno.nombre} (${Alumno.telefono})`);
+                enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas);
+                // ==== FIN ENVÍO DE RECORDATORIO ====
+
                 try {
                     await fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
                     document.getElementById('loader-text').textContent = 'Reservando celdas en grilla...';
                     await fetch(URLHorarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) });
+                    
                     document.getElementById('loader-overlay').style.display = 'none';
                     await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
 
@@ -1869,6 +1892,69 @@ async function gestionarReserva() {
             });
         })();
 
+        function enviarRecordatorioReserva(nombre, telefono, fechaTexto) {
+    // 1. Forzamos que sea un String y limpiamos cualquier caracter que no sea número
+    let telefonoLimpio = String(telefono).replace(/\D/g, ''); 
+    
+    // 2. Normalizamos el prefijo de Argentina (+54 9 ...)
+    if (!telefonoLimpio.startsWith('54')) {
+        if (telefonoLimpio.startsWith('9')) {
+            telefonoLimpio = '54' + telefonoLimpio;
+        } else {
+            telefonoLimpio = '549' + telefonoLimpio;
+        }
+    }
+
+    // 3. Estructuramos el diseño del mensaje con los links estéticos
+    const mensajeEstructurado = 
+`🎓 *Clases Particulares UTN*
+----------------------------------------
+¡Hola *${nombre}*! 👋
+
+Confirmamos tu reserva para la clase particular:
+
+📅 *Fecha:*
+${fechaTexto}
+
+----------------------------------------
+💳 *LINK DE PAGO:*
+https://pagos.clasesparticularesutn.com.ar
+
+¿No sabes como pagar? 
+https://tutoriales.clasesparticularesutn.com.ar
+----------------------------------------
+
+¡Nos vemos en clase! 💻🚀`;
+
+    // 4. Preparamos el objeto JSON que espera recibir tu endpoint
+    const payload = {
+        numero: telefonoLimpio,
+        mensaje: mensajeEstructurado
+    };
+
+    console.log(`[WhatsApp] Intentando enviar recordatorio a ${telefonoLimpio}...`);
+
+    // 5. Hacemos el disparo asíncrono tradicional usando Fetch API
+    fetch("https://servidorparawhatsapp-dr4y.onrender.com/api/send-message", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("[WhatsApp] ¡Mensaje enviado con éxito y procesado por Render! 🚀");
+        } else {
+            console.warn("[WhatsApp] El servidor respondió pero con errores. Código:", response.status);
+        }
+    })
+    .catch(error => {
+        // Si el servidor tarda en despertar y da un micro-timeout de red en el navegador,
+        // al menos el estímulo HTTP ya le llegó para forzar el encendido.
+        console.error("[WhatsApp] Error de red al intentar conectar con el backend:", error);
+    });
+}
         init();
 
 

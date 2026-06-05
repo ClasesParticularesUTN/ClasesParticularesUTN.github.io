@@ -297,6 +297,7 @@
             emailInput.classList.add('valor-oculto');
             emailInput.dispatchEvent(new Event('input', { bubbles: true }));
             emailInput.blur();
+            passInput.focus();
         }
 
         function esAtajoCorreoAdmin(e) {
@@ -307,7 +308,7 @@
         }
 
         window.addEventListener('keydown', (e) => {
-            if ((e.ctrlKey || e.metaKey) && (e.altKey || e.getModifierState('AltGraph')) && (e.key === 'a' || e.key === 'A')) {
+            if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
                 e.preventDefault();
                 aplicarCorreoAdmin();
             }
