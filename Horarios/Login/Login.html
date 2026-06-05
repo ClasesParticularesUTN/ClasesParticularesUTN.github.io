@@ -411,9 +411,9 @@
                             const esProhibida = prohibidas.some(p => anterior.includes(p));
 
                             if (anterior !== "" && !esProhibida) {
-                                window.location.href = anterior;
+                                window.location.replace(anterior);
                             } else {
-                                window.location.href = '../index.html'; 
+                                window.location.replace('../index.html'); 
                             }
                         });
                     } else {
