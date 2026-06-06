@@ -226,12 +226,67 @@
 
         .register-link { font-size: 0.9rem; color: var(--text-muted); }
         .register-link a { color: var(--primary); text-decoration: none; font-weight: 600; }
+
+        /* Botón Eruda */
+        .eruda-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .eruda-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+        }
+
+        .eruda-btn:active {
+            transform: scale(0.95);
+        }
+
+        .eruda-btn-tooltip {
+            position: absolute;
+            bottom: 70px;
+            right: 0;
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            border: 1px solid var(--primary);
+        }
+
+        .eruda-btn:hover .eruda-btn-tooltip {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
 
     <button type="button" class="back-button" id="btnBack" aria-label="Volver">
         <i class="fa-solid fa-arrow-left"></i>
+    </button>
+
+    <button type="button" class="eruda-btn" id="btnEruda" aria-label="Abrir consola" title="Consola de desarrollador">
+        <i class="fa-solid fa-terminal"></i>
+        <div class="eruda-btn-tooltip">Abre la consola</div>
     </button>
 
     <div class="login-container">
@@ -378,6 +433,7 @@
         const btnForgot = document.getElementById('btnForgot');
         const toggleEye = document.getElementById('toggleEye');
         const btnBack = document.getElementById('btnBack');
+        const btnEruda = document.getElementById('btnEruda');
         
         console.log('📋 [ELEMENTOS] Elementos del DOM cargados:', {
             form: !!form,
@@ -385,7 +441,8 @@
             passInput: !!passInput,
             submitBtn: !!submitBtn,
             toggleEye: !!toggleEye,
-            btnBack: !!btnBack
+            btnBack: !!btnBack,
+            btnEruda: !!btnEruda
         });
 
         // CORRECCIÓN PARA MÓVILES DEL OJO
@@ -408,6 +465,24 @@
             
             // Mantener el foco si el usuario estaba escribiendo
             passInput.focus();
+        });
+
+        // Botón para abrir Eruda
+        btnEruda.addEventListener('click', () => {
+            console.log('🖱️ [ERUDA] Botón presionado - Inicializando');
+            if (typeof eruda !== 'undefined') {
+                if (!erudaActivado) {
+                    eruda.init();
+                    erudaActivado = true;
+                    console.log('✅ Eruda activado!');
+                    mostrarToast('✅ Consola abierta', 1500);
+                } else {
+                    console.log('ℹ️ Eruda ya estaba activo');
+                }
+            } else {
+                console.warn('⚠️ [ERUDA] Script de Eruda no cargado');
+                mostrarToast('❌ Error: Eruda no disponible', 2000);
+            }
         });
 
         document.addEventListener('DOMContentLoaded', () => {
