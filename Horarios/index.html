@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -23,7 +23,6 @@
             --scrollbar-size: 5px;
         }
 
-        /* Scrollbars minimalistas (global): track transparente, thumb fino — Firefox + WebKit */
         * {
             scrollbar-width: thin;
             scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
@@ -45,7 +44,6 @@
         *::-webkit-scrollbar-corner {
             background: transparent;
         }
-        /* Modales claros (swal-modal-light): thumb oscuro para contraste sobre fondo blanco */
         .swal-modal-light .swal2-popup * {
             scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
         }
@@ -56,7 +54,6 @@
             background: rgba(0, 0, 0, 0.3);
         }
 
-        /* Ajuste de prioridad para que SweetAlert esté sobre el sidebar */
         .swal2-container { z-index: 10000 !important; }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,7 +67,6 @@
         .swal-modal-light .swal2-title, .swal-modal-light .swal2-html-container { color: #000000 !important; }
         .swal-modal-light .swal2-radio { color: #000000 !important; display: flex !important; flex-direction: column !important; align-items: flex-start !important; padding-left: 20% !important; }
 
-        /* Selector de modalidad */
         .mod-selector { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin: 8px 0 4px; }
         .mod-card {
             flex: 1; min-width: 140px; max-width: 200px;
@@ -90,11 +86,52 @@
         .brand-title { font-weight: 700; color: var(--primary); letter-spacing: 1px; }
         .user-access { width: 40px; height: 40px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--border); }
 
-        #user-sidebar { position: fixed; top: 0; right: -350px; width: 350px; height: 100%; background: rgba(13, 13, 15, 0.98); backdrop-filter: blur(25px); z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+        /* ── SIDEBAR ── */
+        #user-sidebar {
+            position: fixed; top: 0; right: -350px; width: 350px; height: 100%;
+            background: rgba(13, 13, 15, 0.98); backdrop-filter: blur(25px);
+            z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 1px solid var(--border);
+            display: flex; flex-direction: column;
+        }
         #user-sidebar.active { right: 0; }
+
+        /* Botón de cerrar (X) en la esquina superior derecha */
+        .sidebar-close-btn {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 34px;
+            height: 34px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 1rem;
+            transition: background 0.2s, color 0.2s;
+            z-index: 10;
+        }
+        .sidebar-close-btn:hover {
+            background: rgba(255, 255, 255, 0.13);
+            color: #fff;
+        }
+
         .sidebar-header { padding: 40px 25px 20px; text-align: center; }
         .profile-img { width: 60px; height: 60px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 10px; font-weight: 700; box-shadow: 0 0 15px rgba(243, 166, 97, 0.3); }
-        .sidebar-content { padding: 10px 25px; flex-grow: 1; overflow-y: auto; }
+
+        /* FIX: min-height: 0 + flex-shrink: 1 para que el contenido no empuje el footer */
+        .sidebar-content {
+            padding: 10px 25px;
+            flex-grow: 1;
+            flex-shrink: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
         .info-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
         .info-label { font-size: 0.65rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; display: block; }
         .info-value { font-size: 1.1rem; font-weight: 600; color: #fff; }
@@ -123,7 +160,6 @@
             color: var(--primary); font-weight: 600; white-space: nowrap; flex-shrink: 0;
         }
 
-        /* Lista de turnos en el menú usuario */
         #sb-lista-horarios { display: flex; flex-direction: column; gap: 8px; }
         .horario-item {
             display: flex; align-items: flex-start; gap: 12px;
@@ -179,7 +215,15 @@
         }
         .horario-item--empty .horario-item-fecha { color: rgba(255, 255, 255, 0.5); font-weight: 400; }
 
-        .sidebar-footer { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid var(--border); }
+        /* FIX: flex-shrink: 0 para que el footer nunca se oculte */
+        .sidebar-footer {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+        }
         .btn-footer { padding: 12px; border-radius: 8px; border: 1px solid #444; cursor: pointer; font-weight: 600; font-size: 0.7rem; text-transform: uppercase; transition: 0.2s; }
         .btn-close { background: #222; color: white; }
         .btn-logout { background: rgba(255, 95, 95, 0.1); color: var(--danger); border-color: rgba(255, 95, 95, 0.3); }
@@ -196,19 +240,16 @@
             display: flex; 
             flex-grow: 1; 
             width: calc(100% - 50px);
-            overflow-x: hidden; /* default: sin scroll (LUN–VIE) */
+            overflow-x: hidden;
         }
         .day-column { 
-            flex: 1; /* default: 5 columnas entran en una pantalla */
+            flex: 1;
             min-width: 0;
             display: flex; 
             flex-direction: column; 
             border-right: 1px solid var(--border); 
         }
-        /* Sólo para usuarios habilitados a ver SÁB–DOM */
         .days-container.weekend-enabled { overflow-x: auto; }
-        /* En modo fines de semana, todas las columnas mantienen el ancho de un layout de 5 días:
-           LUN–VIE entran completos, SÁB–DOM quedan hacia la derecha y se acceden con scroll */
         .days-container.weekend-enabled .day-column { 
             flex: 0 0 calc(100% / 5);
             min-width: calc(100% / 5);
@@ -277,7 +318,6 @@
         .spinner { width: 40px; height: 40px; border: 3px solid rgba(243, 166, 97, 0.1); border-top: 3px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Modal términos y condiciones (sobre SweetAlert de confirmación) */
         .terms-modal {
             position: fixed; inset: 0; z-index: 11000;
             display: none; align-items: center; justify-content: center;
@@ -452,6 +492,11 @@
     <div id="userHintCursor" aria-hidden="true"><i class="fa-solid fa-hand"></i></div>
 
     <div id="user-sidebar">
+        <!-- NUEVO: botón X para cerrar el sidebar -->
+        <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Cerrar menú">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
         <div class="sidebar-header">
             <div class="profile-img" id="user-initial">?</div>
             <h2 id="sb-nombre-completo">-</h2>
@@ -545,12 +590,10 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-        // URL del endpoint que acabamos de crear en tu backend
         const urlPing = "https://servidorparawhatsapp.onrender.com/ping";
 
         console.log("Iniciando estímulo de fondo para despertar el backend...");
 
-        // Hacemos el disparo sin 'await' para que no bloquee el renderizado de la UI
         fetch(urlPing)
             .then(response => {
                 if (response.ok) {
@@ -560,8 +603,6 @@
                 }
             })
             .catch(error => {
-                // Si el servidor estaba dormido de verdad, va a entrar por acá por "timeout"
-                // o tardará en responder, pero al menos ya recibió el estímulo para arrancar.
                 console.log("Estímulo enviado. El servidor se está levantando de su letargo...");
             });
     });
@@ -608,7 +649,6 @@
             return porDia;
         }
 
-        /** Tarifa individual: 2.ª hora bonificada solo si hay 2+ hs el mismo día. */
         function calcularPrecioIndividualReserva(slots) {
             const porDia = contarHorasPorDia(slots);
             return Object.values(porDia).reduce((total, nHorasDia) => {
@@ -693,7 +733,6 @@
             detalle.hidden = !expanded;
         }
 
-        /** Horarios: antes string; ahora { fecha, codigo, cantidadHoras }. Mantiene compatibilidad con datos viejos. */
         function textoHorarioReserva(h) {
             if (h == null) return '';
             if (typeof h === 'string') return h;
@@ -750,7 +789,6 @@
             }
         }
 
-        /** Reintenta fetch a Apps Script (el primer request suele fallar por CORS/cold start). */
         async function fetchConReintentos(url, opciones = {}, intentos = 3) {
             let ultimoError;
             for (let i = 0; i < intentos; i++) {
@@ -900,7 +938,6 @@
                     });
                 }
            
-           
                 location.reload();
             } catch (err) {
                 document.getElementById('loader-overlay').style.display = 'none';
@@ -916,7 +953,6 @@
             }
         }
         
-        // Si no hay sesión, mostrar menú de acceso
         if (!Alumno) {
             Swal.fire({
                 title: '¡Bienvenido!',
@@ -939,13 +975,10 @@
                 if (result.isConfirmed) {
                     window.location.href = './Login/Login.html';
                 } else if (result.dismiss === Swal.DismissReason.cancel) {
-                    // Cambia esta ruta si tu archivo de registro se llama distinto
                     window.location.href = './Registro/Registro.html'; 
                 }
             });
             
-            // Definimos un objeto Alumno vacío temporal para evitar errores de lectura 
-            // en el resto del script antes de que cambie la página
             Alumno = { nombre: "", cantidadDebe: 0, horarios: [] };
         }
         let weekOffset = 0, selectedSlots = [], cacheHorarios = { 0: null, 1: null };
@@ -1240,7 +1273,6 @@
             const now = new Date();
             const limit12 = new Date(now.getTime() + (12 * 60 * 60 * 1000));
             const monday = new Date(now);
-            // Si hoy es domingo, "semana actual" = próxima semana (desde el lunes); si no, lunes de esta semana
             const daysToMonday = (now.getDay() === 0) ? 1 : (1 - now.getDay());
             monday.setDate(now.getDate() + daysToMonday + (weekOffset * 7));
             monday.setHours(0,0,0,0);
@@ -1384,8 +1416,6 @@ async function gestionarReserva() {
                 });
             }
 
-            // --- NUEVA RESTRICCIÓN: cantidadDebe ---
-            // Se usa el string hexadecimal directamente para evitar errores de sintaxis
             if (!isAdmin && (Alumno.condicionPago == "Normal" && Alumno.cantidadDebe >= 2)) {
                 return swalPagoDeuda({
                     icon: 'error',
@@ -1555,7 +1585,6 @@ async function gestionarReserva() {
                     emailsIntegrantes: integrantes.slice(1)
                 });
 
-                // Validación de correos (integrantes registrados y sin deuda) siempre, también en modo admin
                 document.getElementById('loader-overlay').style.display = 'flex';
                 document.getElementById('loader-text').textContent = 'Validando integrantes...';
                 try {
@@ -1640,7 +1669,7 @@ async function gestionarReserva() {
             const fechas = selectedSlots.map(id => id.split(' ')[0]);
             const fechasUnicas = [...new Set(fechas)];
             const formatearDia = (d) => {
-                const dayOfWeek = d.getDay(); // 0=Domingo, 1=Lunes,...6=Sábado
+                const dayOfWeek = d.getDay();
                 const idx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
                 const diaNombre = diasNombres[idx].charAt(0).toUpperCase() + diasNombres[idx].slice(1);
                 const fechaStr = `${d.getDate()}/${(d.getMonth()+1).toString().padStart(2,'0')}`;
@@ -1745,7 +1774,7 @@ async function gestionarReserva() {
                 selectedSlots.forEach(id => {
                     const [fecha, hora] = id.split(' ');
                     const d = new Date(fecha + 'T00:00:00');
-                    const dayOfWeek = d.getDay(); // 0=Domingo, 1=Lunes,...6=Sábado
+                    const dayOfWeek = d.getDay();
                     const idx = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
                     celdasExcel.push(`${letras[idx]}${parseInt(hora)-5}`);
                     const horaTexto = hora === '08:15' ? '8:15' : `${parseInt(hora)}:00`;
@@ -1756,7 +1785,6 @@ async function gestionarReserva() {
                 const recordatorio = (esPrimeraReserva && mod !== 'grupal') ? '' : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
                 const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "sinCorreo": recordatorio === 'Whatsapp'};
 
-                // ==== ENVIAR RECORDATORIO PRIMERO (FIRE AND FORGET) ====
                 const diasNombresRecordatorio = puedeFinDeSemana
                     ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
                     : ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
@@ -1774,9 +1802,6 @@ async function gestionarReserva() {
                     fechasFormateadas.push(fechaFormato);
                 }
                 const textoFechas = fechasFormateadas.map(f => `    • ${f}`).join('\n');
-                // Solo enviar recordatorio por WhatsApp si fue seleccionado
-                
-                // ==== FIN ENVÍO DE RECORDATORIO ====
 
                try {
                     await Promise.all([
@@ -1915,10 +1940,8 @@ async function gestionarReserva() {
         })();
 
         function enviarRecordatorioReserva(nombre, telefono, fechaTexto) {
-    // 1. Forzamos que sea un String y limpiamos cualquier caracter que no sea número
     let telefonoLimpio = String(telefono).replace(/\D/g, ''); 
     
-    // 2. Normalizamos el prefijo de Argentina (+54 9 ...)
     if (!telefonoLimpio.startsWith('54')) {
         if (telefonoLimpio.startsWith('9')) {
             telefonoLimpio = '54' + telefonoLimpio;
@@ -1927,7 +1950,6 @@ async function gestionarReserva() {
         }
     }
 
-    // 3. Estructuramos el diseño del mensaje con los links estéticos
     const mensajeEstructurado = 
 `🎓 *Clases Particulares UTN*
 ----------------------------------------
@@ -1948,7 +1970,6 @@ https://tutoriales.clasesparticularesutn.com.ar
 
 ¡Nos vemos en clase! 💻🚀`;
 
-    // 4. Preparamos el objeto JSON que espera recibir tu endpoint
     const payload = {
         numero: telefonoLimpio,
         mensaje: mensajeEstructurado
@@ -1956,7 +1977,6 @@ https://tutoriales.clasesparticularesutn.com.ar
 
     console.log(`[WhatsApp] Intentando enviar recordatorio a ${telefonoLimpio}...`);
 
-    // 5. Hacemos el disparo asíncrono tradicional usando Fetch API
     fetch("https://servidorparawhatsapp.onrender.com/api/send-message", {
         method: 'POST',
         headers: {
@@ -1972,8 +1992,6 @@ https://tutoriales.clasesparticularesutn.com.ar
         }
     })
     .catch(error => {
-        // Si el servidor tarda en despertar y da un micro-timeout de red en el navegador,
-        // al menos el estímulo HTTP ya le llegó para forzar el encendido.
         console.error("[WhatsApp] Error de red al intentar conectar con el backend:", error);
     });
 }
