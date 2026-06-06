@@ -61,7 +61,6 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.4);
         }
 
-        /* Toast de notificación */
         .toast-notification {
             position: fixed;
             top: 20px;
@@ -80,25 +79,13 @@
         }
 
         @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
+            from { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+            to   { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
-            }
-            to {
-                opacity: 0;
-                transform: translateX(-50%) translateY(-20px);
-            }
+            from { opacity: 1; transform: translateX(-50%) translateY(0); }
+            to   { opacity: 0; transform: translateX(-50%) translateY(-20px); }
         }
 
         .toast-notification.fade-out {
@@ -109,7 +96,7 @@
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            width: 90%; /* Mejorado para móviles pequeños */
+            width: 90%;
             max-width: 400px;
             padding: 50px 40px;
             border-radius: 24px;
@@ -118,7 +105,6 @@
             text-align: center;
         }
 
-        /* --- LOGO UNIFICADO --- */
         .logo-box { text-align: center; margin-bottom: 30px; }
         .logo-circle {
             display: inline-block;
@@ -150,12 +136,12 @@
         .input-control {
             width: 100%;
             padding: 14px 16px;
-            padding-right: 45px; /* Espacio para el ojo */
+            padding-right: 45px;
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             color: #fff;
-            font-size: 16px; /* Evita zoom automático en iOS al hacer focus */
+            font-size: 16px;
             transition: all 0.3s ease;
         }
 
@@ -174,12 +160,11 @@
             box-shadow: none;
         }
 
-        /* Mejora del botón del ojo para móviles */
         .toggle-password {
             position: absolute;
             right: 10px;
-            top: 30px; /* Ajustado para centrar mejor con el input */
-            padding: 12px; /* Mayor área de contacto para dedos */
+            top: 30px;
+            padding: 12px;
             cursor: pointer;
             color: var(--text-muted);
             transition: color 0.3s;
@@ -188,7 +173,6 @@
         }
         .toggle-password:hover { color: var(--primary); }
 
-        /* Evitar que el autocompletado dañe el diseño */
         input:-webkit-autofill,
         input:-webkit-autofill:hover, 
         input:-webkit-autofill:focus {
@@ -273,8 +257,6 @@
     </div>
 
     <script>
-        sessionStorage.clear();
-        localStorage.clear();
         console.log('🔧 [LOGIN] Script iniciado');
         
         let clicksEnLogo = 0;
@@ -282,11 +264,9 @@
         let erudaActivado = false;
         let toastActual = null;
 
-        // Función para mostrar toast de notificación
         function mostrarToast(mensaje, duracion = 1500) {
             console.log('📢 [TOAST] Mostrando:', mensaje);
             
-            // Remover toast anterior si existe
             if (toastActual) {
                 toastActual.classList.add('fade-out');
                 setTimeout(() => {
@@ -297,14 +277,12 @@
                 }, 300);
             }
 
-            // Crear nuevo toast
             const toast = document.createElement('div');
             toast.className = 'toast-notification';
             toast.textContent = mensaje;
             document.body.appendChild(toast);
             toastActual = toast;
 
-            // Auto-remover después de la duración
             setTimeout(() => {
                 if (toast && toast.parentNode) {
                     toast.classList.add('fade-out');
@@ -320,7 +298,6 @@
             }, duracion);
         }
 
-        // Activar Eruda con 3 clics en el logo
         document.addEventListener('DOMContentLoaded', () => {
             console.log('📄 [LOGIN] DOMContentLoaded disparado');
             const logoBox = document.querySelector('.logo-box');
@@ -331,7 +308,6 @@
                     const ahora = Date.now();
                     console.log(`🖱️ [LOGO] Click detectado - Total: ${clicksEnLogo + 1}/3 (${Math.round(ahora - tiempoUltimoClick)}ms desde último)`);
                     
-                    // Resetear si pasaron más de 2 segundos desde el último click
                     if (ahora - tiempoUltimoClick > 2000) {
                         console.log('⏱️ [LOGO] Timeout > 2000ms, contador resetado');
                         clicksEnLogo = 0;
@@ -339,7 +315,6 @@
                     tiempoUltimoClick = ahora;
                     clicksEnLogo++;
 
-                    // Mostrar toast con el contador
                     if (clicksEnLogo === 1) {
                         mostrarToast('🖱️ 1 click en logo', 1500);
                     } else if (clicksEnLogo === 2) {
@@ -390,25 +365,21 @@
             btnBack: !!btnBack
         });
 
-        // CORRECCIÓN PARA MÓVILES DEL OJO
         toggleEye.addEventListener('click', function(e) {
-            e.preventDefault(); // Evita pérdida de foco brusca
+            e.preventDefault();
             
             const isPassword = passInput.getAttribute('type') === 'password';
             const newType = isPassword ? 'text' : 'password';
             passInput.setAttribute('type', newType);
             console.log(`👁️ [PASSWORD] Toggle - Tipo cambiado a: ${newType}`);
             
-            // Cambiar icono
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
 
-            // Refrescar el valor para forzar al navegador móvil a mostrar el texto real
             const tempVal = passInput.value;
             passInput.value = '';
             passInput.value = tempVal;
             
-            // Mantener el foco si el usuario estaba escribiendo
             passInput.focus();
         });
 
@@ -465,13 +436,6 @@
             console.log('✅ [ADMIN] Correo admin aplicado y password field en foco');
         }
 
-        function esAtajoCorreoAdmin(e) {
-            if (e.repeat || !esTeclaAtajo(e)) return false;
-            const ctrlOk = e.ctrlKey || modAdmin.ctrl;
-            const altOk = e.altKey || modAdmin.alt || e.getModifierState('AltGraph');
-            return ctrlOk && altOk;
-        }
-
         window.addEventListener('keydown', (e) => {
             if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
                 console.log('⌨️ [TECLAS] Atajo Ctrl+A detectado');
@@ -506,8 +470,8 @@
                 console.log('📍 [BACK] Redirigiendo a referrer');
                 window.location.href = ref;
             } else {
-                console.log('📍 [BACK] Redirigiendo a index.html');
-                window.location.href = '../index.html';
+                console.log('📍 [BACK] Redirigiendo a ../../index.html');
+                window.location.href = '../../index.html';
             }
         });
 
@@ -597,21 +561,25 @@
                         sessionStorage.setItem('persona', JSON.stringify(data));
                         localStorage.setItem('UltimoCorreo', JSON.stringify(correo));
                         console.log('💾 [STORAGE] Session y UltimoCorreo guardados');
-                        
+
+                        // ✅ CORRECCIÓN: rutas relativas según estructura de carpetas
+                        // Login está en: Horarios/Login/Login.html
+                        // ../        → Horarios/
+                        // ../../Pagos/ → Pagos/
                         let siguiente;
                         const anterior = (document.referrer || '').toLowerCase();
                         
                         if (anterior.includes('pagos')) {
-                            siguiente = '/Pagos';
+                            siguiente = '../../Pagos/';
                         } else {
-                            siguiente = '/Horarios';
+                            siguiente = '../';
                         }
                         console.log('🎯 [REDIRECT] Siguiente:', siguiente);
                         
                         Swal.fire({
                             icon: 'success',
                             title: 'Sesión Iniciada',
-                            html: `Estás por ser redirigido al siguiente link <strong>${siguiente}</strong>`,
+                            html: `Bienvenido/a <strong>${data.nombre}</strong>, serás redirigido en un momento.`,
                             showConfirmButton: true,
                             confirmButtonText: 'Continuar',
                         }).then(() => {
@@ -635,7 +603,6 @@
                 });
         });
                 
-        // Ping al servidor de Mercado Pago (sin bloquear)
         console.log('🔄 [MERCADO PAGO] Enviando ping...');
         fetch("https://mercadopago-di7q.onrender.com/ping")
             .then(() => console.log('✅ [MERCADO PAGO] Ping exitoso'))
