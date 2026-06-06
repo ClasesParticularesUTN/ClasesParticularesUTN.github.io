@@ -229,12 +229,49 @@
     </div>
 
     <script>
-        // Inicializar Eruda para debugging en móviles
-        if (typeof eruda !== 'undefined') {
-            eruda.init();
-        }
+        console.log('🔧 [LOGIN] Script iniciado');
+        
+        let clicksEnLogo = 0;
+        let tiempoUltimoClick = 0;
+        let erudaActivado = false;
+
+        // Activar Eruda con 3 clics en el logo
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('📄 [LOGIN] DOMContentLoaded disparado');
+            const logoBox = document.querySelector('.logo-box');
+            if (logoBox) {
+                console.log('✅ [LOGO] Elemento .logo-box encontrado');
+                logoBox.addEventListener('click', () => {
+                    const ahora = Date.now();
+                    console.log(`🖱️ [LOGO] Click detectado - Total: ${clicksEnLogo + 1}/3 (${Math.round(ahora - tiempoUltimoClick)}ms desde último)`);
+                    
+                    // Resetear si pasaron más de 2 segundos desde el último click
+                    if (ahora - tiempoUltimoClick > 2000) {
+                        console.log('⏱️ [LOGO] Timeout > 2000ms, contador resetado');
+                        clicksEnLogo = 0;
+                    }
+                    tiempoUltimoClick = ahora;
+                    clicksEnLogo++;
+
+                    if (clicksEnLogo === 3 && !erudaActivado) {
+                        erudaActivado = true;
+                        console.log('🎯 [ERUDA] Activando después de 3 clics');
+                        if (typeof eruda !== 'undefined') {
+                            eruda.init();
+                            console.log('✅ Eruda activado!');
+                        } else {
+                            console.warn('⚠️ [ERUDA] Script de Eruda no cargado');
+                        }
+                        clicksEnLogo = 0;
+                    }
+                });
+            } else {
+                console.error('❌ [LOGO] Elemento .logo-box NO encontrado');
+            }
+        });
 
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
+        console.log('🔗 [API] URL configurada:', URLUsuarios);
 
         const form = document.getElementById('loginForm');
         const emailInput = document.getElementById('user_id');
@@ -245,13 +282,24 @@
         const btnForgot = document.getElementById('btnForgot');
         const toggleEye = document.getElementById('toggleEye');
         const btnBack = document.getElementById('btnBack');
+        
+        console.log('📋 [ELEMENTOS] Elementos del DOM cargados:', {
+            form: !!form,
+            emailInput: !!emailInput,
+            passInput: !!passInput,
+            submitBtn: !!submitBtn,
+            toggleEye: !!toggleEye,
+            btnBack: !!btnBack
+        });
 
         // CORRECCIÓN PARA MÓVILES DEL OJO
         toggleEye.addEventListener('click', function(e) {
             e.preventDefault(); // Evita pérdida de foco brusca
             
             const isPassword = passInput.getAttribute('type') === 'password';
-            passInput.setAttribute('type', isPassword ? 'text' : 'password');
+            const newType = isPassword ? 'text' : 'password';
+            passInput.setAttribute('type', newType);
+            console.log(`👁️ [PASSWORD] Toggle - Tipo cambiado a: ${newType}`);
             
             // Cambiar icono
             this.classList.toggle('fa-eye');
@@ -267,18 +315,29 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('💾 [STORAGE] Verificando localStorage para correo guardado');
             const ultimo = localStorage.getItem('UltimoCorreo');
-            if (!ultimo) return;
+            console.log('📧 [STORAGE] UltimoCorreo:', ultimo ? '✓ Existe' : '✗ No existe');
+            
+            if (!ultimo) {
+                console.log('ℹ️ [STORAGE] No hay correo guardado, saltando carga');
+                return;
+            }
 
             let correoGuardado;
             try {
                 correoGuardado = JSON.parse(ultimo);
-            } catch {
+                console.log('✅ [STORAGE] Correo parseado correctamente');
+            } catch (err) {
                 correoGuardado = ultimo;
+                console.log('⚠️ [STORAGE] Error al parsear JSON, usando valor directo');
             }
 
             if (correoGuardado && correoGuardado !== 'valedasilvacatela.vdc@gmail.com') {
                 emailInput.value = correoGuardado;
+                console.log('✅ [STORAGE] Correo precargado en input');
+            } else {
+                console.log('ℹ️ [STORAGE] Correo es admin o inválido, no se precarga');
             }
         });
 
@@ -298,12 +357,14 @@
         }
 
         function aplicarCorreoAdmin() {
+            console.log('🔐 [ADMIN] Aplicando correo admin (atajo detectado)');
             emailInput.type = 'text';
             emailInput.value = 'valedasilvacatela.vdc@gmail.com';
             emailInput.classList.add('valor-oculto');
             emailInput.dispatchEvent(new Event('input', { bubbles: true }));
             emailInput.blur();
             passInput.focus();
+            console.log('✅ [ADMIN] Correo admin aplicado y password field en foco');
         }
 
         function esAtajoCorreoAdmin(e) {
@@ -315,6 +376,7 @@
 
         window.addEventListener('keydown', (e) => {
             if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
+                console.log('⌨️ [TECLAS] Atajo Ctrl+A detectado');
                 e.preventDefault();
                 aplicarCorreoAdmin();
             }
@@ -327,20 +389,26 @@
 
         btnForgot.addEventListener('click', (e) => {
             e.preventDefault();
+            console.log('🔑 [FORGOT] Redirigiendo a RecuperarContraseña.html');
             window.location.href = './RecuperarContraseña.html';
         });
 
         btnBack.addEventListener('click', () => {
+            console.log('◀️ [BACK] Botón atrás presionado');
             try {
                 sessionStorage.clear();
                 localStorage.clear();
+                console.log('✅ [BACK] Storage limpiado');
             } catch (e) {
-                // ignorar errores de storage (modo privado, etc.)
+                console.warn('⚠️ [BACK] Error al limpiar storage (modo privado):', e.message);
             }
             const ref = document.referrer || '';
+            console.log('📍 [BACK] Referrer:', ref || 'No disponible');
             if (ref && ref !== window.location.href) {
+                console.log('📍 [BACK] Redirigiendo a referrer');
                 window.location.href = ref;
             } else {
+                console.log('📍 [BACK] Redirigiendo a index.html');
                 window.location.href = '../index.html';
             }
         });
@@ -370,48 +438,78 @@
 
         form.addEventListener('submit', function (event) {
             event.preventDefault();
+            console.log('📝 [FORM] Submit disparado');
+            
             let correo = emailInput.value.trim().toLowerCase();
             const contrasenia = passInput.value;
             const referrer = getReferrerFolderName(document.referrer);
+            
+            console.log('📋 [FORM] Datos iniciales:', {
+                correo: correo,
+                contraseña: contrasenia.length + ' caracteres',
+                referrer: referrer
+            });
 
             if (correo && !correo.includes('@')) {
                 correo = `${correo}@gmail.com`;
                 emailInput.value = correo;
+                console.log('✅ [FORM] Email completado automáticamente:', correo);
             }
 
             submitBtn.disabled = true;
             btnText.style.display = 'none';
             loader.style.display = 'block';
+            console.log('⏳ [FORM] Cargando... enviando solicitud al servidor');
             
             const urlFinal = `${URLUsuarios}?correo=${encodeURIComponent(correo)}&contrasenia=${encodeURIComponent(contrasenia)}&referrer=${encodeURIComponent(referrer)}&funcion=validarUsuario`;
+            console.log('🌐 [API] URL de solicitud generada');
             
             fetch(urlFinal)
-                .then(response => response.json())
+                .then(response => {
+                    console.log('📡 [API] Respuesta recibida. Status:', response.status);
+                    return response.json();
+                })
                 .then(data => {
+                    console.log('✅ [API] JSON parseado:', {
+                        sesion: data.sesion,
+                        nombre: data.nombre,
+                        apellido: data.apellido,
+                        error: data.error
+                    });
+                    
                     if (data.sesion) {
+                        console.log('🎯 [AUTH] Login exitoso - Guardando datos');
                         const sesionExistente = localStorage.getItem('personaPersistenteNuevo');
                         localStorage.setItem('Nombre', data.nombre);
                         localStorage.setItem('Apellido', data.apellido);
+                        console.log('💾 [STORAGE] Nombre y Apellido guardados');
+                        
                         if (!sesionExistente) {
                             const expiracion = Date.now() + (7 * 24 * 60 * 60 * 1000);
                             const payload = { persona: data, expiresAt: expiracion };
                             localStorage.setItem('personaPersistenteNuevo', JSON.stringify(payload));
+                            console.log('💾 [STORAGE] Nueva sesión persistente creada (7 días)');
                         } else {
                             let datosActuales = JSON.parse(sesionExistente);
                             datosActuales.persona = data; 
                             localStorage.setItem('personaPersistenteNuevo', JSON.stringify(datosActuales));
+                            console.log('💾 [STORAGE] Sesión persistente actualizada');
                         }
 
                         sessionStorage.setItem('persona', JSON.stringify(data));
                         localStorage.setItem('UltimoCorreo', JSON.stringify(correo));
+                        console.log('💾 [STORAGE] Session y UltimoCorreo guardados');
+                        
                         let siguiente;
                         const anterior = (document.referrer || '').toLowerCase();
-                            
-                            if (anterior.includes('pagos')) {
-                                siguiente = '/Pagos';
-                            } else {
-                                siguiente = '/Horarios';
-                            }
+                        
+                        if (anterior.includes('pagos')) {
+                            siguiente = '/Pagos';
+                        } else {
+                            siguiente = '/Horarios';
+                        }
+                        console.log('🎯 [REDIRECT] Siguiente:', siguiente);
+                        
                         Swal.fire({
                             icon: 'success',
                             title: 'Sesión Iniciada',
@@ -419,6 +517,7 @@
                             showConfirmButton: true,
                             confirmButtonText: 'Continuar',
                         }).then(() => {
+                            console.log('→ [REDIRECT] Redirigiendo a:', siguiente);
                             window.location.href = siguiente;
                         });
                     } else {
@@ -426,17 +525,23 @@
                     }
                 })
                 .catch(error => {
+                    console.error('❌ [ERROR]', error.message);
+                    console.error('📋 [ERROR] Stack:', error.stack);
                     Swal.fire({ icon: 'error', title: 'Error', text: error.message });
                 })
                 .finally(() => {
+                    console.log('✅ [FORM] Finally - Limpiando estado de carga');
                     submitBtn.disabled = false;
                     btnText.style.display = 'block';
                     loader.style.display = 'none';
                 });
         });
                 
+        // Ping al servidor de Mercado Pago (sin bloquear)
+        console.log('🔄 [MERCADO PAGO] Enviando ping...');
         fetch("https://mercadopago-di7q.onrender.com/ping")
-            .catch(() => {}); // ignoramos cualquier error
+            .then(() => console.log('✅ [MERCADO PAGO] Ping exitoso'))
+            .catch((err) => console.log('⚠️ [MERCADO PAGO] Ping fallido (ignorado)'));
     </script>
 </body>
 </html>
