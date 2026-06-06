@@ -398,22 +398,23 @@
 
                         sessionStorage.setItem('persona', JSON.stringify(data));
                         localStorage.setItem('UltimoCorreo', JSON.stringify(correo));
-
+                        let siguiente;
+                        const anterior = (document.referrer || '').toLowerCase();
+                            
+                            if (anterior.includes('pagos')) {
+                                siguiente = '/Pagos';
+                            } else {
+                                siguiente = '/Horarios';
+                            }
                         Swal.fire({
                             icon: 'success',
                             title: 'Sesión Iniciada',
-                            text: 'Redirigiendo...',
+                            html: `Estás por ser redirigido al siguiente link <strong>${siguiente}</strong>`,
                             timer: 800,
-                            showConfirmButton: false
+                            showConfirmButton: true,
+                            confirmButtonText: 'Continuar',
                         }).then(() => {
-                            const anterior = (document.referrer || '').toLowerCase();
-                            if (anterior.includes('pagos')) {
-                                window.location.href = '/Pagos';
-                            } else {
-                                window.location.href = '/Horarios';
-                            }
-
-                            
+                            window.location.href = siguiente;
                         });
                     } else {
                         throw new Error(data.error || 'Credenciales incorrectas');
