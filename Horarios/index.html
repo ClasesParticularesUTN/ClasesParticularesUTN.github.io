@@ -633,7 +633,7 @@
         }
 
         function superaLimiteClasesImpagas(slots) {
-            if (isAdmin || tienePackActivo()) return false;
+            if (isAdmin || tienePackActivo() || Alumno.condicionPago === 'Libre') return false;
             const reservadas = Number(Alumno?.reservadasSinPagar) || 0;
             return reservadas + contarDiasUnicos(slots) > 2;
         }
@@ -1775,19 +1775,16 @@ async function gestionarReserva() {
                 }
                 const textoFechas = fechasFormateadas.map(f => `    • ${f}`).join('\n');
                 // Solo enviar recordatorio por WhatsApp si fue seleccionado
-                if (recordatorio === 'Whatsapp') {
-                    console.log(`Enviando recordatorio por WhatsApp con fechas:\n${textoFechas}\na ${Alumno.nombre} (${Alumno.telefono})`);
-                    enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas);
-                } else if (recordatorio === 'Correo') {
-                    console.log(`Recordatorio por correo será enviado desde el servidor para ${Alumno.nombre} (${Alumno.correoElectronico})`);
-                }
+                
                 // ==== FIN ENVÍO DE RECORDATORIO ====
 
-                try {
-                    await fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                    document.getElementById('loader-text').textContent = 'Reservando celdas en grilla...';
-                    await fetch(URLHorarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) });
-                    
+               try {
+                    await Promise.all([
+                        recordatorio === 'Whatsapp' ? enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas) : Promise.resolve(),
+                        fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) }),
+                        fetch(URLHorarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) })
+                    ]);
+
                     document.getElementById('loader-overlay').style.display = 'none';
                     await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
 
