@@ -406,17 +406,14 @@
                             timer: 800,
                             showConfirmButton: false
                         }).then(() => {
-                            const anterior = document.referrer;
-                            const prohibidas = ['Registro', 'RecuperarContraseña', 'Login.html', 'Registro.html'];
-                            const esProhibida = prohibidas.some(p => anterior.includes(p));
-                            
-                            window.location.href = '../index.html';
+                            const anterior = (document.referrer || '').toLowerCase();
+                            if (anterior.includes('pagos')) {
+                                window.location.href = '/Pagos';
+                            } else {
+                                window.location.href = '/Horarios';
+                            }
 
-                            // if (anterior !== "" && !esProhibida) {
-                            //     window.location.replace(anterior);
-                            // } else {
-                            //     window.location.replace('../index.html'); 
-                            // }
+                            
                         });
                     } else {
                         throw new Error(data.error || 'Credenciales incorrectas');
