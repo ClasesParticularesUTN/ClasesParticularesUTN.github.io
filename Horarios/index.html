@@ -583,9 +583,7 @@
         let Alumno = JSON.parse(sessionStorage.getItem("persona"));
         const nombreLocal = localStorage.getItem('Nombre');
         const apellidoLocal = localStorage.getItem('apellido') ?? localStorage.getItem('Apellido');
-        if (nombreLocal !== 'Valentin' || apellidoLocal !== 'Da Silva') {
-            window.location.href = './Login/Login.html';
-        }
+        
         const EMAILS_FINES_DE_SEMANA = [
             //"juanma.2000@hotmail.com",
             "valedasilvacatela.vdc@gmail.com",
