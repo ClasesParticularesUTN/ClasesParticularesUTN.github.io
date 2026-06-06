@@ -563,9 +563,9 @@
                         const anterior = (document.referrer || '').toLowerCase();
                         
                         if (anterior.includes('pagos')) {
-                            siguiente = 'https://clasesparticularesutn.com.ar/Pagos/';
+                            siguiente = '/Pagos/';
                         } else {
-                            siguiente = 'https://clasesparticularesutn.com.ar/Horarios/';
+                            siguiente = '/Horarios/';
                         }
                         console.log('🎯 [REDIRECT] Siguiente:', siguiente);
                         
@@ -573,10 +573,9 @@
                             icon: 'success',
                             title: 'Sesión Iniciada',
                             html: `Bienvenido/a <strong>${data.nombre}</strong>, serás redirigido en un momento.`,
-                            showConfirmButton: true,
-                            confirmButtonText: 'Continuar',
+                            showConfirmButton: false,
+                            timer: 600,
                         }).then(() => {
-                            alert('¡Redirigiendo ahora! a ' + siguiente);
                             window.location.href = siguiente;
                         });
                     } else {
