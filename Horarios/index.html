@@ -91,16 +91,15 @@
             position: fixed; top: 0; right: -350px;
             width: min(350px, 100vw);
             height: 100vh;
-            height: 100dvh; /* alto real sin barras del navegador en móvil */
+            height: 100dvh;
             background: rgba(13, 13, 15, 0.98); backdrop-filter: blur(25px);
             z-index: 2000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             border-left: 1px solid var(--border);
             display: flex; flex-direction: column;
-            overflow: hidden; /* evita que cualquier hijo rompa el layout */
+            overflow: hidden;
         }
         #user-sidebar.active { right: 0; }
 
-        /* Botón de cerrar (X) en la esquina superior derecha */
         .sidebar-close-btn {
             position: absolute;
             top: 14px;
@@ -127,7 +126,6 @@
         .sidebar-header { padding: 40px 25px 20px; text-align: center; }
         .profile-img { width: 60px; height: 60px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 10px; font-weight: 700; box-shadow: 0 0 15px rgba(243, 166, 97, 0.3); }
 
-        /* FIX: min-height: 0 + flex-shrink: 1 para que el contenido no empuje el footer */
         .sidebar-content {
             padding: 10px 25px;
             flex-grow: 1;
@@ -219,7 +217,6 @@
         }
         .horario-item--empty .horario-item-fecha { color: rgba(255, 255, 255, 0.5); font-weight: 400; }
 
-        /* FIX: flex-shrink: 0 para que el footer nunca se oculte */
         .sidebar-footer {
             padding: 20px;
             display: grid;
@@ -496,7 +493,6 @@
     <div id="userHintCursor" aria-hidden="true"><i class="fa-solid fa-hand"></i></div>
 
     <div id="user-sidebar">
-        <!-- NUEVO: botón X para cerrar el sidebar -->
         <button class="sidebar-close-btn" onclick="toggleSidebar()" aria-label="Cerrar menú">
             <i class="fa-solid fa-xmark"></i>
         </button>
@@ -1699,7 +1695,9 @@ async function gestionarReserva() {
 
             const esPrimeraVezTyC = !yaVioTerminosHorarios();
             const esPrimeraReserva = localStorage.getItem('primeraReserva') === null;
-            const htmlRecordatorio = esPrimeraReserva ? '' : `
+
+            // ─── FIX: el HTML del recordatorio siempre se muestra ───────────────────
+            const htmlRecordatorio = `
                     <div style="margin-top: 18px; padding: 14px; border-radius: 14px; border: 1px solid rgba(243,166,97,0.22); background: rgba(243,166,97,0.08);">
                         <p style="margin: 0 0 10px; font-weight: 700; color: #322a1f;">Enviar recordatorio por</p>
                         <div class="swal-recordatorio-group">
@@ -1714,6 +1712,8 @@ async function gestionarReserva() {
                         </div>
                     </div>
                 `;
+            // ────────────────────────────────────────────────────────────────────────
+
             const htmlConfirmacion = `
                 <div style="text-align: left; font-size: 0.95rem; color: #333;">
                     <p style="margin: 0; padding: 12px 14px; background: rgba(243, 166, 97, 0.12); border-radius: 10px; border-left: 4px solid #f3a661; line-height: 1.5;">
@@ -1786,7 +1786,10 @@ async function gestionarReserva() {
                     nuevosHorarios.push({ fecha: fechaLinea, codigo: '' });
                 });
 
-                const recordatorio = (esPrimeraReserva && mod !== 'grupal') ? '' : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
+                // ─── FIX: leer el radio siempre; en primera reserva individual usa Whatsapp por defecto ───
+                const recordatorio = document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
+                // ──────────────────────────────────────────────────────────────────────────────────────────
+
                 const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "sinCorreo": recordatorio === 'Whatsapp'};
 
                 const diasNombresRecordatorio = puedeFinDeSemana
