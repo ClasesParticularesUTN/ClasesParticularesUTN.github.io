@@ -406,7 +406,7 @@ function iniciarVerificacionWhatsApp(numeroCelular, objetoEnvioFinal) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             numero: numeroCelular,
-            mensaje: `*Clases Particulares UTN*\n\nTu código de verificación para completar el registro es: *${codigoVerificacion}*`
+            mensaje: `🎓 *Clases Particulares UTN*\n\nTu código de verificación para completar el registro es: \n\n*${codigoVerificacion}*`
         })
     })
     .then(response => response.json())
@@ -453,9 +453,6 @@ Tu registro fue completado con éxito. Ya podés ingresar al sistema y reservar 
 
 📋 *TÉRMINOS Y CONDICIONES para reservas de clases:*
 
-💳 *Pagos*
-- Si debés dinero, no podrás reservar nuevas clases.
-
 ⏱️ *Plazos para pagos: *
   1️⃣ Primeras 24 hs → sin recargo
   2️⃣ Pasadas las 24 hs → +5% de recargo
@@ -467,8 +464,6 @@ Podés cancelar desde el menú de usuario (ícono de perfil arriba a la derecha)
   📅 Con 2 días o más de anticipación → sin costo
   📅 El día anterior → se cobra el 25% de la tarifa
   📅 El mismo día → se cobra la tarifa completa (100%)
-
-----------------------------------------
 `;
 
     fetch(URLServidorWhatsAPP, {
