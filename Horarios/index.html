@@ -1370,7 +1370,7 @@
             return msg;
         }
 
-async function gestionarReserva() {
+        async function gestionarReserva() {
             if (!isAdmin) {
                 const porDia = contarHorasPorDia(selectedSlots);
                 if (Object.values(porDia).some(h => h > 3)) {
@@ -1448,7 +1448,6 @@ async function gestionarReserva() {
                     });
                 }
             }
-
 
             if (!isAdmin && Alumno.condicionPago !== 'Libre') {
                 const debeClases = Number(Alumno.cantidadDebe) || 0;
@@ -1695,9 +1694,7 @@ async function gestionarReserva() {
 
             const esPrimeraVezTyC = !yaVioTerminosHorarios();
             const esPrimeraReserva = localStorage.getItem('primeraReserva') === null;
-
-            // ─── FIX: el HTML del recordatorio siempre se muestra ───────────────────
-            const htmlRecordatorio = `
+            const htmlRecordatorio = esPrimeraReserva ? '' : `
                     <div style="margin-top: 18px; padding: 14px; border-radius: 14px; border: 1px solid rgba(243,166,97,0.22); background: rgba(243,166,97,0.08);">
                         <p style="margin: 0 0 10px; font-weight: 700; color: #322a1f;">Enviar recordatorio por</p>
                         <div class="swal-recordatorio-group">
@@ -1712,8 +1709,6 @@ async function gestionarReserva() {
                         </div>
                     </div>
                 `;
-            // ────────────────────────────────────────────────────────────────────────
-
             const htmlConfirmacion = `
                 <div style="text-align: left; font-size: 0.95rem; color: #333;">
                     <p style="margin: 0; padding: 12px 14px; background: rgba(243, 166, 97, 0.12); border-radius: 10px; border-left: 4px solid #f3a661; line-height: 1.5;">
@@ -1786,9 +1781,15 @@ async function gestionarReserva() {
                     nuevosHorarios.push({ fecha: fechaLinea, codigo: '' });
                 });
 
-                // ─── FIX: leer el radio siempre; en primera reserva individual usa Whatsapp por defecto ───
-                const recordatorio = document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
-                // ──────────────────────────────────────────────────────────────────────────────────────────
+                // ── FIX ──────────────────────────────────────────────────────────────
+                // Primera reserva: no se muestra el selector, pero se manda WhatsApp.
+                // Reservas siguientes: se respeta la opción que eligió el usuario.
+                //   Si eligió 'Correo' → recordatorio = 'Correo' → NO se llama enviarRecordatorioReserva.
+                //   Si eligió 'Whatsapp' (o quedó por defecto) → SÍ se manda.
+                const recordatorio = esPrimeraReserva
+                    ? 'Whatsapp'
+                    : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
+                // ─────────────────────────────────────────────────────────────────────
 
                 const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "sinCorreo": recordatorio === 'Whatsapp'};
 
