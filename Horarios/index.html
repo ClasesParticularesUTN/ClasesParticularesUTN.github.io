@@ -1791,7 +1791,7 @@
                     : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
                 // ─────────────────────────────────────────────────────────────────────
 
-                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "sinCorreo": recordatorio === 'Whatsapp'};
+                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva) };
 
                 const diasNombresRecordatorio = puedeFinDeSemana
                     ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
