@@ -1,6 +1,6 @@
 window.addEventListener("load", function () {
-    const nombre = localStorage.getItem("nombre");
-    const apellido = localStorage.getItem("apellido");
+    const nombre = localStorage.getItem("Nombre");
+    const apellido = localStorage.getItem("Apellido");  
 
     if (nombre !== "Valentin" || apellido !== "Da Silva") {
         window.location.href = "/Horarios/Login/Login.html";
