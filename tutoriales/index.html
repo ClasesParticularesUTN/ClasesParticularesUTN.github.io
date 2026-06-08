@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tutoriales</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: #0f0f0f;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+
+    /* VIDEO */
+    #video {
+      width: 100vw;
+      height: 100dvh;
+      object-fit: contain;
+      display: none;
+      background: black;
+    }
+
+    #playBtn {
+      position: absolute;
+      z-index: 10;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 15px 25px;
+      font-size: 18px;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      color: black;
+      display: none;
+    }
+
+    /* ROTACIÓN (MEJORADA) */
+    #rotateScreen {
+      position: fixed;
+      inset: 0;
+      background: black;
+      color: white;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      z-index: 999;
+    }
+
+    .phone {
+      width: 80px;
+      height: 140px;
+      border: 4px solid white;
+      border-radius: 15px;
+      position: relative;
+      margin-bottom: 20px;
+      animation: rotateAnim 1.5s infinite ease-in-out;
+    }
+
+    .phone::after {
+      content: "";
+      position: absolute;
+      width: 30px;
+      height: 5px;
+      background: white;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+    }
+
+    @keyframes rotateAnim {
+      0%   { transform: rotate(0deg); }
+      50%  { transform: rotate(90deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    /* MENU */
+    #menu {
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+      gap: 30px;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, 280px);
+      justify-content: center;
+      gap: 25px;
+      width: 100%;
+    }
+
+    .card {
+      background: #1c1c1c;
+      border-radius: 15px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px) scale(1.02);
+    }
+
+    .thumbCustom {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-weight: bold;
+    }
+
+    .pago .thumbCustom {
+      background: linear-gradient(135deg, #00c6ff, #0072ff);
+    }
+
+    .cancelacion .thumbCustom {
+      background: linear-gradient(135deg, #ff4e50, #c0392b);
+    }
+
+    .horarios .thumbCustom {
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+    }
+
+    .label {
+      font-size: 28px;
+    }
+
+    .playIcon {
+      position: absolute;
+      font-size: 40px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 50%;
+      padding: 10px 15px;
+    }
+
+    .content {
+      padding: 15px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ROTACIÓN -->
+<div id="rotateScreen">
+  <div class="phone"></div>
+  <h2 id="rotateMsg">Rotá el dispositivo para ver el video</h2>
+</div>
+
+<button id="playBtn">▶ Reproducir</button>
+
+<!-- MENU -->
+<div id="menu">
+  <h1>Elegí un tutorial</h1>
+
+  <div class="grid">
+    <div class="card horarios" onclick="goTo('#TutorialHorarios')">
+      <div class="thumbCustom">
+        <div class="playIcon">▶</div>
+        <div class="label">HORARIOS</div>
+      </div>
+      <div class="content">Registro de horarios</div>
+    </div>
+
+    <div class="card pago" onclick="goTo('#TutorialPago')">
+      <div class="thumbCustom">
+        <div class="playIcon">▶</div>
+        <div class="label">PAGOS</div>
+      </div>
+      <div class="content">Cómo pagar online</div>
+    </div>
+
+    <div class="card cancelacion" onclick="goTo('#TutorialCancelacion')">
+      <div class="thumbCustom">
+        <div class="playIcon">▶</div>
+        <div class="label">CANCELACIÓN</div>
+      </div>
+      <div class="content">Cancelar una clase</div>
+    </div>
+  </div>
+</div>
+
+<!-- VIDEO -->
+<video id="video" controls playsinline>
+  <source id="videoSource" src="" type="video/mp4">
+</video>
+
+<script>
+  const video = document.getElementById("video");
+  const source = document.getElementById("videoSource");
+  const rotateScreen = document.getElementById("rotateScreen");
+  const rotateMsg = document.getElementById("rotateMsg");
+  const playBtn = document.getElementById("playBtn");
+  const menu = document.getElementById("menu");
+
+  /**
+   * Orientación del archivo de video (cómo fue filmado):
+   * - "horizontal" → conviene ver en apaisado (si el celu está en vertical, pedimos girar).
+   * - "vertical"   → conviene ver en vertical (si está acostado, pedimos enderezar).
+   * Agregá una entrada por cada #Tutorial... que uses en loadVideoByHash.
+   */
+  const orientacionPorTutorial = {
+    "#TutorialPago": "horizontal",
+    "#TutorialCancelacion": "horizontal",
+    "#TutorialHorarios": "vertical",
+  };
+
+  function orientacionDelVideoActual() {
+    const h = window.location.hash;
+    return orientacionPorTutorial[h] || "horizontal";
+  }
+
+  function loadVideoByHash() {
+    const hash = window.location.hash;
+
+    if (hash === "#TutorialPago") {
+      source.src = "/assets/video/Pago Online.mp4";
+      showVideo();
+    } 
+    else if (hash === "#TutorialCancelacion") {
+      source.src = "/assets/video/CancelacionClase.mp4";
+      showVideo();
+    }
+    else if (hash === "#TutorialHorarios") {
+      source.src = "/assets/video/RegistroHorarios.mp4";
+      showVideo();
+    }
+    else {
+      menu.style.display = "flex";
+      video.style.display = "none";
+      playBtn.style.display = "none";
+      rotateScreen.style.display = "none"; // 🔥 oculto en menú
+    }
+  }
+
+  function showVideo() {
+    menu.style.display = "none";
+    video.style.display = "none";
+    playBtn.style.display = "block";
+    video.load();
+  }
+
+  function goTo(hash) {
+    window.location.hash = hash;
+  }
+
+  function checkOrientation() {
+    const hash = window.location.hash;
+    const hasVideo = !!hash;
+
+    if (!hasVideo) {
+      rotateScreen.style.display = "none";
+      return;
+    }
+
+    const modo = orientacionDelVideoActual();
+    const isLandscape = window.innerWidth > window.innerHeight;
+    /** En ventanas grandes (PC) no molestamos con la rotación */
+    const pareceMovil =
+      Math.min(window.innerWidth, window.innerHeight) < 768;
+    const orientacionOk =
+      !pareceMovil || (modo === "vertical" ? !isLandscape : isLandscape);
+
+    if (orientacionOk) {
+      rotateScreen.style.display = "none";
+      playBtn.style.display = "block";
+    } else {
+      rotateMsg.textContent =
+        modo === "vertical"
+          ? "Rotá el dispositivo a vertical (de pie) para ver este video"
+          : "Rotá el dispositivo a horizontal (de costado) para ver este video";
+      rotateScreen.style.display = "flex";
+      playBtn.style.display = "none";
+      video.pause();
+      video.style.display = "none";
+    }
+  }
+
+  playBtn.addEventListener("click", async () => {
+    playBtn.style.display = "none";
+    video.style.display = "block";
+
+    try {
+      await video.play();
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  window.addEventListener("hashchange", () => {
+    loadVideoByHash();
+    checkOrientation();
+  });
+
+  window.addEventListener("load", () => {
+    loadVideoByHash();
+    checkOrientation();
+  });
+
+  window.addEventListener("resize", checkOrientation);
+  window.addEventListener("orientationchange", checkOrientation);
+</script>
+
+</body>
+</html>
