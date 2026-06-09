@@ -75,17 +75,7 @@ const PRECIOS_ESPECIALES = {
             packExamen: 10,
             packMateria: 20,
         }
-    },
-    "Benitez Juan Martin": {
-        individual: {
-            expres1h: 6500,
-            estandar2h: 10000,
-            precioPorHora1: 6500,
-            precioPorHora2: 5000,
-            packExamen: 9000 * 8,
-            packMateria: 9000 *14,
-    }
-    }    
+    },    
 };
 
 
