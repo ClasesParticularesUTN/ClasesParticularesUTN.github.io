@@ -6,6 +6,7 @@
     <title>Reserva De Clase</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../precios.js"></script>
+    <script src="./personalizados.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -1263,7 +1264,8 @@
             try {
                 const res = await fetch(`${URLHorarios}?funcion=celdasOcupadas&numeroHoja=${off}`);
                 const data = await res.json();
-                cacheHorarios[off] = data[1];
+                const correo = Alumno?.correoElectronico ?? '';
+                cacheHorarios[off] = aplicarPersonalizados(correo, off, data[1] ?? []);
             } catch (e) { cacheHorarios[off] = []; }
         }
 
