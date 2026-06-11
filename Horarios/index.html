@@ -683,20 +683,24 @@
 
         function swalPagoDeuda(options = {}) {
             const { title, text, html, icon = 'error', background = '#1a1a1a', confirmButtonColor = '#f3a661', ...rest } = options;
-            return Swal.fire({
+            const isError = icon === 'error';
+            const swalOptions = {
                 icon,
                 title,
                 text,
                 html,
                 background,
                 color: '#fff',
-                showCancelButton: true,
-                confirmButtonText: 'Pagar',
-                cancelButtonText: '¿Como Pagar?',
+                showCancelButton: isError,
                 confirmButtonColor,
                 cancelButtonColor: '#555',
                 ...rest
-            }).then(result => {
+            };
+            if (isError) {
+                swalOptions.confirmButtonText = 'Pagar';
+                swalOptions.cancelButtonText = '¿Como Pagar?';
+            }
+            return Swal.fire(swalOptions).then(result => {
                 if (result.isConfirmed) window.location.href = '../Pagos';
                 else if (result.dismiss === Swal.DismissReason.cancel) window.location.href = '../Tutoriales.html';
                 return result;
