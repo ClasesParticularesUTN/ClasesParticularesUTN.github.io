@@ -712,7 +712,7 @@
 
         function obtenerDeudasAlumno() {
             const tomadas = parseMontoAlumno(Alumno?.dineroQueDebe);
-            const futuro = parseMontoAlumno(Alumno?.dineroQueDebeTotal);
+            const futuro = parseMontoAlumno(Alumno?.dineroDebeAFuturo);
             return { tomadas, futuro, total: tomadas + futuro };
         }
 
