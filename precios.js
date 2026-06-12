@@ -75,7 +75,47 @@ const PRECIOS_ESPECIALES = {
             packExamen: 10,
             packMateria: 20,
         }
-    },    
+    }, 
+    "Villanueva Paulina": {
+        individual: {
+            expres1h: 7500,
+            estandar2h: 11000,
+            precioPorHora1: 7500,
+            precioPorHora2: 6000,
+            packExamen: 11000 * 8,
+            packMateria: 11000 *14,
+        },
+        grupal: {
+            estandar2h: 8000,
+            precioPorHora: 4000,
+            packExamen: 8000 * 8,
+            packMateria: 8000 * 14
+        },
+        tp: {
+            individual: 15000,
+            grupal: 20000
+        }
+    } ,
+    "Nigorra Andres": {
+        individual: {
+            expres1h: 7500,
+            estandar2h: 11000,
+            precioPorHora1: 7500,
+            precioPorHora2: 6000,
+            packExamen: 11000 * 8,
+            packMateria: 11000 *14,
+        },
+        grupal: {
+            estandar2h: 8000,
+            precioPorHora: 4000,
+            packExamen: 8000 * 8,
+            packMateria: 8000 * 14
+        },
+        tp: {
+            individual: 15000,
+            grupal: 20000
+        }
+    }
 };
 
 
