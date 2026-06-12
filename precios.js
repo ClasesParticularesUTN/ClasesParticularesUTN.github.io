@@ -92,8 +92,8 @@ const PRECIOS_ESPECIALES = {
             packMateria: 8000 * 14
         },
         tp: {
-            individual: 15000,
-            grupal: 20000
+            individual: 20000,
+            grupal: 25000
         }
     } ,
     "Nigorra Andres": {
@@ -112,8 +112,8 @@ const PRECIOS_ESPECIALES = {
             packMateria: 8000 * 14
         },
         tp: {
-            individual: 15000,
-            grupal: 20000
+            individual: 20000,
+            grupal: 25000
         }
     }
 };
