@@ -682,7 +682,7 @@
         const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases reservadas. Si quiere reservar mas clases, podes pagar las que ya reservaste y luego sacar mas turnos o comprar horas por adelantado';
 
         function swalPagoDeuda(options = {}) {
-            const { title, text, html, icon = 'error', background = '#1a1a1a', confirmButtonColor = '#f3a661', ...rest } = options;
+            const { title, text, html, icon = 'error', background = '#1a1a1a', confirmButtonColor = '#f3a661', sinRedireccion = false, ...rest } = options;
             const isError = icon === 'error';
             const swalOptions = {
                 icon,
@@ -701,6 +701,7 @@
                 swalOptions.cancelButtonText = '¿Como Pagar?';
             }
             return Swal.fire(swalOptions).then(result => {
+                if (sinRedireccion) return result;
                 if (result.isConfirmed) window.location.href = '../Pagos';
                 else if (result.dismiss === Swal.DismissReason.cancel) window.location.href = '../Tutoriales.html';
                 return result;
@@ -1075,17 +1076,14 @@
             const horasAFavor = Alumno.horasAFavor;
             if (fechaPago == "NULL" || fechaPago == null || fechaPago == "" || horasAFavor > 0) return;
             if (localStorage.getItem(AVISO_PACK_KEY) === String(fechaPago)) return;
+            localStorage.setItem(AVISO_PACK_KEY, String(fechaPago));
             swalPagoDeuda({
                 icon: 'info',
                 title: 'Pack de horas finalizado',
                 text: 'Tu pack de horas ha terminado. Deberás abonar la clase individualmente.',
-                background: '#151517'
-            }).then((result) => {
-                if (!result.isConfirmed && result.dismiss !== Swal.DismissReason.cancel) {
-                    localStorage.setItem(AVISO_PACK_KEY, String(fechaPago));
-                }
+                background: '#151517',
+                sinRedireccion: true
             });
-
         }
 
         const RECORDATORIO_DEUDA_KEY = 'recordatorioDeudaHorarios';
@@ -1306,7 +1304,6 @@
                     slot.className = `slot ${isOccupied ? 'occupied' : ''} ${selectedSlots.includes(fullId) ? 'selected' : ''}`;
                     
                     slot.onclick = () => {
-                        mostrarAvisoPackTerminadoSiCorresponde();
                         if (isOccupied && !isAdmin) return Swal.fire({ icon: 'error', title: 'Turno Ocupado', text: 'Esta hora ya ha sido reservada.', background: '#1a1a1a', color: '#fff' });
                         if (Alumno.condicionPago != "Libre" && !isAdmin && slotTime < limit12) {
                             return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 12 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
@@ -1335,6 +1332,7 @@
                                     text: MSG_LIMITE_IMPAGAS
                                 });
                             }
+                            if (selectedSlots.length === 0) mostrarAvisoPackTerminadoSiCorresponde();
                             selectedSlots.push(fullId);
                             slot.classList.add('selected');
                             if (horaSlot === '08:15') {
