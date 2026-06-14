@@ -33,8 +33,8 @@ const PRECIOS_BASE = {
         packMateria: 7000 * 14
     },
     tp: {
-        individual: 15000,
-        grupal: 20000
+        individual: 20000,
+        grupal: 30000
     }
 };
 
@@ -75,47 +75,48 @@ const PRECIOS_ESPECIALES = {
             packExamen: 10,
             packMateria: 20,
         }
-    }, 
+    },
     "Villanueva Paulina": {
         individual: {
-            expres1h: 7500,
-            estandar2h: 11000,
-            precioPorHora1: 7500,
-            precioPorHora2: 6000,
-            packExamen: 11000 * 8,
-            packMateria: 11000 *14,
+            expres1h: PRECIOS_BASE.individual.expres1h + 1000,
+            estandar2h: PRECIOS_BASE.individual.estandar2h + 2000,
+            precioPorHora1: PRECIOS_BASE.individual.precioPorHora1 + 1000,
+            precioPorHora2: PRECIOS_BASE.individual.precioPorHora2 + 1000,
+            packExamen: (PRECIOS_BASE.individual.estandar2h + 2000) * 8,
+            packMateria: (PRECIOS_BASE.individual.estandar2h + 2000) * 14,
         },
         grupal: {
-            estandar2h: 8000,
-            precioPorHora: 4000,
-            packExamen: 8000 * 8,
-            packMateria: 8000 * 14
+            estandar2h: PRECIOS_BASE.grupal.estandar2h + 2000,
+            precioPorHora: PRECIOS_BASE.grupal.precioPorHora + 1000,
+            packExamen: (PRECIOS_BASE.grupal.estandar2h + 2000) * 8,
+            packMateria: (PRECIOS_BASE.grupal.estandar2h + 2000) * 14
         },
         tp: {
-            individual: 20000,
-            grupal: 25000
+            individual: PRECIOS_BASE.tp.individual + 5000,
+            grupal: PRECIOS_BASE.tp.grupal + 5000
         }
-    } ,
+    }, 
+    
     "Nigorra Andres": {
         individual: {
-            expres1h: 7500,
-            estandar2h: 11000,
-            precioPorHora1: 7500,
-            precioPorHora2: 6000,
-            packExamen: 11000 * 8,
-            packMateria: 11000 *14,
+            expres1h: PRECIOS_BASE.individual.expres1h + 1000,
+            estandar2h: PRECIOS_BASE.individual.estandar2h + 2000,
+            precioPorHora1: PRECIOS_BASE.individual.precioPorHora1 + 1000,
+            precioPorHora2: PRECIOS_BASE.individual.precioPorHora2 + 1000,
+            packExamen: (PRECIOS_BASE.individual.estandar2h + 2000) * 8,
+            packMateria: (PRECIOS_BASE.individual.estandar2h + 2000) * 14,
         },
         grupal: {
-            estandar2h: 8000,
-            precioPorHora: 4000,
-            packExamen: 8000 * 8,
-            packMateria: 8000 * 14
+            estandar2h: PRECIOS_BASE.grupal.estandar2h + 2000,
+            precioPorHora: PRECIOS_BASE.grupal.precioPorHora + 1000,
+            packExamen: (PRECIOS_BASE.grupal.estandar2h + 2000) * 8,
+            packMateria: (PRECIOS_BASE.grupal.estandar2h + 2000) * 14
         },
         tp: {
-            individual: 20000,
-            grupal: 25000
+            individual: PRECIOS_BASE.tp.individual + 5000,
+            grupal: PRECIOS_BASE.tp.grupal + 5000
         }
-    }
+    },
 };
 
 

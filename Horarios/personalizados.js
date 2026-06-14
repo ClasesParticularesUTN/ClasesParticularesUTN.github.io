@@ -26,26 +26,6 @@
 
 const HORARIOS_PERSONALIZADOS = {
 
-    "vmosquen@gmail.com": {
-        habilitadas: [
-            { semana: 0, celda: "F10" },   // Semana actual - Viernes 15:00 → libre
-            { semana: 0, celda: "F11" },   // Semana actual - Viernes 16:00 → libre
-            { semana: 0, celda: "F12" },   // Semana actual - Viernes 17:00 → libre
-            { semana: 0, celda: "F13" },   // Semana actual - Viernes 18:00 → libre
-        ],
-        deshabilitadas: []
-    },
-
-    "juanma.2000@hotmail.com": {
-        habilitadas: [
-            { semana: 0, celda: "F10" },   // Semana actual - Viernes 15:00 → libre
-            { semana: 0, celda: "F11" },   // Semana actual - Viernes 16:00 → libre
-            { semana: 0, celda: "F12" },   // Semana actual - Viernes 17:00 → libre
-            { semana: 0, celda: "F13" },   // Semana actual - Viernes 18:00 → libre
-        ],
-        deshabilitadas: []
-    },
-
     "clasesparticularesutnfrsf@gmail.com": {
         habilitadas: [
             { semana: 0, celda: "F10" },   // Semana actual - Viernes 15:00 → libre
