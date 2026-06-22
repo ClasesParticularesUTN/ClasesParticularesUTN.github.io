@@ -34,7 +34,7 @@ const PRECIOS_BASE = {
     },
     tp: {
         individual: 20000,
-        grupal: 30000
+        grupal: 15000
     }
 };
 
