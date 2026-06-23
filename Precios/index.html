@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Poppins:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="/precios.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             /* Variables Modo Oscuro (Default) */
@@ -321,6 +321,97 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Redirigir si no están definidos nombre o apellido en localStorage
+            if (!localStorage.getItem('Nombre') || !localStorage.getItem('Apellido')) {
+
+                // Inyectar estilos de blur ultra intenso ANTES de mostrar el modal
+                if (!document.getElementById('swal2-blur-style')) {
+                  const style = document.createElement('style');
+                  style.id = 'swal2-blur-style';
+                  style.textContent = `
+                    .swal2-container {
+                      backdrop-filter: blur(28px) brightness(0.7) saturate(0.8) !important;
+                      -webkit-backdrop-filter: blur(28px) brightness(0.7) saturate(0.8) !important;
+                      background: rgba(8, 14, 30, 0.45) !important;
+                    }
+                    .swal2-popup {
+                      background: rgba(15, 23, 42, 0.92) !important;
+                      border: 1px solid rgba(243, 166, 97, 0.25) !important;
+                      border-radius: 20px !important;
+                      box-shadow: 0 30px 80px rgba(0,0,0,0.6) !important;
+                      color: #ffffff !important;
+                      backdrop-filter: blur(10px) !important;
+                    }
+                    .swal2-title {
+                      color: #f3a661 !important;
+                      font-family: 'Poppins', sans-serif !important;
+                      font-size: 1.4rem !important;
+                      font-weight: 700 !important;
+                    }
+                    .swal2-confirm {
+                      background: transparent !important;
+                      border: 2px solid #f3a661 !important;
+                      color: #f3a661 !important;
+                      font-weight: 700 !important;
+                      border-radius: 10px !important;
+                      padding: 10px 24px !important;
+                      font-family: 'Poppins', sans-serif !important;
+                      transition: all 0.3s !important;
+                    }
+                    .swal2-confirm:hover {
+                      background: #f3a661 !important;
+                      color: #1a1a24 !important;
+                    }
+                    .swal2-deny {
+                      background: transparent !important;
+                      border: 2px solid rgba(148, 163, 184, 0.5) !important;
+                      color: #94a3b8 !important;
+                      font-weight: 700 !important;
+                      border-radius: 10px !important;
+                      padding: 10px 24px !important;
+                      font-family: 'Poppins', sans-serif !important;
+                      transition: all 0.3s !important;
+                    }
+                    .swal2-deny:hover {
+                      background: rgba(148, 163, 184, 0.15) !important;
+                      border-color: #94a3b8 !important;
+                    }
+                    .swal2-actions {
+                      gap: 12px !important;
+                    }
+                    .swal2-icon.swal2-warning {
+                      border-color: #f3a661 !important;
+                      color: #f3a661 !important;
+                    }
+                  `;
+                  document.head.appendChild(style);
+                }
+
+                Swal.fire({
+                    title: "¿Qué deseas hacer?",
+                    text: "Para acceder a los precios y agendar clases necesitás una cuenta.",
+                    icon: "warning",
+                    showClass: {
+                        popup: `animate__animated animate__fadeInDown animate__faster`
+                    },
+                    hideClass: {
+                        popup: `animate__animated animate__fadeOutUp animate__faster`
+                    },
+                    backdrop: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showDenyButton: true,
+                    confirmButtonText: "Iniciar Sesión",
+                    denyButtonText: "Registrarme"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "/Horarios/Login/Login.html";
+                    } else if (result.isDenied) {
+                        window.location.href = "/Horarios/Registro/Registro.html";
+                    }
+                });
+            }
+       
             if (typeof PRECIOS !== 'undefined') {
                 document.getElementById('precio-ind-expres').textContent = '$' + PRECIOS.individual.expres1h.toLocaleString('es-AR');
                 document.getElementById('precio-ind-estandar').textContent = '$' + PRECIOS.individual.estandar2h.toLocaleString('es-AR');
