@@ -34,7 +34,7 @@ const PRECIOS_BASE = {
     },
     tp: {
         individual: 20000,
-        grupal: 30000
+        grupal: 15000
     }
 };
 
@@ -92,8 +92,8 @@ const PRECIOS_ESPECIALES = {
             packMateria: (PRECIOS_BASE.grupal.estandar2h + 2000) * 14
         },
         tp: {
-            individual: PRECIOS_BASE.tp.individual + 5000,
-            grupal: PRECIOS_BASE.tp.grupal + 5000
+            individual: 25000,
+            grupal: 18000
         }
     }, 
     
@@ -113,8 +113,8 @@ const PRECIOS_ESPECIALES = {
             packMateria: (PRECIOS_BASE.grupal.estandar2h + 2000) * 14
         },
         tp: {
-            individual: PRECIOS_BASE.tp.individual + 5000,
-            grupal: PRECIOS_BASE.tp.grupal + 5000
+            individual: 25000,
+            grupal: 18000
         }
     },
 };
