@@ -1618,15 +1618,16 @@
                 precioTotal = precioPorPersona * integrantes.length;
             }
 
-            const htmlMateria = `
-                <input type="hidden" id="materiaValue" value="" />
-                <p style="margin:0 0 12px; font-size:0.9rem; color:#333; text-align:center;">¿A qué materia vas a asistir?</p>
-                <div class="mod-selector" style="flex-direction:column; width:100%; gap:10px;">
-                    ${MATERIAS_RESERVA.map((m, i) => `<div class="mod-card materia-card" data-materia-idx="${i}" style="max-width:none; min-width:0; text-align:left;"><div class="mod-title" style="font-size:0.85rem; line-height:1.35;">${m}</div></div>`).join('')}
-                </div>
-            `;
+            function buildHtmlMateria() {
+                const cards = MATERIAS_RESERVA.map((m, i) => {
+                    const subrow = '<label class="tp-subrow" style="display:none; align-items:center; gap:8px; margin-top:10px; padding:8px 10px; background:rgba(243,166,97,0.13); border:1px solid rgba(243,166,97,0.30); border-radius:8px; cursor:pointer;" onclick="event.stopPropagation()"><input type="checkbox" class="tp-check" data-tp-idx="' + i + '" style="width:15px; height:15px; accent-color:#f3a661; cursor:pointer; flex-shrink:0;"><span style="font-size:0.8rem; color:#4a3520; font-weight:600; line-height:1.2;">Voy a hacer un Trabajo Pr\u00e1ctico</span></label>';
+                    return '<div class="mod-card materia-card" data-materia-idx="' + i + '" style="max-width:none; min-width:0; text-align:left; padding-bottom:10px;"><div class="mod-title" style="font-size:0.85rem; line-height:1.35;">' + m + '</div>' + subrow + '</div>';
+                }).join('');
+                return '<input type="hidden" id="materiaValue" value="" /><p style="margin:0 0 12px; font-size:0.9rem; color:#333; text-align:center;">\u00bfA qu\u00e9 materia vas a asistir?</p><div class="mod-selector" style="flex-direction:column; width:100%; gap:10px;">' + cards + '</div>';
+            }
+            const htmlMateria = buildHtmlMateria();
 
-            const { value: materia } = await Swal.fire({
+            const { value: materiaResult } = await Swal.fire({
                 title: 'Materia',
                 html: htmlMateria,
                 customClass: { container: 'swal-modal-light' },
@@ -1637,33 +1638,51 @@
                 preConfirm: () => {
                     const v = document.getElementById('materiaValue').value;
                     if (!v) { Swal.showValidationMessage('Elegí una materia'); return false; }
-                    return v;
+                    const selectedCard = document.querySelector('.materia-card.selected');
+                    const esTP = selectedCard?.querySelector('.tp-check')?.checked || false;
+                    return { materia: v, esTP };
                 },
                 didOpen: () => {
-                    document.querySelectorAll('.materia-card').forEach(card => {
-                        card.addEventListener('click', () => {
-                            document.querySelectorAll('.materia-card').forEach(c => c.classList.remove('selected'));
-                            card.classList.add('selected');
-                            const idx = parseInt(card.getAttribute('data-materia-idx'), 10);
-                            document.getElementById('materiaValue').value = MATERIAS_RESERVA[idx] || '';
+                    const seleccionarCard = (card) => {
+                        document.querySelectorAll('.materia-card').forEach(c => {
+                            c.classList.remove('selected');
+                            const sub = c.querySelector('.tp-subrow');
+                            if (sub) sub.style.display = 'none';
                         });
+                        card.classList.add('selected');
+                        const sub = card.querySelector('.tp-subrow');
+                        if (sub) sub.style.display = selectedSlots.length >= 2 ? 'flex' : 'none';
+                        const idx = parseInt(card.getAttribute('data-materia-idx'), 10);
+                        document.getElementById('materiaValue').value = MATERIAS_RESERVA[idx] || '';
+                    };
+                    document.querySelectorAll('.materia-card').forEach(card => {
+                        card.addEventListener('click', () => seleccionarCard(card));
                     });
                     if (prefsReserva.materia) {
                         const idxGuardada = MATERIAS_RESERVA.indexOf(prefsReserva.materia);
                         if (idxGuardada >= 0) {
                             const cardGuardada = document.querySelector(`.materia-card[data-materia-idx="${idxGuardada}"]`);
-                            if (cardGuardada) {
-                                document.querySelectorAll('.materia-card').forEach(c => c.classList.remove('selected'));
-                                cardGuardada.classList.add('selected');
-                                document.getElementById('materiaValue').value = prefsReserva.materia;
-                            }
+                            if (cardGuardada) seleccionarCard(cardGuardada);
                         }
                     }
                 }
             });
 
-            if (!materia) return;
+            if (!materiaResult) return;
+            const materia = materiaResult.materia;
+            const esTP = materiaResult.esTP || false;
             guardarPreferenciasReserva({ materia });
+
+            // Si es TP: precio según modalidad. 2 hs = precio base, 3 hs = precio/2*3
+            if (esTP) {
+                const precioTP2h = mod === 'grupal'
+                    ? PRECIOS.tp?.grupal ?? PRECIOS.tp?.individual ?? 0
+                    : PRECIOS.tp?.individual ?? 0;
+                precioPorPersona = selectedSlots.length === 3
+                    ? Math.round(precioTP2h / 2 * 3)
+                    : precioTP2h;
+                precioTotal = mod === 'grupal' ? precioPorPersona * integrantes.length : precioPorPersona;
+            }
 
             const puedeFinDeSemana = tieneAccesoFinDeSemana();
             const letras = puedeFinDeSemana ? ['B', 'C', 'D', 'E', 'F', 'G', 'H'] : ['B', 'C', 'D', 'E', 'F'];
@@ -1693,14 +1712,14 @@
                 const textoRango = horaInicio === horaFinSlot
                     ? `a las ${horaInicio} hs`
                     : `de ${horaInicio} a ${horaFinHasta} hs`;
-                textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''} · ${materia}`;
+                textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}${esTP ? ' · <strong>Trabajo Práctico</strong>' : ''} · ${materia}`;
             } else {
                 const fechasOrdenadas = [...fechasUnicas].sort();
                 const dMin = new Date(fechasOrdenadas[0] + 'T00:00:00');
                 const dMax = new Date(fechasOrdenadas[fechasOrdenadas.length - 1] + 'T00:00:00');
                 const { diaNombre: diaMin, fechaStr: fechaMin } = formatearDia(dMin);
                 const { diaNombre: diaMax, fechaStr: fechaMax } = formatearDia(dMax);
-                textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''} · ${materia}`;
+                textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}${esTP ? ' · <strong>Trabajo Práctico</strong>' : ''} · ${materia}`;
             }
 
             const esPrimeraVezTyC = !yaVioTerminosHorarios();
@@ -1802,7 +1821,7 @@
                     : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
                 // ─────────────────────────────────────────────────────────────────────
 
-                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva) };
+                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "esTP": esTP, "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva) };
 
                 const diasNombresRecordatorio = puedeFinDeSemana
                     ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
