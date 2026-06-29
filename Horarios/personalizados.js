@@ -26,12 +26,15 @@
 
 const HORARIOS_PERSONALIZADOS = {
 
-    "clasesparticularesutnfrsf@gmail.com": {
+    "ccamilavilla@gmail.com": {
         habilitadas: [
-            { semana: 0, celda: "F10" },   // Semana actual - Viernes 15:00 → libre
-            { semana: 0, celda: "F11" },   // Semana actual - Viernes 16:00 → libre
-            { semana: 0, celda: "F12" },   // Semana actual - Viernes 17:00 → libre
-            { semana: 0, celda: "F13" },   // Semana actual - Viernes 18:00 → libre
+            { semana: 0, celda: "C5" },   // Semana actual - Viernes 15:00 → libre
+            { semana: 0, celda: "C6" },   // Semana actual - Viernes 16:00 → lib
+            { semana: 0, celda: "C7" },   // Semana actual - Viernes 17:00 → libre
+            { semana: 0, celda: "C8" },   // Semana actual - Viernes 18:00 → libre
+            { semana: 0, celda: "C9" },   // Semana actual - Viernes 19:00 → libre  
+            { semana: 0, celda: "C10" },   // Próxima semana - Viernes 15:00 → libre
+            { semana: 0, celda: "C11" },   // Próxima semana - Viernes 16:00 → libre
         ],
         deshabilitadas: []
     },
