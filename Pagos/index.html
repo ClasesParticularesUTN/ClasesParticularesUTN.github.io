@@ -255,7 +255,7 @@
             .footer-bar { animation: slideUp 0.35s ease both; }
 
             @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-            @keyframes fadeInSlow { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeInSlow { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
             @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
             button, .metodo-btn, .pago-checkbox { transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease; }
@@ -553,7 +553,7 @@
                 </div>
                 <div id="qrPackNote" class="qr-pack-note hidden" aria-live="polite">
                     <div class="note-title"><i class="fas fa-wallet" aria-hidden="true"></i> Sugerencia</div>
-                    <div class="note-text">
+                    <div class="note-text" style="text-align: center;">
                         Si pagás <strong style="display: inline;">packs</strong> usando <strong>cualquier billetera que no sea Mercado Pago</strong>, tenés <strong>5% de reintegro</strong>. ¡Aprovechá!
                     </div>
              
