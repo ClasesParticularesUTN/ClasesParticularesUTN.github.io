@@ -29,22 +29,45 @@ const HORARIOS_PERSONALIZADOS = {
     "ccamilavilla@gmail.com": {
         habilitadas: [],
         deshabilitadas: [
-        { semana: 1, celda: "B5" },
-        { semana: 1, celda: "B6" },
-        { semana: 1, celda: "B7" },
-        { semana: 1, celda: "D11" },
-        { semana: 1, celda: "D12" },
-        { semana: 1, celda: "D13" },
-        { semana: 1, celda: "F8" },
-        { semana: 1, celda: "F9" },
-   
+            { semana: 1, celda: "B5" },
+            { semana: 1, celda: "B6" },
+            { semana: 1, celda: "B7" },
+            { semana: 1, celda: "D11" },
+            { semana: 1, celda: "D12" },
+            { semana: 1, celda: "D13" },
+            { semana: 1, celda: "F8" },
+            { semana: 1, celda: "F9" }, 
         ]
     },
     "suaffine@gmail.com": {
         habilitadas: [],
         deshabilitadas: [
-
-   
+        { semana: 1, celda: "C3" },
+        { semana: 1, celda: "C4" },
+        { semana: 1, celda: "C5" },
+        { semana: 1, celda: "C6" },
+        { semana: 1, celda: "C7" },
+        { semana: 1, celda: "F7" },
+        { semana: 1, celda: "F8" },
+        { semana: 1, celda: "F9" },
+        { semana: 1, celda: "E12" },
+        { semana: 1, celda: "E13" },
+        ]
+    },
+    
+    "mailinquiroz.05@gmail.com": {
+        habilitadas: [],
+        deshabilitadas: [
+        { semana: 1, celda: "C3" },
+        { semana: 1, celda: "C4" },
+        { semana: 1, celda: "C5" },
+        { semana: 1, celda: "C6" },
+        { semana: 1, celda: "C7" },
+        { semana: 1, celda: "F7" },
+        { semana: 1, celda: "F8" },
+        { semana: 1, celda: "F9" },
+        { semana: 1, celda: "E12" },
+        { semana: 1, celda: "E13" },
         ]
     },
 
