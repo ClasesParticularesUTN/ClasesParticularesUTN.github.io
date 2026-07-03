@@ -27,9 +27,18 @@
 const HORARIOS_PERSONALIZADOS = {
 
     "ccamilavilla@gmail.com": {
-        habilitadas: [
-        ],
-        deshabilitadas: []
+        habilitadas: [],
+        deshabilitadas: [
+        { semana: 0, celda: "B5" },
+        { semana: 0, celda: "B6" },
+        { semana: 0, celda: "B7" },
+        { semana: 0, celda: "D11" },
+        { semana: 0, celda: "D12" },
+        { semana: 0, celda: "D13" },
+        { semana: 0, celda: "F8" },
+        { semana: 0, celda: "F9" },
+   
+        ]
     },
 
     // ── Podés agregar más alumnos debajo ──────────────────────────────────────
