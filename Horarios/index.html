@@ -8,6 +8,11 @@
     <script src="../precios.js"></script>
     <script src="./preciosActualizados.js"></script>
     <script src="./personalizados.js"></script>
+    <!-- Sistema de permisos: orden importa, permisosMotor.js depende de los 3 anteriores -->
+    <script src="./Permisos/permisos.js"></script>
+    <script src="./Permisos/permisosPorCondicionPago.js"></script>
+    <script src="./Permisos/permisosPorCorreo.js"></script>
+    <script src="./Permisos/permisosMotor.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -659,15 +664,8 @@
         const nombreLocal = localStorage.getItem('Nombre');
         const apellidoLocal = localStorage.getItem('apellido') ?? localStorage.getItem('Apellido');
         
-        const EMAILS_FINES_DE_SEMANA = [
-            //"juanma.2000@hotmail.com",
-            "valedasilvacatela.vdc@gmail.com",
-            "suaffine@gmail.com",
-            "juanma.2000@hotmail.com",
-        ];
-
         function tieneAccesoFinDeSemana() {
-            return Alumno && EMAILS_FINES_DE_SEMANA.includes(Alumno.correoElectronico);
+            return !!Alumno && tienePermiso('reservarFinesDeSemana', Alumno);
         }
 
         function fechaDeSlot(slotId) {
@@ -707,7 +705,7 @@
         }
 
         function superaLimiteClasesImpagas(slots) {
-            if (isAdmin || tienePackActivo() || Alumno.condicionPago === 'Libre') return false;
+            if (isAdmin || tienePackActivo() || tienePermiso('superarLimiteClasesImpagas', Alumno)) return false;
             const reservadas = Number(Alumno?.reservadasSinPagar) || 0;
             return reservadas + contarDiasUnicos(slots) > 2;
         }
@@ -1139,20 +1137,11 @@
         }
 
         const RECORDATORIO_DEUDA_KEY = 'recordatorioDeudaHorarios';
-        const CORREOS_RECORDATORIO_DEUDA = [
-            'paulinalisvillanueva@gmail.com',
-            'andresnigorrafac2026@gmail.com'
-        ];
         const RECORDATORIO_DEUDA_ESPECIFICA_KEY = 'recordatorioDeudaEspecificaHorarios';
-
-        function esCorreoRecordatorioDeudaEspecifico(correo) {
-            const c = String(correo || '').trim().toLowerCase();
-            return CORREOS_RECORDATORIO_DEUDA.some(e => e.toLowerCase() === c);
-        }
 
         async function mostrarRecordatorioDeudaCorreosEspecificos() {
             if (!Alumno?.correoElectronico) return;
-            if (!esCorreoRecordatorioDeudaEspecifico(Alumno.correoElectronico)) return;
+            if (!tienePermiso('verRecordatorioDeudaEspecifico', Alumno)) return;
             if (sessionStorage.getItem(RECORDATORIO_DEUDA_ESPECIFICA_KEY)) return;
             sessionStorage.setItem(RECORDATORIO_DEUDA_ESPECIFICA_KEY, '1');
             await Swal.fire({
@@ -1175,7 +1164,7 @@
 
         async function mostrarRecordatorioDeudaAlEntrar() {
             if (isAdmin || !Alumno?.correoElectronico) return;
-            if (esCorreoRecordatorioDeudaEspecifico(Alumno.correoElectronico)) return;
+            if (!tienePermiso('verRecordatorioDeudaAlEntrar', Alumno)) return;
             const monto = obtenerMontoDeuda();
             if (monto <= 0) return;
             if (sessionStorage.getItem(RECORDATORIO_DEUDA_KEY)) return;
@@ -1357,7 +1346,7 @@
                     
                     slot.onclick = () => {
                         if (isOccupied && !isAdmin) return Swal.fire({ icon: 'error', title: 'Turno Ocupado', text: 'Esta hora ya ha sido reservada.', background: '#1a1a1a', color: '#fff' });
-                        if (Alumno.condicionPago != "Libre" && !isAdmin && slotTime < limit12) {
+                        if (!isAdmin && slotTime < limit12 && !tienePermiso('reservarSinAnticipacion12h', Alumno)) {
                             return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 12 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
                         }
                         if (selectedSlots.includes(fullId)) {
@@ -1367,7 +1356,7 @@
                         } else {
                             const fechaSlot = fechaDeSlot(fullId);
                             const horasEseDia = selectedSlots.filter(s => fechaDeSlot(s) === fechaSlot).length;
-                            if (!isAdmin && horasEseDia >= 3) {
+                            if (!isAdmin && horasEseDia >= 3 && !tienePermiso('superarLimiteHorasPorDia', Alumno)) {
                                 return Swal.fire({
                                     icon: 'error',
                                     title: 'Límite diario',
@@ -1463,7 +1452,12 @@
                 }
             }
 
-            if (!isAdmin && Alumno.condicionPago == 0 && Alumno.dineroQueDebe) {
+            // --- Validaciones de deuda unificadas a través del motor de permisos ---
+            // (antes eran 5 bloques sueltos con las mismas reglas repetidas;
+            // ahora cada restricción se resuelve con tienePermiso() según
+            // permisos.js / permisosPorCondicionPago.js / permisosPorCorreo.js)
+
+            if (!isAdmin && parseMontoAlumno(Alumno.dineroQueDebe) > 0 && !tienePermiso('reservarConDeudaDeDinero', Alumno)) {
                 return swalPagoDeuda({
                     icon: 'error',
                     title: 'Permiso Denegado',
@@ -1472,7 +1466,7 @@
                 });
             }
 
-            if (!isAdmin && (Alumno.condicionPago == "Normal" && Alumno.cantidadDebe >= 2)) {
+            if (!isAdmin && Number(Alumno.cantidadDebe) >= 2 && !tienePermiso('reservarConClasesPendientes', Alumno)) {
                 return swalPagoDeuda({
                     icon: 'error',
                     title: 'Permiso Denegado',
@@ -1481,7 +1475,7 @@
                 });
             }
 
-            if (!isAdmin && (Alumno.condicionPago == "Regular" && Alumno.cantidadDebe >= 2 && Alumno.deudaMasVieja > 6)) {
+            if (!isAdmin && Number(Alumno.cantidadDebe) >= 2 && Number(Alumno.deudaMasVieja) > 6 && !tienePermiso('reservarConClasesPendientesAntiguas', Alumno)) {
                 return swalPagoDeuda({
                     icon: 'error',
                     title: 'Permiso Denegado',
@@ -1490,27 +1484,9 @@
                 });
             }
 
-            if (!isAdmin && Alumno.condicionPago == "Deudor") {
-                const rawDineroDeudor = Alumno.dineroQueDebe != null && Alumno.dineroQueDebe !== ''
-                    ? String(Alumno.dineroQueDebe).replace(/[^\d.-]/g, '')
-                    : '0';
-                const dineroPendienteDeudor = parseFloat(rawDineroDeudor) || 0;
-                if (dineroPendienteDeudor > 0) {
-                    return swalPagoDeuda({
-                        icon: 'error',
-                        title: 'Permiso Denegado',
-                        text: 'No puedes reservar nuevos horarios porque debés dinero. Regularizá tu deuda antes de sacar más turnos.',
-                        confirmButtonColor: '#ff5f5f'
-                    });
-                }
-            }
-
-            if (!isAdmin && Alumno.condicionPago !== 'Libre') {
+            if (!isAdmin && tienePermiso('verAvisoInteresPorDeuda', Alumno)) {
                 const debeClases = Number(Alumno.cantidadDebe) || 0;
-                const rawDinero = Alumno.dineroQueDebe != null && Alumno.dineroQueDebe !== ''
-                    ? String(Alumno.dineroQueDebe).replace(/[^\d.-]/g, '')
-                    : '0';
-                const dineroPendiente = parseFloat(rawDinero) || 0;
+                const dineroPendiente = parseMontoAlumno(Alumno.dineroQueDebe);
                 const debePeroPuedeReservar = debeClases >= 1 || dineroPendiente > 0;
                 if (debePeroPuedeReservar && localStorage.getItem("avisoDeuda") == undefined) {
                     const avisoDeuda = await swalPagoDeuda({
