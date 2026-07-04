@@ -24,6 +24,9 @@
             --border: rgba(255, 255, 255, 0.08);
             --available: rgba(243, 166, 97, 0.07);
             --danger: #ff5f5f;
+            --mine: #5b9dff;
+            --mine-bg: rgba(91, 157, 255, 0.18);
+            --mine-border: rgba(91, 157, 255, 0.6);
             --scrollbar-track: transparent;
             --scrollbar-thumb: rgba(255, 255, 255, 0.14);
             --scrollbar-thumb-hover: rgba(255, 255, 255, 0.26);
@@ -271,6 +274,8 @@
         .slot.occupied { background: rgba(255,255,255,0.03); opacity: 0.4; cursor: not-allowed; }
         .slot.occupied::after { content: "\f023"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 0.7rem; color: rgba(255,255,255,0.4); }
         .slot.selected { background: var(--primary) !important; border: 1px solid #fff; box-shadow: 0 0 10px var(--primary); }
+        .slot.mine { background: var(--mine-bg); opacity: 1; cursor: not-allowed; box-shadow: inset 0 0 0 1.5px var(--mine-border); }
+        .slot.mine::after { content: "\f058"; font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 0.7rem; color: var(--mine); }
 
         .controls-overlay { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 10px; z-index: 1000; cursor: grab; user-select: none; }
         .controls-overlay.dragging { cursor: grabbing; }
@@ -788,6 +793,28 @@
             return c != null && String(c).trim() !== '' ? String(c).trim() : '';
         }
 
+        // Devuelve la lista de horarios reservados por el usuario (Alumno.horarios).
+        // Cada horario trae { fecha, codigo, cantidadHoras, hojaId, celdas, semana }
+        // donde "celdas" son las celdas a pintar y "semana" indica 0 = semana actual, 1 = semana siguiente.
+        function actualizarHorarios() {
+            return Alumno?.horarios || [];
+        }
+
+        // Devuelve un Set con las celdas ("B5", "D10", etc.) reservadas por el usuario
+        // para una semana en particular (0 = actual, 1 = siguiente), listas para pintar en la tabla.
+        function celdasPropiasDeLaSemana(semana) {
+            const celdas = new Set();
+            actualizarHorarios().forEach(h => {
+                if (h == null || typeof h === 'string') return;
+                const semanaHorario = Number(h.semana) || 0;
+                if (semanaHorario !== semana) return;
+                (Array.isArray(h.celdas) ? h.celdas : []).forEach(c => {
+                    if (c) celdas.add(String(c).toUpperCase());
+                });
+            });
+            return celdas;
+        }
+
         function escapeAttr(s) {
             return String(s)
                 .replace(/&/g, '&amp;')
@@ -1209,6 +1236,7 @@
             try {
                 const response = await fetch(urlFinal);
                 const data = await response.json();
+                console.log("data: ", data);
                 if (data.sesion) {
                     Alumno = data;
                     sessionStorage.setItem('persona', JSON.stringify(data));
@@ -1323,6 +1351,7 @@
             monday.setHours(0,0,0,0);
 
             const celdasOcupadas = cacheHorarios[weekOffset] || [];
+            const misCeldas = celdasPropiasDeLaSemana(weekOffset);
             const puedeFinDeSemana = tieneAccesoFinDeSemana();
             container.classList.toggle('weekend-enabled', puedeFinDeSemana);
             const letras = puedeFinDeSemana ? ['B', 'C', 'D', 'E', 'F', 'G', 'H'] : ['B', 'C', 'D', 'E', 'F'];
@@ -1340,11 +1369,15 @@
                     const horaSlot = h === 8 ? '08:15' : `${h.toString().padStart(2, '0')}:00`;
                     const fullId = `${isoDate} ${horaSlot}`;
                     const slotTime = new Date(`${isoDate}T${horaSlot}:00`);
-                    const isOccupied = celdasOcupadas.includes(`${letra}${h-5}`);
+                    const cellCode = `${letra}${h-5}`;
+                    const isOccupied = celdasOcupadas.includes(cellCode);
+                    const isMine = misCeldas.has(cellCode);
                     const slot = document.createElement('div');
-                    slot.className = `slot ${isOccupied ? 'occupied' : ''} ${selectedSlots.includes(fullId) ? 'selected' : ''}`;
+                    slot.className = `slot ${isOccupied && !isMine ? 'occupied' : ''} ${isMine ? 'mine' : ''} ${selectedSlots.includes(fullId) ? 'selected' : ''}`;
+                    if (isMine) slot.title = 'Ya tenés esta clase reservada';
                     
                     slot.onclick = () => {
+                        if (isMine && !isAdmin) return Swal.fire({ icon: 'info', title: 'Ya es tu reserva', text: 'Esta clase ya está reservada por vos. Podés cancelarla desde tu perfil si lo necesitás.', background: '#1a1a1a', color: '#fff' });
                         if (isOccupied && !isAdmin) return Swal.fire({ icon: 'error', title: 'Turno Ocupado', text: 'Esta hora ya ha sido reservada.', background: '#1a1a1a', color: '#fff' });
                         if (!isAdmin && slotTime < limit12 && !tienePermiso('reservarSinAnticipacion12h', Alumno)) {
                             return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 12 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
