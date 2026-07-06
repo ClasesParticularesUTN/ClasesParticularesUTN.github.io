@@ -587,7 +587,12 @@
                 .catch(error => {
                     console.error('❌ [ERROR]', error.message);
                     console.error('📋 [ERROR] Stack:', error.stack);
-                    Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Se produjo un error. Avísele al profesor.'
+                    });
                 })
                 .finally(() => {
                     console.log('✅ [FORM] Finally - Limpiando estado de carga');
