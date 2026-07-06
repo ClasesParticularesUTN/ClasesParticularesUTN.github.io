@@ -77,16 +77,6 @@ const PRECIOS_ESPECIALES = {
             packMateria: 12000 * 14,
         }
     },
-    "Da Silva Valentin": {
-        individual: {
-            expres1h: 10,
-            estandar2h: 10,
-            precioPorHora1: 10,
-            precioPorHora2: 10,
-            packExamen: 10,
-            packMateria: 20,
-        }
-    },
     "Villanueva Paulina": {
         individual: {
             expres1h: PRECIOS_BASE.individual.expres1h + 1000,
