@@ -51,19 +51,6 @@ const HORARIOS_PERSONALIZADOS = {
         { semana: 1, celda: "F8" },
         { semana: 1, celda: "F9" },
         { semana: 1, celda: "E12" },
-        { semana: 1, celda: "E13" },
-        { semana: 0, celda: "C3" },
-        { semana: 0, celda: "C4" },
-        { semana: 0, celda: "C5" },
-        { semana: 0, celda: "C6" },
-        { semana: 0, celda: "C7" },
-        { semana: 0, celda: "C8" },
-        { semana: 0, celda: "C9" },
-        { semana: 0, celda: "C10" },
-        { semana: 0, celda: "C11" },
-        { semana: 0, celda: "C12" },
-   
-
         ]
     },
     
