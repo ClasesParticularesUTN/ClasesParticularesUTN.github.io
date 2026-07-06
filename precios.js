@@ -46,6 +46,17 @@ const PRECIOS_BASE = {
  * ============================================
  */
 const PRECIOS_ESPECIALES = {
+    "Benitez Juan Martin": {
+
+        individual: {
+            expres1h: 6500,
+            estandar2h: 100000,
+            precioPorHora1: 6500,
+            precioPorHora2: 5000,
+            packExamen: 9000 * 8,
+            packMateria: 9000 * 14,
+        }
+    },
     "Villa Camila": {
         individual: {
             expres1h: 5000,
