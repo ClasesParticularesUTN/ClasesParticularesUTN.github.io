@@ -134,7 +134,9 @@ const HORARIOS_PERSONALIZADOS = {
             { semana: 0, celda: "F6" },
    
         ],
-        deshabilitadas: []
+        deshabilitadas: [
+            
+        ]
     },
     // ── Podés agregar más alumnos debajo ──────────────────────────────────────
     // "otro.alumno@gmail.com": {
