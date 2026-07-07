@@ -130,6 +130,9 @@ const HORARIOS_PERSONALIZADOS = {
             { semana: 0, celda: "F11" },
             { semana: 0, celda: "F12" },
             { semana: 0, celda: "F13" },
+            { semana: 0, celda: "F5" },
+            { semana: 0, celda: "F6" },
+   
         ],
         deshabilitadas: []
     },
