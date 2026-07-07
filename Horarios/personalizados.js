@@ -125,7 +125,14 @@ const HORARIOS_PERSONALIZADOS = {
    
         ]
     },
-    
+    "juanma.2000@hotmail.com": {
+        habilitadas: [
+            { semana: 0, celda: "F11" },
+            { semana: 0, celda: "F12" },
+            { semana: 0, celda: "F13" },
+        ],
+        deshabilitadas: []
+    },
     // ── Podés agregar más alumnos debajo ──────────────────────────────────────
     // "otro.alumno@gmail.com": {
     //     habilitadas: [
