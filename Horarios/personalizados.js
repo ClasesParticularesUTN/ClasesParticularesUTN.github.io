@@ -138,6 +138,35 @@ const HORARIOS_PERSONALIZADOS = {
             
         ]
     },
+    "bautistaclaret10@gmail.com": {
+        
+        habilitadas: [],
+        deshabilitadas: [
+        { semana: 1, celda: "E3" },
+        { semana: 1, celda: "E4" },
+        { semana: 1, celda: "E5" },
+        { semana: 1, celda: "E6" },
+        { semana: 1, celda: "E7" },
+        { semana: 1, celda: "E8" },
+        { semana: 1, celda: "E9" },
+        { semana: 1, celda: "E10" },
+        { semana: 1, celda: "E11" },
+        { semana: 1, celda: "E12" },
+        { semana: 1, celda: "E13" },
+        { semana: 1, celda: "F3" },
+        { semana: 1, celda: "F4" },
+        { semana: 1, celda: "F5" },
+        { semana: 1, celda: "F6" },
+        { semana: 1, celda: "F7" },
+        { semana: 1, celda: "F8" },
+        { semana: 1, celda: "F9" },
+        { semana: 1, celda: "F10" },
+        { semana: 1, celda: "F11" },
+        { semana: 1, celda: "F12" },
+        { semana: 1, celda: "F13" },
+   
+        ]
+    },
     // ── Podés agregar más alumnos debajo ──────────────────────────────────────
     // "otro.alumno@gmail.com": {
     //     habilitadas: [
