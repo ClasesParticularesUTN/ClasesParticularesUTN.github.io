@@ -583,15 +583,27 @@
                     } else {
                         throw new Error(data.error || 'Credenciales incorrectas');
                     }
-                })
-                .catch(error => {
+                }).catch(error => {
                     console.error('❌ [ERROR]', error.message);
                     console.error('📋 [ERROR] Stack:', error.stack);
 
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: 'Se produjo un error. Avísele al profesor.'
+                        html: `
+                            <p>${error.message}</p>
+                            <br>
+                            <p>Si crees que hubo un error avisale al profesor</p>
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Cerrar',
+                        cancelButtonText: '<i class="fa-brands fa-whatsapp"></i> Ir a WhatsApp',
+                        cancelButtonColor: '#25D366',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.dismiss === Swal.DismissReason.cancel) {
+                            window.open('https://wa.me/5493425271005?text=Hola valentin, tuve un error al iniciar sesión: ' + encodeURIComponent(error.message), '_blank');
+                        }
                     });
                 })
                 .finally(() => {
