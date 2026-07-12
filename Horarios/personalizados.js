@@ -27,7 +27,13 @@
 const HORARIOS_PERSONALIZADOS = {
 
     "ccamilavilla@gmail.com": {
-        habilitadas: [],
+        habilitadas: [
+            
+            { semana: 1, celda: "C3" },
+            { semana: 1, celda: "C4" },
+            { semana: 1, celda: "D3" },
+            { semana: 1, celda: "D4" }
+        ],
         deshabilitadas: []
     },
     "suaffine@gmail.com": {
