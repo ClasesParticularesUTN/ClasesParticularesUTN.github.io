@@ -35,7 +35,7 @@ const PERMISOS_POR_CORREO = {
     // Correos con el recordatorio de deuda "especial" (ya lo tenían antes)
     'paulinalisvillanueva@gmail.com': {
         verRecordatorioDeudaAlEntrar: false,
-        verRecordatorioDeudaEspecifico: true
+        verRecordatorioDeudaEspecifico: false
     },
     'andresnigorrafac2026@gmail.com': {
         verRecordatorioDeudaAlEntrar: false,
