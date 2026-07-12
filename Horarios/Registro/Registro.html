@@ -444,27 +444,17 @@ function iniciarVerificacionWhatsApp(numeroCelular, objetoEnvioFinal) {
 
 // ── NUEVA: Bienvenida + TyC por WhatsApp ──────────────────────────────────────
 function enviarBienvenidaYTerminos(nombre, numeroCelular) {
-    const mensaje =
+  const mensaje =
 `🎓 *Clases Particulares UTN*
 ----------------------------------------
 ¡Bienvenido/a *${nombre}*! 🎉
 
 Tu registro fue completado con éxito. Ya podés ingresar al sistema y reservar tus primeras clases.
 
-📋 *TÉRMINOS Y CONDICIONES para reservas de clases:*
+📋 Antes de tu primera reserva, te recomendamos leer los *términos y condiciones* (pagos y cancelaciones):
+clasesparticularesutn.com.ar/TerminosYCondiciones
 
-⏱️ *Plazos para pagos: *
-  1️⃣ Primeras 24 hs → sin recargo
-  2️⃣ Pasadas las 24 hs → +5% de recargo
-  3️⃣ A partir de las 48 hs → +1% adicional por cada día de demora (sobre el total acumulado)
-
-❌ *Cancelaciones*
-Podés cancelar desde el menú de usuario (ícono de perfil arriba a la derecha).
-
-  📅 Con 2 días o más de anticipación → sin costo
-  📅 El día anterior → se cobra el 25% de la tarifa
-  📅 El mismo día → se cobra la tarifa completa (100%)
-`;
+¡Nos vemos en clase! 💻🚀`;
 
     fetch(URLServidorWhatsAPP, {
         method: 'POST',

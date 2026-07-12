@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Términos y Condiciones | Reserva de Clases</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #f3a661;
+            --bg-dark: #0a0a0b;
+            --glass: rgba(20, 20, 22, 0.97);
+            --border: rgba(255, 255, 255, 0.08);
+            --danger: #ff5f5f;
+            --scrollbar-thumb: rgba(255, 255, 255, 0.14);
+            --scrollbar-thumb-hover: rgba(255, 255, 255, 0.26);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-thumb) transparent;
+        }
+        *::-webkit-scrollbar { width: 6px; height: 6px; }
+        *::-webkit-scrollbar-track { background: transparent; }
+        *::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 999px; }
+        *::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 15% 10%, rgba(243, 166, 97, 0.08), transparent 40%),
+                radial-gradient(circle at 85% 90%, rgba(243, 166, 97, 0.05), transparent 45%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            height: 65px;
+            background: var(--glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 25px;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .brand-title { font-weight: 700; color: var(--primary); letter-spacing: 1px; }
+        .brand-title a { color: inherit; text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        .btn-volver {
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 9px 16px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .btn-volver:hover { background: rgba(243, 166, 97, 0.1); border-color: rgba(243, 166, 97, 0.35); }
+
+        .page-wrap {
+            max-width: 760px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        .page-header { margin-bottom: 28px; }
+        .page-header .eyebrow {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 0.68rem; font-weight: 800; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--primary);
+            background: rgba(243, 166, 97, 0.1);
+            border: 1px solid rgba(243, 166, 97, 0.25);
+            padding: 5px 12px; border-radius: 20px;
+            margin-bottom: 14px;
+        }
+        .page-header h1 { font-size: 1.7rem; font-weight: 800; margin-bottom: 8px; }
+        .page-header p { color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.5; }
+
+        .panel {
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 8px 26px 26px;
+            box-shadow: 0 24px 48px rgba(0,0,0,0.35);
+        }
+
+        .panel h3 {
+            font-size: 0.78rem; font-weight: 700; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.06em;
+            margin: 26px 0 12px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .panel h3::before {
+            content: '';
+            width: 4px; height: 14px;
+            background: var(--primary);
+            border-radius: 3px;
+            display: inline-block;
+        }
+        .panel > h3:first-of-type { margin-top: 26px; }
+
+        .panel p, .panel .terms-intro { line-height: 1.6; color: rgba(255,255,255,0.85); font-size: 0.92rem; margin: 0 0 12px; }
+        .terms-intro { color: rgba(255,255,255,0.65); font-size: 0.88rem; }
+
+        ul.terms-list { list-style: none; margin: 0 0 6px; padding: 0; }
+        ul.terms-list > li {
+            position: relative;
+            padding-left: 1.1em;
+            margin-bottom: 12px;
+            line-height: 1.55;
+            font-size: 0.92rem;
+            color: rgba(255,255,255,0.88);
+        }
+        ul.terms-list > li:last-child { margin-bottom: 0; }
+        ul.terms-list > li::before {
+            content: '';
+            position: absolute; left: 0; top: 0.55em;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 0 2px rgba(243, 166, 97, 0.2);
+        }
+
+        .terms-block {
+            background: rgba(243, 166, 97, 0.09);
+            border: 1px solid rgba(243, 166, 97, 0.22);
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin: 14px 0 6px;
+        }
+        .terms-block-title {
+            font-size: 0.74rem; font-weight: 700; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.055em;
+            margin: 0 0 12px;
+        }
+        ul.terms-list--tight > li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; padding-left: 0; }
+        ul.terms-list--tight > li::before { display: none; }
+        ul.terms-list--tight > li:last-child { margin-bottom: 0; }
+        .terms-step {
+            flex-shrink: 0; min-width: 2rem; height: 2rem;
+            border-radius: 9px;
+            background: rgba(243, 166, 97, 0.2);
+            color: var(--primary);
+            font-size: 0.75rem; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 1px;
+        }
+        .terms-step-text { flex: 1; min-width: 0; font-size: 0.9rem; line-height: 1.55; color: rgba(255,255,255,0.88); }
+
+        .cancel-tyc-list { display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+        .cancel-tyc-row {
+            display: flex; align-items: center; gap: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 14px;
+        }
+        .cancel-tyc-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .cancel-tyc-dot.ok { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.5); }
+        .cancel-tyc-dot.mid { background: #facc15; box-shadow: 0 0 8px rgba(250, 204, 21, 0.5); }
+        .cancel-tyc-dot.full { background: var(--danger); box-shadow: 0 0 8px rgba(255, 95, 95, 0.5); }
+        .cancel-tyc-label { font-size: 0.87rem; color: rgba(255,255,255,0.9); line-height: 1.35; flex: 1; }
+        .cancel-tyc-label small { display: block; color: rgba(255,255,255,0.45); font-size: 0.73rem; margin-top: 2px; }
+        .cancel-tyc-pct { margin-left: auto; flex-shrink: 0; font-weight: 700; font-size: 0.82rem; padding: 4px 11px; border-radius: 20px; white-space: nowrap; }
+        .cancel-tyc-pct.ok { color: #4ade80; background: rgba(74, 222, 128, 0.12); }
+        .cancel-tyc-pct.mid { color: #facc15; background: rgba(250, 204, 21, 0.12); }
+        .cancel-tyc-pct.full { color: var(--danger); background: rgba(255, 95, 95, 0.12); }
+
+        .updated-note {
+            margin-top: 26px;
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .page-header h1 { font-size: 1.4rem; }
+            .panel { padding: 4px 18px 20px; }
+            .cancel-tyc-row { flex-wrap: wrap; }
+            .cancel-tyc-pct { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="brand-title">
+            <a href="../">
+                <i class="fa-solid fa-graduation-cap"></i>
+                Reserva de Horarios
+            </a>
+        </div>
+        <a href="../" class="btn-volver">
+            <i class="fa-solid fa-arrow-left"></i>
+            Volver
+        </a>
+    </nav>
+
+    <div class="page-wrap">
+        <div class="page-header">
+            <span class="eyebrow"><i class="fa-solid fa-file-shield"></i> Legal</span>
+            <h1>Términos y condiciones</h1>
+            <p>Leé con atención las condiciones de pago y cancelación antes de reservar tus clases.</p>
+        </div>
+
+        <div class="panel">
+            <h3>Pagos</h3>
+            <ul class="terms-list">
+                <li>Podés pagar la clase cuando quieras, pero si demorás pueden aplicarse <strong>recargos por demora</strong>.</li>
+                <li>Si debés dinero, <strong>no vas a poder reservar</strong> nuevas clases hasta regularizar la deuda.</li>
+            </ul>
+            <div class="terms-block">
+                <p class="terms-block-title">Plazos después de la clase</p>
+                <ul class="terms-list terms-list--tight">
+                    <li>
+                        <span class="terms-step" aria-hidden="true">1</span>
+                        <span class="terms-step-text"><strong>Primeras 24 horas:</strong> podés pagar <strong>sin recargo</strong>.</span>
+                    </li>
+                    <li>
+                        <span class="terms-step" aria-hidden="true">2</span>
+                        <span class="terms-step-text"><strong>Pasadas las 24 horas:</strong> se suma un recargo del <strong>5&nbsp;%</strong>.</span>
+                    </li>
+                    <li>
+                        <span class="terms-step" aria-hidden="true">3</span>
+                        <span class="terms-step-text"><strong>A partir de las 48 horas:</strong> sobre el <strong>monto total acumulado</strong> se cobra un <strong>1&nbsp;% adicional por cada día</strong> de demora.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <h3>Cancelaciones</h3>
+            <p class="terms-intro">Podés cancelar desde el <strong>menú de usuario</strong> (tocá el ícono de perfil arriba a la derecha y revisá tus horarios reservados).</p>
+            <div class="cancel-tyc-list">
+                <div class="cancel-tyc-row">
+                    <span class="cancel-tyc-dot ok"></span>
+                    <span class="cancel-tyc-label">Dos días antes o más<small>Respecto al día de la clase</small></span>
+                    <span class="cancel-tyc-pct ok">Sin costo</span>
+                </div>
+                <div class="cancel-tyc-row">
+                    <span class="cancel-tyc-dot mid"></span>
+                    <span class="cancel-tyc-label">El día anterior<small>A la fecha de la clase</small></span>
+                    <span class="cancel-tyc-pct mid">25% del precio</span>
+                </div>
+                <div class="cancel-tyc-row">
+                    <span class="cancel-tyc-dot full"></span>
+                    <span class="cancel-tyc-label">El mismo día<small>De la clase</small></span>
+                    <span class="cancel-tyc-pct full">100% del precio</span>
+                </div>
+            </div>
+        </div>
+
+        <p class="updated-note">Estos términos pueden actualizarse. Revisalos periódicamente.</p>
+    </div>
+
+</body>
+</html>
