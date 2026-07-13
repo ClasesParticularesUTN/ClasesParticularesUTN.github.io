@@ -26,7 +26,7 @@ const PERMISOS_POR_CORREO = {
         reservarFinesDeSemana: true
     },
     'suaffine@gmail.com': {
-        reservarFinesDeSemana: true
+        reservarFinesDeSemana: false
     },
     'juanma.2000@hotmail.com': {
         reservarFinesDeSemana: true
