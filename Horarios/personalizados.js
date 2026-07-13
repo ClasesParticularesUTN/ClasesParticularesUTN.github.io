@@ -76,24 +76,18 @@ const HORARIOS_PERSONALIZADOS = {
     },
     "bautistaclaret10@gmail.com": {
         habilitadas: [
-            // Habilita B5:B8, B11:B12 y todo C5:D12
-            { semana: 0, celda: "B5:B8" },
-            { semana: 0, celda: "B11:B12" },
-            { semana: 0, celda: "C5:D12" },
         ],
         deshabilitadas: [
-            { semana: 0, celda: "E3:F13" },
+                        { semana: 0, celda: "B3:F14" },
+
         ]
     },
     "pane.joaquin07@gmail.com": {
         habilitadas: [
-            // Habilita B5:B9, B12 y todo C5:D12
-            { semana: 0, celda: "B5:B9" },
-            { semana: 0, celda: "B12" },
-            { semana: 0, celda: "C5:D12" },
         ],
         deshabilitadas: [
-            { semana: 0, celda: "E3:F13" },
+                        { semana: 0, celda: "B3:F14" },
+
         ]
     },
 
