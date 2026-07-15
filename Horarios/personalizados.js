@@ -103,14 +103,14 @@ const HORARIOS_PERSONALIZADOS = {
         ],
         deshabilitadas: []
     },
-    "niolastroncozo@gmail.com": {
-        habilitadas: [],
-        deshabilitadas: [
-            { semana: 1, celda: "B3:F14" },
+    // "niolastroncozo@gmail.com": {
+    //     habilitadas: [],
+    //     deshabilitadas: [
+    //         { semana: 1, celda: "B3:F14" },
             
-            { semana: 0, celda: "B3:F14" },
-        ]
-    },
+    //         { semana: 0, celda: "B3:F14" },
+    //     ]
+    // },
     
     // ── Podés agregar más alumnos debajo ──────────────────────────────────────
     // "otro.alumno@gmail.com": {
