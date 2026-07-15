@@ -161,7 +161,7 @@
 
         .modal-box .modal-compare {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 0;
         }
         .modal-box .modal-compare-block {
             padding: 14px 16px;
@@ -202,6 +202,56 @@
         }
         .modal-box .btn-modal-close:hover { background: var(--primary); color: #1a1a24; }
 
+        .modal-box-consulta {
+            display: flex;
+            flex-direction: column;
+            max-height: min(88vh, 520px);
+            padding: 28px 24px 22px;
+            overflow: hidden;
+        }
+        .modal-box-consulta .modal-icon {
+            width: 52px;
+            height: 52px;
+            margin-bottom: 12px;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .modal-box-consulta h4 {
+            font-size: 1.15rem;
+            margin-bottom: 14px;
+            flex-shrink: 0;
+        }
+        .modal-box-consulta .modal-compare {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            padding-right: 4px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(243, 166, 97, 0.45) transparent;
+        }
+        .modal-box-consulta .modal-compare::-webkit-scrollbar { width: 5px; }
+        .modal-box-consulta .modal-compare::-webkit-scrollbar-thumb {
+            background: rgba(243, 166, 97, 0.45);
+            border-radius: 999px;
+        }
+        .modal-box-consulta .modal-compare-block {
+            padding: 12px 14px;
+        }
+        .modal-box-consulta .modal-compare-block h5 {
+            font-size: 0.88rem;
+            margin-bottom: 6px;
+        }
+        .modal-box-consulta .modal-compare-block p {
+            font-size: 0.86rem;
+            line-height: 1.5;
+        }
+        .modal-box-consulta .btn-modal-close {
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
         .btn-select {
             display: block; width: 100%; padding: 16px; margin-top: auto;
             background: transparent; color: var(--primary);
@@ -218,8 +268,9 @@
             position: fixed; inset: 0; z-index: 2000;
             background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(6px);
             display: flex; align-items: center; justify-content: center;
-            padding: 20px; opacity: 0; visibility: hidden;
+            padding: 16px; opacity: 0; visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
+            overflow-y: auto;
         }
         .modal-overlay.is-open { opacity: 1; visibility: visible; }
 
@@ -267,6 +318,11 @@
             .pricing-section h2 { font-size: 1.8rem; }
             .pricing-container { gap: 45px; padding: 0 10px; }
             .pricing-card { padding: 40px 18px 25px; }
+            .modal-box-consulta {
+                max-height: calc(100dvh - 32px);
+                padding: 24px 18px 18px;
+            }
+            .modal-box-consulta h4 { font-size: 1.05rem; }
         }
     </style>
 </head>
@@ -380,14 +436,14 @@
 
     <!-- Modal Clases de Consulta -->
     <div class="modal-overlay" id="consulta-modal" onclick="if(event.target === this) closeConsultaModal()">
-        <div class="modal-box">
+        <div class="modal-box modal-box-consulta">
             <button type="button" class="modal-close" onclick="closeConsultaModal()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
             <div class="modal-icon"><i class="fas fa-circle-question"></i></div>
             <h4>¿En qué se diferencian?</h4>
             <div class="modal-compare">
                 <div class="modal-compare-block">
                     <h5>Clase de Consulta</h5>
-                    <p>Ideal cuando tenés dudas concretas y querés enfocarte en lo que vos necesitás. Podés traer ejercicios puntuales para resolver, un parcial para repasar o preguntas específicas sobre temas que ya viste. <strong>Vos marcás la agenda</strong>: la clase gira en torno a tus consultas.</p>
+                    <p>Ideal cuando tenés dudas concretas y querés enfocarte en lo que vos necesitás. Podés traer ejercicios puntuales para resolver, un parcial especifico o preguntas específicas sobre temas que ya viste. <strong>Vos marcás la agenda</strong>: la clase gira en torno a tus consultas.</p>
                 </div>
                 <div class="modal-compare-block">
                     <h5>Clase normal (Express, Estándar o Packs)</h5>
