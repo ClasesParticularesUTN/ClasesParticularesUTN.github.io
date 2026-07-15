@@ -106,7 +106,7 @@ const HORARIOS_PERSONALIZADOS = {
     "niolastroncozo@gmail.com": {
         habilitadas: [],
         deshabilitadas: [
-            { semana: 0, celda: "B3:F14" },
+            { semana: 1, celda: "B3:F14" },
         ]
     },
     
