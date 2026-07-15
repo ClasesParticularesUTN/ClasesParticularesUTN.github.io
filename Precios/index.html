@@ -159,6 +159,28 @@
         }
         .info-trigger:hover { background: rgba(243, 166, 97, 0.15); }
 
+        .price-item { position: relative; overflow: visible; }
+
+        .item-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--primary);
+            color: #1a1a24;
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            padding: 5px 14px;
+            border-radius: 0 13px 0 12px;
+            white-space: nowrap;
+        }
+
+        .price-item-badged {
+            flex-wrap: wrap;
+            padding-top: 26px;
+        }
+
         .modal-box .modal-compare {
             text-align: center;
             margin-bottom: 0;
@@ -396,7 +418,8 @@
                     <span class="price-label">Clase Express<small>1 hora de clase</small></span>
                     <span class="price-value" id="precio-ind-expres">$5.000</span>
                 </div>
-                <div class="price-item">
+                <div class="price-item price-item-badged">
+                    <span class="item-badge">La más elegida</span>
                     <span class="price-label">Clase Estándar<small>2 horas seguidas</small></span>
                     <span class="price-value" id="precio-ind-estandar">$9.000</span>
                 </div>
