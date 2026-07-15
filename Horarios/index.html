@@ -443,6 +443,75 @@
             margin-top: 1px;
         }
         .terms-modal-body .terms-step-text { flex: 1; min-width: 0; }
+        .consulta-info-trigger {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 22px; height: 22px; border-radius: 50%;
+            border: none; color: #1a1a24;
+            background: var(--primary);
+            font-size: 0.78rem; font-weight: 800; line-height: 1;
+            cursor: pointer; flex-shrink: 0;
+            padding: 0; margin-left: 4px;
+            box-shadow: 0 2px 6px rgba(243, 166, 97, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .consulta-info-trigger:hover { transform: scale(1.12); box-shadow: 0 3px 9px rgba(243, 166, 97, 0.7); }
+
+        .consulta-info-modal {
+            position: fixed; inset: 0; z-index: 12000;
+            display: none; align-items: center; justify-content: center;
+            padding: 16px;
+        }
+        .consulta-info-modal.is-open { display: flex; }
+        .consulta-info-modal-backdrop {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+        }
+        .consulta-info-modal-panel {
+            position: relative; z-index: 1;
+            width: 100%; max-width: 420px; max-height: min(88vh, 560px);
+            background: var(--glass); border: 1px solid var(--border);
+            border-radius: 16px; box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .consulta-info-modal-header {
+            padding: 16px 44px 12px 18px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0; text-align: center;
+        }
+        .consulta-info-modal-header h2 {
+            font-size: 1rem; font-weight: 700; color: var(--primary);
+            margin: 0; letter-spacing: 0.02em;
+        }
+        .consulta-info-modal-close {
+            position: absolute; top: 10px; right: 10px;
+            width: 36px; height: 36px; border: none; border-radius: 10px;
+            background: rgba(255,255,255,0.06); color: #fff;
+            font-size: 1.35rem; line-height: 1; cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .consulta-info-modal-close:hover { background: rgba(255,255,255,0.12); color: var(--primary); }
+        .consulta-info-modal-body {
+            padding: 16px 18px 18px;
+            overflow-y: auto;
+        }
+        .consulta-info-block {
+            background: rgba(243, 166, 97, 0.09);
+            border: 1px solid rgba(243, 166, 97, 0.22);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+        }
+        .consulta-info-block:last-child { margin-bottom: 0; }
+        .consulta-info-block h5 {
+            font-size: 0.85rem; font-weight: 700; color: var(--primary);
+            margin: 0 0 8px; text-align: center;
+        }
+        .consulta-info-block p {
+            margin: 0; font-size: 0.82rem; line-height: 1.55;
+            color: rgba(255,255,255,0.85); text-align: center;
+        }
+        .consulta-info-block p strong { color: #fff; }
+
         .swal-tyc-row {
             display: flex; align-items: flex-start; gap: 10px;
             margin-top: 16px; text-align: left; font-size: 0.9rem; color: #333;
@@ -628,6 +697,26 @@
                     <li><strong>El día anterior</strong> a la clase → se cobra el <strong>25&nbsp;%</strong> de la tarifa de la clase.</li>
                     <li><strong>El mismo día</strong> de la clase → se cobra la <strong>tarifa completa</strong> (100&nbsp;%).</li>
                 </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="consulta-info-modal" class="consulta-info-modal" aria-hidden="true" role="dialog" aria-labelledby="consulta-info-modal-title">
+        <div class="consulta-info-modal-backdrop" role="button" tabindex="-1" aria-label="Cerrar" onclick="cerrarModalInfoConsulta()"></div>
+        <div class="consulta-info-modal-panel">
+            <button type="button" class="consulta-info-modal-close" onclick="cerrarModalInfoConsulta()" aria-label="Cerrar">&times;</button>
+            <div class="consulta-info-modal-header">
+                <h2 id="consulta-info-modal-title">¿En qué se diferencian?</h2>
+            </div>
+            <div class="consulta-info-modal-body">
+                <div class="consulta-info-block">
+                    <h5>Clase de Consulta</h5>
+                    <p>Ideal cuando tenés dudas concretas y querés enfocarte en lo que vos necesitás. Podés traer ejercicios puntuales para resolver, un parcial específico o preguntas concretas sobre temas que ya estudiaste. <strong>Vos marcás la agenda:</strong> la clase gira en torno a tus consultas.</p>
+                </div>
+                <div class="consulta-info-block">
+                    <h5>Clase normal</h5>
+                    <p>Pensada para prepararte de forma ordenada para el parcial o el final. Avanzamos tema por tema según tu nivel, construyendo la preparación de a poco en cada encuentro. <strong>Acá el ritmo lo lleva más el profesor:</strong> propone qué ver, en qué orden y con qué profundidad, para que progreses de manera sostenida.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -902,6 +991,21 @@
                 marcarTerminosHorariosVistos();
                 habilitarCheckboxTyCConfirmacion();
             }
+        }
+
+        function abrirModalInfoConsulta(ev) {
+            if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+            const el = document.getElementById('consulta-info-modal');
+            if (!el) return;
+            el.classList.add('is-open');
+            el.setAttribute('aria-hidden', 'false');
+        }
+
+        function cerrarModalInfoConsulta() {
+            const el = document.getElementById('consulta-info-modal');
+            if (!el) return;
+            el.classList.remove('is-open');
+            el.setAttribute('aria-hidden', 'true');
         }
 
         async function cancelarClase(codigo) {
@@ -1681,7 +1785,7 @@
                 const labelStyle = 'font-size:0.8rem; color:#4a3520; font-weight:600; line-height:1.2;';
                 const cards = MATERIAS_RESERVA.map((m, i) => {
                     const tpSubrow = '<label class="tp-subrow materia-subrow" style="' + subrowStyle + ' background:rgba(243,166,97,0.13); border:1px solid rgba(243,166,97,0.30);" onclick="event.stopPropagation()"><input type="checkbox" class="tp-check" data-tp-idx="' + i + '" style="' + checkStyle + '"><span style="' + labelStyle + '">Voy a hacer un Trabajo Pr\u00e1ctico</span></label>';
-                    const consultaSubrow = '<label class="consulta-subrow materia-subrow" style="' + subrowStyle + ' background:rgba(240,228,1,0.15); border:1px solid rgba(240,228,1,0.45);" onclick="event.stopPropagation()"><input type="checkbox" class="consulta-check" data-consulta-idx="' + i + '" style="' + checkStyle + '"><span style="' + labelStyle + '">Voy a realizar una Clase de Consulta</span></label>';
+                    const consultaSubrow = '<label class="consulta-subrow materia-subrow" style="' + subrowStyle + ' background:rgba(240,228,1,0.15); border:1px solid rgba(240,228,1,0.45);" onclick="event.stopPropagation()"><input type="checkbox" class="consulta-check" data-consulta-idx="' + i + '" style="' + checkStyle + '"><span style="' + labelStyle + '">Voy a realizar una Clase de Consulta</span><button type="button" class="consulta-info-trigger" onclick="abrirModalInfoConsulta(event)" aria-label="¿Qué es una clase de consulta?">?</button></label>';
                     return '<div class="mod-card materia-card" data-materia-idx="' + i + '" style="max-width:none; min-width:0; text-align:left; padding-bottom:10px;"><div class="mod-title" style="font-size:0.85rem; line-height:1.35;">' + m + '</div>' + tpSubrow + consultaSubrow + '</div>';
                 }).join('');
                 return '<input type="hidden" id="materiaValue" value="" /><p style="margin:0 0 12px; font-size:0.9rem; color:#333; text-align:center;">\u00bfA qu\u00e9 materia vas a asistir?</p><div class="mod-selector" style="flex-direction:column; width:100%; gap:10px;">' + cards + '</div>';
@@ -1817,6 +1921,15 @@
 
             const esPrimeraVezTyC = !yaVioTerminosHorarios();
             const esPrimeraReserva = localStorage.getItem('primeraReserva') === null;
+
+            const montoAMostrar = mod === 'grupal' ? precioTotal : precioPorPersona;
+            const leyendaPrecio = mod === 'grupal' ? 'Total del grupo' : 'Precio final';
+            const htmlPrecioDestacado = (esTP || esConsulta) ? `
+                    <div style="margin-top: 8px; padding: 8px 12px; border-radius: 8px; background: rgba(243,166,97,0.08); border-left: 3px solid rgba(243,166,97,0.5); font-size: 0.85rem; color: #333;">
+                        <i class="fa-solid fa-circle-dollar-to-slot" style="color:#a35a2d; margin-right:6px;"></i>${esConsulta ? 'Clase de Consulta' : 'Trabajo Práctico'} · ${leyendaPrecio}: <strong>${formatearMontoDeuda(montoAMostrar)}</strong>
+                    </div>
+                ` : '';
+
             const htmlRecordatorio = esPrimeraReserva ? '' : `
                     <div style="margin-top: 18px; padding: 14px; border-radius: 14px; border: 1px solid rgba(243,166,97,0.22); background: rgba(243,166,97,0.08);">
                         <p style="margin: 0 0 10px; font-weight: 700; color: #322a1f;">Enviar recordatorio por</p>
@@ -1838,6 +1951,7 @@
                         <b>Resumen de la reserva</b><br>
                         <span style="margin-top: 6px; display: inline-block;">${textoResumen}</span>
                     </p>
+                    ${htmlPrecioDestacado}
                     ${htmlRecordatorio}
                     <div class="swal-tyc-row">
                         <input type="checkbox" id="swal-acepto-tyc" autocomplete="off"${esPrimeraVezTyC ? ' disabled' : ''}>
