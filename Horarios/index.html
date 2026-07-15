@@ -1676,9 +1676,13 @@
             }
 
             function buildHtmlMateria() {
+                const subrowStyle = 'display:none; align-items:center; gap:8px; margin-top:10px; padding:8px 10px; border-radius:8px; cursor:pointer;';
+                const checkStyle = 'width:15px; height:15px; accent-color:#f3a661; cursor:pointer; flex-shrink:0;';
+                const labelStyle = 'font-size:0.8rem; color:#4a3520; font-weight:600; line-height:1.2;';
                 const cards = MATERIAS_RESERVA.map((m, i) => {
-                    const subrow = '<label class="tp-subrow" style="display:none; align-items:center; gap:8px; margin-top:10px; padding:8px 10px; background:rgba(243,166,97,0.13); border:1px solid rgba(243,166,97,0.30); border-radius:8px; cursor:pointer;" onclick="event.stopPropagation()"><input type="checkbox" class="tp-check" data-tp-idx="' + i + '" style="width:15px; height:15px; accent-color:#f3a661; cursor:pointer; flex-shrink:0;"><span style="font-size:0.8rem; color:#4a3520; font-weight:600; line-height:1.2;">Voy a hacer un Trabajo Pr\u00e1ctico</span></label>';
-                    return '<div class="mod-card materia-card" data-materia-idx="' + i + '" style="max-width:none; min-width:0; text-align:left; padding-bottom:10px;"><div class="mod-title" style="font-size:0.85rem; line-height:1.35;">' + m + '</div>' + subrow + '</div>';
+                    const tpSubrow = '<label class="tp-subrow materia-subrow" style="' + subrowStyle + ' background:rgba(243,166,97,0.13); border:1px solid rgba(243,166,97,0.30);" onclick="event.stopPropagation()"><input type="checkbox" class="tp-check" data-tp-idx="' + i + '" style="' + checkStyle + '"><span style="' + labelStyle + '">Voy a hacer un Trabajo Pr\u00e1ctico</span></label>';
+                    const consultaSubrow = '<label class="consulta-subrow materia-subrow" style="' + subrowStyle + ' background:rgba(240,228,1,0.15); border:1px solid rgba(240,228,1,0.45);" onclick="event.stopPropagation()"><input type="checkbox" class="consulta-check" data-consulta-idx="' + i + '" style="' + checkStyle + '"><span style="' + labelStyle + '">Voy a realizar una Clase de Consulta</span></label>';
+                    return '<div class="mod-card materia-card" data-materia-idx="' + i + '" style="max-width:none; min-width:0; text-align:left; padding-bottom:10px;"><div class="mod-title" style="font-size:0.85rem; line-height:1.35;">' + m + '</div>' + tpSubrow + consultaSubrow + '</div>';
                 }).join('');
                 return '<input type="hidden" id="materiaValue" value="" /><p style="margin:0 0 12px; font-size:0.9rem; color:#333; text-align:center;">\u00bfA qu\u00e9 materia vas a asistir?</p><div class="mod-selector" style="flex-direction:column; width:100%; gap:10px;">' + cards + '</div>';
             }
@@ -1697,29 +1701,57 @@
                     if (!v) { Swal.showValidationMessage('Elegí una materia'); return false; }
                     const selectedCard = document.querySelector('.materia-card.selected');
                     const esTP = selectedCard?.querySelector('.tp-check')?.checked || false;
-                    return { materia: v, esTP };
+                    const esConsulta = selectedCard?.querySelector('.consulta-check')?.checked || false;
+                    if (esTP && esConsulta) {
+                        Swal.showValidationMessage('Elegí solo una opción: Trabajo Práctico o Clase de Consulta');
+                        return false;
+                    }
+                    if (esConsulta && mod !== 'individual') {
+                        Swal.showValidationMessage('La Clase de Consulta solo está disponible en modalidad individual');
+                        return false;
+                    }
+                    return { materia: v, esTP, esConsulta };
                 },
                 didOpen: () => {
+                    const actualizarSubrowsMateria = (card) => {
+                        const tpSub = card?.querySelector('.tp-subrow');
+                        const consultaSub = card?.querySelector('.consulta-subrow');
+                        if (tpSub) tpSub.style.display = selectedSlots.length >= 2 ? 'flex' : 'none';
+                        if (consultaSub) consultaSub.style.display = mod === 'individual' ? 'flex' : 'none';
+                    };
                     const seleccionarCard = (card) => {
                         document.querySelectorAll('.materia-card').forEach(c => {
                             c.classList.remove('selected');
-                            const sub = c.querySelector('.tp-subrow');
-                            if (sub) sub.style.display = 'none';
+                            c.querySelectorAll('.materia-subrow').forEach(sub => { sub.style.display = 'none'; });
                         });
                         card.classList.add('selected');
-                        const sub = card.querySelector('.tp-subrow');
-                        if (sub) sub.style.display = selectedSlots.length >= 2 ? 'flex' : 'none';
+                        actualizarSubrowsMateria(card);
                         const idx = parseInt(card.getAttribute('data-materia-idx'), 10);
                         document.getElementById('materiaValue').value = MATERIAS_RESERVA[idx] || '';
                     };
                     document.querySelectorAll('.materia-card').forEach(card => {
                         card.addEventListener('click', () => seleccionarCard(card));
+                        const tpCheck = card.querySelector('.tp-check');
+                        const consultaCheck = card.querySelector('.consulta-check');
+                        if (tpCheck && consultaCheck) {
+                            tpCheck.addEventListener('change', () => { if (tpCheck.checked) consultaCheck.checked = false; });
+                            consultaCheck.addEventListener('change', () => { if (consultaCheck.checked) tpCheck.checked = false; });
+                        }
                     });
                     if (prefsReserva.materia) {
                         const idxGuardada = MATERIAS_RESERVA.indexOf(prefsReserva.materia);
                         if (idxGuardada >= 0) {
                             const cardGuardada = document.querySelector(`.materia-card[data-materia-idx="${idxGuardada}"]`);
-                            if (cardGuardada) seleccionarCard(cardGuardada);
+                            if (cardGuardada) {
+                                seleccionarCard(cardGuardada);
+                                if (prefsReserva.esConsulta && mod === 'individual') {
+                                    const consultaCheck = cardGuardada.querySelector('.consulta-check');
+                                    if (consultaCheck) consultaCheck.checked = true;
+                                } else if (prefsReserva.esTP && selectedSlots.length >= 2) {
+                                    const tpCheck = cardGuardada.querySelector('.tp-check');
+                                    if (tpCheck) tpCheck.checked = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -1728,10 +1760,13 @@
             if (!materiaResult) return;
             const materia = materiaResult.materia;
             const esTP = materiaResult.esTP || false;
-            guardarPreferenciasReserva({ materia });
+            const esConsulta = materiaResult.esConsulta || false;
+            guardarPreferenciasReserva({ materia, esTP, esConsulta });
 
-            // Si es TP: precio según modalidad. 2 hs = precio base, 3 hs = precio/2*3
-            if (esTP) {
+            if (esConsulta) {
+                precioPorPersona = PRECIOS.individual.consulta1h * selectedSlots.length;
+                precioTotal = precioPorPersona;
+            } else if (esTP) {
                 const precioTP2h = mod === 'grupal'
                     ? PRECIOS.tp?.grupal ?? PRECIOS.tp?.individual ?? 0
                     : PRECIOS.tp?.individual ?? 0;
@@ -1762,6 +1797,7 @@
                 return { diaNombre, fechaStr };
             };
 
+            const etiquetaExtra = esConsulta ? ' · <strong>Clase de Consulta</strong>' : (esTP ? ' · <strong>Trabajo Práctico</strong>' : '');
             let textoResumen = "";
             if (fechasUnicas.length === 1) {
                 const d0 = new Date(fechasUnicas[0] + 'T00:00:00');
@@ -1769,14 +1805,14 @@
                 const textoRango = horaInicio === horaFinSlot
                     ? `a las ${horaInicio} hs`
                     : `de ${horaInicio} a ${horaFinHasta} hs`;
-                textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}${esTP ? ' · <strong>Trabajo Práctico</strong>' : ''} · ${materia}`;
+                textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}${etiquetaExtra} · ${materia}`;
             } else {
                 const fechasOrdenadas = [...fechasUnicas].sort();
                 const dMin = new Date(fechasOrdenadas[0] + 'T00:00:00');
                 const dMax = new Date(fechasOrdenadas[fechasOrdenadas.length - 1] + 'T00:00:00');
                 const { diaNombre: diaMin, fechaStr: fechaMin } = formatearDia(dMin);
                 const { diaNombre: diaMax, fechaStr: fechaMax } = formatearDia(dMax);
-                textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}${esTP ? ' · <strong>Trabajo Práctico</strong>' : ''} · ${materia}`;
+                textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}${etiquetaExtra} · ${materia}`;
             }
 
             const esPrimeraVezTyC = !yaVioTerminosHorarios();
@@ -1878,7 +1914,7 @@
                     : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
                 // ─────────────────────────────────────────────────────────────────────
 
-                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "esTP": esTP, "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva) };
+                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "esTP": esTP, "esConsulta": esConsulta, "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva) };
 
                 const diasNombresRecordatorio = puedeFinDeSemana
                     ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']

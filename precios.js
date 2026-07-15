@@ -21,6 +21,7 @@ const PRECIOS_BASE = {
     individual: {
             expres1h: 6500,
             estandar2h: 10000,
+            consulta1h: 8000,
             precioPorHora1: 6500,
             precioPorHora2: 5000,
             packExamen: 10000 * 8,
