@@ -107,6 +107,8 @@ const HORARIOS_PERSONALIZADOS = {
         habilitadas: [],
         deshabilitadas: [
             { semana: 1, celda: "B3:F14" },
+            
+            { semana: 0, celda: "B3:F14" },
         ]
     },
     
