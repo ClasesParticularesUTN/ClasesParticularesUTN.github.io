@@ -94,4 +94,6 @@ const PERMISOS_GLOBAL = {
         activo: false,
         descripcion: 'Muestra la variante especial del recordatorio de deuda. Pensado para habilitarse solo por correo en permisosPorCorreo.js.'
     }
+
+    
 };

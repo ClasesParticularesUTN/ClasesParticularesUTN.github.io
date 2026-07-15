@@ -40,7 +40,13 @@ const PERMISOS_POR_CORREO = {
     'andresnigorrafac2026@gmail.com': {
         verRecordatorioDeudaAlEntrar: false,
         verRecordatorioDeudaEspecifico: true
-    }
+    },
+
+    
+    
+    "ccamilavilla@gmail.com": {
+        reservarSinAnticipacion12h: true
+    },
 
     // Ejemplo para agregar una excepción nueva a un alumno puntual:
     // 'correo@ejemplo.com': {
