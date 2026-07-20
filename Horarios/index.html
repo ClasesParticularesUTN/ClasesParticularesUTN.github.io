@@ -2074,13 +2074,34 @@
                 const precioFinalRecordatorio = (esTP || esConsulta) ? formatearMontoDeuda(montoAMostrar) : null;
 
                try {
-                    await Promise.all([
+                    const [, , resultadoReserva] = await Promise.all([
                         recordatorio === 'Whatsapp' ? enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio }) : Promise.resolve(),
                         fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) }),
-                        fetch(URLHorarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) })
+                        fetch(URLHorarios, { method: 'POST', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('[reservarHorario] Resultado del servidor:', data);
+                                return data;
+                            })
+                            .catch(error => {
+                                console.error('[reservarHorario] Error al llamar al servidor:', error);
+                                throw error;
+                            })
                     ]);
 
                     document.getElementById('loader-overlay').style.display = 'none';
+
+                    if (resultadoReserva && resultadoReserva.ok === false) {
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'Horario no disponible',
+                            text: resultadoReserva.error || 'Alguna de las celdas ya fue reservada por otra persona. Por favor, elegí otro horario.',
+                            confirmButtonColor: '#f3a661'
+                        });
+                        location.reload();
+                        return;
+                    }
+
                     await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
 
                     location.reload();
