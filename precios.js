@@ -53,8 +53,8 @@ const PRECIOS_ESPECIALES = {
             estandar2h: 10000,
             precioPorHora1: 6500,
             precioPorHora2: 5000,
-            packExamen: 9000 * 8,
-            packMateria: 9000 * 14,
+            packExamen: 10000 * 8,
+            packMateria: 10000 * 14,
         }
     },
     "Villa Camila": {
