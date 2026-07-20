@@ -55,6 +55,44 @@ const PRECIOS_ESPECIALES = {
             precioPorHora2: 5000,
             packExamen: 10000 * 8,
             packMateria: 10000 * 14,
+        },
+        grupal: {
+            estandar2h: 8000,
+            precioPorHora: 4000,
+            packExamen: 8000 * 8,
+            packMateria: 8000 * 14
+        }
+    },
+    "Mosquen Valentin Ignacio": {
+        individual: {
+            expres1h: 6500,
+            estandar2h: 10000,
+            precioPorHora1: 6500,
+            precioPorHora2: 5000,
+            packExamen: 10000 * 8,
+            packMateria: 10000 * 14,
+        },
+        grupal: {
+            estandar2h: 8000,
+            precioPorHora: 4000,
+            packExamen: 8000 * 8,
+            packMateria: 8000 * 14
+        }
+    },
+    "Bertoia Delfina": {
+        individual: {
+            expres1h: 6500,
+            estandar2h: 10000,
+            precioPorHora1: 6500,
+            precioPorHora2: 5000,
+            packExamen: 10000 * 8,
+            packMateria: 10000 * 14,
+        },
+        grupal: {
+            estandar2h: 8000,
+            precioPorHora: 4000,
+            packExamen: 8000 * 8,
+            packMateria: 8000 * 14
         }
     },
     "Villa Camila": {
