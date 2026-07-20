@@ -2051,7 +2051,7 @@
                     ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
                     : ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
                 const fechas = selectedSlots.map(id => id.split(' ')[0]);
-                const fechasUnicas = [...new Set(fechas)];
+                const fechasUnicas = [...new Set(fechas)].sort();
                 const fechasFormateadas = [];
                 for (const fecha of fechasUnicas) {
                     const horasDeFecha = selectedSlots.filter(id => id.split(' ')[0] === fecha).map(id => id.split(' ')[1]);
@@ -2301,6 +2301,7 @@ ${fechaTexto}`
         init();
 
         
+    console.log("17:47");
 
     </script>
 </body>
