@@ -2074,24 +2074,19 @@
                 const precioFinalRecordatorio = (esTP || esConsulta) ? formatearMontoDeuda(montoAMostrar) : null;
 
                try {
-                    const [, , resultadoReserva] = await Promise.all([
-                        recordatorio === 'Whatsapp' ? enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio }) : Promise.resolve(),
-                        fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) }),
-                        fetch(URLHorarios, { method: 'POST', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) })
-                            .then(response => response.json())
-                            .then(data => {
-                                console.log('[reservarHorario] Resultado del servidor:', data);
-                                return data;
-                            })
-                            .catch(error => {
-                                console.error('[reservarHorario] Error al llamar al servidor:', error);
-                                throw error;
-                            })
-                    ]);
-
-                    document.getElementById('loader-overlay').style.display = 'none';
+                    const resultadoReserva = await fetch(URLHorarios, { method: 'POST', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) })
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('[reservarHorario] Resultado del servidor:', data);
+                            return data;
+                        })
+                        .catch(error => {
+                            console.error('[reservarHorario] Error al llamar al servidor:', error);
+                            throw error;
+                        });
 
                     if (resultadoReserva && resultadoReserva.ok === false) {
+                        document.getElementById('loader-overlay').style.display = 'none';
                         await Swal.fire({
                             icon: 'warning',
                             title: 'Horario no disponible',
@@ -2102,6 +2097,14 @@
                         return;
                     }
 
+                    // El horario se reservó con éxito: recién ahora se manda el WhatsApp y se guarda el alumno
+                    document.getElementById('loader-text').textContent = 'Confirmando reserva...';
+                    await Promise.all([
+                        recordatorio === 'Whatsapp' ? enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio }) : Promise.resolve(),
+                        fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
+                    ]);
+
+                    document.getElementById('loader-overlay').style.display = 'none';
                     await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
 
                     location.reload();
@@ -2243,35 +2246,32 @@
 
     const { incluirLinkPago = true, precioFinal = null } = opciones;
 
-    const bloquePago = incluirLinkPago
-        ? `
-----------------------------------------
+    const bloquePago = `----------------------------------------
 💳 *LINK DE PAGO:*
 clasesparticularesutn.com.ar/pagos
 
 ¿No sabes como pagar?
 clasesparticularesutn.com.ar/tutoriales
-----------------------------------------`
-        : '';
+----------------------------------------`;
 
-    const bloquePrecioFinal = precioFinal
-        ? `
-💰 *Precio final:* ${precioFinal}`
-        : '';
+    const bloquePrecioFinal = precioFinal ? `💰 *Precio final:* ${precioFinal}` : null;
 
-    const mensajeEstructurado = 
-`🎓 *Clases Particulares UTN*
+    const partes = [
+        `🎓 *Clases Particulares UTN*
 ----------------------------------------
 ¡Hola *${nombre}*! 👋
 
 Confirmamos tu reserva para la clase particular:
 
 📅 *Fecha:*
-${fechaTexto}
-${bloquePrecioFinal}
-${bloquePago}
+${fechaTexto}`
+    ];
 
-¡Nos vemos en clase! 💻🚀`;
+    if (bloquePrecioFinal) partes.push(bloquePrecioFinal);
+    if (incluirLinkPago) partes.push(bloquePago);
+    partes.push('¡Nos vemos en clase! 💻🚀');
+
+    const mensajeEstructurado = partes.join('\n\n');
 
     const payload = {
         numero: telefonoLimpio,
@@ -2300,7 +2300,7 @@ ${bloquePago}
 }
         init();
 
-    console.log("17:27");
+        
 
     </script>
 </body>
