@@ -48,10 +48,9 @@ const PRECIOS_BASE = {
  */
 const PRECIOS_ESPECIALES = {
     "Benitez Juan Martin": {
-
         individual: {
             expres1h: 6500,
-            estandar2h: 100000,
+            estandar2h: 10000,
             precioPorHora1: 6500,
             precioPorHora2: 5000,
             packExamen: 9000 * 8,
