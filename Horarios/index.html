@@ -2065,9 +2065,17 @@
                 }
                 const textoFechas = fechasFormateadas.map(f => `    • ${f}`).join('\n');
 
+                // ── Horas a favor: si lo reservado entra dentro del pack, no se pide pago ──
+                const horasAFavorRecordatorio = Number(Alumno?.horasAFavor) || 0;
+                const usoHorasAFavor = horasAFavorRecordatorio > 0 && selectedSlots.length <= horasAFavorRecordatorio;
+                const incluirLinkPago = !usoHorasAFavor;
+
+                // ── Precio final: solo si es Clase de Consulta o Trabajo Práctico ──
+                const precioFinalRecordatorio = (esTP || esConsulta) ? formatearMontoDeuda(montoAMostrar) : null;
+
                try {
                     await Promise.all([
-                        recordatorio === 'Whatsapp' ? enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas) : Promise.resolve(),
+                        recordatorio === 'Whatsapp' ? enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio }) : Promise.resolve(),
                         fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) }),
                         fetch(URLHorarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre }) })
                     ]);
@@ -2201,7 +2209,7 @@
             });
         })();
 
-        function enviarRecordatorioReserva(nombre, telefono, fechaTexto) {
+        function enviarRecordatorioReserva(nombre, telefono, fechaTexto, opciones = {}) {
     let telefonoLimpio = String(telefono).replace(/\D/g, ''); 
     
     if (!telefonoLimpio.startsWith('54')) {
@@ -2212,6 +2220,24 @@
         }
     }
 
+    const { incluirLinkPago = true, precioFinal = null } = opciones;
+
+    const bloquePago = incluirLinkPago
+        ? `
+----------------------------------------
+💳 *LINK DE PAGO:*
+clasesparticularesutn.com.ar/pagos
+
+¿No sabes como pagar?
+clasesparticularesutn.com.ar/tutoriales
+----------------------------------------`
+        : '';
+
+    const bloquePrecioFinal = precioFinal
+        ? `
+💰 *Precio final:* ${precioFinal}`
+        : '';
+
     const mensajeEstructurado = 
 `🎓 *Clases Particulares UTN*
 ----------------------------------------
@@ -2221,14 +2247,8 @@ Confirmamos tu reserva para la clase particular:
 
 📅 *Fecha:*
 ${fechaTexto}
-
-----------------------------------------
-💳 *LINK DE PAGO:*
-clasesparticularesutn.com.ar/pagos
-
-¿No sabes como pagar?
-clasesparticularesutn.com.ar/tutoriales
-----------------------------------------
+${bloquePrecioFinal}
+${bloquePago}
 
 ¡Nos vemos en clase! 💻🚀`;
 
