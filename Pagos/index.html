@@ -11,7 +11,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script src="/precios.js" charset="UTF-8"></script>
-    <script src="PagosPersonalizados.js" charset="UTF-8"></script>
+    <script src="pagosPersonalizados.js" charset="UTF-8"></script>
     <script src="cupones.js" charset="UTF-8"></script>
     <style>
         :root {
@@ -347,6 +347,25 @@
             font-weight: 700;
         }
 
+        /* Título grande del pago personalizado (reemplaza a la nota de packs) */
+        .qr-personalizado-titulo {
+            width: 100%;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1.35;
+            margin: -4px 0 22px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: var(--primary-glow);
+            border: 1.5px solid var(--primary);
+            box-shadow: 0 0 24px var(--primary-glow);
+            letter-spacing: 0.2px;
+        }
+        .qr-personalizado-titulo.hidden { display: none; }
+
+
         /* Cupones de descuento */
         .cupon-card {
             background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
@@ -548,6 +567,7 @@
                 <i class="fas fa-qrcode"></i>
                 <span>Escane&#225; para pagar</span>
             </div>
+            <div id="qrPersonalizadoTitulo" class="qr-personalizado-titulo hidden"></div>
             <div class="qr-pack-layout">
                 <div class="qr-frame">
                     <div id="qrImgContainer"></div>
@@ -1030,10 +1050,17 @@ async function generarQRPersonalizado({ precio, titulo, referencia }) {
             setProcessingUI(false);
             document.getElementById("qrImgContainer").innerHTML =
                 `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
+
+            // En personalizado no va la nota de packs, va el título grande en su lugar.
             const note = document.getElementById("qrPackNote");
-            if (note) note.classList.remove("hidden");
+            if (note) note.classList.add("hidden");
             const qrContainer = document.querySelector("#modalQR .qr-container");
-            if (qrContainer) qrContainer.classList.add("has-pack-note");
+            if (qrContainer) qrContainer.classList.remove("has-pack-note");
+            const tituloEl = document.getElementById("qrPersonalizadoTitulo");
+            if (tituloEl) {
+                tituloEl.textContent = titulo;
+                tituloEl.classList.remove("hidden");
+            }
 
             // En personalizado, mostramos directo el QR (sin la pantalla informativa).
             document.getElementById("modalInfoQR").style.display = "none";
@@ -1458,6 +1485,8 @@ async function ejecutarPago({ lineas, referencias, tipoPago }) {
             if (note) note.classList.toggle("hidden", !esPack);
             const qrContainer = document.querySelector("#modalQR .qr-container");
             if (qrContainer) qrContainer.classList.toggle("has-pack-note", esPack);
+            const tituloPersonalizadoEl = document.getElementById("qrPersonalizadoTitulo");
+            if (tituloPersonalizadoEl) tituloPersonalizadoEl.classList.add("hidden");
             if (!localStorage.getItem("qrInfoShown")) {
                 document.getElementById("modalInfoQR").style.display = "flex";
             } else {
@@ -1526,6 +1555,8 @@ async function generarQRAdmin() {
         if (data.qr_data) {
             setProcessingUI(false);
             document.getElementById("qrImgContainer").innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
+            const tituloPersonalizadoEl = document.getElementById("qrPersonalizadoTitulo");
+            if (tituloPersonalizadoEl) tituloPersonalizadoEl.classList.add("hidden");
             if (!localStorage.getItem("qrInfoShown")) {
                 document.getElementById("modalInfoQR").style.display = "flex";
             } else {
@@ -1547,6 +1578,8 @@ function cerrarQR() {
         if (note) note.classList.add("hidden");
         const qrContainer = document.querySelector("#modalQR .qr-container");
         if (qrContainer) qrContainer.classList.remove("has-pack-note");
+        const tituloPersonalizadoEl = document.getElementById("qrPersonalizadoTitulo");
+        if (tituloPersonalizadoEl) tituloPersonalizadoEl.classList.add("hidden");
     }
 function cerrarRechazo() {
         document.getElementById("modalRechazo").style.display = "none";
