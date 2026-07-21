@@ -1452,8 +1452,7 @@
         }
 
         function logout() {
-            localStorage.removeItem('persona');
-            localStorage.removeItem('personaSemana');
+            localStorage.clear();
             sessionStorage.clear();
             window.location.href = './Login/Login.html';
         }
