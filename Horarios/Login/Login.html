@@ -558,6 +558,7 @@
 
                         // Sesión válida hasta el próximo lunes (semana calendario)
                         localStorage.setItem('persona', JSON.stringify(data));
+                        sessionStorage.setItem('persona', JSON.stringify(data));
                         localStorage.setItem('personaSemana', claveSemanaActual());
                         localStorage.setItem('UltimoCorreo', JSON.stringify(correo));
                         console.log('💾 [STORAGE] Sesión y UltimoCorreo guardados (válida hasta el próximo lunes)');
