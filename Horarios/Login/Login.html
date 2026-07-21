@@ -230,19 +230,25 @@
         <p class="subtitle">Ingresa tus datos para continuar</p>
 
         <form id="loginForm" autocomplete="off">
-            <div style="opacity: 0; position: absolute; z-index: -1; height: 0;">
-                <input type="text" name="anti_fill_1" tabindex="-1">
-                <input type="password" name="anti_fill_2" tabindex="-1">
+            <div style="opacity: 0; position: absolute; z-index: -1; height: 0; pointer-events: none;" aria-hidden="true">
+                <input type="text" name="anti_fill_1" autocomplete="username" tabindex="-1">
+                <input type="password" name="anti_fill_2" autocomplete="current-password" tabindex="-1">
             </div>
 
             <div class="form-group">
                 <label class="form-label">Correo Electrónico</label>
-                <input type="text" id="user_id" class="input-control" placeholder="nombre@ejemplo.com" autocomplete="username" required>
+                <input type="text" id="user_id" class="input-control" placeholder="nombre@ejemplo.com"
+                    autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+                    data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other" data-protonpass-ignore="true"
+                    required>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Contraseña</label>
-                <input type="password" id="security_key" class="input-control" placeholder="Escribe tu contraseña" autocomplete="current-password" required>
+                <input type="password" id="security_key" class="input-control" placeholder="Escribe tu contraseña"
+                    autocomplete="off"
+                    data-lpignore="true" data-1p-ignore data-bwignore="true" data-form-type="other" data-protonpass-ignore="true"
+                    required>
                 <i class="fa-regular fa-eye toggle-password" id="toggleEye"></i>
                 <a href="#" class="forgot-link" id="btnForgot">¿Olvidaste tu contraseña?</a>
             </div>
@@ -491,6 +497,18 @@
             }
         }
 
+        // ── Clave de la semana calendario actual (lunes a domingo) ──────────────
+        // Debe ser idéntica a la de index.html para que ambas páginas coincidan.
+        function claveSemanaActual() {
+            const hoy = new Date();
+            const dia = hoy.getDay(); // 0=domingo, 1=lunes, ... 6=sábado
+            const diffAlLunes = (dia === 0 ? -6 : 1 - dia);
+            const lunes = new Date(hoy);
+            lunes.setHours(0, 0, 0, 0);
+            lunes.setDate(hoy.getDate() + diffAlLunes);
+            return lunes.toISOString().slice(0, 10); // "YYYY-MM-DD" del lunes de esta semana
+        }
+
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             console.log('📝 [FORM] Submit disparado');
@@ -534,26 +552,15 @@
                     
                     if (data.sesion) {
                         console.log('🎯 [AUTH] Login exitoso - Guardando datos');
-                        const sesionExistente = localStorage.getItem('personaPersistenteNuevo');
                         localStorage.setItem('Nombre', data.nombre);
                         localStorage.setItem('Apellido', data.apellido);
                         console.log('💾 [STORAGE] Nombre y Apellido guardados');
-                        
-                        if (!sesionExistente) {
-                            const expiracion = Date.now() + (7 * 24 * 60 * 60 * 1000);
-                            const payload = { persona: data, expiresAt: expiracion };
-                            localStorage.setItem('personaPersistenteNuevo', JSON.stringify(payload));
-                            console.log('💾 [STORAGE] Nueva sesión persistente creada (7 días)');
-                        } else {
-                            let datosActuales = JSON.parse(sesionExistente);
-                            datosActuales.persona = data; 
-                            localStorage.setItem('personaPersistenteNuevo', JSON.stringify(datosActuales));
-                            console.log('💾 [STORAGE] Sesión persistente actualizada');
-                        }
 
-                        sessionStorage.setItem('persona', JSON.stringify(data));
+                        // Sesión válida hasta el próximo lunes (semana calendario)
+                        localStorage.setItem('persona', JSON.stringify(data));
+                        localStorage.setItem('personaSemana', claveSemanaActual());
                         localStorage.setItem('UltimoCorreo', JSON.stringify(correo));
-                        console.log('💾 [STORAGE] Session y UltimoCorreo guardados');
+                        console.log('💾 [STORAGE] Sesión y UltimoCorreo guardados (válida hasta el próximo lunes)');
 
                         // ✅ CORRECCIÓN: rutas relativas según estructura de carpetas
                         // Login está en: Horarios/Login/Login.html
