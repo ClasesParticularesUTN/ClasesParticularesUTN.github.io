@@ -348,7 +348,9 @@ Visualizador de algoritmos
 </footer>
 
 <script>
-
+if(!localStorage.getItem("persona")){
+    window.location.href = '/Horarios/Login/Login.html';
+}
 const modal=document.getElementById("modal");
 const video=document.getElementById("video");
 const titulo=document.getElementById("titulo");
