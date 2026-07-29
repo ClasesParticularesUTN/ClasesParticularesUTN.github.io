@@ -3,159 +3,397 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Videos de Algoritmos</title>
+
+<title>Visualizador de Algoritmos</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    user-select:none;
+    font-family:Segoe UI,Arial,sans-serif;
 }
 
 body{
-    background:#111;
+    background:#0b0f14;
     color:white;
-    font-family:Arial, Helvetica, sans-serif;
+    overflow-x:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+    radial-gradient(circle at top,#1b3c65 0%,transparent 35%),
+    radial-gradient(circle at bottom,#14324d 0%,transparent 35%);
+    opacity:.35;
+    z-index:-1;
 }
 
 header{
-    background:#1f1f1f;
-    padding:25px;
     text-align:center;
-    border-bottom:3px solid #444;
+    padding:40px 20px;
 }
 
 header h1{
-    font-size:34px;
+    font-size:42px;
+    margin-bottom:10px;
 }
 
-.container{
+header p{
+    color:#bdbdbd;
+    font-size:18px;
+}
+
+.grid{
+
     width:95%;
-    max-width:1100px;
-    margin:40px auto;
+    max-width:1300px;
+    margin:auto;
+
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:30px;
+
+    padding-bottom:60px;
+
 }
 
-.video{
-    background:#1c1c1c;
-    margin-bottom:45px;
-    padding:20px;
-    border-radius:12px;
-    box-shadow:0 0 20px rgba(0,0,0,.45);
+.card{
+
+    background:#171d24;
+    border-radius:18px;
+    overflow:hidden;
+    cursor:pointer;
+
+    transition:.3s;
+
+    border:1px solid rgba(255,255,255,.05);
+
 }
 
-.video h2{
-    margin-bottom:15px;
-    color:#4fc3f7;
+.card:hover{
+
+    transform:translateY(-8px);
+
+    box-shadow:
+    0 0 40px rgba(0,170,255,.2);
+
+}
+
+.thumb{
+
+    height:170px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    font-size:80px;
+
+    background:linear-gradient(135deg,#0b73c8,#153a63);
+
+}
+
+.info{
+
+    padding:22px;
+
+}
+
+.info h2{
+
+    margin-bottom:8px;
+
+}
+
+.info p{
+
+    color:#bfbfbf;
+    line-height:1.5;
+
+}
+
+.play{
+
+    margin-top:18px;
+
+    background:#2196f3;
+
+    color:white;
+
+    border:none;
+
+    padding:12px;
+
+    width:100%;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    transition:.25s;
+
+}
+
+.play:hover{
+
+    background:#42a5f5;
+
+}
+
+/************* MODAL ************/
+
+#modal{
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.92);
+
+    display:none;
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:999;
+
+    animation:fade .25s;
+
+}
+
+@keyframes fade{
+
+from{opacity:0;}
+to{opacity:1;}
+
+}
+
+.modalContent{
+
+    width:min(95%,1100px);
+
+}
+
+#titulo{
+
     text-align:center;
+
+    margin-bottom:20px;
+
+    font-size:34px;
+
 }
 
 video{
+
     width:100%;
-    border-radius:10px;
-    outline:none;
+
+    border-radius:14px;
+
     background:black;
+
+    outline:none;
+
 }
+
+.cerrar{
+
+    position:absolute;
+
+    right:25px;
+
+    top:20px;
+
+    font-size:45px;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+.cerrar:hover{
+
+    transform:scale(1.2);
+
+    color:#ff5252;
+
+}
+
+footer{
+
+    text-align:center;
+
+    color:#888;
+
+    padding:30px;
+
+}
+
 </style>
+
 </head>
 
 <body oncontextmenu="return false">
 
 <header>
-    <h1>Algoritmos de Ordenamiento</h1>
+
+<h1>📚 Algoritmos de Ordenamiento</h1>
+
+<p>Seleccioná un algoritmo para visualizar su funcionamiento.</p>
+
 </header>
 
-<div class="container">
+<div class="grid">
 
-    <div class="video">
-        <h2>Burbuja</h2>
+<div class="card" onclick="abrir('Burbuja','videos/Burbuja.mp4')">
 
-        <video
-            controls
-            controlsList="nodownload noplaybackrate"
-            disablePictureInPicture
-            disableRemotePlayback
-            playsinline
-            preload="metadata">
+<div class="thumb">🫧</div>
 
-            <source src="Burbuja.mp4" type="video/mp4">
-        </video>
-    </div>
+<div class="info">
 
-    <div class="video">
-        <h2>Inserción</h2>
+<h2>Burbuja</h2>
 
-        <video
-            controls
-            controlsList="nodownload noplaybackrate"
-            disablePictureInPicture
-            disableRemotePlayback
-            playsinline
-            preload="metadata">
+<p>Compara elementos adyacentes e intercambia los que estén fuera de orden.</p>
 
-            <source src="Insercion.mp4" type="video/mp4">
-        </video>
-    </div>
-
-    <div class="video">
-        <h2>Merge Sort</h2>
-
-        <video
-            controls
-            controlsList="nodownload noplaybackrate"
-            disablePictureInPicture
-            disableRemotePlayback
-            playsinline
-            preload="metadata">
-
-            <source src="MergeSort.mp4" type="video/mp4">
-        </video>
-    </div>
-
-    <div class="video">
-        <h2>Selección</h2>
-
-        <video
-            controls
-            controlsList="nodownload noplaybackrate"
-            disablePictureInPicture
-            disableRemotePlayback
-            playsinline
-            preload="metadata">
-
-            <source src="Seleccion.mp4" type="video/mp4">
-        </video>
-    </div>
+<button class="play">▶ Ver animación</button>
 
 </div>
 
+</div>
+
+<div class="card" onclick="abrir('Inserción','videos/Insercion.mp4')">
+
+<div class="thumb">📥</div>
+
+<div class="info">
+
+<h2>Inserción</h2>
+
+<p>Inserta cada elemento en la posición correcta dentro de la parte ordenada.</p>
+
+<button class="play">▶ Ver animación</button>
+
+</div>
+
+</div>
+
+<div class="card" onclick="abrir('Merge Sort','videos/MergeSort.mp4')">
+
+<div class="thumb">🌳</div>
+
+<div class="info">
+
+<h2>Merge Sort</h2>
+
+<p>Divide el problema en partes más pequeñas y luego las fusiona ordenadamente.</p>
+
+<button class="play">▶ Ver animación</button>
+
+</div>
+
+</div>
+
+<div class="card" onclick="abrir('Selección','videos/Seleccion.mp4')">
+
+<div class="thumb">🎯</div>
+
+<div class="info">
+
+<h2>Selección</h2>
+
+<p>Busca el menor elemento restante y lo coloca en su posición definitiva.</p>
+
+<button class="play">▶ Ver animación</button>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="modal">
+
+<div class="cerrar" onclick="cerrar()">&times;</div>
+
+<div class="modalContent">
+
+<h2 id="titulo"></h2>
+
+<video
+id="video"
+controls
+controlsList="nodownload noplaybackrate"
+disablePictureInPicture
+disableRemotePlayback
+playsinline>
+
+</video>
+
+</div>
+
+</div>
+
+<footer>
+
+Visualizador de algoritmos
+
+</footer>
+
 <script>
 
-if (!localStorage.getItem('persona')) {
-    window.location.href = '/Horarios/Login/Login.html';
+const modal=document.getElementById("modal");
+const video=document.getElementById("video");
+const titulo=document.getElementById("titulo");
+
+function abrir(nombre,archivo){
+
+    titulo.innerHTML=nombre;
+
+    video.innerHTML="<source src='"+archivo+"' type='video/mp4'>";
+
+    video.load();
+
+    modal.style.display="flex";
+
 }
 
-// Bloquea clic derecho
-document.addEventListener("contextmenu", e => e.preventDefault());
+function cerrar(){
 
-// Evita arrastrar los videos
-document.querySelectorAll("video").forEach(video=>{
+    video.pause();
 
-    video.addEventListener("dragstart",e=>e.preventDefault());
+    video.currentTime=0;
 
-    // Pausar los demás cuando uno comienza
-    video.addEventListener("play",function(){
+    modal.style.display="none";
 
-        document.querySelectorAll("video").forEach(v=>{
+}
 
-            if(v!==this)
-                v.pause();
+window.onclick=function(e){
 
-        });
+    if(e.target==modal)
 
-    });
+        cerrar();
+
+}
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key=="Escape")
+
+        cerrar();
 
 });
+
+document.addEventListener("contextmenu",e=>e.preventDefault());
+
+video.addEventListener("dragstart",e=>e.preventDefault());
 
 </script>
 
