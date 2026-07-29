@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Videos de Algoritmos</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    user-select:none;
+}
+
+body{
+    background:#111;
+    color:white;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+header{
+    background:#1f1f1f;
+    padding:25px;
+    text-align:center;
+    border-bottom:3px solid #444;
+}
+
+header h1{
+    font-size:34px;
+}
+
+.container{
+    width:95%;
+    max-width:1100px;
+    margin:40px auto;
+}
+
+.video{
+    background:#1c1c1c;
+    margin-bottom:45px;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(0,0,0,.45);
+}
+
+.video h2{
+    margin-bottom:15px;
+    color:#4fc3f7;
+    text-align:center;
+}
+
+video{
+    width:100%;
+    border-radius:10px;
+    outline:none;
+    background:black;
+}
+</style>
+</head>
+
+<body oncontextmenu="return false">
+
+<header>
+    <h1>Algoritmos de Ordenamiento</h1>
+</header>
+
+<div class="container">
+
+    <div class="video">
+        <h2>Burbuja</h2>
+
+        <video
+            controls
+            controlsList="nodownload noplaybackrate"
+            disablePictureInPicture
+            disableRemotePlayback
+            playsinline
+            preload="metadata">
+
+            <source src="Burbuja.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="video">
+        <h2>Inserción</h2>
+
+        <video
+            controls
+            controlsList="nodownload noplaybackrate"
+            disablePictureInPicture
+            disableRemotePlayback
+            playsinline
+            preload="metadata">
+
+            <source src="Insercion.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="video">
+        <h2>Merge Sort</h2>
+
+        <video
+            controls
+            controlsList="nodownload noplaybackrate"
+            disablePictureInPicture
+            disableRemotePlayback
+            playsinline
+            preload="metadata">
+
+            <source src="MergeSort.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="video">
+        <h2>Selección</h2>
+
+        <video
+            controls
+            controlsList="nodownload noplaybackrate"
+            disablePictureInPicture
+            disableRemotePlayback
+            playsinline
+            preload="metadata">
+
+            <source src="Seleccion.mp4" type="video/mp4">
+        </video>
+    </div>
+
+</div>
+
+<script>
+
+// Bloquea clic derecho
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+// Evita arrastrar los videos
+document.querySelectorAll("video").forEach(video=>{
+
+    video.addEventListener("dragstart",e=>e.preventDefault());
+
+    // Pausar los demás cuando uno comienza
+    video.addEventListener("play",function(){
+
+        document.querySelectorAll("video").forEach(v=>{
+
+            if(v!==this)
+                v.pause();
+
+        });
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>
