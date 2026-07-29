@@ -131,6 +131,10 @@ video{
 
 <script>
 
+if (!localStorage.getItem('semana')) {
+    window.location.href = '/Horarios/Login/Login.html';
+}
+
 // Bloquea clic derecho
 document.addEventListener("contextmenu", e => e.preventDefault());
 
