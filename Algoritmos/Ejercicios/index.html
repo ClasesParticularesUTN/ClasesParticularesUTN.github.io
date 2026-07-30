@@ -69,7 +69,9 @@ Contenido protegido
 <img src="./6.jpg" draggable="false">
 
 <script>
-
+if(!localStorage.getItem("persona")){
+    location.href = '/Horarios/Login/Login.html';
+}
 // Clic derecho
 document.addEventListener("contextmenu",e=>e.preventDefault());
 
