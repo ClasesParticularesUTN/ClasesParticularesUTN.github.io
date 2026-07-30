@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>Libro</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    user-select:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    -webkit-touch-callout:none;
+}
+
+html,body{
+    background:#111;
+    overflow-x:hidden;
+}
+
+body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+img{
+    width:100%;
+    max-width:1100px;
+    display:block;
+    pointer-events:none;
+    -webkit-user-drag:none;
+    user-drag:none;
+}
+
+#bloqueo{
+    position:fixed;
+    inset:0;
+    background:black;
+    color:white;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    font-size:40px;
+    z-index:999999;
+}
+
+</style>
+</head>
+
+<body oncontextmenu="return false">
+
+<div id="bloqueo">
+Contenido protegido
+</div>
+
+<img src="Parcial_C++_Vectores_Fisicos_page-0001.jpg" draggable="false">
+<img src="Parcial_C++_Vectores_Fisicos_page-0002.jpg" draggable="false">
+<img src="Parcial_C++_Vectores_Fisicos_page-0003.jpg" draggable="false">
+<img src="Parcial_C++_Vectores_Fisicos_page-0004.jpg" draggable="false">
+<img src="Parcial_C++_Vectores_Fisicos_page-0005.jpg" draggable="false">
+<img src="Parcial_C++_Vectores_Fisicos_page-0006.jpg" draggable="false">
+
+<script>
+
+// Clic derecho
+document.addEventListener("contextmenu",e=>e.preventDefault());
+
+// Arrastrar
+document.addEventListener("dragstart",e=>e.preventDefault());
+
+// Copiar
+document.addEventListener("copy",e=>e.preventDefault());
+
+// Cortar
+document.addEventListener("cut",e=>e.preventDefault());
+
+// Pegar
+document.addEventListener("paste",e=>e.preventDefault());
+
+// Selección
+document.addEventListener("selectstart",e=>e.preventDefault());
+
+// Atajos
+document.addEventListener("keydown",function(e){
+
+    if(e.key=="F12")
+        e.preventDefault();
+
+    if(e.ctrlKey){
+
+        switch(e.key.toLowerCase()){
+
+            case 's':
+            case 'u':
+            case 'c':
+            case 'x':
+            case 'a':
+            case 'p':
+                e.preventDefault();
+                break;
+
+        }
+
+    }
+
+    if(e.ctrlKey && e.shiftKey){
+        e.preventDefault();
+    }
+
+});
+
+// Detectar DevTools
+setInterval(function(){
+
+    let ancho = window.outerWidth-window.innerWidth;
+    let alto = window.outerHeight-window.innerHeight;
+
+    if(ancho>160 || alto>160){
+        document.getElementById("bloqueo").style.display="flex";
+    }else{
+        document.getElementById("bloqueo").style.display="none";
+    }
+
+},500);
+
+// Si cambia de pestaña
+document.addEventListener("visibilitychange",function(){
+
+    if(document.hidden){
+
+        document.body.style.filter="brightness(0)";
+
+    }else{
+
+        document.body.style.filter="none";
+
+    }
+
+});
+
+</script>
+
+</body>
+</html>
