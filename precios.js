@@ -115,6 +115,49 @@ const PRECIOS_ESPECIALES = {
             packMateria: 12000 * 14,
         }
     },
+
+    "Pane Joaquin": {
+        individual: {
+            expres1h: PRECIOS_BASE.individual.expres1h + 750,
+            estandar2h: PRECIOS_BASE.individual.estandar2h + 1500,
+            precioPorHora1: PRECIOS_BASE.individual.precioPorHora1 + 750,
+            precioPorHora2: PRECIOS_BASE.individual.precioPorHora2 + 750,
+            packExamen: (PRECIOS_BASE.individual.estandar2h + 1500) * 8,
+            packMateria: (PRECIOS_BASE.individual.estandar2h + 1500) * 14,
+        },
+        grupal: {
+            estandar2h: PRECIOS_BASE.grupal.estandar2h + 1500,
+            precioPorHora: PRECIOS_BASE.grupal.precioPorHora + 750,
+            packExamen: (PRECIOS_BASE.grupal.estandar2h + 1500) * 8,
+            packMateria: (PRECIOS_BASE.grupal.estandar2h + 1500) * 14
+        },
+        tp: {
+            individual: 25000,
+            grupal: 15000
+        }
+    },
+    "Claret Bautista": {
+        individual: {
+            expres1h: PRECIOS_BASE.individual.expres1h + 750,
+            estandar2h: PRECIOS_BASE.individual.estandar2h + 1500,
+            precioPorHora1: PRECIOS_BASE.individual.precioPorHora1 + 750,
+            precioPorHora2: PRECIOS_BASE.individual.precioPorHora2 + 750,
+            packExamen: (PRECIOS_BASE.individual.estandar2h + 1500) * 8,
+            packMateria: (PRECIOS_BASE.individual.estandar2h + 1500) * 14,
+        },
+        grupal: {
+            estandar2h: PRECIOS_BASE.grupal.estandar2h + 1500,
+            precioPorHora: PRECIOS_BASE.grupal.precioPorHora + 750,
+            packExamen: (PRECIOS_BASE.grupal.estandar2h + 1500) * 8,
+            packMateria: (PRECIOS_BASE.grupal.estandar2h + 1500) * 14
+        },
+        tp: {
+            individual: 25000,
+            grupal: 15000
+        }
+    }, 
+    
+    
     "Villanueva Paulina": {
         individual: {
             expres1h: PRECIOS_BASE.individual.expres1h + 1000,
