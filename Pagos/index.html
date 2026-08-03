@@ -497,7 +497,7 @@
             <div class="card horas-compra-card" id="horasCompraCard">
                 <p class="horas-info-msg" role="note">
                     <i class="fas fa-circle-info" aria-hidden="true"></i>
-                    <span>Podés comprar un <strong>pack</strong> o una <strong>cantidad de horas menor</strong> (por ejemplo, 6) y usarlas después al reservar turnos en Horarios.</span>
+                    <span>Podés comprar un <strong>pack</strong> o una <strong>cantidad de clases menor</strong> (por ejemplo, 3) y usarlas después al reservar turnos en Horarios.</span>
                 </p>
                 <div class="horas-modalidad" role="group" aria-label="Modalidad">
                     <button type="button" class="horas-mod-btn active" data-mod="individual" onclick="setHorasModalidad('individual')">
@@ -514,11 +514,12 @@
                     <button type="button" class="btn-pago pack-directo-btn" onclick="pagarPackDirecto('materia')">Pack Materia</button>
                 </div>
                 <div class="horas-custom-section">
-                    <strong>Otra cantidad de horas</strong>
+                    <strong>Otra cantidad de clases</strong>
                     <div class="horas-input-row">
-                        <label for="horasCompraInput">Horas</label>
+                        <label for="horasCompraInput">Clases</label>
                         <input id="horasCompraInput" type="number" min="1" step="1" value="1" inputmode="numeric" oninput="onHorasCompraInput()">
                     </div>
+                    <p class="horas-aviso">Cada clase dura 2 horas.</p>
                     <p class="horas-aviso" id="horasCompraAviso"></p>
                     <div id="horasDesglose" class="horas-desglose" aria-live="polite"></div>
                     <div class="horas-aceptar-row">
@@ -575,7 +576,7 @@
                 <div id="qrPackNote" class="qr-pack-note hidden" aria-live="polite">
                     <div class="note-title"><i class="fas fa-wallet" aria-hidden="true"></i> Sugerencia</div>
                     <div class="note-text" style="text-align: center;">
-                        Si pagás <strong style="display: inline;">packs</strong> usando <strong>cualquier billetera que no sea Mercado Pago</strong>, tenés <strong>5% de reintegro</strong>. ¡Aprovechá!
+                        No pagués usando <strong>Mercado Pago</strong>; usá <strong>otra billetera</strong> para la transacción.
                     </div>
              
                     <span class="note-pill"><i class="fas fa-lightbulb" aria-hidden="true"></i> Tip: Sirve cualquiera: Ualá, Lemon, Modo, BNA, NaranjaX, etc</span>
@@ -671,6 +672,11 @@ let cuponAplicado = null; // { codigo, correo, descuento } cuando hay un cupón 
 
 const HORAS_PACK_EXAMEN = 20;
 const HORAS_PACK_MATERIA = 40;
+
+// Precio especial fijo: 40 clases individuales (80 hs), aunque no exista un pack armado para esa cantidad.
+const CLASES_PROMO_ESPECIAL = 40;
+const PRECIO_PROMO_ESPECIAL = 250000;
+const MODALIDAD_PROMO_ESPECIAL = 'individual';
 
 /** Monto con 2 decimales (evita basura de float al enviar al backend / MP). */
 function redondearPrecio(valor) {
@@ -1203,7 +1209,8 @@ function setHorasModalidad(modalidad, opts = {}) {
 }
 
 function actualizarVistaCompraHoras() {
-    const horas = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+    const clases = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+    const horas = clases * 2; // cada clase dura 2 horas
     const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
     renderizarDesgloseHoras(calc);
     if (modoPago === 'pack') {
@@ -1218,12 +1225,13 @@ function actualizarVistaCompraHoras() {
 }
 
 function aceptarCompraHoras() {
-    const horas = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+    const clases = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+    const horas = clases * 2; // cada clase dura 2 horas
     const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
     if (!calc) {
         const msg = horasCompraModalidad === 'grupal' && horas < 2
-            ? 'Grupal: mínimo 2 horas.'
-            : 'Ingresá una cantidad válida de horas.';
+            ? 'Grupal: mínimo 1 clase.'
+            : 'Ingresá una cantidad válida de clases.';
         Swal.fire({ icon: 'warning', title: 'Revisá la compra', text: msg, confirmButtonColor: '#f3a661' });
         return;
     }
@@ -1247,6 +1255,23 @@ function calcularPrecioCompraHoras(horas, modalidad) {
     const h = Math.floor(Number(horas));
     if (h < 1) return null;
     if (modalidad === 'grupal' && h < 2) return null;
+
+    // Precio especial fijo: 40 clases individuales (80 hs) = $250.000,
+    // aunque no exista un pack armado para esa cantidad exacta.
+    if (modalidad === MODALIDAD_PROMO_ESPECIAL && h === CLASES_PROMO_ESPECIAL * 2) {
+        const precio = PRECIO_PROMO_ESPECIAL;
+        const ref = { tipo: 'horas_sueltas', modalidad, cantidad: h };
+        return {
+            total: precio,
+            lineas: [{ title: `${CLASES_PROMO_ESPECIAL} clases Individual (precio especial)`, precio, horasSueltas: ref }],
+            referencias: [ref],
+            desglose: [{ label: `${CLASES_PROMO_ESPECIAL} clases (precio especial)`, precio }],
+            horas: h,
+            modalidad,
+            tienePacks: false,
+            tieneSueltas: true
+        };
+    }
 
     const precios = PRECIOS[modalidad];
     if (!precios?.packExamen || !precios?.packMateria) return null;
@@ -1312,16 +1337,16 @@ function renderizarDesgloseHoras(calc) {
     if (!box) return;
 
     if (!calc) {
-        box.innerHTML = '<span style="color: var(--text-muted);">Ingresá una cantidad válida de horas.</span>';
-        if (aviso) aviso.textContent = horasCompraModalidad === 'grupal' ? 'Grupal: mínimo 2 horas.' : '';
+        box.innerHTML = '<span style="color: var(--text-muted);">Ingresá una cantidad válida de clases.</span>';
+        if (aviso) aviso.textContent = horasCompraModalidad === 'grupal' ? 'Grupal: mínimo 1 clase.' : '';
         return;
     }
 
     const lineasHtml = calc.desglose.map(d =>
         `<div class="desglose-linea"><span>${d.label}</span><strong>$${d.precio.toFixed(2)}</strong></div>`
     ).join('');
-    box.innerHTML = `${lineasHtml}<div class="desglose-total"><span>Total (${calc.horas} hs)</span><span>$${calc.total.toFixed(2)}</span></div>`;
-    if (aviso) aviso.textContent = horasCompraModalidad === 'grupal' ? 'Grupal: mínimo 2 horas. Precio por persona.' : '';
+    box.innerHTML = `${lineasHtml}<div class="desglose-total"><span>Total (${calc.horas / 2} clases / ${calc.horas} hs)</span><span>$${calc.total.toFixed(2)}</span></div>`;
+    if (aviso) aviso.textContent = horasCompraModalidad === 'grupal' ? 'Grupal: mínimo 1 clase. Precio por persona.' : '';
 }
 
 async function cargarClases() {
@@ -1514,7 +1539,8 @@ async function pagarSeleccion() {
         });
     } else if (modoPago === 'pack') {
         if (!horasCompraConfirmada) return;
-        const horas = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+        const clases = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+        const horas = clases * 2; // cada clase dura 2 horas
         const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
         if (!calc) return;
         lineas.push(...calc.lineas);
