@@ -1974,6 +1974,10 @@
                     </div>
                 ` : '';
 
+            // ── TEMPORAL: selector de método de recordatorio (correo/WhatsApp) desactivado ──
+            // Se deja comentado para poder reactivarlo más adelante. Mientras tanto, no se
+            // muestra ningún selector y el recordatorio se envía siempre por WhatsApp.
+            /*
             const htmlRecordatorio = esPrimeraReserva ? '' : `
                     <div style="margin-top: 18px; padding: 14px; border-radius: 14px; border: 1px solid rgba(243,166,97,0.22); background: rgba(243,166,97,0.08);">
                         <p style="margin: 0 0 10px; font-weight: 700; color: #322a1f;">Enviar recordatorio por</p>
@@ -1989,6 +1993,8 @@
                         </div>
                     </div>
                 `;
+            */
+            const htmlRecordatorio = '';
             const htmlConfirmacion = `
                 <div style="text-align: left; font-size: 0.95rem; color: #333;">
                     <p style="margin: 0; padding: 12px 14px; background: rgba(243, 166, 97, 0.12); border-radius: 10px; border-left: 4px solid #f3a661; line-height: 1.5;">
@@ -2067,9 +2073,13 @@
                 // Reservas siguientes: se respeta la opción que eligió el usuario.
                 //   Si eligió 'Correo' → recordatorio = 'Correo' → NO se llama enviarRecordatorioReserva.
                 //   Si eligió 'Whatsapp' (o quedó por defecto) → SÍ se manda.
+                /*
                 const recordatorio = esPrimeraReserva
                     ? 'Whatsapp'
                     : document.querySelector('input[name="swal-recordatorio"]:checked')?.value || 'Whatsapp';
+                */
+                // ── TEMPORAL: selector desactivado, se envía siempre por WhatsApp ──
+                const recordatorio = 'Whatsapp';
                 // ─────────────────────────────────────────────────────────────────────
 
                 const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "esTP": esTP, "esConsulta": esConsulta, "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva) };
