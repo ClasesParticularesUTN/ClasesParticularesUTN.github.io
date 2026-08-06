@@ -2,4 +2,6 @@
 const CORREOS_PRECIOS_ACTUALIZADOS = [
     "valedasilvacatela.vdc@gmail.com",
     "juanma.2000@hotmail.com",
+    "bautistaclaret10@gmail.com",
+    "pane.joaquin07@gmail.com",
 ];
