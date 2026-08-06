@@ -423,7 +423,7 @@
                     <span class="price-label">Clase Estándar<small>2 horas seguidas</small></span>
                     <span class="price-value" id="precio-ind-estandar">$9.000</span>
                 </div>
-                <div class="price-item">
+                <div class="price-item" id="item-clase-consulta">
                     <span class="price-label">
                         <span class="price-label-row">
                             Clase de Consulta
@@ -621,6 +621,14 @@
             //     });
             // }
        
+            // Si no existe la persona en localStorage, ocultar la opción de "Clase de Consulta"
+            if (!localStorage.getItem('persona')) {
+                const itemClaseConsulta = document.getElementById('item-clase-consulta');
+                if (itemClaseConsulta) {
+                    itemClaseConsulta.style.display = 'none';
+                }
+            }
+
             if (typeof PRECIOS !== 'undefined') {
                 document.getElementById('precio-ind-expres').textContent = '$' + PRECIOS.individual.expres1h.toLocaleString('es-AR');
                 document.getElementById('precio-ind-estandar').textContent = '$' + PRECIOS.individual.estandar2h.toLocaleString('es-AR');
