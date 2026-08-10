@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+
+<script>
+class Cliente {
+    constructor(nombre, edad, dni, direccion) {
+        this.nombre = nombre;
+        this.edad = edad;
+        this.dni = dni;
+        this.direccion = direccion;
+        this.carrito = new Carrito;
+    }
+
+    totalGastado(){
+        return this.carrito.getTotal();
+    }
+    agregarProdcto(producto){
+        this.carrito.agregarProducto(producto);
+    }
+
+    setNombre(nombre){
+        this.nombre = nombre;
+    }
+
+    setEdad(edad){
+        this.edad = edad;
+    }
+
+    getNombre(){
+        return this.nombre;
+    }
+
+    getEdad(){
+        return this.edad;
+    }
+
+}
+
+class Restaurante {
+    constructor(nombre, direccion, telefono, horarioApertura, horarioCierre) {
+        this.nombre = nombre;
+        this.direccion = direccion;
+        this.telefono = telefono;
+        this.horarioApertura = horarioApertura;
+        this.horarioCierre = horarioCierre;
+        this.productos = [];
+    }
+    agregarProducto(producto){
+        this.productos.push(producto);
+    }
+    listarProductos(){
+        for (let i = 0; i < this.productos.length; i++) {
+            console.log("Producto:", this.productos[i].nombre);
+            console.log("Precio:", this.productos[i].precio);
+            console.log("----------------------");
+        }
+    }
+
+    setNombre(nombre){
+        this.nombre = nombre;
+    }
+
+    mostrarNombre(){
+        console.log("Nombre: " + this.nombre);
+    }
+    
+}
+
+class Carrito {
+    constructor() {
+        this.cliente = cliente;
+        this.restaurante = restaurante;
+        this.productos = [];
+        this.total = 0;
+    }
+    agregarProducto(producto){
+        this.productos.push(producto);
+    }
+    calcularTotal(){
+        this.total = 0;
+        for(let i = 0; i < this.productos.length; i++){
+            this.total += this.prodcutos[i].getPrecio();
+        }   
+    }
+    getTotal(){
+        calcularTotal();
+        return this.total;
+    }
+
+}
+
+class Producto {
+    constructor(nombre, descripcion, precio, categoria, disponible) {
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.precio = precio;
+        this.categoria = categoria;
+        this.disponible = disponible;
+    }
+    getPrecio(){
+        return this.precio;
+    }
+}
+
+let restaurante = new Restaurante(
+    "Burger House",
+    "Av. Aristóbulo del Valle 3200",
+    "3425551234",
+    "11:00",
+    "23:30"
+);
+
+let producto1 = new Producto(
+    "Hamburguesa Clásica",
+    "Hamburguesa con carne, cheddar, lechuga y tomate",
+    7500,
+    "Hamburguesas",
+    true
+);
+
+let producto2 = new Producto(
+    "Hamburguesa Doble",
+    "Doble carne, doble cheddar, cebolla y salsa especial",
+    9500,
+    "Hamburguesas",
+    true
+);
+
+let producto3 = new Producto(
+    "Papas Fritas",
+    "Papas fritas clásicas con sal",
+    3500,
+    "Guarniciones",
+    true
+);
+
+let producto4 = new Producto(
+    "Coca-Cola",
+    "Gaseosa Coca-Cola de 500 ml",
+    2500,
+    "Bebidas",
+    true
+);
+
+let producto5 = new Producto(
+    "Brownie con Helado",
+    "Brownie de chocolate acompañado de helado de vainilla",
+    4500,
+    "Postres",
+    true
+);
+
+
+let cliente1 = new Cliente("Martin", 25, 42758199, "Gdor Crespo 2636");
+
+cliente1.getNombre();
+restaurante.setNombre("Lo de KIKE");
+restaurante.agregarProducto(producto1);
+restaurante.agregarProducto(producto2);
+restaurante.mostrarNombre();
+restaurante.listarProductos();
+cliente1.agregarProdcto(producto1);
+
+</script>
+
+</html>
