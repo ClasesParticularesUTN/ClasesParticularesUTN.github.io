@@ -2136,7 +2136,9 @@
                     const dayOfWeek = d.getDay();
                     const idxDia = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
                     const diaNombre = diasNombresRecordatorio[idxDia].charAt(0).toUpperCase() + diasNombresRecordatorio[idxDia].slice(1);
-                    const fechaFormato = `${diaNombre} ${d.getDate()}/${d.getMonth()+1} ${horaMenor}`;
+                    const cantHorasFecha = horasDeFecha.length;
+                    const textoCantHoras = `(${cantHorasFecha} ${cantHorasFecha === 1 ? 'hora' : 'horas'})`;
+                    const fechaFormato = `${diaNombre} ${d.getDate()}/${d.getMonth()+1} ${horaMenor} ${textoCantHoras}`;
                     fechasFormateadas.push(fechaFormato);
                 }
                 const textoFechas = fechasFormateadas.map(f => `    • ${f}`).join('\n');
