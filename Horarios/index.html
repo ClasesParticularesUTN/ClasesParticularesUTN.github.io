@@ -830,6 +830,34 @@
 
         const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases reservadas. Si quiere reservar mas clases, podes pagar las que ya reservaste y luego sacar mas turnos o comprar horas por adelantado';
 
+        const NUMERO_WHATSAPP_PROFESOR = "5493425271005";
+        const MENSAJE_WHATSAPP_PRIMERA_CLASE = "Hola, estoy interesado en tomar mi primera clase";
+
+        // Si el alumno tiene condicionPago == '0' (aún no habló con el profesor / primera clase),
+        // se le muestra un aviso y se lo invita a contactarlo por WhatsApp antes de reservar.
+        async function verificarCondicionPagoAntesDeReservar() {
+            if (isAdmin || !Alumno) return true;
+            if (String(Alumno?.condicionPago) !== '0') return true;
+
+            const { isConfirmed } = await Swal.fire({
+                icon: 'info',
+                title: 'Antes de tu primera clase',
+                text: 'Antes de tomar tu primera clase, habla con el profesor',
+                background: '#1a1a1a',
+                color: '#fff',
+                showCancelButton: true,
+                confirmButtonText: 'Ir a WhatsApp',
+                confirmButtonColor: '#25D366',
+                cancelButtonText: 'Cerrar',
+                cancelButtonColor: '#555'
+            });
+
+            if (isConfirmed) {
+                window.open(`https://wa.me/${NUMERO_WHATSAPP_PROFESOR}?text=${encodeURIComponent(MENSAJE_WHATSAPP_PRIMERA_CLASE)}`, '_blank');
+            }
+            return false;
+        }
+
         function swalPagoDeuda(options = {}) {
             const { title, text, html, icon = 'error', background = '#1a1a1a', confirmButtonColor = '#f3a661', sinRedireccion = false, ...rest } = options;
             const isError = icon === 'error';
@@ -2087,6 +2115,8 @@
             });
 
             if (result.isConfirmed) {
+                if (!(await verificarCondicionPagoAntesDeReservar())) return;
+
                 localStorage.setItem('primeraReserva', 'false');
                 document.getElementById('loader-overlay').style.display = 'flex';
                 document.getElementById('loader-text').textContent = 'Asignando horario...';
