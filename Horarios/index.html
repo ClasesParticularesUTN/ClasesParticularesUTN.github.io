@@ -1719,11 +1719,20 @@
                         icon: 'warning',
                         title: 'Cuidado, tenés deuda pendiente',
                         html: 'Podés seguir sacando horarios, pero <strong>se te están cobrando intereses por día</strong>.',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ir a pagar',
+                        cancelButtonText: 'OK',
                         allowOutsideClick: true,
-                        showCloseButton: true
+                        showCloseButton: true,
+                        sinRedireccion: true
                     });
-                    if (avisoDeuda.isConfirmed || avisoDeuda.dismiss === Swal.DismissReason.cancel) return;
                     localStorage.setItem("avisoDeuda", "true");
+                    if (avisoDeuda.isConfirmed) {
+                        window.location.href = '../Pagos';
+                        return;
+                    }
+                    // "OK", el botón de cerrar o un click afuera solo cierran el aviso
+                    // y dejan que el alumno siga sacando turnos con normalidad.
                 }
             }
 
