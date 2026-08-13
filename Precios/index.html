@@ -458,6 +458,16 @@
                     <span class="price-label">Clase Estándar<small>2 horas seguidas</small></span>
                     <span class="price-value" id="precio-grup-estandar">$6.000 c/u</span>
                 </div>
+                <div class="price-item" id="item-clase-consulta-grupal">
+                    <span class="price-label">
+                        <span class="price-label-row">
+                            Clase de Consulta
+                            <button type="button" class="info-trigger" onclick="openConsultaModal()" aria-label="¿Qué es una clase de consulta?">?</button>
+                        </span>
+                        <small>1 hora de clase</small>
+                    </span>
+                    <span class="price-value" id="precio-grup-consulta-1h">$5.000 c/u</span>
+                </div>
                 <div class="price-item highlight-pack">
                     <span class="price-label"><strong>Pack Preparación Examen</strong><small>10 clases (20hs totales)</small></span>
                     <span class="price-value" id="precio-grup-pack-examen">$48.000 c/u</span>
@@ -624,6 +634,10 @@
                 if (itemClaseConsulta) {
                     itemClaseConsulta.style.display = 'none';
                 }
+                const itemClaseConsultaGrupal = document.getElementById('item-clase-consulta-grupal');
+                if (itemClaseConsultaGrupal) {
+                    itemClaseConsultaGrupal.style.display = 'none';
+                }
             }
 
             if (typeof PRECIOS !== 'undefined') {
@@ -633,6 +647,7 @@
                 document.getElementById('precio-ind-pack-examen').textContent = '$' + PRECIOS.individual.packExamen.toLocaleString('es-AR');
                 document.getElementById('precio-ind-pack-materia').textContent = '$' + PRECIOS.individual.packMateria.toLocaleString('es-AR');
                 document.getElementById('precio-grup-estandar').textContent = '$' + PRECIOS.grupal.estandar2h.toLocaleString('es-AR') + ' c/u';
+                document.getElementById('precio-grup-consulta-1h').textContent = '$' + PRECIOS.grupal.consulta1h.toLocaleString('es-AR') + ' c/u';
                 document.getElementById('precio-grup-pack-examen').textContent = '$' + PRECIOS.grupal.packExamen.toLocaleString('es-AR') + ' c/u';
                 document.getElementById('precio-grup-pack-materia').textContent = '$' + PRECIOS.grupal.packMateria.toLocaleString('es-AR') + ' c/u';
                 document.getElementById('precio-tp-individual').textContent = '$' + PRECIOS.tp.individual.toLocaleString('es-AR');
