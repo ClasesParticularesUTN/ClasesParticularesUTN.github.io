@@ -25,8 +25,8 @@ const PERMISOS_POR_CORREO = {
     'valedasilvacatela.vdc@gmail.com': {
         reservarFinesDeSemana: true
     },
-    'suaffine@gmail.com': {
-        reservarFinesDeSemana: false
+    'vmosquen@gmail.com': {
+        reservarFinesDeSemana: true
     },
     'juanma.2000@hotmail.com': {
         reservarFinesDeSemana: true
