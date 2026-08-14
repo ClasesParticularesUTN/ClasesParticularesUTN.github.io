@@ -23,7 +23,7 @@ const PERMISOS_POR_CORREO = {
 
     // Acceso a turnos de fin de semana (ya lo tenían habilitado antes)
     'valedasilvacatela.vdc@gmail.com': {
-        reservarFinesDeSemana: true
+        reservarFinesDeSemana: false
     },
     'vmosquen@gmail.com': {
         reservarFinesDeSemana: true
