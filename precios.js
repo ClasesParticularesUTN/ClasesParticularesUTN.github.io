@@ -29,6 +29,7 @@ const PRECIOS_BASE = {
     },
     grupal: {
         estandar2h: 7000,
+        consulta1h: 6500,
         precioPorHora: 3500,
         packExamen: 7000 * 8,
         packMateria: 7000 * 14
