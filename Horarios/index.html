@@ -2017,6 +2017,7 @@
                 return { diaNombre, fechaStr };
             };
 
+            const modalidadTexto = mod === 'individual' ? 'Individual' : `Grupal (${integrantes.length} integrantes)`;
             const etiquetaExtra = esConsulta ? ' · <strong>Clase de Consulta</strong>' : (esTP ? ' · <strong>Trabajo Práctico</strong>' : '');
             let textoResumen = "";
             if (fechasUnicas.length === 1) {
@@ -2025,21 +2026,21 @@
                 const textoRango = horaInicio === horaFinSlot
                     ? `a las ${horaInicio} hs`
                     : `de ${horaInicio} a ${horaFinHasta} hs`;
-                textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}${etiquetaExtra} · ${materia}`;
+                textoResumen = `${diaNombre} ${fechaStr} ${textoRango} · Modalidad ${modalidadTexto}${etiquetaExtra} · ${materia}`;
             } else {
                 const fechasOrdenadas = [...fechasUnicas].sort();
                 const dMin = new Date(fechasOrdenadas[0] + 'T00:00:00');
                 const dMax = new Date(fechasOrdenadas[fechasOrdenadas.length - 1] + 'T00:00:00');
                 const { diaNombre: diaMin, fechaStr: fechaMin } = formatearDia(dMin);
                 const { diaNombre: diaMax, fechaStr: fechaMax } = formatearDia(dMax);
-                textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${mod === 'individual' ? 'Individual' : 'Grupal'}${mod === 'grupal' ? ` (${integrantes.length} integrantes)` : ''}${etiquetaExtra} · ${materia}`;
+                textoResumen = `${fechasUnicas.length} días · del ${diaMin} ${fechaMin} al ${diaMax} ${fechaMax} · Modalidad ${modalidadTexto}${etiquetaExtra} · ${materia}`;
             }
 
             const esPrimeraVezTyC = !yaVioTerminosHorarios();
             const esPrimeraReserva = localStorage.getItem('primeraReserva') === null;
 
-            const montoAMostrar = mod === 'grupal' ? precioTotal : precioPorPersona;
-            const leyendaPrecio = mod === 'grupal' ? 'Total del grupo' : 'Precio final';
+            const montoAMostrar = precioPorPersona;
+            const leyendaPrecio = mod === 'grupal' ? 'Precio por persona' : 'Precio final';
             const htmlPrecioDestacado = (esTP || esConsulta) ? `
                     <div style="margin-top: 8px; padding: 8px 12px; border-radius: 8px; background: rgba(243,166,97,0.08); border-left: 3px solid rgba(243,166,97,0.5); font-size: 0.85rem; color: #333;">
                         <i class="fa-solid fa-circle-dollar-to-slot" style="color:#a35a2d; margin-right:6px;"></i>${esConsulta ? 'Clase de Consulta' : 'Trabajo Práctico'} · ${leyendaPrecio}: <strong>${formatearMontoDeuda(montoAMostrar)}</strong>
@@ -2185,6 +2186,8 @@
 
                 // ── Precio final: solo si es Clase de Consulta o Trabajo Práctico ──
                 const precioFinalRecordatorio = (esTP || esConsulta) ? formatearMontoDeuda(montoAMostrar) : null;
+                // ── Modalidad: solo se aclara si es Clase de Consulta o Trabajo Práctico ──
+                const modalidadRecordatorio = (esTP || esConsulta) ? modalidadTexto : null;
 
                try {
                     const resultadoReserva = await fetch(URLHorarios, { method: 'POST', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre, admin: isAdmin }) })
@@ -2213,7 +2216,7 @@
                     // El horario se reservó con éxito: recién ahora se manda el WhatsApp y se guarda el alumno
                     document.getElementById('loader-text').textContent = 'Confirmando reserva...';
                     const [resultadoWhatsapp] = await Promise.allSettled([
-                        recordatorio === 'Whatsapp' ? enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio }) : Promise.resolve(),
+                        recordatorio === 'Whatsapp' ? enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio }) : Promise.resolve(),
                         fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
                     ]);
 
@@ -2368,7 +2371,7 @@
         }
     }
 
-    const { incluirLinkPago = true, precioFinal = null } = opciones;
+    const { incluirLinkPago = true, precioFinal = null, modalidad = null } = opciones;
 
     const bloquePago = `----------------------------------------
 💳 *LINK DE PAGO:*
@@ -2378,6 +2381,7 @@ clasesparticularesutn.com.ar/pagos
 clasesparticularesutn.com.ar/tutoriales
 ----------------------------------------`;
 
+    const bloqueModalidad = modalidad ? `👥 *Modalidad:* ${modalidad}` : null;
     const bloquePrecioFinal = precioFinal ? `💰 *Precio final:* ${precioFinal}` : null;
 
     const partes = [
@@ -2391,6 +2395,7 @@ Confirmamos tu reserva para la clase particular:
 ${fechaTexto}`
     ];
 
+    if (bloqueModalidad) partes.push(bloqueModalidad);
     if (bloquePrecioFinal) partes.push(bloquePrecioFinal);
     if (incluirLinkPago) partes.push(bloquePago);
     partes.push('¡Nos vemos en clase! 💻🚀');
