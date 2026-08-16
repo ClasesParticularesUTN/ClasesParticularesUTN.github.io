@@ -34,7 +34,13 @@
  */
 
 const HORARIOS_PERSONALIZADOS = {
-
+    "vmosquen@gmail.com": {
+        habilitadas: [
+            { semana: 0, celda: "B5:B13" }
+        ],
+        deshabilitadas: []
+    },
+            
     "juanma.2000@hotmail.com": {
         habilitadas: [],
         deshabilitadas: [
