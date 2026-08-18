@@ -2213,26 +2213,18 @@
                         return;
                     }
 
-                    // El horario se reservó con éxito: recién ahora se manda el WhatsApp y se guarda el alumno
+                    // El horario se reservó con éxito: se guarda el alumno y se dispara el
+                    // WhatsApp de fondo, SIN esperar su respuesta (no bloquea la confirmación).
                     document.getElementById('loader-text').textContent = 'Confirmando reserva...';
-                    const [resultadoWhatsapp] = await Promise.allSettled([
-                        recordatorio === 'Whatsapp' ? enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio }) : Promise.resolve(),
-                        fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) })
-                    ]);
+
+                    if (recordatorio === 'Whatsapp') {
+                        enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio });
+                    }
+
+                    await fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 
                     document.getElementById('loader-overlay').style.display = 'none';
-
-                    if (resultadoWhatsapp.status === 'rejected') {
-                        console.error('[WhatsApp] No se pudo enviar el recordatorio:', resultadoWhatsapp.reason);
-                        await Swal.fire({
-                            icon: 'warning',
-                            title: 'Reserva completada',
-                            html: 'Tu horario quedó reservado, pero <strong>no pudimos enviarte el recordatorio por WhatsApp</strong>. Revisá tu correo electrónico para confirmar los detalles.',
-                            confirmButtonColor: '#f3a661'
-                        });
-                    } else {
-                        await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
-                    }
+                    await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
 
                     location.reload();
                 } catch (e) {
@@ -2414,19 +2406,19 @@ ${fechaTexto}`
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(15000) // corta a los 15s si el servidor no responde
     })
     .then(response => {
         if (response.ok) {
             console.log("[WhatsApp] ¡Mensaje enviado con éxito y procesado por Render! 🚀");
         } else {
             console.warn("[WhatsApp] El servidor respondió pero con errores. Código:", response.status);
-            throw new Error('Respuesta no-ok del servidor de WhatsApp: ' + response.status);
         }
     })
     .catch(error => {
-        console.error("[WhatsApp] Error de red al intentar conectar con el backend:", error);
-        throw error;
+        // Nadie espera esta promesa (se dispara de fondo), así que solo logueamos.
+        console.error("[WhatsApp] No se pudo enviar el recordatorio:", error.name === 'TimeoutError' ? 'timeout (15s)' : error);
     });
 }
         init();
