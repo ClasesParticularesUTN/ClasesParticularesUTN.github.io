@@ -2188,6 +2188,8 @@
                 const precioFinalRecordatorio = (esTP || esConsulta) ? formatearMontoDeuda(montoAMostrar) : null;
                 // ── Modalidad: solo se aclara si es Clase de Consulta o Trabajo Práctico ──
                 const modalidadRecordatorio = (esTP || esConsulta) ? modalidadTexto : null;
+                // ── Etiqueta del precio: "Precio por persona" si es grupal, "Precio final" si es individual ──
+                const etiquetaPrecioRecordatorio = (esTP || esConsulta) ? leyendaPrecio : null;
 
                try {
                     const resultadoReserva = await fetch(URLHorarios, { method: 'POST', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre, admin: isAdmin }) })
@@ -2218,7 +2220,7 @@
                     document.getElementById('loader-text').textContent = 'Confirmando reserva...';
 
                     if (recordatorio === 'Whatsapp') {
-                        enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio });
+                        enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
                     }
 
                     await fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
@@ -2363,7 +2365,7 @@
         }
     }
 
-    const { incluirLinkPago = true, precioFinal = null, modalidad = null } = opciones;
+    const { incluirLinkPago = true, precioFinal = null, modalidad = null, etiquetaPrecio = 'Precio final' } = opciones;
 
     const bloquePago = `----------------------------------------
 💳 *LINK DE PAGO:*
@@ -2374,7 +2376,7 @@ clasesparticularesutn.com.ar/tutoriales
 ----------------------------------------`;
 
     const bloqueModalidad = modalidad ? `👥 *Modalidad:* ${modalidad}` : null;
-    const bloquePrecioFinal = precioFinal ? `💰 *Precio final:* ${precioFinal}` : null;
+    const bloquePrecioFinal = precioFinal ? `💰 *${etiquetaPrecio}:* ${precioFinal}` : null;
 
     const partes = [
         `🎓 *Clases Particulares UTN*
