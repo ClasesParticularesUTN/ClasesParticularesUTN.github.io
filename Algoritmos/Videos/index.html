@@ -317,6 +317,22 @@ footer{
 
 </div>
 
+<div class="card" onclick="abrir('Clock y Frecuencia','./Clock%20Y%20Frecuencia.mp4')">
+
+<div class="thumb">⏱️</div>
+
+<div class="info">
+
+<h2>Clock y Frecuencia</h2>
+
+<p>Visualiza el funcionamiento del reloj y la frecuencia en el algoritmo.</p>
+
+<button class="play">▶ Ver animación</button>
+
+</div>
+
+</div>
+
 </div>
 
 <div id="modal">
@@ -347,10 +363,26 @@ Visualizador de algoritmos
 
 </footer>
 
+<script src="./permitidos.js"></script>
+
 <script>
-if(!localStorage.getItem("persona")){
+const personaGuardada = localStorage.getItem("persona");
+
+if(!personaGuardada){
     window.location.href = '/Horarios/Login/Login.html';
+} else {
+    try {
+        const persona = JSON.parse(personaGuardada);
+        const correo = String(persona?.correoElectronico || '').trim().toLowerCase();
+
+        if(!CORREOS_PERMITIDOS.includes(correo)){
+            window.location.href = '/Horarios/Login/Login.html';
+        }
+    } catch(error) {
+        window.location.href = '/Horarios/Login/Login.html';
+    }
 }
+
 console.log("ultimo comit");
 const modal=document.getElementById("modal");
 const video=document.getElementById("video");
