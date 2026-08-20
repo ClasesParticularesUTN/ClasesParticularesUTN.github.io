@@ -22,7 +22,7 @@ const PERMISOS_POR_CORREO = {
     },
     "vmosquen@gmail.com": {
         burbuja: false,
-        insercion: true,
+        insercion: false,
         mergeSort: false,
         seleccion: false,
         clockFrecuencia: true
