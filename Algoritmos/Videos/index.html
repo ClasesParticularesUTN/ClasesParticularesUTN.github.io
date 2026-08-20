@@ -146,6 +146,22 @@ header p{
 
 }
 
+.permiso{
+
+    margin-top:12px;
+    color:#bdbdbd;
+    font-size:14px;
+
+}
+
+.play:disabled{
+
+    background:#555;
+    cursor:not-allowed;
+    opacity:.7;
+
+}
+
 /************* MODAL ************/
 
 #modal{
@@ -253,7 +269,7 @@ footer{
 
 <div class="grid">
 
-<div class="card" onclick="abrir('Burbuja','./Burbuja.mp4')">
+<div class="card" data-video="burbuja" data-archivo="./Burbuja.mp4" data-titulo="Burbuja">
 
 <div class="thumb">🫧</div>
 
@@ -264,12 +280,13 @@ footer{
 <p>Compara elementos adyacentes e intercambia los que estén fuera de orden.</p>
 
 <button class="play">▶ Ver animación</button>
+<p class="permiso"></p>
 
 </div>
 
 </div>
 
-<div class="card" onclick="abrir('Inserción','./Insercion.mp4')">
+<div class="card" data-video="insercion" data-archivo="./Insercion.mp4" data-titulo="Inserción">
 
 <div class="thumb">📥</div>
 
@@ -280,12 +297,13 @@ footer{
 <p>Inserta cada elemento en la posición correcta dentro de la parte ordenada.</p>
 
 <button class="play">▶ Ver animación</button>
+<p class="permiso"></p>
 
 </div>
 
 </div>
 
-<div class="card" onclick="abrir('Merge Sort','./MergeSort.mp4')">
+<div class="card" data-video="mergeSort" data-archivo="./MergeSort.mp4" data-titulo="Merge Sort">
 
 <div class="thumb">🌳</div>
 
@@ -296,12 +314,13 @@ footer{
 <p>Divide el problema en partes más pequeñas y luego las fusiona ordenadamente.</p>
 
 <button class="play">▶ Ver animación</button>
+<p class="permiso"></p>
 
 </div>
 
 </div>
 
-<div class="card" onclick="abrir('Selección','./Seleccion.mp4')">
+<div class="card" data-video="seleccion" data-archivo="./Seleccion.mp4" data-titulo="Selección">
 
 <div class="thumb">🎯</div>
 
@@ -312,12 +331,13 @@ footer{
 <p>Busca el menor elemento restante y lo coloca en su posición definitiva.</p>
 
 <button class="play">▶ Ver animación</button>
+<p class="permiso"></p>
 
 </div>
 
 </div>
 
-<div class="card" onclick="abrir('Clock y Frecuencia','./Clock%20Y%20Frecuencia.mp4')">
+<div class="card" data-video="clockFrecuencia" data-archivo="./Clock%20Y%20Frecuencia.mp4" data-titulo="Clock y Frecuencia">
 
 <div class="thumb">⏱️</div>
 
@@ -328,6 +348,7 @@ footer{
 <p>Visualiza el funcionamiento del reloj y la frecuencia en el algoritmo.</p>
 
 <button class="play">▶ Ver animación</button>
+<p class="permiso"></p>
 
 </div>
 
@@ -367,6 +388,7 @@ Visualizador de algoritmos
 
 <script>
 const personaGuardada = localStorage.getItem("persona");
+let permisosActuales = {};
 
 if(!personaGuardada){
     window.location.href = '/Horarios/Login/Login.html';
@@ -374,10 +396,7 @@ if(!personaGuardada){
     try {
         const persona = JSON.parse(personaGuardada);
         const correo = String(persona?.correoElectronico || '').trim().toLowerCase();
-
-        if(!CORREOS_PERMITIDOS.includes(correo)){
-            window.location.href = '/Horarios/Login/Login.html';
-        }
+        permisosActuales = PERMISOS_POR_CORREO[correo] || {};
     } catch(error) {
         window.location.href = '/Horarios/Login/Login.html';
     }
@@ -387,6 +406,18 @@ console.log("ultimo comit");
 const modal=document.getElementById("modal");
 const video=document.getElementById("video");
 const titulo=document.getElementById("titulo");
+
+document.querySelectorAll(".card[data-video]").forEach(card => {
+    const permitido = permisosActuales[card.dataset.video] === true;
+    const boton = card.querySelector(".play");
+    const estado = card.querySelector(".permiso");
+
+    estado.textContent = `Permitido: ${permitido}`;
+    boton.disabled = !permitido;
+    boton.addEventListener("click", () => {
+        if (permitido) abrir(card.dataset.titulo, card.dataset.archivo);
+    });
+});
 
 function abrir(nombre,archivo){
 
