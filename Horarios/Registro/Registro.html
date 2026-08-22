@@ -6,6 +6,7 @@
     <title>Registro</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #f3a661;
@@ -318,8 +319,9 @@
     </div>
 
     <script>
-        const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
+        const URLUsuarios = "https://script.google.com/macros/s/AKfycbxdU8UEBWmBuNYAZbrGNPxPiMBlckCYI2NxITttfWCPbTnHbT5fCuG1zcYYEQ4U-74E/exec"; 
 const URLServidorWhatsAPP = "https://servidorparawhatsapp.onrender.com/api/send-message";
+const NUMERO_WHATSAPP_SOPORTE = "5493425271005";
 
 function toggleParciales(materia) {
     const checkbox = document.getElementById('check_' + materia);
@@ -436,8 +438,21 @@ function iniciarVerificacionWhatsApp(numeroCelular, objetoEnvioFinal) {
         Swal.fire({
             icon: 'error',
             title: 'Error de conexión',
-            text: 'No se pudo despachar el mensaje por WhatsApp. Verificá tu número e intentalo más tarde.',
-            customClass: { popup: 'swal2-dark-modal' }
+            html: `
+                <p>No se pudo despachar el mensaje por WhatsApp. Verificá tu número e intentalo más tarde.</p>
+                <br>
+                <p>Si el problema persiste, avisale al profesor</p>
+            `,
+            customClass: { popup: 'swal2-dark-modal' },
+            showCancelButton: true,
+            confirmButtonText: 'Cerrar',
+            cancelButtonText: '<i class="fa-brands fa-whatsapp"></i> Ir a WhatsApp',
+            cancelButtonColor: '#25D366',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+                window.open('https://wa.me/' + NUMERO_WHATSAPP_SOPORTE + '?text=' + encodeURIComponent('Hola valentin, tuve un error al enviar el código de verificación en el registro: ' + error.message), '_blank');
+            }
         });
     });
 }
@@ -473,12 +488,43 @@ function enviar(datos) {
 
     fetch(URLUsuarios, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(datos)
-    }).then(function() {
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(resultado) {
         document.querySelector(".loader").style.display = "none";
         document.querySelector(".contenedorLouder").style.zIndex = "-100";
+
+        if (resultado.status === false) {
+            // El servidor rechazó el registro (correo o teléfono duplicado, error interno, etc.)
+            document.querySelector("form").style.opacity = "1";
+            const mensajeError = resultado.mensaje || "Ocurrió un error. Intentá nuevamente.";
+            Swal.fire({
+                icon: "error",
+                title: "No se pudo completar el registro",
+                html: `
+                    <p>${mensajeError}</p>
+                    <br>
+                    <p>Si crees que hubo un error avisale al profesor</p>
+                `,
+                customClass: { popup: 'swal2-dark-modal' },
+                showCancelButton: true,
+                confirmButtonText: 'Cerrar',
+                cancelButtonText: '<i class="fa-brands fa-whatsapp"></i> Ir a WhatsApp',
+                cancelButtonColor: '#25D366',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.open('https://wa.me/' + NUMERO_WHATSAPP_SOPORTE + '?text=' + encodeURIComponent('Hola valentin, tuve un error al registrarme: ' + mensajeError), '_blank');
+                }
+            });
+            return;
+        }
+
+        // Registro exitoso
         localStorage.setItem('UltimoCorreo', JSON.stringify(datos.datosAlumnos[2]));
 
         const areaInput  = document.getElementById('input_22_area').value.trim();
@@ -491,16 +537,37 @@ function enviar(datos) {
         Swal.fire({
             icon: "success",
             title: "¡Registro exitoso!",
-            text: "Te enviamos un mensaje de bienvenida con los términos y condiciones a tu WhatsApp.",
+            text: resultado.mensaje || "Te enviamos un mensaje de bienvenida con los términos y condiciones a tu WhatsApp.",
             customClass: { popup: 'swal2-dark-modal' }
         }).then(() => {
             window.location.href = "../Login/Login.html";
         });
 
-    }).catch(error => {
+    })
+    .catch(error => {
         console.error('Error:', error);
         document.querySelector(".loader").style.display = "none";
+        document.querySelector(".contenedorLouder").style.zIndex = "-100";
         document.querySelector("form").style.opacity = "1";
+        Swal.fire({
+            icon: "error",
+            title: "Error de conexión",
+            html: `
+                <p>No pudimos comunicarnos con el servidor. Intentá nuevamente en unos minutos.</p>
+                <br>
+                <p>Si crees que hubo un error avisale al profesor</p>
+            `,
+            customClass: { popup: 'swal2-dark-modal' },
+            showCancelButton: true,
+            confirmButtonText: 'Cerrar',
+            cancelButtonText: '<i class="fa-brands fa-whatsapp"></i> Ir a WhatsApp',
+            cancelButtonColor: '#25D366',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.dismiss === Swal.DismissReason.cancel) {
+                window.open('https://wa.me/' + NUMERO_WHATSAPP_SOPORTE + '?text=' + encodeURIComponent('Hola valentin, tuve un error de conexión al registrarme: ' + error.message), '_blank');
+            }
+        });
     });
 }
 
