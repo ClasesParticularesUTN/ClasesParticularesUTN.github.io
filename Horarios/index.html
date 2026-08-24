@@ -1063,7 +1063,7 @@
                 .replace(/</g, '&lt;');
         }
 
-        const TYC_HORARIOS_LS_KEY = 'tycHorariosVisto';
+        const TYC_HORARIOS_LS_KEY = 'tycHorariosVistoV2';
         const RESERVA_PREFS_LS_PREFIX = 'reservaPrefs_';
         let tycModalAbiertoEnConfirmacion = false;
         let cancelacionEnCurso = false;
@@ -1113,7 +1113,7 @@
         }
 
         function marcarTerminosHorariosVistos() {
-            try { localStorage.setItem(TYC_HORARIOS_LS_KEY, '1'); } catch (e) { console.warn('No se pudo guardar tycHorariosVisto:', e); }
+            try { localStorage.setItem(TYC_HORARIOS_LS_KEY, '1'); } catch (e) { console.warn('No se pudo guardar tycHorariosVistoV2:', e); }
         }
 
         function habilitarCheckboxTyCConfirmacion() {
