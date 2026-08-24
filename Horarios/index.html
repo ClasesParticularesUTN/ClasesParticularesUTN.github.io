@@ -490,10 +490,39 @@
             flex-shrink: 0;
             padding: 12px 18px 16px;
             border-top: 1px solid var(--border);
+        }
+        .terms-modal-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+        }
+        .terms-modal-actions > * {
+            min-width: 0;
+            min-height: 34px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             text-align: center;
         }
+        .terms-modal-actions > * + * { border-left: 1px solid var(--border); }
+        .terms-modal-close-action {
+            border: none;
+            background: none;
+            padding: 0 10px;
+            color: rgba(255, 255, 255, 0.7);
+            font: inherit;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .terms-modal-close-action:hover { color: #fff; }
+        .terms-modal-close-action:focus-visible,
+        .terms-modal-more:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 3px;
+        }
         .terms-modal-more {
-            display: inline-flex; align-items: center; gap: 6px;
+            gap: 6px;
             color: var(--primary); font-weight: 700; font-size: 0.85rem;
             text-decoration: none;
         }
@@ -760,9 +789,20 @@
                         <li><strong>El mismo día</strong> de la clase → se cobra la <strong>tarifa completa</strong> (100&nbsp;%).</li>
                     </ul>
                 </section>
+
+                <section class="terms-section">
+                    <h3>Clase de consulta y clase estándar</h3>
+                    <ul class="terms-list">
+                        <li><strong>Clase de consulta:</strong> dudas o ejercicios puntuales. Ritmo marcado por vos.</li>
+                        <li><strong>Clase estándar:</strong> preparación ordenada y progresiva según el nivel del alumno. Ritmo marcado por el profesor.</li>
+                    </ul>
+                </section>
             </div>
             <div class="terms-modal-footer">
-                <a href="../TerminosYCondiciones/" class="terms-modal-more">Leer más</a>
+                <div class="terms-modal-actions">
+                    <a href="../TerminosYCondiciones/" class="terms-modal-more">Leer más</a>
+                    <button type="button" class="terms-modal-close-action" onclick="cerrarModalTerminos()">Cerrar</button>
+                </div>
             </div>
         </div>
     </div>
