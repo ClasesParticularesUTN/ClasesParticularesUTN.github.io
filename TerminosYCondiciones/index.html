@@ -111,6 +111,18 @@
         }
         .panel > h3:first-of-type { margin-top: 26px; }
 
+        .terms-section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 4px 18px 18px;
+            margin-top: 16px;
+        }
+        .terms-section:first-child { margin-top: 18px; }
+        .terms-section h3 { margin-top: 18px; }
+        .terms-section .terms-block { margin-bottom: 0; }
+        .terms-section .terms-list { margin-bottom: 0; }
+
         .panel p, .panel .terms-intro { line-height: 1.6; color: rgba(255,255,255,0.85); font-size: 0.92rem; margin: 0 0 12px; }
         .terms-intro { color: rgba(255,255,255,0.65); font-size: 0.88rem; }
 
@@ -124,6 +136,13 @@
             color: rgba(255,255,255,0.88);
         }
         ul.terms-list > li:last-child { margin-bottom: 0; }
+        ul.terms-list .terms-clarify {
+            display: block;
+            margin-top: 8px;
+            font-size: 0.86rem;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.55);
+        }
         ul.terms-list > li::before {
             content: '';
             position: absolute; left: 0; top: 0.55em;
@@ -215,48 +234,79 @@
         </div>
 
         <div class="panel">
-            <h3>Pagos</h3>
-            <ul class="terms-list">
-                <li>Podés pagar la clase cuando quieras, pero si demorás pueden aplicarse <strong>recargos por demora</strong>.</li>
-                <li>Si debés dinero, <strong>no vas a poder reservar</strong> nuevas clases hasta regularizar la deuda.</li>
-            </ul>
-            <div class="terms-block">
-                <p class="terms-block-title">Plazos después de la clase</p>
-                <ul class="terms-list terms-list--tight">
+            <section class="terms-section">
+                <h3>Pagos</h3>
+                <ul class="terms-list">
+                    <li>Podés pagar la clase cuando quieras, pero si demorás pueden aplicarse <strong>recargos por demora</strong>.</li>
+                    <li>Si debés dinero, <strong>no vas a poder reservar</strong> nuevas clases hasta regularizar la deuda.</li>
+                </ul>
+                <div class="terms-block">
+                    <p class="terms-block-title">Plazos después de la clase</p>
+                    <ul class="terms-list terms-list--tight">
+                        <li>
+                            <span class="terms-step" aria-hidden="true">1</span>
+                            <span class="terms-step-text"><strong>Primeras 24 horas:</strong> podés pagar <strong>sin recargo</strong>.</span>
+                        </li>
+                        <li>
+                            <span class="terms-step" aria-hidden="true">2</span>
+                            <span class="terms-step-text"><strong>Pasadas las 24 horas:</strong> se suma un recargo del <strong>5&nbsp;%</strong>.</span>
+                        </li>
+                        <li>
+                            <span class="terms-step" aria-hidden="true">3</span>
+                            <span class="terms-step-text"><strong>A partir de las 48 horas:</strong> sobre el <strong>monto total acumulado</strong> se cobra un <strong>1&nbsp;% adicional por cada día</strong> de demora.</span>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="terms-section">
+                <h3>Cancelaciones</h3>
+                <p class="terms-intro">Podés cancelar desde el <strong>menú de usuario</strong> (tocá el ícono de perfil arriba a la derecha y revisá tus horarios reservados).</p>
+                <div class="cancel-tyc-list">
+                    <div class="cancel-tyc-row">
+                        <span class="cancel-tyc-dot ok"></span>
+                        <span class="cancel-tyc-label">Dos días antes o más<small>Respecto al día de la clase</small></span>
+                        <span class="cancel-tyc-pct ok">Sin costo</span>
+                    </div>
+                    <div class="cancel-tyc-row">
+                        <span class="cancel-tyc-dot mid"></span>
+                        <span class="cancel-tyc-label">El día anterior<small>A la fecha de la clase</small></span>
+                        <span class="cancel-tyc-pct mid">25% del precio</span>
+                    </div>
+                    <div class="cancel-tyc-row">
+                        <span class="cancel-tyc-dot full"></span>
+                        <span class="cancel-tyc-label">El mismo día<small>De la clase</small></span>
+                        <span class="cancel-tyc-pct full">100% del precio</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="terms-section">
+                <h3>Packs</h3>
+                <ul class="terms-list">
                     <li>
-                        <span class="terms-step" aria-hidden="true">1</span>
-                        <span class="terms-step-text"><strong>Primeras 24 horas:</strong> podés pagar <strong>sin recargo</strong>.</span>
+                        Los packs rigen durante el <strong>mismo ciclo lectivo</strong> en el que fueron adquiridos. Su vigencia se extiende <strong>hasta febrero inclusive</strong>.
+                        <span class="terms-clarify">Las horas o clases no utilizadas en dicho período <strong>no se transfieren</strong> al ciclo lectivo siguiente.</span>
                     </li>
+                    <li>Las clases del pack son de <strong>uso personal e intransferible</strong>: no pueden cederse a terceros.</li>
+                    <li>Está permitido utilizarlas para <strong>cualquiera de las materias que se dictan</strong>.</li>
+                </ul>
+            </section>
+
+            <section class="terms-section">
+                <h3>Trabajos prácticos</h3>
+                <ul class="terms-list">
                     <li>
-                        <span class="terms-step" aria-hidden="true">2</span>
-                        <span class="terms-step-text"><strong>Pasadas las 24 horas:</strong> se suma un recargo del <strong>5&nbsp;%</strong>.</span>
+                        La clase de preparación de trabajo práctico tiene una duración de <strong>hasta dos (2) horas</strong>. Si el trabajo se completa antes de dicho plazo, el valor de la clase <strong>no se modifica</strong>.
+                        <span class="terms-clarify">Esta situación es <strong>infrecuente, aunque posible</strong>. Por ejemplo, cuando el alumno asiste únicamente a resolver <strong>un ítem puntual</strong> o <strong>una parte específica</strong> del trabajo práctico, y no el trabajo en su totalidad.</span>
                     </li>
+                    <li>Es <strong>responsabilidad del alumno</strong> verificar las resoluciones elaboradas junto a los ayudantes de cátedra y profesores, a fin de validar que corresponden a lo solicitado por la materia.</li>
                     <li>
-                        <span class="terms-step" aria-hidden="true">3</span>
-                        <span class="terms-step-text"><strong>A partir de las 48 horas:</strong> sobre el <strong>monto total acumulado</strong> se cobra un <strong>1&nbsp;% adicional por cada día</strong> de demora.</span>
+                        Es responsabilidad del alumno elaborar <strong>su propia versión</strong> de lo trabajado en clase y utilizar la resolución <strong>únicamente como guía</strong>, sin entregarla de forma directa.
+                        <span class="terms-clarify">Esta condición se debe a que, en ocasiones, concurren <strong>varios grupos</strong> a resolver el mismo trabajo práctico, por lo que las entregas podrían resultar idénticas si se presenta la resolución sin adaptación.</span>
                     </li>
                 </ul>
-            </div>
-
-            <h3>Cancelaciones</h3>
-            <p class="terms-intro">Podés cancelar desde el <strong>menú de usuario</strong> (tocá el ícono de perfil arriba a la derecha y revisá tus horarios reservados).</p>
-            <div class="cancel-tyc-list">
-                <div class="cancel-tyc-row">
-                    <span class="cancel-tyc-dot ok"></span>
-                    <span class="cancel-tyc-label">Dos días antes o más<small>Respecto al día de la clase</small></span>
-                    <span class="cancel-tyc-pct ok">Sin costo</span>
-                </div>
-                <div class="cancel-tyc-row">
-                    <span class="cancel-tyc-dot mid"></span>
-                    <span class="cancel-tyc-label">El día anterior<small>A la fecha de la clase</small></span>
-                    <span class="cancel-tyc-pct mid">25% del precio</span>
-                </div>
-                <div class="cancel-tyc-row">
-                    <span class="cancel-tyc-dot full"></span>
-                    <span class="cancel-tyc-label">El mismo día<small>De la clase</small></span>
-                    <span class="cancel-tyc-pct full">100% del precio</span>
-                </div>
-            </div>
+            </section>
         </div>
 
         <p class="updated-note">Estos términos pueden actualizarse. Revisalos periódicamente.</p>
