@@ -65,6 +65,11 @@
         }
 
         .swal2-container { z-index: 10000 !important; }
+        .swal-modal-blur-backdrop {
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            background: rgba(0, 0, 0, 0.35) !important;
+        }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -112,6 +117,14 @@
             overflow: hidden;
         }
         #user-sidebar.active { right: 0; }
+        #user-sidebar.is-loading .sidebar-header,
+        #user-sidebar.is-loading .sidebar-footer,
+        #user-sidebar.is-loading .sidebar-content > :not(.sidebar-data-loader) { display: none; }
+        #user-sidebar.is-loading .sidebar-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
         .sidebar-close-btn {
             position: absolute;
@@ -146,6 +159,19 @@
             min-height: 0;
             overflow-y: auto;
         }
+
+        .sidebar-data-loader {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 0 12px;
+            color: var(--primary);
+            font-size: 0.75rem;
+            text-align: center;
+        }
+        .sidebar-data-loader.is-visible { display: flex; }
+        .sidebar-data-loader .spinner { width: 28px; height: 28px; }
 
         .info-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
         .info-label { font-size: 0.65rem; color: var(--primary); font-weight: 700; text-transform: uppercase; margin-bottom: 4px; display: block; }
@@ -645,6 +671,10 @@
             <p id="sb-correo" style="font-size: 0.8rem; opacity: 0.6;"></p>
         </div>
         <div class="sidebar-content">
+            <div class="sidebar-data-loader" id="sidebar-data-loader" role="status" aria-live="polite">
+                <div class="spinner" aria-hidden="true"></div>
+                <span>Actualizando tus datos...</span>
+            </div>
             <div class="info-card info-card-deuda" id="sb-deuda-card">
                 <span class="info-label">Deuda Total</span>
                 <div class="deuda-header" id="sb-deuda-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="sb-deuda-detalle">
@@ -1236,6 +1266,7 @@
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 customClass: {
+                    container: 'swal-modal-blur-backdrop',
                     confirmButton: 'btn-footer',
                     cancelButton: 'btn-footer'
                 }
@@ -1393,7 +1424,8 @@
         async function init() {
             document.getElementById('loader-overlay').style.display = 'flex';
             if (Alumno && Alumno.correoElectronico && Alumno.contrasenia) {
-                await actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
+                mostrarLoaderDatosSidebar();
+                void actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
             }
             if(Alumno.admin === true) {
                 isAdmin = true;
@@ -1429,6 +1461,17 @@
                     actualizarInterfazSidebar();
                 }
             } catch (error) { console.error('Error:', error); }
+            finally { ocultarLoaderDatosSidebar(); }
+        }
+
+        function mostrarLoaderDatosSidebar() {
+            document.getElementById('user-sidebar')?.classList.add('is-loading');
+            document.getElementById('sidebar-data-loader')?.classList.add('is-visible');
+        }
+
+        function ocultarLoaderDatosSidebar() {
+            document.getElementById('user-sidebar')?.classList.remove('is-loading');
+            document.getElementById('sidebar-data-loader')?.classList.remove('is-visible');
         }
 
         function actualizarInterfazSidebar() {
