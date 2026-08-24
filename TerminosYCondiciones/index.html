@@ -123,6 +123,93 @@
         .terms-section .terms-block { margin-bottom: 0; }
         .terms-section .terms-list { margin-bottom: 0; }
 
+        .terms-index {
+            background: linear-gradient(135deg, rgba(243, 166, 97, 0.13), rgba(255,255,255,0.03));
+            border: 1px solid rgba(243, 166, 97, 0.24);
+            border-radius: 16px;
+            padding: 18px;
+            margin: 18px 0 4px;
+        }
+        .terms-index-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .terms-index-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 9px;
+            background: rgba(243, 166, 97, 0.18);
+            color: var(--primary);
+            font-size: 0.82rem;
+        }
+        .terms-index-title {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            margin: 0;
+        }
+        .terms-index-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+            list-style: none;
+            counter-reset: terms-index;
+        }
+        .terms-index-list li:last-child { grid-column: 1 / -1; }
+        .terms-index-list a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-height: 42px;
+            padding: 8px 11px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            color: rgba(255,255,255,0.82);
+            font-size: 0.82rem;
+            text-decoration: none;
+            transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
+        }
+        .terms-index-list a::before {
+            counter-increment: terms-index;
+            content: counter(terms-index, decimal-leading-zero);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+            border-radius: 7px;
+            background: rgba(243, 166, 97, 0.16);
+            color: var(--primary);
+            font-size: 0.65rem;
+            font-weight: 800;
+        }
+        .terms-index-list a::after {
+            content: '\f35d';
+            margin-left: auto;
+            color: rgba(255,255,255,0.35);
+            font-family: 'Font Awesome 6 Free';
+            font-size: 0.65rem;
+            font-weight: 900;
+        }
+        .terms-index-list a:hover {
+            background: rgba(243, 166, 97, 0.1);
+            border-color: rgba(243, 166, 97, 0.35);
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        .terms-index-list a:hover::after { color: var(--primary); }
+        .terms-index-list a:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
         .panel p, .panel .terms-intro { line-height: 1.6; color: rgba(255,255,255,0.85); font-size: 0.92rem; margin: 0 0 12px; }
         .terms-intro { color: rgba(255,255,255,0.65); font-size: 0.88rem; }
 
@@ -146,6 +233,7 @@
             line-height: 1.5;
             color: rgba(255,255,255,0.55);
         }
+        ul.terms-list .terms-clarify { text-align: left; }
         ul.terms-list > li::before {
             content: '';
             position: absolute; left: 0; top: 0.55em;
@@ -209,6 +297,8 @@
         @media (max-width: 480px) {
             .page-header h1 { font-size: 1.4rem; }
             .panel { padding: 4px 18px 20px; }
+            .terms-index-list { grid-template-columns: 1fr; }
+            .terms-index-list li:last-child { grid-column: auto; }
             .cancel-tyc-row { flex-wrap: wrap; }
             .cancel-tyc-pct { margin-left: 0; }
         }
@@ -237,7 +327,21 @@
         </div>
 
         <div class="panel">
-            <section class="terms-section">
+            <nav class="terms-index" aria-label="Índice de términos y condiciones">
+                <div class="terms-index-heading">
+                    <span class="terms-index-icon" aria-hidden="true"><i class="fa-solid fa-list"></i></span>
+                    <p class="terms-index-title">En esta página</p>
+                </div>
+                <ul class="terms-index-list">
+                    <li><a href="#pagos">Pagos</a></li>
+                    <li><a href="#cancelaciones">Cancelaciones</a></li>
+                    <li><a href="#packs">Packs</a></li>
+                    <li><a href="#trabajos-practicos">Trabajos prácticos</a></li>
+                    <li><a href="#modalidades">Clase estándar y clase de consulta</a></li>
+                </ul>
+            </nav>
+
+            <section class="terms-section" id="pagos">
                 <h3>Pagos</h3>
                 <ul class="terms-list">
                     <li>Podés pagar la clase cuando quieras, pero si demorás pueden aplicarse <strong>recargos por demora</strong>.</li>
@@ -262,7 +366,7 @@
                 </div>
             </section>
 
-            <section class="terms-section">
+            <section class="terms-section" id="cancelaciones">
                 <h3>Cancelaciones</h3>
                 <p class="terms-intro">Podés cancelar desde el <strong>menú de usuario</strong> (tocá el ícono de perfil arriba a la derecha y revisá tus horarios reservados).</p>
                 <div class="cancel-tyc-list">
@@ -284,7 +388,7 @@
                 </div>
             </section>
 
-            <section class="terms-section">
+            <section class="terms-section" id="packs">
                 <h3>Packs</h3>
                 <ul class="terms-list">
                     <li>
@@ -296,7 +400,7 @@
                 </ul>
             </section>
 
-            <section class="terms-section">
+            <section class="terms-section" id="trabajos-practicos">
                 <h3>Trabajos prácticos</h3>
                 <ul class="terms-list">
                     <li>
@@ -311,7 +415,7 @@
                 </ul>
             </section>
 
-            <section class="terms-section">
+            <section class="terms-section" id="modalidades">
                 <h3>Clase estándar y clase de consulta</h3>
                 <p class="terms-intro">Al reservar, podés elegir la modalidad que mejor se adapte a tu objetivo y a la forma en la que necesitás estudiar.</p>
                 <div class="terms-block">
