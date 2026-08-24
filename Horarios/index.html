@@ -383,9 +383,19 @@
         .terms-modal-body h3 {
             font-size: 0.78rem; font-weight: 700; color: var(--primary);
             text-transform: uppercase; letter-spacing: 0.06em;
-            margin: 14px 0 8px;
+            margin: 12px 0 8px;
         }
-        .terms-modal-body h3:first-child { margin-top: 0; }
+        .terms-modal-body .terms-section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2px 12px 12px;
+            margin-bottom: 10px;
+        }
+        .terms-modal-body .terms-section:last-child { margin-bottom: 0; }
+        .terms-modal-body .terms-section h3 { margin-top: 12px; }
+        .terms-modal-body .terms-section .terms-block { margin-bottom: 0; }
+        .terms-modal-body .terms-section .terms-list { margin-bottom: 0; }
         .terms-modal-body p { margin: 0 0 10px; }
         .terms-modal-body p:last-child { margin-bottom: 0; }
         .terms-modal-body .terms-intro {
@@ -686,36 +696,40 @@
                 <h2 id="terms-modal-title">Términos y condiciones</h2>
             </div>
             <div class="terms-modal-body">
-                <h3>Pagos</h3>
-                <ul class="terms-list">
-                    <li>Podés pagar la clase cuando quieras, pero si demorás pueden aplicarse <strong>recargos por demora</strong>.</li>
-                    <li>Si debés dinero, <strong>no vas a poder reservar</strong> nuevas clases hasta regularizar la deuda.</li>
-                </ul>
-                <div class="terms-block">
-                    <p class="terms-block-title">Plazos después de la clase</p>
-                    <ul class="terms-list terms-list--tight">
-                        <li>
-                            <span class="terms-step" aria-hidden="true">1</span>
-                            <span class="terms-step-text"><strong>Primeras 24 horas:</strong> podés pagar <strong>sin recargo</strong>.</span>
-                        </li>
-                        <li>
-                            <span class="terms-step" aria-hidden="true">2</span>
-                            <span class="terms-step-text"><strong>Pasadas las 24 horas:</strong> se suma un recargo del <strong>5&nbsp;%</strong>.</span>
-                        </li>
-                        <li>
-                            <span class="terms-step" aria-hidden="true">3</span>
-                            <span class="terms-step-text"><strong>A partir de las 48 horas:</strong> sobre el <strong>monto total acumulado</strong> se cobra un <strong>1&nbsp;% adicional por cada día</strong> de demora.</span>
-                        </li>
+                <section class="terms-section">
+                    <h3>Pagos</h3>
+                    <ul class="terms-list">
+                        <li>Podés pagar la clase cuando quieras, pero si demorás pueden aplicarse <strong>recargos por demora</strong>.</li>
+                        <li>Si debés dinero, <strong>no vas a poder reservar</strong> nuevas clases hasta regularizar la deuda.</li>
                     </ul>
-                </div>
+                    <div class="terms-block">
+                        <p class="terms-block-title">Plazos después de la clase</p>
+                        <ul class="terms-list terms-list--tight">
+                            <li>
+                                <span class="terms-step" aria-hidden="true">1</span>
+                                <span class="terms-step-text"><strong>Primeras 24 horas:</strong> podés pagar <strong>sin recargo</strong>.</span>
+                            </li>
+                            <li>
+                                <span class="terms-step" aria-hidden="true">2</span>
+                                <span class="terms-step-text"><strong>Pasadas las 24 horas:</strong> se suma un recargo del <strong>5&nbsp;%</strong>.</span>
+                            </li>
+                            <li>
+                                <span class="terms-step" aria-hidden="true">3</span>
+                                <span class="terms-step-text"><strong>A partir de las 48 horas:</strong> sobre el <strong>monto total acumulado</strong> se cobra un <strong>1&nbsp;% adicional por cada día</strong> de demora.</span>
+                            </li>
+                        </ul>
+                    </div>
+                </section>
 
-                <h3>Cancelaciones</h3>
-                <p class="terms-intro">Podés cancelar desde el <strong>menú de usuario</strong> (tocá el ícono de perfil arriba a la derecha y revisá tus horarios reservados).</p>
-                <ul class="terms-list">
-                    <li><strong>Dos días antes o más</strong> (respecto al día de la clase) → <strong>sin costo</strong> (no se cobra interés ni recargo).</li>
-                    <li><strong>El día anterior</strong> a la clase → se cobra el <strong>25&nbsp;%</strong> de la tarifa de la clase.</li>
-                    <li><strong>El mismo día</strong> de la clase → se cobra la <strong>tarifa completa</strong> (100&nbsp;%).</li>
-                </ul>
+                <section class="terms-section">
+                    <h3>Cancelaciones</h3>
+                    <p class="terms-intro">Podés cancelar desde el <strong>menú de usuario</strong> (tocá el ícono de perfil arriba a la derecha y revisá tus horarios reservados).</p>
+                    <ul class="terms-list">
+                        <li><strong>Dos días antes o más</strong> (respecto al día de la clase) → <strong>sin costo</strong> (no se cobra interés ni recargo).</li>
+                        <li><strong>El día anterior</strong> a la clase → se cobra el <strong>25&nbsp;%</strong> de la tarifa de la clase.</li>
+                        <li><strong>El mismo día</strong> de la clase → se cobra la <strong>tarifa completa</strong> (100&nbsp;%).</li>
+                    </ul>
+                </section>
             </div>
             <div class="terms-modal-footer">
                 <a href="../TerminosYCondiciones/" class="terms-modal-more">Leer más</a>
