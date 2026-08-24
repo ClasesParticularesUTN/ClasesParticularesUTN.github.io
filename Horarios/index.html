@@ -2249,7 +2249,7 @@
                     document.getElementById('loader-text').textContent = 'Confirmando reserva...';
 
                     if (recordatorio === 'Whatsapp') {
-                        enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
+                        void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
                     }
 
                     await fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
@@ -2432,7 +2432,7 @@ ${fechaTexto}`
 
     console.log(`[WhatsApp] Intentando enviar recordatorio a ${telefonoLimpio}...`);
 
-    return fetch("https://servidorparawhatsapp.onrender.com/api/send-message", {
+    void fetch("https://servidorparawhatsapp.onrender.com/api/send-message", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
