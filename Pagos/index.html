@@ -454,6 +454,27 @@
         }
         .subtotal-row.hidden, .descuento-row.hidden { display: none; }
         .descuento-row { color: #2ecc71; }
+
+        /* Confirmacion de clases pendientes al comprar un pack */
+        #modalPackClases { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10001; padding: 24px; animation: fadeIn 0.25s ease; }
+        #modalPackClases .modal-inner { animation: modalIn 0.35s ease; }
+        .pack-clases-container { background: var(--card-bg); padding: 26px 22px 22px; border-radius: 24px; text-align: left; max-width: 480px; width: 100%; max-height: min(680px, 90vh); overflow-y: auto; border: 1px solid var(--glass-border); box-shadow: 0 24px 56px rgba(0,0,0,0.45); }
+        .pack-clases-container h2 { font-size: 1.25rem; margin-bottom: 6px; font-weight: 700; }
+        .pack-clases-container > p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 16px; }
+        .pack-seleccionado { display: flex; justify-content: space-between; gap: 12px; padding: 11px 12px; margin-bottom: 10px; border-radius: 14px; background: var(--primary-glow); border: 1px solid var(--primary); color: var(--text-main); font-size: 0.85rem; font-weight: 700; }
+        .pack-seleccionado strong { color: var(--primary); white-space: nowrap; }
+        .pack-clases-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+        .pack-clase-option { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 14px; background: rgba(128,128,128,0.1); border: 1px solid var(--glass-border); cursor: pointer; }
+        .pack-clase-option input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--primary); }
+        .pack-clase-option .pack-clase-info { min-width: 0; flex: 1; }
+        .pack-clase-option strong { display: block; color: var(--text-main); font-size: 0.9rem; }
+        .pack-clase-option span { display: block; color: var(--text-muted); font-size: 0.76rem; }
+        .pack-clases-total { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.85rem; }
+        .pack-clases-total strong { color: var(--primary); font-size: 1rem; }
+        .pack-clases-actions { display: flex; gap: 10px; }
+        .pack-clases-actions button { flex: 1; }
+        .pack-clases-actions .btn-cerrar { background: rgba(128,128,128,0.15); color: var(--text-main); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+        @media (max-width: 480px) { .pack-clases-actions { flex-direction: column-reverse; } }
     </style>
 </head>
 <body>
@@ -599,6 +620,24 @@
     </div>
 </div>
 
+<div id="modalPackClases">
+    <div class="pack-clases-container">
+        <div class="modal-inner">
+            <h2>Sumar clases pendientes</h2>
+            <p>El pack se puede pagar junto con estas clases. Destildá las que quieras dejar para después.</p>
+            <div id="packSeleccionado" class="pack-seleccionado"></div>
+            <div id="packClasesList" class="pack-clases-list"></div>
+            <div class="pack-clases-total">
+                <span>Total con el pack</span>
+                <strong>$<span id="packClasesTotal">0,00</span></strong>
+            </div>
+            <div class="pack-clases-actions">
+                <button type="button" class="btn-pago" onclick="confirmarPackConClases()">Generar QR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id="modalInfoCupon">
     <div class="infoqr-container">
         <h2><i class="fas fa-gift"></i> &#191;C&#243;mo consigo cupones?</h2>
@@ -669,6 +708,7 @@ let isPersonalizado = false;
 let horasCompraModalidad = 'individual';
 let horasCompraConfirmada = false;
 let cuponAplicado = null; // { codigo, correo, descuento } cuando hay un cupón validado y aplicado
+let pagoPackPendiente = null;
 
 const HORAS_PACK_EXAMEN = 20;
 const HORAS_PACK_MATERIA = 40;
@@ -1192,7 +1232,7 @@ async function pagarPackDirecto(tipoPack) {
         Swal.fire({ icon: 'error', title: 'Error', text: 'No hay precio cargado para este pack.', confirmButtonColor: '#f3a661' });
         return;
     }
-    await ejecutarPago({
+    iniciarPagoPack({
         lineas: [linea],
         referencias: [linea.referencia],
         tipoPago: 'pack'
@@ -1466,7 +1506,7 @@ function actualizarTotal() {
     aplicarDescuentoYRenderizarTotal(total, sel);
 }
 
-async function ejecutarPago({ lineas, referencias, tipoPago }) {
+async function ejecutarPago({ lineas, referencias, tipoPago, desglose = null }) {
     if (!lineas?.length) return;
 
     generarNuevaOrdenId();
@@ -1485,6 +1525,7 @@ async function ejecutarPago({ lineas, referencias, tipoPago }) {
         referencias,
         external_reference: miOrdenId,
         tipoPago,
+        desglose,
         cupon: descuentoInfo ? { codigo: descuentoInfo.codigo, descuento: cuponAplicado.descuento, montoDescontado: descuentoMonto } : null
     };
 
@@ -1526,6 +1567,91 @@ async function ejecutarPago({ lineas, referencias, tipoPago }) {
     }
 }
 
+function iniciarPagoPack({ lineas, referencias, tipoPago }) {
+    if (clases.length > 0) {
+        pagoPackPendiente = { lineas, referencias, tipoPago };
+        mostrarModalPackClases();
+        return;
+    }
+    ejecutarPago({ lineas, referencias, tipoPago });
+}
+
+function mostrarModalPackClases() {
+    const lista = document.getElementById('packClasesList');
+    const modal = document.getElementById('modalPackClases');
+    if (!lista || !modal || !pagoPackPendiente) return;
+
+    const packEl = document.getElementById('packSeleccionado');
+    if (packEl) {
+        const pack = pagoPackPendiente.lineas.reduce((texto, linea) => texto ? `${texto} + ${linea.title}` : linea.title, '');
+        const precio = pagoPackPendiente.lineas.reduce((total, linea) => total + linea.precio, 0);
+        packEl.innerHTML = `<span>${pack}</span><strong>$${precio.toFixed(2)}</strong>`;
+    }
+    lista.innerHTML = '';
+    clases.forEach(clase => {
+        const label = document.createElement('label');
+        label.className = 'pack-clase-option';
+        label.innerHTML = `<input type="checkbox" value="${clase.id}" checked onchange="actualizarResumenPackClases()">
+            <span class="pack-clase-info"><strong>${clase.modalidad} - $${clase.precioEditado.toFixed(2)}</strong><span>${clase.fecha} | ${clase.horas} hs</span></span>`;
+        lista.appendChild(label);
+    });
+    actualizarResumenPackClases();
+    modal.style.display = 'flex';
+}
+
+function getClasesPackSeleccionadas() {
+    return Array.from(document.querySelectorAll('#packClasesList input[type="checkbox"]:checked'))
+        .map(checkbox => clases[checkbox.value])
+        .filter(Boolean);
+}
+
+function actualizarResumenPackClases() {
+    if (!pagoPackPendiente) return;
+    const clasesSeleccionadas = getClasesPackSeleccionadas();
+    const subtotal = redondearPrecio(
+        pagoPackPendiente.lineas.reduce((total, linea) => total + linea.precio, 0) +
+        clasesSeleccionadas.reduce((total, clase) => total + clase.precioEditado, 0)
+    );
+    const total = redondearPrecio(Math.max(subtotal - calcularDescuentoCupon(subtotal, cuponAplicado?.descuento), 0));
+    const totalEl = document.getElementById('packClasesTotal');
+    if (totalEl) totalEl.textContent = total.toFixed(2).replace('.', ',');
+}
+
+function confirmarPackConClases() {
+    if (!pagoPackPendiente) return;
+    const clasesSeleccionadas = getClasesPackSeleccionadas();
+    const lineas = [...pagoPackPendiente.lineas];
+    const referencias = [...pagoPackPendiente.referencias];
+
+    // Guardamos por separado las referencias del pack y las de las clases sueltas
+    // ANTES de mezclarlas, para poder avisarle a GAS de cada cosa por separado.
+    const referenciasPack = [...pagoPackPendiente.referencias];
+    const tipoPagoPack = pagoPackPendiente.tipoPago;
+    const referenciasClases = [];
+
+    clasesSeleccionadas.forEach(clase => {
+        lineas.push({ title: clase.modalidad, precio: clase.precioEditado, codigo: clase.codigo });
+        referencias.push(clase.codigo);
+        referenciasClases.push(clase.codigo);
+    });
+
+    const tipoPago = clasesSeleccionadas.length ? 'pack_horas' : pagoPackPendiente.tipoPago;
+
+    // Si en la misma orden hay clases sueltas Y pack, mandamos el desglose para que
+    // el backend, al aprobarse el pago, avise primero de las clases y luego del pack.
+    const desglose = (referenciasClases.length && referenciasPack.length)
+        ? {
+            clases: { referencias: referenciasClases, tipoPago: 'clase' },
+            pack: { referencias: referenciasPack, tipoPago: tipoPagoPack }
+        }
+        : null;
+
+    const modal = document.getElementById('modalPackClases');
+    if (modal) modal.style.display = 'none';
+    pagoPackPendiente = null;
+    ejecutarPago({ lineas, referencias, tipoPago, desglose });
+}
+
 async function pagarSeleccion() {
     const lineas = [];
     let referencias = [];
@@ -1539,8 +1665,8 @@ async function pagarSeleccion() {
         });
     } else if (modoPago === 'pack') {
         if (!horasCompraConfirmada) return;
-        const clases = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
-        const horas = clases * 2; // cada clase dura 2 horas
+        const cantidadClases = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+        const horas = cantidadClases * 2; // cada clase dura 2 horas
         const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
         if (!calc) return;
         lineas.push(...calc.lineas);
@@ -1548,6 +1674,10 @@ async function pagarSeleccion() {
         tipoPago = getTipoPagoCompraHoras(calc);
     }
 
+    if (modoPago === 'pack') {
+        iniciarPagoPack({ lineas, referencias, tipoPago });
+        return;
+    }
     await ejecutarPago({ lineas, referencias, tipoPago });
 }
 

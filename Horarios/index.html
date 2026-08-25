@@ -1179,7 +1179,7 @@
                     color: '#fff'
                 });
             }
-            const { isConfirmed } = await Swal.fire({
+            const { isConfirmed, value: razonCancelacion } = await Swal.fire({
                 title: '¿Cancelar esta clase?',
                 html: `
                     <p style="text-align: center;" class="cancel-tyc-intro">Recordá los términos y condiciones de cancelación antes de confirmar:</p>
@@ -1201,6 +1201,16 @@
                         </div>
                     </div>
                 `,
+                input: 'textarea',
+                inputLabel: '¿Por qué cancelás la clase?',
+                inputPlaceholder: 'Escribí el motivo de la cancelación',
+                inputAttributes: {
+                    maxlength: 500,
+                    'aria-label': 'Razón de la cancelación'
+                },
+                inputValidator: (value) => {
+                    if (!value || !value.trim()) return 'Es necesario indicar una razón.';
+                },
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Sí, cancelar',
@@ -1211,6 +1221,7 @@
             });
             if (!isConfirmed) return;
 
+            const reservaCancelada = (Alumno.horarios || []).find(h => codigoHorarioReserva(h) === String(codigo).trim());
             cancelacionEnCurso = true;
             document.getElementById('loader-overlay').style.display = 'flex';
             document.getElementById('loader-text').textContent = 'Cancelando clase...';
@@ -1261,6 +1272,7 @@
                 if (Alumno.contrasenia) {
                     await actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
                 }
+                void enviarNotificacionCancelacion(Alumno.nombre, Alumno.telefono, textoHorarioReserva(reservaCancelada), razonCancelacion.trim());
                 document.getElementById('loader-overlay').style.display = 'none';
                 const htmlCancelacion = data.mensaje
                     ? `<div class="swal-cancel-msg" style="text-align: center;">${String(data.mensaje)}</div>`
@@ -2544,6 +2556,44 @@ ${fechaTexto}`
         console.error("[WhatsApp] No se pudo enviar el recordatorio:", error.name === 'TimeoutError' ? 'timeout (15s)' : error);
     });
 }
+
+        function enviarNotificacionCancelacion(nombre, telefono, fechaTexto, razon) {
+            let telefonoLimpio = String(telefono || '').replace(/\D/g, '');
+            if (!telefonoLimpio) {
+                console.warn('[WhatsApp] No hay teléfono para notificar la cancelación.');
+                return;
+            }
+            if (!telefonoLimpio.startsWith('54')) {
+                telefonoLimpio = telefonoLimpio.startsWith('9')
+                    ? '54' + telefonoLimpio
+                    : '549' + telefonoLimpio;
+            }
+
+            const mensaje = `🎓 *Clases Particulares UTN*
+----------------------------------------
+Hola *${nombre}*.
+
+Tu clase fue cancelada correctamente:
+
+📅 *Fecha:*
+${fechaTexto || 'No disponible'}
+
+📝 *Motivo de cancelación:*
+${razon}
+
+Si querés reservar otro horario, podés hacerlo desde la sección de Horarios.`;
+
+            void fetch('https://servidorparawhatsapp.onrender.com/api/send-message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ numero: telefonoLimpio, mensaje }),
+                signal: AbortSignal.timeout(15000)
+            })
+                .then(response => {
+                    if (!response.ok) console.warn('[WhatsApp] Error al enviar la cancelación. Código:', response.status);
+                })
+                .catch(error => console.error('[WhatsApp] No se pudo enviar la cancelación:', error));
+        }
         init();
 
         
