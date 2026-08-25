@@ -122,7 +122,8 @@
     </div>
 
     <script>
-        const URLUsuarios = "https://script.google.com/macros/s/AKfycbxdU8UEBWmBuNYAZbrGNPxPiMBlckCYI2NxITttfWCPbTnHbT5fCuG1zcYYEQ4U-74E/exec"; 
+        const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
+        const NUMERO_WHATSAPP_SOPORTE = "5493425271005";
         let clave = generarCadenaAleatoria();
 
         document.getElementById('formularioRegistro').addEventListener('submit', function (event) {
@@ -148,13 +149,7 @@
                     let urlFinal = URLUsuarios + "?correo=" + encodeURIComponent(datosAEnviar[0]) + "&contrasenia=" + encodeURIComponent(datosAEnviar[1]) + "&funcion=modificarContrasenia";
                     enviar(urlFinal);
                 } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Error",
-                        text: "Codigo incorrecto. Intente nuevamente. Respete Mayúsculas y Minúsculas.",
-                        background: '#1a1a1a',
-                        color: '#fff'
-                    });
+                    mostrarErrorWhatsApp("Error", "Código incorrecto. Intente nuevamente. Respete mayúsculas y minúsculas.");
                 }
             }
         });
@@ -171,13 +166,7 @@
             })
             .then(res => {
                 if (res.status == false) {
-                    Swal.fire({
-                        icon: "error",
-                        title: "No encontrado",
-                        text: "El correo no existe en nuestra base de datos.",
-                        background: '#1a1a1a',
-                        color: '#fff'
-                    });
+                    mostrarErrorWhatsApp("No encontrado", "El correo no existe en nuestra base de datos.");
                 } else if (res.status) {
                     Swal.fire({
                         title: "Código Enviado",
@@ -189,11 +178,13 @@
                     document.querySelector(".codigo").style.display = "block";
                     document.querySelector("#botonEnviar").innerHTML = "Cambiar Contraseña";
                     document.getElementById('instruccion').innerText = "Ingresa la nueva contraseña y el código enviado.";
+                } else {
+                    mostrarErrorWhatsApp("Respuesta inesperada", "El servidor no pudo procesar la solicitud.");
                 }
             })
             .catch(error => {
                 console.error(error);
-                Swal.fire({ icon: "error", title: "Error", text: "No se pudo conectar con el servidor." });
+                mostrarErrorWhatsApp("Error de conexión", "No se pudo conectar con el servidor.", error.message);
             })
             .finally(() => {
                 document.querySelector("body").style.cursor = "default";
@@ -230,10 +221,34 @@
                 }
             })
             .catch(() => {
-                Swal.fire({ icon: "error", title: "Error", text: "Error al cambiar la contraseña." });
+                mostrarErrorWhatsApp("Error", "Error al cambiar la contraseña.");
             })
             .finally(() => {
                 document.querySelector(".contenedorLoader").style.display = "none";
+            });
+        }
+
+        function mostrarErrorWhatsApp(titulo, texto, detalle = "") {
+            const mensaje = detalle ? `${texto}\nDetalle: ${detalle}` : texto;
+            Swal.fire({
+                icon: "error",
+                title: titulo,
+                text: texto,
+                background: '#1a1a1a',
+                color: '#fff',
+                showCancelButton: true,
+                confirmButtonText: "Cerrar",
+                cancelButtonText: "Ir a WhatsApp",
+                cancelButtonColor: "#25D366",
+                reverseButtons: true
+            }).then((resultado) => {
+                if (resultado.dismiss === Swal.DismissReason.cancel) {
+                    window.open(
+                        "https://wa.me/" + NUMERO_WHATSAPP_SOPORTE + "?text=" +
+                        encodeURIComponent("Hola, tuve un problema al recuperar mi contraseña: " + mensaje),
+                        "_blank"
+                    );
+                }
             });
         }
     </script>
