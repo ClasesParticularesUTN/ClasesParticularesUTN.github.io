@@ -48,6 +48,12 @@ const PRECIOS_BASE = {
  * ============================================
  */
 const PRECIOS_ESPECIALES = {
+    "Da Silva Valentin": {
+        individual: {
+            packExamen: 10,
+            packMateria: 10000 * 14,
+        },
+    },
     "Benitez Juan Martin": {
         individual: {
             expres1h: 6500,
