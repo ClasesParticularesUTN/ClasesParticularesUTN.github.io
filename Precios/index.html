@@ -539,7 +539,37 @@
     </footer>
 
     <script>
+        const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec";
+
+        function notificarVisitaPrecios() {
+            let persona;
+
+            try {
+                persona = JSON.parse(localStorage.getItem('persona'));
+            } catch (error) {
+                persona = null;
+            }
+
+            if (!persona || persona.admin !== false) return;
+
+            const nombre = persona?.nombre || localStorage.getItem('Nombre');
+            const apellido = persona?.apellido || localStorage.getItem('Apellido');
+            const nombreCompleto = nombre && apellido ? `: ${nombre} ${apellido}` : '';
+            if(!nombreCompleto) nombreCompleto = '(Desconocido)';
+            fetch(URLUsuarios, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({
+                    funcion: 'enviarCorreo',
+                    asunto: 'Visita a la página de precios',
+                    texto: `Alguien entro a ver los precios${nombreCompleto}`
+                })
+            }).catch(error => console.error('No se pudo notificar la visita a precios:', error));
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            notificarVisitaPrecios();
+
             // Redirigir si no están definidos nombre o apellido en localStorage
             // if (!localStorage.getItem('Nombre') || !localStorage.getItem('Apellido')) {
 
@@ -603,8 +633,7 @@
             //           color: #f3a661 !important;
             //         }
             //       `;
-            //       document.head.appendChild(style);
-            //     }
+            //       
 
             //     Swal.fire({
             //         title: "¿Qué deseas hacer?",
