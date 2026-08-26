@@ -102,27 +102,6 @@ const PRECIOS_ESPECIALES = {
             packMateria: 8000 * 14
         }
     },
-    "Villa Camila": {
-        individual: {
-            expres1h: 5000,
-            estandar2h: 9000,
-            precioPorHora1: 5000,
-            precioPorHora2: 4500,
-            packExamen: 72000,
-            packMateria: 9000 * 14,
-        }
-    },
-    "Trancaso Nicolas": {
-        individual: {
-            expres1h: 7500,
-            estandar2h: 12000,
-            precioPorHora1: 7500,
-            precioPorHora2: 6000,
-            packExamen: 12000 * 8,
-            packMateria: 12000 * 14,
-        }
-    },
-
     "Pane Joaquin": {
         individual: {
             expres1h: PRECIOS_BASE.individual.expres1h + 750,
