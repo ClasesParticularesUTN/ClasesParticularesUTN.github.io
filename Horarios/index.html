@@ -1272,7 +1272,25 @@
                 if (Alumno.contrasenia) {
                     await actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
                 }
-                void enviarNotificacionCancelacion(Alumno.nombre, Alumno.telefono, textoHorarioReserva(reservaCancelada), razonCancelacion.trim());
+                let avisarPorWhatsapp = true;
+                if (isAdmin) {
+                    const decisionWhatsapp = await Swal.fire({
+                        icon: 'question',
+                        title: '¿Avisar por WhatsApp?',
+                        text: 'La clase ya fue cancelada. ¿Querés enviarle un mensaje al usuario?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Avisar por WhatsApp',
+                        cancelButtonText: 'No avisar',
+                        confirmButtonColor: '#25d366',
+                        cancelButtonColor: '#555',
+                        background: '#151517',
+                        color: '#fff'
+                    });
+                    avisarPorWhatsapp = decisionWhatsapp.isConfirmed;
+                }
+                if (avisarPorWhatsapp) {
+                    void enviarNotificacionCancelacion(Alumno.nombre, Alumno.telefono, textoHorarioReserva(reservaCancelada), razonCancelacion.trim());
+                }
                 document.getElementById('loader-overlay').style.display = 'none';
                 const htmlCancelacion = data.mensaje
                     ? `<div class="swal-cancel-msg" style="text-align: center;">${String(data.mensaje)}</div>`
