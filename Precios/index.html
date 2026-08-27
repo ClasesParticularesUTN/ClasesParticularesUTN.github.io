@@ -554,15 +554,33 @@
 
             const nombre = persona?.nombre || localStorage.getItem('Nombre');
             const apellido = persona?.apellido || localStorage.getItem('Apellido');
-            const nombreCompleto = nombre && apellido ? `: ${nombre} ${apellido}` : '';
-            if(!nombreCompleto) nombreCompleto = '(Desconocido)';
+            const nombreCompleto = nombre && apellido ? `${nombre} ${apellido}` : '(Desconocido)';
+            const nombreSeguro = nombreCompleto.replace(/[&<>'"]/g, caracter => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[caracter]));
+
             fetch(URLUsuarios, {
                 method: 'POST',
                 mode: 'no-cors',
                 body: JSON.stringify({
                     funcion: 'enviarCorreo',
                     asunto: 'Visita a la página de precios',
-                    texto: `Alguien entro a ver los precios${nombreCompleto}`
+                    texto: `
+                        <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 28px; color: #1f2937; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 14px;">
+                            <div style="margin-bottom: 22px; padding-bottom: 16px; border-bottom: 3px solid #f3a661;">
+                                <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #a35a2d; text-transform: uppercase;">C/S Ingeniería en Sistemas</div>
+                                <h2 style="margin: 8px 0 0; font-size: 24px; color: #111827;">Nueva visita a precios</h2>
+                            </div>
+                            <p style="margin: 0 0 18px; font-size: 16px; line-height: 1.6;">Alguien entró a ver los precios.</p>
+                            <div style="padding: 14px 16px; background: #fff7ed; border-left: 4px solid #f3a661; border-radius: 6px; font-size: 16px;">
+                                <strong>Visitante:</strong> ${nombreSeguro}
+                            </div>
+                        </div>
+                    `
                 })
             }).catch(error => console.error('No se pudo notificar la visita a precios:', error));
         }
