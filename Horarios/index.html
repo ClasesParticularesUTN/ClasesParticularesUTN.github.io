@@ -2389,7 +2389,7 @@
                         void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
                     }
 
-                    await fetch(URLUsuarios, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                    await fetch(URLUsuarios, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
 
                     document.getElementById('loader-overlay').style.display = 'none';
                     await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
