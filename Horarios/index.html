@@ -2309,7 +2309,21 @@
                 const recordatorio = 'Whatsapp';
                 // ─────────────────────────────────────────────────────────────────────
 
-                const payload = { "persona": { ...Alumno, "horarios": nuevosHorarios }, "funcion": "asignarHorario", "celdas": celdasExcel, "numeroHoja": weekOffset, "metodoDePago": "", "integrantes": integrantes, "precio": precioPorPersona, "nombre": Alumno.nombre, "materia": materia, "esTP": esTP, "esConsulta": esConsulta, "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva) };
+                const payload = {
+                    "persona": { ...Alumno, "horarios": nuevosHorarios },
+                    "funcion": "asignarHorario",
+                    "celdas": celdasExcel,
+                    "numeroHoja": weekOffset,
+                    "metodoDePago": "",
+                    "integrantes": integrantes,
+                    "precio": precioPorPersona,
+                    "nombre": Alumno.nombre,
+                    "materia": materia,
+                    "esTP": esTP,
+                    "esConsulta": esConsulta,
+                    "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva),
+                    "mensaje": mensajeEstructurado
+                };
 
                 const diasNombresRecordatorio = puedeFinDeSemana
                     ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
@@ -2549,45 +2563,32 @@ ${fechaTexto}`
     const mensajeEstructurado = partes.join('\n\n');
 
     const payload = {
-        numero: telefonoLimpio,
         mensaje: mensajeEstructurado
     };
 
-    console.log(`[WhatsApp] Intentando enviar recordatorio a ${telefonoLimpio}...`);
+    console.log(`[WhatsApp] Intentando enviar recordatorio por URLUsuarios...`);
 
-    void fetch("https://servidorparawhatsapp.onrender.com/api/send-message", {
+    void fetch(URLUsuarios, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(15000) // corta a los 15s si el servidor no responde
+        signal: AbortSignal.timeout(15000)
     })
     .then(response => {
         if (response.ok) {
-            console.log("[WhatsApp] ¡Mensaje enviado con éxito y procesado por Render! 🚀");
+            console.log("[WhatsApp] Mensaje enviado por URLUsuarios.");
         } else {
-            console.warn("[WhatsApp] El servidor respondió pero con errores. Código:", response.status);
+            console.warn("[WhatsApp] URLUsuarios respondió con error. Código:", response.status);
         }
     })
     .catch(error => {
-        // Nadie espera esta promesa (se dispara de fondo), así que solo logueamos.
-        console.error("[WhatsApp] No se pudo enviar el recordatorio:", error.name === 'TimeoutError' ? 'timeout (15s)' : error);
+        console.error("[WhatsApp] No se pudo enviar el recordatorio por URLUsuarios:", error.name === 'TimeoutError' ? 'timeout (15s)' : error);
     });
 }
 
         function enviarNotificacionCancelacion(nombre, telefono, fechaTexto, razon) {
-            let telefonoLimpio = String(telefono || '').replace(/\D/g, '');
-            if (!telefonoLimpio) {
-                console.warn('[WhatsApp] No hay teléfono para notificar la cancelación.');
-                return;
-            }
-            if (!telefonoLimpio.startsWith('54')) {
-                telefonoLimpio = telefonoLimpio.startsWith('9')
-                    ? '54' + telefonoLimpio
-                    : '549' + telefonoLimpio;
-            }
-
             const mensaje = `🎓 *Clases Particulares UTN*
 ----------------------------------------
 Hola *${nombre}*.
@@ -2602,10 +2603,10 @@ ${razon}
 
 Si querés reservar otro horario, podés hacerlo desde la sección de Horarios.`;
 
-            void fetch('https://servidorparawhatsapp.onrender.com/api/send-message', {
+            void fetch(URLUsuarios, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ numero: telefonoLimpio, mensaje }),
+                body: JSON.stringify({ mensaje }),
                 signal: AbortSignal.timeout(15000)
             })
                 .then(response => {
