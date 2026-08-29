@@ -2309,22 +2309,6 @@
                 const recordatorio = 'Whatsapp';
                 // ─────────────────────────────────────────────────────────────────────
 
-                const payload = {
-                    "persona": { ...Alumno, "horarios": nuevosHorarios },
-                    "funcion": "asignarHorario",
-                    "celdas": celdasExcel,
-                    "numeroHoja": weekOffset,
-                    "metodoDePago": "",
-                    "integrantes": integrantes,
-                    "precio": precioPorPersona,
-                    "nombre": Alumno.nombre,
-                    "materia": materia,
-                    "esTP": esTP,
-                    "esConsulta": esConsulta,
-                    "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva),
-                    "mensaje": mensajeEstructurado
-                };
-
                 const diasNombresRecordatorio = puedeFinDeSemana
                     ? ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo']
                     : ['lunes', 'martes', 'miércoles', 'jueves', 'viernes'];
@@ -2345,17 +2329,54 @@
                 }
                 const textoFechas = fechasFormateadas.map(f => `    • ${f}`).join('\n');
 
-                // ── Horas a favor: si lo reservado entra dentro del pack, no se pide pago ──
                 const horasAFavorRecordatorio = Number(Alumno?.horasAFavor) || 0;
                 const usoHorasAFavor = horasAFavorRecordatorio > 0 && selectedSlots.length <= horasAFavorRecordatorio;
                 const incluirLinkPago = !usoHorasAFavor;
 
-                // ── Precio final: solo si es Clase de Consulta o Trabajo Práctico ──
                 const precioFinalRecordatorio = (esTP || esConsulta) ? formatearMontoDeuda(montoAMostrar) : null;
-                // ── Modalidad: solo se aclara si es Clase de Consulta o Trabajo Práctico ──
                 const modalidadRecordatorio = (esTP || esConsulta) ? modalidadTexto : null;
-                // ── Etiqueta del precio: "Precio por persona" si es grupal, "Precio final" si es individual ──
                 const etiquetaPrecioRecordatorio = (esTP || esConsulta) ? leyendaPrecio : null;
+
+                const bloquePago = `----------------------------------------
+💳 *LINK DE PAGO:*
+clasesparticularesutn.com.ar/pagos
+
+¿No sabes como pagar?
+clasesparticularesutn.com.ar/tutoriales
+----------------------------------------`;
+                const bloqueModalidad = modalidadRecordatorio ? `👥 *Modalidad:* ${modalidadRecordatorio}` : null;
+                const bloquePrecioFinal = precioFinalRecordatorio ? `💰 *${etiquetaPrecioRecordatorio}:* ${precioFinalRecordatorio}` : null;
+                const partes = [
+                    `🎓 *Clases Particulares UTN*
+----------------------------------------
+¡Hola *${Alumno.nombre}*! 👋
+
+Confirmamos tu reserva para la clase particular:
+
+📅 *Fecha:*
+${textoFechas}`
+                ];
+                if (bloqueModalidad) partes.push(bloqueModalidad);
+                if (bloquePrecioFinal) partes.push(bloquePrecioFinal);
+                if (incluirLinkPago) partes.push(bloquePago);
+                partes.push('¡Nos vemos en clase! 💻🚀');
+                const mensajeEstructurado = partes.join('\n\n');
+
+                const payload = {
+                    "persona": { ...Alumno, "horarios": nuevosHorarios },
+                    "funcion": "asignarHorario",
+                    "celdas": celdasExcel,
+                    "numeroHoja": weekOffset,
+                    "metodoDePago": "",
+                    "integrantes": integrantes,
+                    "precio": precioPorPersona,
+                    "nombre": Alumno.nombre,
+                    "materia": materia,
+                    "esTP": esTP,
+                    "esConsulta": esConsulta,
+                    "sinCorreo": (recordatorio === 'Whatsapp' && !esPrimeraReserva),
+                    "mensaje": mensajeEstructurado
+                };
 
                try {
                     const resultadoReserva = await fetch(URLHorarios, { method: 'POST', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre, admin: isAdmin }) })
