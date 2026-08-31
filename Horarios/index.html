@@ -856,6 +856,7 @@
     });
         const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbxdU8UEBWmBuNYAZbrGNPxPiMBlckCYI2NxITttfWCPbTnHbT5fCuG1zcYYEQ4U-74E/exec"; 
+        const URLWhatsapp = "https://servidorparawhatsapp.onrender.com/api/send-message";
         const MATERIAS_RESERVA = [
             'Algoritmos y Estructuras de Datos',
             'Arquitectura de Computadoras',
@@ -2604,9 +2605,34 @@ ${fechaTexto}`
     .catch(error => {
         console.error("[WhatsApp] No se pudo enviar el recordatorio por URLUsuarios:", error.name === 'TimeoutError' ? 'timeout (15s)' : error);
     });
+
+    console.log(`[WhatsApp] Intentando enviar recordatorio directo al servidor de WhatsApp...`);
+
+    void fetch(URLWhatsapp, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ numero: telefonoLimpio, mensaje: mensajeEstructurado }),
+        signal: AbortSignal.timeout(15000)
+    })
+    .then(async response => {
+        if (response.ok) {
+            console.log("[WhatsApp] Mensaje enviado directo por el servidor de WhatsApp.");
+        } else {
+            const texto = await response.text().catch(() => '');
+            console.warn("[WhatsApp] El servidor de WhatsApp respondió con error. Código:", response.status, texto);
+        }
+    })
+    .catch(error => {
+        console.error("[WhatsApp] No se pudo enviar el recordatorio directo al servidor de WhatsApp:", error.name === 'TimeoutError' ? 'timeout (15s)' : error);
+    });
 }
 
         function enviarNotificacionCancelacion(nombre, telefono, fechaTexto, razon) {
+            let telefonoLimpio = String(telefono).replace(/\D/g, '');
+            if (!telefonoLimpio.startsWith('54')) {
+                telefonoLimpio = telefonoLimpio.startsWith('9') ? '54' + telefonoLimpio : '549' + telefonoLimpio;
+            }
+
             const mensaje = `🎓 *Clases Particulares UTN*
 ----------------------------------------
 Hola *${nombre}*.
@@ -2627,9 +2653,23 @@ Si querés reservar otro horario, podés hacerlo desde la sección de Horarios.`
                 signal: AbortSignal.timeout(15000)
             })
                 .then(response => {
-                    if (!response.ok) console.warn('[WhatsApp] Error al enviar la cancelación. Código:', response.status);
+                    if (!response.ok) console.warn('[WhatsApp] Error al enviar la cancelación por URLUsuarios. Código:', response.status);
                 })
-                .catch(error => console.error('[WhatsApp] No se pudo enviar la cancelación:', error));
+                .catch(error => console.error('[WhatsApp] No se pudo enviar la cancelación por URLUsuarios:', error));
+
+            void fetch(URLWhatsapp, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ numero: telefonoLimpio, mensaje }),
+                signal: AbortSignal.timeout(15000)
+            })
+                .then(async response => {
+                    if (!response.ok) {
+                        const texto = await response.text().catch(() => '');
+                        console.warn('[WhatsApp] El servidor de WhatsApp respondió con error al cancelar. Código:', response.status, texto);
+                    }
+                })
+                .catch(error => console.error('[WhatsApp] No se pudo enviar la cancelación directo al servidor de WhatsApp:', error));
         }
         init();
 
