@@ -550,11 +550,11 @@
                 persona = null;
             }
 
-            if (!persona || persona.admin !== false) return;
+            if (persona?.admin === true) return;
 
-            const nombre = persona?.nombre || localStorage.getItem('Nombre');
-            const apellido = persona?.apellido || localStorage.getItem('Apellido');
-            const nombreCompleto = nombre && apellido ? `${nombre} ${apellido}` : '(Desconocido)';
+            const nombre = persona?.nombre || localStorage.getItem('Nombre') || 'Desconocido';
+            const apellido = persona?.apellido || localStorage.getItem('Apellido') || 'Desconocido';
+            const nombreCompleto = `${nombre} ${apellido}`;
             const nombreSeguro = nombreCompleto.replace(/[&<>'"]/g, caracter => ({
                 '&': '&amp;',
                 '<': '&lt;',
