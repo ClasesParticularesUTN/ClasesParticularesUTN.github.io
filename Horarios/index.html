@@ -1103,11 +1103,18 @@
             }
         }
 
-        async function fetchConReintentos(url, opciones = {}, intentos = 3) {
+        // Reintentos con backoff + timeout. OJO: solo usar esto con peticiones de
+        // LECTURA (GET / consultas). Reintentar un POST que reserva o escribe algo
+        // puede duplicar la reserva o el envío de un correo/WhatsApp si el primer
+        // intento en realidad sí llegó a buen puerto y solo tardó en responder.
+        async function fetchConReintentos(url, opciones = {}, intentos = 3, timeoutMs = 15000) {
             let ultimoError;
             for (let i = 0; i < intentos; i++) {
                 try {
-                    return await fetch(url, opciones);
+                    return await fetch(url, {
+                        ...opciones,
+                        signal: opciones.signal || AbortSignal.timeout(timeoutMs)
+                    });
                 } catch (err) {
                     ultimoError = err;
                     if (i < intentos - 1) {
@@ -1523,15 +1530,40 @@
             await Promise.all([fetchSemana(0), fetchSemana(1)]);
             render();
             document.getElementById('loader-overlay').style.display = 'none';
+            if (cacheHorarios[0]?.error || cacheHorarios[1]?.error) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'No se pudo cargar la disponibilidad',
+                    text: 'No pudimos consultar qué horarios están ocupados. Los que ves ahora podrían no estar realmente libres. Recargá la página antes de reservar.',
+                    confirmButtonColor: '#f3a661',
+                    background: '#1a1a1a',
+                    color: '#fff'
+                });
+            }
             await mostrarRecordatorioDeudaCorreosEspecificos();
             await mostrarRecordatorioDeudaAlEntrar();
             setTimeout(() => { if (!yaMostroHintUser) mostrarHintUserIcon(); }, 500);
         }
 
+        function avisarErrorDatosDesactualizados() {
+            if (typeof Swal === 'undefined') return;
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'warning',
+                title: 'No se pudieron actualizar tus datos. Mostrando la última información guardada.',
+                showConfirmButton: false,
+                timer: 4500,
+                timerProgressBar: true,
+                background: '#1a1a1a',
+                color: '#fff'
+            });
+        }
+
         async function actualizarDatos(correo, contrasenia) {
             let urlFinal = `${URLUsuarios}?correo=${correo}&contrasenia=${contrasenia}&funcion=validarUsuario`;
             try {
-                const response = await fetch(urlFinal);
+                const response = await fetchConReintentos(urlFinal);
                 const data = await response.json();
                 console.log("data: ", data);
                 if (data.sesion) {
@@ -1541,7 +1573,10 @@
                     actualizarInterfazSidebar();
                     render();
                 }
-            } catch (error) { console.error('Error:', error); }
+            } catch (error) {
+                console.error('Error:', error);
+                avisarErrorDatosDesactualizados();
+            }
             finally { ocultarLoaderDatosSidebar(); }
         }
 
@@ -1668,15 +1703,23 @@
 
         async function fetchSemana(off) {
             try {
-                const res = await fetch(`${URLHorarios}?funcion=celdasOcupadas&numeroHoja=${off}`);
+                const res = await fetchConReintentos(`${URLHorarios}?funcion=celdasOcupadas&numeroHoja=${off}`);
                 const data = await res.json();
                 const correo = Alumno?.correoElectronico ?? '';
                 const { codigos, alumnos } = normalizarCeldasOcupadas(data[1] ?? []);
                 cacheHorarios[off] = {
                     celdas: aplicarPersonalizados(correo, off, codigos),
-                    alumnos
+                    alumnos,
+                    error: false
                 };
-            } catch (e) { cacheHorarios[off] = { celdas: [], alumnos: {} }; }
+            } catch (e) {
+                // Importante: si esto falla no sabemos qué celdas están ocupadas de
+                // verdad. Se marca error:true para poder avisar en vez de mostrar
+                // la semana como si estuviera toda libre (eso llevaría a que el
+                // usuario elija un horario ya tomado sin enterarse hasta confirmar).
+                console.error(`[fetchSemana] No se pudo traer la semana ${off}:`, e);
+                cacheHorarios[off] = { celdas: [], alumnos: {}, error: true };
+            }
         }
 
         function render() {
@@ -2011,7 +2054,7 @@
                 document.getElementById('loader-text').textContent = 'Validando integrantes...';
                 try {
                     const urlVerif = `${URLUsuarios}?funcion=verificarCorreos&correos=${encodeURIComponent(JSON.stringify(integrantes))}`;
-                    const resVerif = await fetch(urlVerif);
+                    const resVerif = await fetchConReintentos(urlVerif);
                     const dataVerif = await resVerif.json();
                     if (dataVerif.error && dataVerif.error !== false) {
                         document.getElementById('loader-overlay').style.display = 'none';
@@ -2380,7 +2423,13 @@ ${textoFechas}`
                 };
 
                try {
-                    const resultadoReserva = await fetch(URLHorarios, { method: 'POST', body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre, admin: isAdmin }) })
+                    // Sin reintentos automáticos acá: si el POST llegó a procesarse en el
+                    // servidor y solo tardó en contestar, reintentar duplicaría la reserva.
+                    const resultadoReserva = await fetch(URLHorarios, {
+                        method: 'POST',
+                        body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre, admin: isAdmin }),
+                        signal: AbortSignal.timeout(20000)
+                    })
                         .then(response => response.json())
                         .then(data => {
                             console.log('[reservarHorario] Resultado del servidor:', data);
@@ -2411,15 +2460,45 @@ ${textoFechas}`
                         void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
                     }
 
-                    await fetch(URLUsuarios, { method: 'POST', body: JSON.stringify(payload) });
+                    const resAsignar = await fetch(URLUsuarios, {
+                        method: 'POST',
+                        body: JSON.stringify(payload),
+                        signal: AbortSignal.timeout(20000)
+                    });
+                    let dataAsignar = {};
+                    try { dataAsignar = await resAsignar.json(); } catch (e) { dataAsignar = {}; }
+                    console.log('[asignarHorario] Resultado del servidor:', resAsignar.status, dataAsignar);
 
                     document.getElementById('loader-overlay').style.display = 'none';
+
+                    if (!resAsignar.ok || dataAsignar.ok === false || dataAsignar.exito === false) {
+                        // El horario YA quedó tomado (el fetch anterior tuvo éxito). Lo que
+                        // pudo haber fallado acá es guardar el turno en la ficha del alumno
+                        // y/o el envío del correo. Antes esto no se chequeaba y siempre se
+                        // mostraba "Reserva completada" sin importar el resultado real.
+                        await Swal.fire({
+                            icon: 'warning',
+                            title: 'Reserva tomada, con un problema',
+                            html: 'El horario quedó reservado, pero no pudimos confirmar que se haya guardado en tu cuenta ni que se haya enviado el correo. Si en unos minutos no lo ves en <strong>"Mis Horarios"</strong>, escribinos para verificarlo.',
+                            confirmButtonColor: '#f3a661'
+                        });
+                        location.reload();
+                        return;
+                    }
+
                     await Swal.fire({ icon: 'success', title: 'Reserva completada', html: '<span style="color: #ff5f5f; font-weight: 600;">Por favor, revise su correo electrónico</span>', confirmButtonColor: '#f3a661' });
 
                     location.reload();
                 } catch (e) {
                     document.getElementById('loader-overlay').style.display = 'none';
-                    Swal.fire({ icon: 'error', title: 'Error de red' });
+                    const esTimeout = e && e.name === 'TimeoutError';
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de red',
+                        text: esTimeout
+                            ? 'El servidor tardó demasiado en responder. Antes de reintentar, revisá en "Mis Horarios" si la reserva ya se hizo, para no duplicarla.'
+                            : 'No se pudo completar la reserva. Intentá de nuevo.'
+                    });
                 }
             }
         }

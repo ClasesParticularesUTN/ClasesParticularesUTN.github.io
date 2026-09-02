@@ -212,107 +212,133 @@ function doPost(e) {
   agregarAlRegistro(JSON.stringify(datos));
   SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Valentin").getRange("C1").setValue(JSON.stringify(datos));
 
-  switch (datos.funcion) {
-    case "asignarHorario": {
-      const mensajeWhatsApp = typeof datos.mensaje === 'string' ? datos.mensaje : '';
-      let fechas = [];
+  try {
+    switch (datos.funcion) {
+      case "asignarHorario": {
+        const mensajeWhatsApp = typeof datos.mensaje === 'string' ? datos.mensaje : '';
+        let fechas = [];
+        // Código de reserva compartido por todos los integrantes de una
+        // misma reserva grupal. Se completa con el código que genera
+        // asignarHorario() para el principal (índice 0), y se reutiliza
+        // para el resto de los integrantes en vez de dejar que cada uno
+        // genere el suyo.
+        let codigoReservaCompartido;
 
-      (datos.integrantes || []).forEach((correo, indice) => {
-        let res = asignarHorario(
-          correo,
-          datos.celdas,
-          datos.numeroHoja,
-          datos.integrantes,
-          datos.precio,
-          datos.nombre,
-          indice == 0,
-          !!datos.sinCorreo,
-          mensajeWhatsApp
-        );
-
-        if (!Array.isArray(res)) {
-          res = [res];
-        }
-
-        res.forEach(r => {
-          if (r && r.fecha) fechas.push(r.fecha);
-        });
-      });
-
-      console.log(fechas, datos.persona, datos.integrantes);
-      enviarCorreo(fechas, datos.persona, datos.integrantes, datos.materia);
-      break;
-    }
-
-    case "agregarAlumno": {
-      resultado = agregarAlumno(datos.datosAlumnos);
-      break;
-    }
-
-    case "registrarPago": {
-      registrarPago(datos.persona, datos.horario);
-      break;
-    }
-
-    case "subirCodigo": {
-      subirCodigo(datos);
-      break;
-    }
-
-    case "enviarWhatsApp": {
-      resultado = {
-        ok: true,
-        recibido: true,
-        numero: datos.numero || '',
-        mensaje: datos.mensaje || ''
-      };
-      break;
-    }
-
-    case "registrarPagoAutomatico": {
-      const referenciasPack = [
-        "horas_sueltas",
-        "individual_packExamen",
-        "individual_packMateria",
-        "grupal_packExamen",
-        "grupal_packMateria"
-      ];
-
-      resultado = referenciasPack.some(x =>
-        (datos.referencia || []).includes(x) ||
-        (
-          datos.referencia &&
-          datos.referencia[0] &&
-          datos.referencia[0].tipo &&
-          datos.referencia[0].tipo.includes(x)
-        )
-      )
-        ? habilitarPack(datos.correo, datos.referencia)
-        : registrarPagoAutomatico(
-            datos.correo,
-            datos.referencia,
-            datos.monto
+        (datos.integrantes || []).forEach((correo, indice) => {
+          let res = asignarHorario(
+            correo,
+            datos.celdas,
+            datos.numeroHoja,
+            datos.integrantes,
+            datos.precio,
+            datos.nombre,
+            indice == 0,
+            !!datos.sinCorreo,
+            // 9° = codigoReserva: undefined para el principal (se genera
+            // uno nuevo) y ya definido para el resto (se reutiliza).
+            codigoReservaCompartido,
+            // 10° = mensajePersonalizado: el texto de WhatsApp. Este es
+            // un parámetro propio y separado de codigoReserva — NUNCA
+            // reusar la posición 9 para esto, fue justamente el bug que
+            // rompía la planilla.
+            mensajeWhatsApp
           );
 
-      break;
-    }
+          if (!Array.isArray(res)) {
+            res = [res];
+          }
 
-    case "cargarContras": {
-      agregarAlRegistro(
-        datos.correo,
-        (datos.contra || []).join(", "),
-        "Iniciar Sesion"
-      );
-      break;
-    }
+          res.forEach(r => {
+            if (r && r.fecha) fechas.push(r.fecha);
+            if (r && r.referencia && !codigoReservaCompartido) {
+              codigoReservaCompartido = r.referencia;
+            }
+          });
+        });
 
-    case "enviarCorreo": {
-      enviarCorreoCualquiera(
-        datos.asunto,
-        datos.texto
-      );
-      break;
+        console.log(fechas, datos.persona, datos.integrantes);
+        enviarCorreo(fechas, datos.persona, datos.integrantes, datos.materia);
+        break;
+      }
+
+      case "agregarAlumno": {
+        resultado = agregarAlumno(datos.datosAlumnos);
+        break;
+      }
+
+      case "registrarPago": {
+        registrarPago(datos.persona, datos.horario);
+        break;
+      }
+
+      case "subirCodigo": {
+        subirCodigo(datos);
+        break;
+      }
+
+      case "enviarWhatsApp": {
+        resultado = {
+          ok: true,
+          recibido: true,
+          numero: datos.numero || '',
+          mensaje: datos.mensaje || ''
+        };
+        break;
+      }
+
+      case "registrarPagoAutomatico": {
+        const referenciasPack = [
+          "horas_sueltas",
+          "individual_packExamen",
+          "individual_packMateria",
+          "grupal_packExamen",
+          "grupal_packMateria"
+        ];
+
+        resultado = referenciasPack.some(x =>
+          (datos.referencia || []).includes(x) ||
+          (
+            datos.referencia &&
+            datos.referencia[0] &&
+            datos.referencia[0].tipo &&
+            datos.referencia[0].tipo.includes(x)
+          )
+        )
+          ? habilitarPack(datos.correo, datos.referencia)
+          : registrarPagoAutomatico(
+              datos.correo,
+              datos.referencia,
+              datos.monto
+            );
+
+        break;
+      }
+
+      case "cargarContras": {
+        agregarAlRegistro(
+          datos.correo,
+          (datos.contra || []).join(", "),
+          "Iniciar Sesion"
+        );
+        break;
+      }
+
+      case "enviarCorreo": {
+        enviarCorreoCualquiera(
+          datos.asunto,
+          datos.texto
+        );
+        break;
+      }
     }
+  } catch (err) {
+    Logger.log(err);
+    resultado = {
+      ok: false,
+      exito: false,
+      mensaje: String(err && err.message ? err.message : err),
+      funcion: datos.funcion || 'sin_funcion'
+    };
   }
 
   if (resultado !== undefined) {
