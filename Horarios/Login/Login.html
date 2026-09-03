@@ -563,7 +563,7 @@
             loader.style.display = 'block';
             console.log('⏳ [FORM] Cargando... enviando solicitud al servidor');
             
-            const urlFinal = `${URLUsuarios}?correo=${encodeURIComponent(correo)}&contrasenia=${encodeURIComponent(contrasenia)}&referrer=${encodeURIComponent(referrer)}&funcion=validarUsuario`;
+            const urlFinal = `${URLUsuarios}?correo=${encodeURIComponent(correo)}&contrasenia=${encodeURIComponent(contrasenia)}&referrer=${encodeURIComponent(referrer)}&funcion=validarUsuarioSimplificado`;
             console.log('🌐 [API] URL de solicitud generada');
             
             fetchConReintento(urlFinal)
