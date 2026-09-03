@@ -474,6 +474,35 @@
             
         });
 
+        // ── Fetch con reintento: tolera el "cold start" de Apps Script ──────────
+        // La primera petición a una Web App de Apps Script a veces devuelve una
+        // página HTML intermedia (login/redirect) en lugar del JSON esperado.
+        // Esta función intenta parsear el JSON y, si falla, reintenta una vez
+        // más tras una breve pausa antes de rendirse.
+        async function fetchConReintento(url, intentos = 2, esperaMs = 700) {
+            let ultimoError;
+            for (let i = 0; i < intentos; i++) {
+                try {
+                    const response = await fetch(url);
+                    console.log(`📡 [API] Intento ${i + 1}/${intentos}. Status:`, response.status);
+                    const texto = await response.text();
+                    try {
+                        return JSON.parse(texto);
+                    } catch (parseErr) {
+                        console.warn(`⚠️ [API] Respuesta no era JSON en el intento ${i + 1}:`, texto.slice(0, 120));
+                        ultimoError = new Error('El servidor no respondió correctamente, reintentando...');
+                    }
+                } catch (networkErr) {
+                    console.warn(`⚠️ [API] Error de red en el intento ${i + 1}:`, networkErr.message);
+                    ultimoError = networkErr;
+                }
+                if (i < intentos - 1) {
+                    await new Promise(r => setTimeout(r, esperaMs));
+                }
+            }
+            throw ultimoError || new Error('No se pudo contactar al servidor');
+        }
+
         function getReferrerFolderName(ref) {
             if (!ref) return 'Horarios';
             try {
@@ -537,11 +566,7 @@
             const urlFinal = `${URLUsuarios}?correo=${encodeURIComponent(correo)}&contrasenia=${encodeURIComponent(contrasenia)}&referrer=${encodeURIComponent(referrer)}&funcion=validarUsuario`;
             console.log('🌐 [API] URL de solicitud generada');
             
-            fetch(urlFinal)
-                .then(response => {
-                    console.log('📡 [API] Respuesta recibida. Status:', response.status);
-                    return response.json();
-                })
+            fetchConReintento(urlFinal)
                 .then(data => {
                     console.log('✅ [API] JSON parseado:', {
                         sesion: data.sesion,
