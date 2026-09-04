@@ -1783,29 +1783,11 @@
                             return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 12 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
                         }
                         if (selectedSlots.includes(fullId)) {
-                            if (horaSlot === '17:00' && tieneSlotEnHora(selectedSlots, isoDate, '18:00')) {
-                                return Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Horario requerido',
-                                    text: 'No podés quitar las 17:00 mientras tengas seleccionadas las 18:00 del mismo día.',
-                                    background: '#1a1a1a',
-                                    color: '#fff'
-                                });
-                            }
                             selectedSlots = selectedSlots.filter(s => s !== fullId);
                             slot.classList.remove('selected');
                             if (selectedSlots.length === 0) ocultarHintMoverBarra();
                         } else {
                             const fechaSlot = fechaDeSlot(fullId);
-                            if (horaSlot === '18:00' && !tieneSlotEnHora(selectedSlots, fechaSlot, '17:00')) {
-                                return Swal.fire({
-                                    icon: 'warning',
-                                    title: 'Horario requerido',
-                                    text: 'Para reservar las 18:00 también tenés que seleccionar las 17:00 del mismo día.',
-                                    background: '#1a1a1a',
-                                    color: '#fff'
-                                });
-                            }
                             const horasEseDia = selectedSlots.filter(s => fechaDeSlot(s) === fechaSlot).length;
                             if (!isAdmin && horasEseDia >= 3 && !tienePermiso('superarLimiteHorasPorDia', Alumno)) {
                                 return Swal.fire({
