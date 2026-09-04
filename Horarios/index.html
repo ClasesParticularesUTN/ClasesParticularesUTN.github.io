@@ -899,6 +899,17 @@
             return slotId.split(' ')[0];
         }
 
+        function tieneSlotEnHora(slots, fecha, hora) {
+            return slots.includes(`${fecha} ${hora}`);
+        }
+
+        function diasConHorario18Sin17(slots) {
+            return [...new Set(slots
+                .filter(slot => slot.endsWith(' 18:00'))
+                .map(fechaDeSlot))]
+                .filter(fecha => !tieneSlotEnHora(slots, fecha, '17:00'));
+        }
+
         function contarHorasPorDia(slots) {
             const porDia = {};
             for (const s of slots) {
@@ -1772,11 +1783,29 @@
                             return Swal.fire({ icon: 'info', title: 'Plazo de anticipación', html: 'Las reservas deben realizarse con un <b>mínimo de 12 horas de antelación</b>.', background: '#1a1a1a', color: '#fff' });
                         }
                         if (selectedSlots.includes(fullId)) {
+                            if (horaSlot === '17:00' && tieneSlotEnHora(selectedSlots, isoDate, '18:00')) {
+                                return Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Horario requerido',
+                                    text: 'No podés quitar las 17:00 mientras tengas seleccionadas las 18:00 del mismo día.',
+                                    background: '#1a1a1a',
+                                    color: '#fff'
+                                });
+                            }
                             selectedSlots = selectedSlots.filter(s => s !== fullId);
                             slot.classList.remove('selected');
                             if (selectedSlots.length === 0) ocultarHintMoverBarra();
                         } else {
                             const fechaSlot = fechaDeSlot(fullId);
+                            if (horaSlot === '18:00' && !tieneSlotEnHora(selectedSlots, fechaSlot, '17:00')) {
+                                return Swal.fire({
+                                    icon: 'warning',
+                                    title: 'Horario requerido',
+                                    text: 'Para reservar las 18:00 también tenés que seleccionar las 17:00 del mismo día.',
+                                    background: '#1a1a1a',
+                                    color: '#fff'
+                                });
+                            }
                             const horasEseDia = selectedSlots.filter(s => fechaDeSlot(s) === fechaSlot).length;
                             if (!isAdmin && horasEseDia >= 3 && !tienePermiso('superarLimiteHorasPorDia', Alumno)) {
                                 return Swal.fire({
@@ -1838,6 +1867,17 @@
         }
 
         async function gestionarReserva() {
+            const horarios18Sin17 = diasConHorario18Sin17(selectedSlots);
+            if (horarios18Sin17.length > 0) {
+                return Swal.fire({
+                    icon: 'warning',
+                    title: 'Horario requerido',
+                    text: 'Toda reserva de las 18:00 debe estar acompañada por las 17:00 del mismo día.',
+                    background: '#1a1a1a',
+                    color: '#fff'
+                });
+            }
+
             if (!isAdmin) {
                 const porDia = contarHorasPorDia(selectedSlots);
                 if (Object.values(porDia).some(h => h > 3)) {
