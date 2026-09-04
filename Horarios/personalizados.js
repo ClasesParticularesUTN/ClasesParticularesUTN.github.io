@@ -35,16 +35,21 @@
 
 const HORARIOS_PERSONALIZADOS = {
     "vmosquen@gmail.com": {
-        habilitadas: [
-            { semana: 0, celda: "B5:B13" },
+        habilitadas: [],
+        deshabilitadas: [
+            { semana: 0, celda: "F8:F13" },
             { semana: 0, celda: "B3:C13" },
-        ],
-        deshabilitadas: []
+            
+            { semana: 1, celda: "F3:F13" },
+            
+            { semana: 0, celda: "D3:D13" },
+            { semana: 1, celda: "D3:D13" },
+        ]
     },
     "juanma.2000@hotmail.com": {
         habilitadas: [],
         deshabilitadas: [
-            { semana: 0, celda: "F3:F13" },
+            { semana: 0, celda: "F8:F13" },
             { semana: 0, celda: "B3:C13" },
             
             { semana: 1, celda: "F3:F13" },
@@ -56,7 +61,7 @@ const HORARIOS_PERSONALIZADOS = {
     "delfibert@gmail.com": {
         habilitadas: [],
         deshabilitadas: [
-            { semana: 0, celda: "F3:F13" },
+            { semana: 0, celda: "F8:F13" },
             { semana: 0, celda: "B3:C13" },
             
             { semana: 1, celda: "F3:F13" },
