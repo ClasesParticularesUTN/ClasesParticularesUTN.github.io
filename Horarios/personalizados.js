@@ -47,11 +47,11 @@ const HORARIOS_PERSONALIZADOS = {
         ]
     },
     "juanma.2000@hotmail.com": {
-        habilitadas: [],
+         habilitadas: [],
         deshabilitadas: [
             { semana: 0, celda: "F8:F13" },
-            { semana: 0, celda: "B3:C13" },
-            
+            { semana: 0, celda: "B3:B13" },
+            { semana: 0, celda: "C7:C13" },
             { semana: 1, celda: "F8:F13" },
             
             { semana: 0, celda: "D3:D13" },
@@ -59,11 +59,11 @@ const HORARIOS_PERSONALIZADOS = {
         ]
     },
     "delfibert@gmail.com": {
-        habilitadas: [],
+         habilitadas: [],
         deshabilitadas: [
             { semana: 0, celda: "F8:F13" },
-            { semana: 0, celda: "B3:C13" },
-            
+            { semana: 0, celda: "B3:B13" },
+            { semana: 0, celda: "C7:C13" },
             { semana: 1, celda: "F8:F13" },
             
             { semana: 0, celda: "D3:D13" },
