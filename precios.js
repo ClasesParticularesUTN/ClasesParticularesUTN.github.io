@@ -72,9 +72,9 @@ const PRECIOS_ESPECIALES = {
     },
     "Mosquen Valentin Ignacio": {
         individual: {
-            expres1h: 7000,
+            expres1h: 7500,
             estandar2h: 11000,
-            precioPorHora1: 7500,
+            precioPorHora1: 6500,
             precioPorHora2: 5500,
             packExamen: 11000 * 8,
             packMateria: 11000 * 14,
