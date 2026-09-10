@@ -842,7 +842,7 @@
 
         console.log("Iniciando estímulo de fondo para despertar el backend...");
 
-        fetch(urlPing)
+        fetchDirectoConReintento(urlPing, {}, 'No se pudo conectar con el servidor de horarios.')
             .then(response => {
                 if (response.ok) {
                     console.log("¡Backend despierto y respondiendo impecable! 🚀");
@@ -1122,10 +1122,15 @@
             let ultimoError;
             for (let i = 0; i < intentos; i++) {
                 try {
-                    return await fetch(url, {
-                        ...opciones,
-                        signal: opciones.signal || AbortSignal.timeout(timeoutMs)
+                    const { signal, ...opcionesSinSignal } = opciones;
+                    const response = await fetch(url, {
+                        ...opcionesSinSignal,
+                        signal: AbortSignal.timeout(timeoutMs)
                     });
+                    if (!response.ok) {
+                        throw new Error(`El servidor respondió con código ${response.status}.`);
+                    }
+                    return response;
                 } catch (err) {
                     ultimoError = err;
                     if (i < intentos - 1) {
@@ -1133,7 +1138,43 @@
                     }
                 }
             }
-            throw ultimoError;
+            return solicitarReintentoPeticion(ultimoError, () => fetchConReintentos(url, opciones, intentos, timeoutMs));
+        }
+
+        async function solicitarReintentoPeticion(error, reintentar, mensaje = 'No se pudo completar la solicitud.') {
+            const detalle = error?.name === 'TimeoutError'
+                ? 'El servidor tardó demasiado en responder.'
+                : (error?.message || 'Puede haber un problema de conexión.');
+            const resultado = await Swal.fire({
+                icon: 'error',
+                title: 'No se pudo completar la solicitud',
+                html: `${mensaje}<br><small>${detalle}</small>`,
+                showCancelButton: true,
+                confirmButtonText: 'Volver a intentar',
+                cancelButtonText: 'Cerrar',
+                confirmButtonColor: '#f3a661',
+                cancelButtonColor: '#555',
+                background: '#1a1a1a',
+                color: '#fff'
+            });
+            if (!resultado.isConfirmed) throw error;
+            return reintentar();
+        }
+
+        async function fetchDirectoConReintento(url, opciones = {}, mensaje, timeoutMs = 15000) {
+            try {
+                const { signal, ...opcionesSinSignal } = opciones;
+                const response = await fetch(url, {
+                    ...opcionesSinSignal,
+                    signal: AbortSignal.timeout(timeoutMs)
+                });
+                if (!response.ok) {
+                    throw new Error(`El servidor respondió con código ${response.status}.`);
+                }
+                return response;
+            } catch (error) {
+                return solicitarReintentoPeticion(error, () => fetchDirectoConReintento(url, opciones, mensaje, timeoutMs), mensaje);
+            }
         }
 
         function yaVioTerminosHorarios() {
@@ -2447,20 +2488,13 @@ ${textoFechas}`
                try {
                     // Sin reintentos automáticos acá: si el POST llegó a procesarse en el
                     // servidor y solo tardó en contestar, reintentar duplicaría la reserva.
-                    const resultadoReserva = await fetch(URLHorarios, {
+                    const responseReserva = await fetchDirectoConReintento(URLHorarios, {
                         method: 'POST',
                         body: JSON.stringify({ funcion: "reservarHorario", celdas: celdasExcel, numeroHoja: weekOffset, nombre: Alumno.nombre, admin: isAdmin }),
                         signal: AbortSignal.timeout(20000)
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log('[reservarHorario] Resultado del servidor:', data);
-                            return data;
-                        })
-                        .catch(error => {
-                            console.error('[reservarHorario] Error al llamar al servidor:', error);
-                            throw error;
-                        });
+                    }, 'No se pudo verificar la disponibilidad del horario.', 20000);
+                    const resultadoReserva = await responseReserva.json();
+                    console.log('[reservarHorario] Resultado del servidor:', resultadoReserva);
 
                     if (resultadoReserva && resultadoReserva.ok === false) {
                         document.getElementById('loader-overlay').style.display = 'none';
@@ -2482,11 +2516,11 @@ ${textoFechas}`
                         void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
                     }
 
-                    const resAsignar = await fetch(URLUsuarios, {
+                    const resAsignar = await fetchDirectoConReintento(URLUsuarios, {
                         method: 'POST',
                         body: JSON.stringify(payload),
                         signal: AbortSignal.timeout(20000)
-                    });
+                    }, 'El horario se tomó, pero no se pudo guardar la reserva en tu cuenta.', 20000);
                     let dataAsignar = {};
                     try { dataAsignar = await resAsignar.json(); } catch (e) { dataAsignar = {}; }
                     console.log('[asignarHorario] Resultado del servidor:', resAsignar.status, dataAsignar);
@@ -2691,11 +2725,11 @@ ${fechaTexto}`
 
     console.log(`[WhatsApp] Intentando enviar recordatorio por URLUsuarios...`);
 
-    void fetch(URLUsuarios, {
+    void fetchDirectoConReintento(URLUsuarios, {
         method: 'POST',
         body: JSON.stringify(payload),
         signal: AbortSignal.timeout(15000)
-    })
+    }, 'No se pudo enviar el recordatorio por WhatsApp.')
     .then(response => {
         if (response.ok) {
             console.log("[WhatsApp] Mensaje enviado por URLUsuarios.");
@@ -2709,12 +2743,12 @@ ${fechaTexto}`
 
     console.log(`[WhatsApp] Intentando enviar recordatorio directo al servidor de WhatsApp...`);
 
-    void fetch(URLWhatsapp, {
+    void fetchDirectoConReintento(URLWhatsapp, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ numero: telefonoLimpio, mensaje: mensajeEstructurado }),
         signal: AbortSignal.timeout(15000)
-    })
+    }, 'No se pudo enviar el recordatorio por WhatsApp.')
     .then(async response => {
         if (response.ok) {
             console.log("[WhatsApp] Mensaje enviado directo por el servidor de WhatsApp.");
@@ -2748,22 +2782,22 @@ ${razon}
 
 Si querés reservar otro horario, podés hacerlo desde la sección de Horarios.`;
 
-            void fetch(URLUsuarios, {
+            void fetchDirectoConReintento(URLUsuarios, {
                 method: 'POST',
                 body: JSON.stringify({ mensaje }),
                 signal: AbortSignal.timeout(15000)
-            })
+            }, 'No se pudo enviar la notificación de cancelación.')
                 .then(response => {
                     if (!response.ok) console.warn('[WhatsApp] Error al enviar la cancelación por URLUsuarios. Código:', response.status);
                 })
                 .catch(error => console.error('[WhatsApp] No se pudo enviar la cancelación por URLUsuarios:', error));
 
-            void fetch(URLWhatsapp, {
+            void fetchDirectoConReintento(URLWhatsapp, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ numero: telefonoLimpio, mensaje }),
                 signal: AbortSignal.timeout(15000)
-            })
+            }, 'No se pudo enviar la notificación de cancelación.')
                 .then(async response => {
                     if (!response.ok) {
                         const texto = await response.text().catch(() => '');
