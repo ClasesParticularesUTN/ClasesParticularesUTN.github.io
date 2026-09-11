@@ -560,19 +560,27 @@
         }
         .consulta-info-modal-panel {
             position: relative; z-index: 1;
-            width: 100%; max-width: 420px; max-height: min(88vh, 560px);
-            background: var(--glass); border: 1px solid var(--border);
-            border-radius: 16px; box-shadow: 0 24px 48px rgba(0,0,0,0.45);
+            width: min(100%, 460px); max-height: min(88vh, 600px);
+            background: linear-gradient(145deg, rgba(31, 31, 35, 0.98), rgba(14, 14, 16, 0.98));
+            border: 1px solid rgba(243, 166, 97, 0.42);
+            border-radius: 20px;
+            box-shadow: 0 28px 70px rgba(0,0,0,0.58), 0 0 0 1px rgba(255,255,255,0.03) inset;
             display: flex; flex-direction: column; overflow: hidden;
+            animation: consultaInfoPanelIn 0.28s ease-out both;
+        }
+        @keyframes consultaInfoPanelIn {
+            from { opacity: 0; transform: translateY(12px) scale(0.97); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .consulta-info-modal-header {
-            padding: 16px 44px 12px 18px;
-            border-bottom: 1px solid var(--border);
+            padding: 20px 56px 16px 24px;
+            background: linear-gradient(90deg, rgba(243, 166, 97, 0.14), rgba(243, 166, 97, 0.02));
+            border-bottom: 1px solid rgba(243, 166, 97, 0.2);
             flex-shrink: 0; text-align: center;
         }
         .consulta-info-modal-header h2 {
-            font-size: 1rem; font-weight: 700; color: var(--primary);
-            margin: 0; letter-spacing: 0.02em;
+            font-size: 1.08rem; font-weight: 800; color: #fff;
+            margin: 0; letter-spacing: 0.01em;
         }
         .consulta-info-modal-close {
             position: absolute; top: 10px; right: 10px;
@@ -583,26 +591,44 @@
         }
         .consulta-info-modal-close:hover { background: rgba(255,255,255,0.12); color: var(--primary); }
         .consulta-info-modal-body {
-            padding: 16px 18px 18px;
+            padding: 20px;
             overflow-y: auto;
         }
         .consulta-info-block {
-            background: rgba(243, 166, 97, 0.09);
-            border: 1px solid rgba(243, 166, 97, 0.22);
-            border-radius: 12px;
-            padding: 14px 16px;
-            margin-bottom: 12px;
+            background: rgba(255, 255, 255, 0.045);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 3px solid var(--primary);
+            border-radius: 14px;
+            padding: 16px 18px;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.16);
         }
         .consulta-info-block:last-child { margin-bottom: 0; }
         .consulta-info-block h5 {
-            font-size: 0.85rem; font-weight: 700; color: var(--primary);
-            margin: 0 0 8px; text-align: center;
+            font-size: 0.9rem; font-weight: 800; color: var(--primary);
+            margin: 0 0 9px; text-align: left;
         }
         .consulta-info-block p {
-            margin: 0; font-size: 0.82rem; line-height: 1.55;
-            color: rgba(255,255,255,0.85); text-align: center;
+            margin: 0; font-size: 0.84rem; line-height: 1.6;
+            color: rgba(255,255,255,0.82); text-align: left;
         }
         .consulta-info-block p strong { color: #fff; }
+        .consulta-info-block ul {
+            display: flex; flex-direction: column; gap: 9px;
+            margin: 0; padding: 0; list-style: none;
+        }
+        .consulta-info-block li {
+            position: relative; padding-left: 18px;
+            color: rgba(255,255,255,0.82); font-size: 0.84rem;
+            line-height: 1.55;
+        }
+        .consulta-info-block li::before {
+            content: ''; position: absolute; left: 0; top: 0.62em;
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 0 3px rgba(243,166,97,0.14);
+        }
+        .consulta-info-block li strong { color: #fff; }
 
         .swal-tyc-row {
             display: flex; align-items: flex-start; gap: 10px;
@@ -826,11 +852,19 @@
             <div class="consulta-info-modal-body">
                 <div class="consulta-info-block">
                     <h5>Clase de Consulta</h5>
-                    <p>Ideal cuando tenés dudas concretas y querés enfocarte en lo que vos necesitás. Podés traer ejercicios puntuales para resolver, un parcial específico o preguntas concretas sobre temas que ya estudiaste. <strong>Vos marcás la agenda:</strong> la clase gira en torno a tus consultas.</p>
+                    <ul>
+                        <li>Ideal para resolver dudas concretas y enfocarte en lo que necesitás.</li>
+                        <li>Podés traer ejercicios puntuales, un parcial específico o preguntas sobre temas ya estudiados.</li>
+                        <li><strong>Vos marcás la agenda:</strong> la clase gira en torno a tus consultas.</li>
+                    </ul>
                 </div>
                 <div class="consulta-info-block">
                     <h5>Clase normal</h5>
-                    <p>Pensada para prepararte de forma ordenada para el parcial o el final. Avanzamos tema por tema según tu nivel, construyendo la preparación de a poco en cada encuentro. <strong>Acá el ritmo lo lleva más el profesor:</strong> propone qué ver, en qué orden y con qué profundidad, para que progreses de manera sostenida.</p>
+                    <ul>
+                        <li>Pensada para prepararte de forma ordenada para el parcial o el final.</li>
+                        <li>Avanzamos tema por tema según tu nivel, construyendo la preparación en cada encuentro.</li>
+                        <li><strong>El profesor guía el ritmo:</strong> propone qué ver, en qué orden y con qué profundidad.</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -1227,6 +1261,15 @@
             el.classList.remove('is-open');
             el.setAttribute('aria-hidden', 'true');
         }
+
+        function abrirConsultaDesdeHash() {
+            if (window.location.hash.toLowerCase() === '#consultas') {
+                abrirModalInfoConsulta();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', abrirConsultaDesdeHash);
+        window.addEventListener('hashchange', abrirConsultaDesdeHash);
 
         async function cancelarClase(codigo) {
             if (cancelacionEnCurso) return;

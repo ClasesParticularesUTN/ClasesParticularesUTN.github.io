@@ -215,6 +215,37 @@
             color: #1be6f1;
             font-weight: 700;
         }
+        .modal-box .modal-compare-block ul {
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            text-align: left;
+        }
+        .modal-box .modal-compare-block li {
+            position: relative;
+            padding-left: 18px;
+            color: var(--text-main);
+            font-size: 0.86rem;
+            line-height: 1.55;
+        }
+        .modal-box .modal-compare-block li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.62em;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 0 3px rgba(243,166,97,0.14);
+        }
+        .modal-box .modal-compare-block li strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
         .modal-box .btn-modal-close {
             display: block; width: 100%; padding: 14px 20px;
             border-radius: 12px; background: transparent;
@@ -509,11 +540,19 @@
             <div class="modal-compare">
                 <div class="modal-compare-block">
                     <h5>Clase de Consulta</h5>
-                    <p>Ideal cuando tenés dudas concretas y querés enfocarte en lo que vos necesitás. Podés traer ejercicios puntuales para resolver, un parcial especifico o preguntas concetras sobre temas que ya estudiaste. <strong>Vos marcás la agenda: </strong> la clase gira en torno a tus consultas.</p>
+                    <ul>
+                        <li>Ideal para resolver dudas concretas y enfocarte en lo que necesitás.</li>
+                        <li>Podés traer ejercicios puntuales, un parcial específico o preguntas sobre temas ya estudiados.</li>
+                        <li><strong>Vos marcás la agenda:</strong> la clase gira en torno a tus consultas.</li>
+                    </ul>
                 </div>
                 <div class="modal-compare-block">
                     <h5>Clase normal (Express, Estándar o Packs)</h5>
-                    <p>Pensada para prepararte de forma ordenada para el parcial o el final. Avanzamos tema por tema según tu nivel, construyendo la preparación de a poco en cada encuentro. <strong>Acá el ritmo lo lleva más el profesor</strong>: propone qué ver, en qué orden y con qué profundidad, utilizando un cronograma y un plan de estudio propuestos para que progreses de manera sostenida.</p>
+                    <ul>
+                        <li>Pensada para prepararte de forma ordenada para el parcial o el final.</li>
+                        <li>Avanzamos tema por tema según tu nivel, construyendo la preparación en cada encuentro.</li>
+                        <li><strong>El profesor guía el ritmo:</strong> propone qué ver, en qué orden y con qué profundidad.</li>
+                    </ul>
                 </div>
             </div>
             <button type="button" class="btn-modal-close" onclick="closeConsultaModal()">Entendido</button>
