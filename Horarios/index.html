@@ -873,7 +873,7 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-        const urlPing = "https://servidorparawhatsapp.onrender.com/ping";
+        const urlPing = "https://servidorwhatsappnuevo.onrender.com/health";
 
         console.log("Iniciando estímulo de fondo para despertar el backend...");
 
@@ -891,7 +891,12 @@
     });
         const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbxdU8UEBWmBuNYAZbrGNPxPiMBlckCYI2NxITttfWCPbTnHbT5fCuG1zcYYEQ4U-74E/exec"; 
-        const URLWhatsapp = "https://servidorparawhatsapp.onrender.com/api/send-message";
+        const URLWhatsapp = "https://servidorwhatsappnuevo.onrender.com/send";
+        // ⚠️ Ver nota de seguridad: esta clave queda visible para cualquiera
+        // que abra "Ver código fuente" de esta página. Reemplazala por la
+        // tuya solo si entendés y aceptás ese riesgo (charlemos alternativas
+        // mas seguras antes de subir esto a producción).
+        const WHATSAPP_API_KEY = "PONE_ACA_TU_API_KEY";
         const MATERIAS_RESERVA = [
             'Algoritmos y Estructuras de Datos',
             'Arquitectura de Computadoras',
@@ -2789,8 +2794,8 @@ ${fechaTexto}`
 
     void fetchDirectoConReintento(URLWhatsapp, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ numero: telefonoLimpio, mensaje: mensajeEstructurado }),
+        headers: { 'Content-Type': 'application/json', 'x-api-key': WHATSAPP_API_KEY },
+        body: JSON.stringify({ to: '+' + telefonoLimpio, message: mensajeEstructurado }),
         signal: AbortSignal.timeout(15000)
     }, 'No se pudo enviar el recordatorio por WhatsApp.')
     .then(async response => {
@@ -2838,8 +2843,8 @@ Si querés reservar otro horario, podés hacerlo desde la sección de Horarios.`
 
             void fetchDirectoConReintento(URLWhatsapp, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ numero: telefonoLimpio, mensaje }),
+                headers: { 'Content-Type': 'application/json', 'x-api-key': WHATSAPP_API_KEY },
+                body: JSON.stringify({ to: '+' + telefonoLimpio, message: mensaje }),
                 signal: AbortSignal.timeout(15000)
             }, 'No se pudo enviar la notificación de cancelación.')
                 .then(async response => {
