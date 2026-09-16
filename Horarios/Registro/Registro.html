@@ -319,8 +319,13 @@
     </div>
 
     <script>
-        const URLUsuarios = "https://script.google.com/macros/s/AKfycbxdU8UEBWmBuNYAZbrGNPxPiMBlckCYI2NxITttfWCPbTnHbT5fCuG1zcYYEQ4U-74E/exec"; 
-const URLServidorWhatsAPP = "https://servidorparawhatsapp.onrender.com/api/send-message";
+        const URLUsuarios = "https://servidorusuarios.onrender.com"; 
+const URLServidorWhatsAPP = "https://servidorwhatsappnuevo.onrender.com/send";
+// ⚠️ Ver nota de seguridad: esta clave queda visible para cualquiera
+// que abra "Ver código fuente" de esta página. Reemplazala por la
+// tuya solo si entendés y aceptás ese riesgo (charlemos alternativas
+// mas seguras antes de subir esto a producción).
+const WHATSAPP_API_KEY = "PONE_ACA_TU_API_KEY";
 const NUMERO_WHATSAPP_SOPORTE = "5493425271005";
 
 function toggleParciales(materia) {
@@ -391,6 +396,8 @@ document.getElementById('formularioRegistro').addEventListener('submit', functio
 // ── MODIFICADA: Loader con aviso de demora ────────────────────────────────────
 function iniciarVerificacionWhatsApp(numeroCelular, objetoEnvioFinal) {
     const codigoVerificacion = Math.floor(1000 + Math.random() * 9000).toString();
+    const controlador = new AbortController();
+    const temporizador = setTimeout(() => controlador.abort(), 30000);
 
     Swal.fire({
         title: 'Enviando código...',
@@ -405,13 +412,19 @@ function iniciarVerificacionWhatsApp(numeroCelular, objetoEnvioFinal) {
 
     fetch(URLServidorWhatsAPP, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'x-api-key': WHATSAPP_API_KEY },
+        signal: controlador.signal,
         body: JSON.stringify({
-            numero: numeroCelular,
-            mensaje: `🎓 *Clases Particulares UTN*\n\nTu código de verificación para completar el registro es: \n\n*${codigoVerificacion}*`
+            to: `+${numeroCelular}`,
+            message: `🎓 *Clases Particulares UTN*\n\nTu código de verificación para completar el registro es: \n\n*${codigoVerificacion}*`
         })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Servidor de WhatsApp respondió con ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
         Swal.fire({
             title: 'Verificá tu número',
@@ -433,27 +446,18 @@ function iniciarVerificacionWhatsApp(numeroCelular, objetoEnvioFinal) {
             }
         });
     })
+    .finally(() => clearTimeout(temporizador))
     .catch(error => {
         console.error('Error al enviar WhatsApp:', error);
         Swal.fire({
-            icon: 'error',
-            title: 'Error de conexión',
-            html: `
-                <p>No se pudo despachar el mensaje por WhatsApp. Verificá tu número e intentalo más tarde.</p>
-                <br>
-                <p>Si el problema persiste, avisale al profesor</p>
-            `,
+            icon: 'warning',
+            title: 'Verificación no disponible',
+            text: 'No pudimos enviar el código por WhatsApp. Vamos a continuar con el registro.',
             customClass: { popup: 'swal2-dark-modal' },
-            showCancelButton: true,
-            confirmButtonText: 'Cerrar',
-            cancelButtonText: '<i class="fa-brands fa-whatsapp"></i> Ir a WhatsApp',
-            cancelButtonColor: '#25D366',
-            reverseButtons: true
-        }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.cancel) {
-                window.open('https://wa.me/' + NUMERO_WHATSAPP_SOPORTE + '?text=' + encodeURIComponent('Hola valentin, tuve un error al enviar el código de verificación en el registro: ' + error.message), '_blank');
-            }
-        });
+            timer: 2500,
+            timerProgressBar: true,
+            showConfirmButton: false
+        }).then(() => enviar(objetoEnvioFinal));
     });
 }
 
@@ -470,8 +474,8 @@ Tu registro fue completado con éxito. Ya podés ingresar al sistema y ver que h
 
     fetch(URLServidorWhatsAPP, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ numero: numeroCelular, mensaje })
+        headers: { 'Content-Type': 'application/json', 'x-api-key': WHATSAPP_API_KEY },
+        body: JSON.stringify({ to: `+${numeroCelular}`, message: mensaje })
     })
     .then(response => {
         if (response.ok) console.log("[WhatsApp] Bienvenida enviada con éxito.");
@@ -485,6 +489,8 @@ function enviar(datos) {
     document.querySelector(".contenedorLouder").style.zIndex = "100";
     document.querySelector(".loader").style.display = "block";
     document.querySelector("form").style.opacity = "0.3";
+
+    console.log("Datos a enviar al registrar el usuario:", datos);
 
     fetch(URLUsuarios, {
         method: 'POST',
@@ -539,8 +545,6 @@ function enviar(datos) {
             title: "¡Registro exitoso!",
             text: resultado.mensaje || "Te enviamos un mensaje de bienvenida con los términos y condiciones a tu WhatsApp.",
             customClass: { popup: 'swal2-dark-modal' }
-        }).then(() => {
-            window.location.href = "../Login/Login.html";
         });
 
     })
