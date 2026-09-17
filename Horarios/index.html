@@ -1035,6 +1035,8 @@
                 showCancelButton: isError,
                 confirmButtonColor,
                 cancelButtonColor: '#555',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
                 ...rest
             };
             if (isError) {
@@ -1043,8 +1045,14 @@
             }
             return Swal.fire(swalOptions).then(result => {
                 if (sinRedireccion) return result;
-                if (result.isConfirmed) window.location.href = '../Pagos';
-                else if (result.dismiss === Swal.DismissReason.cancel) window.location.href = '../Tutoriales.html';
+                if (result.isConfirmed) {
+                    window.location.href = '../Pagos';
+                    return result;
+                }
+                const fueCanceladoPorBoton = result.dismiss === Swal.DismissReason.cancel;
+                if (fueCanceladoPorBoton) {
+                    window.location.href = '../Tutoriales.html';
+                }
                 return result;
             });
         }
@@ -1614,7 +1622,9 @@
                 confirmButtonColor: '#f3a661',
                 showCancelButton: true,
                 cancelButtonText: 'Ir a pagos',
-                cancelButtonColor: '#555'
+                cancelButtonColor: '#555',
+                allowOutsideClick: false,
+                allowEscapeKey: false
             }).then((result) => {
                 if (result.dismiss === Swal.DismissReason.cancel) {
                     window.location.href = '../Pagos';
