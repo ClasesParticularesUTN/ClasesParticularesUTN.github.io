@@ -877,7 +877,7 @@
 
         console.log("Iniciando estímulo de fondo para despertar el backend...");
 
-        fetchDirectoConReintento(urlPing, {}, 'No se pudo conectar con el servidor de horarios.')
+        fetchSilencioso(urlPing)
             .then(response => {
                 if (response.ok) {
                     console.log("¡Backend despierto y respondiendo impecable! 🚀");
@@ -1203,6 +1203,31 @@
             });
             if (!resultado.isConfirmed) throw error;
             return reintentar();
+        }
+
+        // Para llamadas de FONDO (fire-and-forget) que el usuario no está esperando
+        // activamente: ping de despertar el backend, envío de WhatsApp, etc.
+        // A diferencia de fetchDirectoConReintento, esta NUNCA abre un Swal si falla
+        // (eso cerraría de golpe cualquier modal que el usuario tenga abierto en ese
+        // momento). Solo reintenta un par de veces en silencio y loguea el resultado.
+        async function fetchSilencioso(url, opciones = {}, intentos = 2, timeoutMs = 15000) {
+            let ultimoError;
+            for (let i = 0; i < intentos; i++) {
+                try {
+                    const { signal, ...opcionesSinSignal } = opciones;
+                    const response = await fetch(url, {
+                        ...opcionesSinSignal,
+                        signal: AbortSignal.timeout(timeoutMs)
+                    });
+                    return response;
+                } catch (err) {
+                    ultimoError = err;
+                    if (i < intentos - 1) {
+                        await new Promise((r) => setTimeout(r, 1000 * (i + 1)));
+                    }
+                }
+            }
+            throw ultimoError;
         }
 
         async function fetchDirectoConReintento(url, opciones = {}, mensaje, timeoutMs = 15000) {
@@ -2772,36 +2797,14 @@ ${fechaTexto}`
 
     const mensajeEstructurado = partes.join('\n\n');
 
-    const payload = {
-        mensaje: mensajeEstructurado
-    };
-
-    console.log(`[WhatsApp] Intentando enviar recordatorio por URLUsuarios...`);
-
-    void fetchDirectoConReintento(URLUsuarios, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(15000)
-    }, 'No se pudo enviar el recordatorio por WhatsApp.')
-    .then(response => {
-        if (response.ok) {
-            console.log("[WhatsApp] Mensaje enviado por URLUsuarios.");
-        } else {
-            console.warn("[WhatsApp] URLUsuarios respondió con error. Código:", response.status);
-        }
-    })
-    .catch(error => {
-        console.error("[WhatsApp] No se pudo enviar el recordatorio por URLUsuarios:", error.name === 'TimeoutError' ? 'timeout (15s)' : error);
-    });
-
     console.log(`[WhatsApp] Intentando enviar recordatorio directo al servidor de WhatsApp...`);
 
-    void fetchDirectoConReintento(URLWhatsapp, {
+    void fetchSilencioso(URLWhatsapp, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': WHATSAPP_API_KEY },
         body: JSON.stringify({ to: '+' + telefonoLimpio, message: mensajeEstructurado }),
         signal: AbortSignal.timeout(15000)
-    }, 'No se pudo enviar el recordatorio por WhatsApp.')
+    })
     .then(async response => {
         if (response.ok) {
             console.log("[WhatsApp] Mensaje enviado directo por el servidor de WhatsApp.");
@@ -2835,22 +2838,12 @@ ${razon}
 
 Si querés reservar otro horario, podés hacerlo desde la sección de Horarios.`;
 
-            void fetchDirectoConReintento(URLUsuarios, {
-                method: 'POST',
-                body: JSON.stringify({ mensaje }),
-                signal: AbortSignal.timeout(15000)
-            }, 'No se pudo enviar la notificación de cancelación.')
-                .then(response => {
-                    if (!response.ok) console.warn('[WhatsApp] Error al enviar la cancelación por URLUsuarios. Código:', response.status);
-                })
-                .catch(error => console.error('[WhatsApp] No se pudo enviar la cancelación por URLUsuarios:', error));
-
-            void fetchDirectoConReintento(URLWhatsapp, {
+            void fetchSilencioso(URLWhatsapp, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'x-api-key': WHATSAPP_API_KEY },
                 body: JSON.stringify({ to: '+' + telefonoLimpio, message: mensaje }),
                 signal: AbortSignal.timeout(15000)
-            }, 'No se pudo enviar la notificación de cancelación.')
+            })
                 .then(async response => {
                     if (!response.ok) {
                         const texto = await response.text().catch(() => '');
