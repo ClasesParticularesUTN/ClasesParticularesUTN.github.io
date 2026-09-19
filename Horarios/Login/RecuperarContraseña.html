@@ -95,7 +95,7 @@
         <div class="logo-box">
             <div class="logo-circle"><div class="logo-text">C/S</div></div>
             <h2>Recuperar Clave</h2>
-            <p class="subtitle" id="instruccion">Ingresa tu correo para recibir un código de verificación.</p>
+            <p class="subtitle" id="instruccion">Ingresa tu correo para recibir un código de verificación por WhatsApp.</p>
         </div>
 
         <form id="formularioRegistro">
@@ -122,35 +122,39 @@
     </div>
 
     <script>
-        const URLUsuarios = "https://script.google.com/macros/s/AKfycbwvSTFpClvlYupAvfgpR7YTvd90x7AN0t4EJZ5x7xarJ-ga1wRtWxNTDDy-Wm4judEX/exec"; 
+        const URLUsuarios = "https://servidorusuarios.onrender.com/";
         const NUMERO_WHATSAPP_SOPORTE = "5493425271005";
-        let clave = generarCadenaAleatoria();
+        // El código lo genera, envía por WhatsApp y valida el SERVIDOR.
+        // Este archivo nunca conoce el código correcto.
 
         document.getElementById('formularioRegistro').addEventListener('submit', function (event) {
             event.preventDefault();
 
+            let formData = new FormData(this);
+            let datosAEnviar = [];
+            formData.forEach((valor) => { datosAEnviar.push(valor); });
+            const correo = datosAEnviar[0].trim().toLowerCase();
+
             if (document.querySelector("#botonEnviar").innerHTML == "Enviar Codigo") {
-                let formData = new FormData(this);
-                let datosAEnviar = [];
-                formData.forEach((valor) => { datosAEnviar.push(valor); });
-                
-                datosAEnviar[0] = datosAEnviar[0].toLowerCase();
-                let urlFinal = URLUsuarios + "?correo=" + encodeURIComponent(datosAEnviar[0]) + "&funcion=recuperarContrasenia" + "&codigo=" + clave;
+                // Paso 1: pedir que el servidor genere y envíe el código por WhatsApp.
+                const urlFinal = URLUsuarios + "?correo=" + encodeURIComponent(correo) + "&funcion=recuperarContrasenia";
                 enviarCodigo(urlFinal);
             } else {
-                let texto = document.querySelector("#codigoUsuario").value;
-                if (texto == clave) {
-                    let formData = new FormData(this);
-                    let datosAEnviar = [];
-                    formData.forEach((valor) => { datosAEnviar.push(valor); });
-                    
-                    datosAEnviar[0] = datosAEnviar[0].toLowerCase();
-                    // datosAEnviar[1] es la nueva contraseña del input agregado
-                    let urlFinal = URLUsuarios + "?correo=" + encodeURIComponent(datosAEnviar[0]) + "&contrasenia=" + encodeURIComponent(datosAEnviar[1]) + "&funcion=modificarContrasenia";
-                    enviar(urlFinal);
-                } else {
-                    mostrarErrorWhatsApp("Error", "Código incorrecto. Intente nuevamente. Respete mayúsculas y minúsculas.");
+                // Paso 2: mandar contraseña nueva + código; el servidor valida y guarda.
+                const nuevaContrasenia = datosAEnviar[1] || "";
+                const codigo = document.querySelector("#codigoUsuario").value.trim();
+
+                if (!nuevaContrasenia || !codigo) {
+                    mostrarErrorWhatsApp("Faltan datos", "Ingresá la nueva contraseña y el código que te llegó por WhatsApp.");
+                    return;
                 }
+
+                const urlFinal = URLUsuarios
+                    + "?correo=" + encodeURIComponent(correo)
+                    + "&contrasenia=" + encodeURIComponent(nuevaContrasenia)
+                    + "&codigo=" + encodeURIComponent(codigo)
+                    + "&funcion=modificarContrasenia";
+                enviar(urlFinal);
             }
         });
 
@@ -166,18 +170,20 @@
             })
             .then(res => {
                 if (res.status == false) {
-                    mostrarErrorWhatsApp("No encontrado", "El correo no existe en nuestra base de datos.");
+                    mostrarErrorWhatsApp("No se pudo enviar", res.mensaje || "El correo no existe en nuestra base de datos.");
                 } else if (res.status) {
                     Swal.fire({
                         title: "Código Enviado",
                         icon: "info",
-                        text: "Revisa tu bandeja de entrada (y spam).",
+                        text: res.destino
+                            ? "Te lo enviamos por WhatsApp al número terminado en " + res.destino + "."
+                            : "Te lo enviamos por WhatsApp.",
                         confirmButtonColor: '#f3a661'
                     });
                     
                     document.querySelector(".codigo").style.display = "block";
                     document.querySelector("#botonEnviar").innerHTML = "Cambiar Contraseña";
-                    document.getElementById('instruccion').innerText = "Ingresa la nueva contraseña y el código enviado.";
+                    document.getElementById('instruccion').innerText = "Ingresa la nueva contraseña y el código que te llegó por WhatsApp.";
                 } else {
                     mostrarErrorWhatsApp("Respuesta inesperada", "El servidor no pudo procesar la solicitud.");
                 }
@@ -191,15 +197,6 @@
                 document.querySelector("#botonEnviar").style.cursor = "pointer";
                 document.querySelector(".contenedorLoader").style.display = "none";
             });
-        }
-
-        function generarCadenaAleatoria() {
-            const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let resultado = '';
-            for (let i = 0; i < 6; i++) {
-                resultado += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-            }
-            return resultado;
         }
 
         function enviar(urlFinal) {
@@ -217,11 +214,11 @@
                         window.location.href = "Login.html";
                     });
                 } else {
-                    throw new Error();
+                    throw new Error(data.mensaje);
                 }
             })
-            .catch(() => {
-                mostrarErrorWhatsApp("Error", "Error al cambiar la contraseña.");
+            .catch((e) => {
+                mostrarErrorWhatsApp("Error", (e && e.message) || "Error al cambiar la contraseña.");
             })
             .finally(() => {
                 document.querySelector(".contenedorLoader").style.display = "none";
