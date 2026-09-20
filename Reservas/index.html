@@ -309,8 +309,13 @@
     const filtradas = reservasCache.filter((r) => {
       if (filtroTipo !== 'todas' && r.estado !== filtroTipo) return false;
       if (filtroTiempo !== 'todas') {
-        if (!r.fechaISO) return false; // sin fecha registrada: no entra en pasadas/próximas
-        const esFutura = new Date(r.fechaISO) >= hoy;
+        // Se interpreta como día LOCAL: new Date('YYYY-MM-DD') lo toma como
+        // medianoche UTC y en Argentina cae el día anterior, con lo que una
+        // clase de hoy quedaría como "pasada".
+        const m = String(r.fechaISO || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+        if (!m) return false; // sin fecha registrada: no entra en pasadas/próximas
+        const dia = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+        const esFutura = dia >= hoy;
         if (filtroTiempo === 'futuras' && !esFutura) return false;
         if (filtroTiempo === 'pasadas' && esFutura) return false;
       }
