@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mis Reservas</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  :root {
+    --primary: #f3a661;
+    --bg-dark: #0a0a0b;
+    --glass: rgba(20, 20, 22, 0.97);
+    --border: rgba(255, 255, 255, 0.08);
+    --danger: #ff5f5f;
+    --success: #59d68c;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-dark);
+    color: #fff;
+    min-height: 100vh;
+    padding: 32px 16px 60px;
+  }
+
+  .contenedor { max-width: 720px; margin: 0 auto; }
+
+  header.encabezado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  header.encabezado h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  header.encabezado p {
+    color: rgba(255,255,255,0.55);
+    font-size: 0.85rem;
+    margin-top: 4px;
+  }
+  #btnActualizar {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: rgba(255,255,255,0.75);
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color .15s, color .15s;
+    flex-shrink: 0;
+  }
+  #btnActualizar:hover { border-color: var(--primary); color: var(--primary); }
+  #btnActualizar i.girando { animation: girar 0.8s linear infinite; }
+  @keyframes girar { to { transform: rotate(360deg); } }
+
+  .acciones-header { display: flex; gap: 10px; flex-shrink: 0; }
+
+  #btnCerrarSesion {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: rgba(255,255,255,0.55);
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: border-color .15s, color .15s;
+  }
+  #btnCerrarSesion:hover { border-color: var(--danger); color: var(--danger); }
+
+  .filtros {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+  .grupo-filtro {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: rgba(255,255,255,0.6);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font-family: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .chip:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+  .chip.activo {
+    background: rgba(243, 166, 97, 0.12);
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  #lista { display: flex; flex-direction: column; gap: 12px; }
+
+  .tarjeta-reserva {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--primary);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .tarjeta-reserva.debe { border-left-color: var(--danger); }
+  .tarjeta-reserva.cancelada { border-left-color: rgba(255,255,255,0.25); opacity: 0.6; }
+  .tarjeta-reserva.pagada { border-left-color: var(--success); }
+  .tarjeta-reserva .fecha {
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+  .tarjeta-reserva .detalle {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.82rem;
+    margin-top: 4px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .etiqueta-estado {
+    font-size: 0.72rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+    background: rgba(243, 166, 97, 0.12);
+    color: var(--primary);
+    border: 1px solid rgba(243, 166, 97, 0.3);
+  }
+  .tarjeta-reserva.debe .etiqueta-estado {
+    background: rgba(255, 95, 95, 0.12);
+    color: var(--danger);
+    border-color: rgba(255, 95, 95, 0.3);
+  }
+  .tarjeta-reserva.cancelada .etiqueta-estado {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.6);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+  .tarjeta-reserva.pagada .etiqueta-estado {
+    background: rgba(89, 214, 140, 0.12);
+    color: var(--success);
+    border-color: rgba(89, 214, 140, 0.3);
+  }
+
+  #estadoVacio, #estadoError {
+    text-align: center;
+    padding: 60px 20px;
+    color: rgba(255,255,255,0.55);
+    display: none;
+  }
+  #estadoVacio i, #estadoError i {
+    font-size: 1.8rem;
+    color: var(--primary);
+    margin-bottom: 14px;
+    display: block;
+  }
+  #estadoError i { color: var(--danger); }
+  #estadoError button {
+    margin-top: 16px;
+    background: var(--primary);
+    border: none;
+    color: #1a1005;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  #loader-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.9);
+    backdrop-filter: blur(10px);
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    z-index: 5000;
+  }
+  .spinner {
+    width: 42px; height: 42px;
+    border: 3px solid rgba(255,255,255,0.15);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: girar 0.8s linear infinite;
+  }
+  #loader-overlay p { margin-top: 14px; color: var(--primary); font-size: 0.9rem; }
+  .swal2-container { z-index: 10000 !important; }
+</style>
+</head>
+<body>
+
+<div id="loader-overlay">
+  <div class="spinner"></div>
+  <p>Cargando tus reservas...</p>
+</div>
+
+<div class="contenedor">
+  <header class="encabezado">
+    <div>
+      <h1>Mis Reservas</h1>
+      <p id="subtitulo"></p>
+    </div>
+    <div class="acciones-header">
+      <button id="btnActualizar" onclick="cargarReservas(true)">
+        <i class="fa-solid fa-rotate-right"></i> Actualizar
+      </button>
+      <button id="btnCerrarSesion" onclick="cerrarSesion()">
+        <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <div class="filtros">
+    <div class="grupo-filtro" id="filtroTipo">
+      <button class="chip activo" data-valor="todas">Todas</button>
+      <button class="chip" data-valor="pack">Pack</button>
+      <button class="chip" data-valor="debe">Debe</button>
+      <button class="chip" data-valor="pagada">Pagada</button>
+      <button class="chip" data-valor="cancelada">Cancelada</button>
+    </div>
+    <div class="grupo-filtro" id="filtroTiempo">
+      <button class="chip activo" data-valor="todas">Todas</button>
+      <button class="chip" data-valor="futuras">Próximas</button>
+      <button class="chip" data-valor="pasadas">Pasadas</button>
+    </div>
+  </div>
+
+  <div id="lista"></div>
+
+  <div id="estadoVacio">
+    <i class="fa-regular fa-calendar"></i>
+    <span id="mensajeVacio">No tenés reservas registradas.</span>
+  </div>
+
+  <div id="estadoError">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <p id="mensajeError">No pudimos cargar tus reservas.</p>
+    <button onclick="cargarReservas(true)">Reintentar</button>
+  </div>
+</div>
+
+<script>
+  // Mismo backend que usa index.html (URLUsuarios) para validarUsuario.
+  const URL_SERVIDOR = "https://servidorusuarios.onrender.com/";
+  const LOGIN_URL = "/Horarios/Login/Login.html";
+
+  function irALogin() {
+    window.location.href = LOGIN_URL;
+  }
+
+  function cerrarSesion() {
+    try { localStorage.removeItem('persona'); } catch (e) {}
+    irALogin();
+  }
+
+  let reservasCache = [];
+  let filtroTipo = 'todas';
+  let filtroTiempo = 'todas';
+
+  function configurarChips(contenedorId, onCambio) {
+    const contenedor = document.getElementById(contenedorId);
+    contenedor.addEventListener('click', (e) => {
+      const boton = e.target.closest('.chip');
+      if (!boton) return;
+      contenedor.querySelectorAll('.chip').forEach((c) => c.classList.remove('activo'));
+      boton.classList.add('activo');
+      onCambio(boton.dataset.valor);
+    });
+  }
+
+  configurarChips('filtroTipo', (valor) => { filtroTipo = valor; aplicarFiltros(); });
+  configurarChips('filtroTiempo', (valor) => { filtroTiempo = valor; aplicarFiltros(); });
+
+  function aplicarFiltros() {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const filtradas = reservasCache.filter((r) => {
+      if (filtroTipo !== 'todas' && r.estado !== filtroTipo) return false;
+      if (filtroTiempo !== 'todas') {
+        if (!r.fechaISO) return false; // sin fecha registrada: no entra en pasadas/próximas
+        const esFutura = new Date(r.fechaISO) >= hoy;
+        if (filtroTiempo === 'futuras' && !esFutura) return false;
+        if (filtroTiempo === 'pasadas' && esFutura) return false;
+      }
+      return true;
+    });
+
+    renderizarReservas(filtradas, reservasCache.length > 0);
+  }
+
+  function leerPersona() {
+    let raw;
+    try {
+      raw = localStorage.getItem('persona');
+    } catch (e) {
+      return null; // localStorage no disponible (ej. modo privado)
+    }
+    if (!raw) return null;
+    try {
+      const persona = JSON.parse(raw);
+      if (!persona || !persona.correoElectronico || !persona.contrasenia) return null;
+      return persona;
+    } catch (e) {
+      return null; // JSON corrupto
+    }
+  }
+
+  function mostrarOverlay(mostrar) {
+    document.getElementById('loader-overlay').style.display = mostrar ? 'flex' : 'none';
+  }
+
+  function mostrarEstado(estado) {
+    document.getElementById('lista').style.display = estado === 'lista' ? 'flex' : 'none';
+    document.getElementById('estadoVacio').style.display = estado === 'vacio' ? 'block' : 'none';
+    document.getElementById('estadoError').style.display = estado === 'error' ? 'block' : 'none';
+  }
+
+  function infoEstado(estado, precio) {
+    switch (estado) {
+      case 'pack':
+        return { texto: 'Con pack', clase: 'pack' };
+      case 'debe':
+        return { texto: precio ? `Debe $${precio}` : 'Debe', clase: 'debe' };
+      case 'pagada':
+        return { texto: 'Pagada', clase: 'pagada' };
+      case 'cancelada':
+        return { texto: precio ? `Cancelada · debe $${precio}` : 'Cancelada', clase: 'cancelada' };
+      default:
+        return { texto: estado || '—', clase: '' };
+    }
+  }
+
+  function renderizarReservas(reservas, hayReservasEnTotal) {
+    const lista = document.getElementById('lista');
+    lista.innerHTML = '';
+
+    if (!Array.isArray(reservas) || reservas.length === 0) {
+      document.getElementById('mensajeVacio').textContent = hayReservasEnTotal
+        ? 'Ninguna reserva coincide con ese filtro.'
+        : 'No tenés reservas registradas.';
+      mostrarEstado('vacio');
+      return;
+    }
+
+    mostrarEstado('lista');
+    for (const r of reservas) {
+      const { texto: textoEstado, clase: claseEstado } = infoEstado(r.estado, r.precio);
+      const div = document.createElement('div');
+      div.className = `tarjeta-reserva ${claseEstado}`;
+      div.innerHTML = `
+        <div>
+          <div class="fecha">${r.fecha || 'Fecha sin definir'}</div>
+          ${r.codigo ? `<div class="detalle">Código ${r.codigo}</div>` : ''}
+        </div>
+        <span class="etiqueta-estado">${textoEstado}</span>
+      `;
+      lista.appendChild(div);
+    }
+  }
+
+  async function cargarReservas(esManual) {
+    const persona = leerPersona();
+    if (!persona) {
+      irALogin();
+      return;
+    }
+
+    if (esManual) {
+      const boton = document.getElementById('btnActualizar');
+      boton.disabled = true;
+      boton.querySelector('i').classList.add('girando');
+    } else {
+      mostrarOverlay(true);
+    }
+
+    try {
+      const params = new URLSearchParams({
+        funcion: 'listarReservas',
+        correo: persona.correoElectronico,
+        contrasenia: persona.contrasenia,
+      });
+
+      const respuesta = await fetch(URL_SERVIDOR + '?' + params.toString(), {
+        method: 'GET',
+        signal: AbortSignal.timeout(15000),
+      });
+      const datos = await respuesta.json();
+
+      if (!datos || datos.sesion !== true) {
+        // Credenciales guardadas ya no son válidas (contraseña cambiada,
+        // cuenta eliminada, etc.): se limpia la sesión y se manda a loguear
+        // de nuevo, en vez de mostrar un error genérico.
+        try { localStorage.removeItem('persona'); } catch (e) {}
+        irALogin();
+        return;
+      }
+
+      document.getElementById('subtitulo').textContent =
+        `${datos.nombre || ''} ${datos.apellido || ''}`.trim() || datos.correoElectronico;
+
+      reservasCache = Array.isArray(datos.reservas) ? datos.reservas : [];
+      aplicarFiltros();
+    } catch (err) {
+      document.getElementById('mensajeError').textContent =
+        err && err.name === 'TimeoutError'
+          ? 'El servidor tardó demasiado en responder.'
+          : 'No pudimos cargar tus reservas. Revisá tu conexión.';
+      mostrarEstado('error');
+    } finally {
+      mostrarOverlay(false);
+      const boton = document.getElementById('btnActualizar');
+      boton.disabled = false;
+      boton.querySelector('i').classList.remove('girando');
+    }
+  }
+
+  cargarReservas(false);
+</script>
+</body>
+</html>

@@ -443,8 +443,8 @@
         }
 
         window.addEventListener('keydown', (e) => {
-            if (e.ctrlKey && (e.key === 'a' || e.key === 'A')) {
-                console.log('⌨️ [TECLAS] Atajo Ctrl+A detectado');
+            if (e.altKey && (e.key === 'a' || e.key === 'A')) {
+                console.log('⌨️ [TECLAS] Atajo Alt+A detectado');
                 e.preventDefault();
                 aplicarCorreoAdmin();
             }
