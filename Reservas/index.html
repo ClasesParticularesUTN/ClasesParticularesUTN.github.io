@@ -84,32 +84,40 @@
 
   .filtros {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    gap: 12px;
     margin-bottom: 22px;
   }
-  .grupo-filtro {
+  .campo-filtro {
+    flex: 1;
+    min-width: 0;
     display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: 6px;
   }
-  .chip {
-    background: transparent;
+  .campo-filtro label {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.55);
+  }
+  .campo-filtro select {
+    width: 100%;
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: var(--glass);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%23f3a661' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
     border: 1px solid var(--border);
-    color: rgba(255,255,255,0.6);
-    border-radius: 999px;
-    padding: 7px 14px;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px 38px 10px 14px;
     font-family: inherit;
-    font-size: 0.8rem;
+    font-size: 16px; /* evita el zoom automático de iOS al enfocar */
     cursor: pointer;
-    transition: border-color .15s, color .15s, background .15s;
+    transition: border-color .15s;
   }
-  .chip:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
-  .chip.activo {
-    background: rgba(243, 166, 97, 0.12);
-    border-color: var(--primary);
-    color: var(--primary);
-  }
+  .campo-filtro select:hover { border-color: rgba(255,255,255,0.3); }
+  .campo-filtro select:focus-visible { outline: none; border-color: var(--primary); }
+  .campo-filtro select option { background: #141416; color: #fff; }
 
   #lista { display: flex; flex-direction: column; gap: 12px; }
 
@@ -233,17 +241,23 @@
   </header>
 
   <div class="filtros">
-    <div class="grupo-filtro" id="filtroTipo">
-      <button class="chip activo" data-valor="todas">Todas</button>
-      <button class="chip" data-valor="pack">Pack</button>
-      <button class="chip" data-valor="debe">Debe</button>
-      <button class="chip" data-valor="pagada">Pagada</button>
-      <button class="chip" data-valor="cancelada">Cancelada</button>
+    <div class="campo-filtro">
+      <label for="filtroTipo">Tipo</label>
+      <select id="filtroTipo">
+        <option value="todas">Todas</option>
+        <option value="pack">Pack</option>
+        <option value="debe">Debe</option>
+        <option value="pagada">Pagada</option>
+        <option value="cancelada">Cancelada</option>
+      </select>
     </div>
-    <div class="grupo-filtro" id="filtroTiempo">
-      <button class="chip activo" data-valor="todas">Todas</button>
-      <button class="chip" data-valor="futuras">Próximas</button>
-      <button class="chip" data-valor="pasadas">Pasadas</button>
+    <div class="campo-filtro">
+      <label for="filtroTiempo">Tiempo</label>
+      <select id="filtroTiempo">
+        <option value="todas">Todas</option>
+        <option value="futuras">Próximas</option>
+        <option value="pasadas">Pasadas</option>
+      </select>
     </div>
   </div>
 
@@ -279,19 +293,14 @@
   let filtroTipo = 'todas';
   let filtroTiempo = 'todas';
 
-  function configurarChips(contenedorId, onCambio) {
-    const contenedor = document.getElementById(contenedorId);
-    contenedor.addEventListener('click', (e) => {
-      const boton = e.target.closest('.chip');
-      if (!boton) return;
-      contenedor.querySelectorAll('.chip').forEach((c) => c.classList.remove('activo'));
-      boton.classList.add('activo');
-      onCambio(boton.dataset.valor);
-    });
-  }
-
-  configurarChips('filtroTipo', (valor) => { filtroTipo = valor; aplicarFiltros(); });
-  configurarChips('filtroTiempo', (valor) => { filtroTiempo = valor; aplicarFiltros(); });
+  document.getElementById('filtroTipo').addEventListener('change', (e) => {
+    filtroTipo = e.target.value;
+    aplicarFiltros();
+  });
+  document.getElementById('filtroTiempo').addEventListener('change', (e) => {
+    filtroTiempo = e.target.value;
+    aplicarFiltros();
+  });
 
   function aplicarFiltros() {
     const hoy = new Date();
