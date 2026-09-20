@@ -900,11 +900,12 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-        const urlPing = "https://servidorwhatsappnuevo.onrender.com/health";
+        const urlPingWhatsApp = "https://servidorwhatsappnuevo.onrender.com/health";
+        const urlPingUsuarios = "https://servidorusuarios.onrender.com/ping";
 
         console.log("Iniciando estímulo de fondo para despertar el backend...");
 
-        fetchSilencioso(urlPing)
+        fetchSilencioso(urlPingWhatsApp)
             .then(response => {
                 if (response.ok) {
                     console.log("¡Backend despierto y respondiendo impecable! 🚀");
@@ -914,6 +915,18 @@
             })
             .catch(error => {
                 console.log("Estímulo enviado. El servidor se está levantando de su letargo...");
+            });
+
+        fetchSilencioso(urlPingUsuarios)
+            .then(response => {
+                if (response.ok) {
+                    console.log("¡Backend de usuarios despierto y respondiendo impecable! 🚀");
+                } else {
+                    console.warn("El servidor de usuarios respondió con un estado inesperado:", response.status);
+                }
+            })
+            .catch(error => {
+                console.log("Estímulo enviado al servidor de usuarios. Se está levantando...");
             });
     });
         const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
