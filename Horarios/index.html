@@ -1639,12 +1639,25 @@
             if (monto <= 0) return;
             if (sessionStorage.getItem(RECORDATORIO_DEUDA_KEY)) return;
             sessionStorage.setItem(RECORDATORIO_DEUDA_KEY, '1');
-            await swalPagoDeuda({
+            await Swal.fire({
                 icon: 'warning',
                 title: 'Recordatorio de deuda',
                 html: `Tenés una deuda pendiente de <strong>${formatearMontoDeuda(monto)}</strong>. Podés regularizarla desde la sección de pagos.`,
+                background: '#1a1a1a',
+                color: '#fff',
+                confirmButtonText: 'Pagar',
+                cancelButtonText: 'Cerrar',
+                confirmButtonColor: '#f3a661',
+                cancelButtonColor: '#555',
+                showConfirmButton: true,
+                showCancelButton: true,
                 allowOutsideClick: true,
-                showCloseButton: true
+                allowEscapeKey: true,
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '../Pagos';
+                }
             });
         }
 
