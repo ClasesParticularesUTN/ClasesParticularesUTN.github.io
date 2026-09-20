@@ -549,12 +549,13 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
         // URL del endpoint que acabamos de crear en tu backend
-        const urlPing = "https://servidorparawhatsapp.onrender.com/ping";
+        const urlPingUsuarios = "https://servidorusuarios.onrender.com/ping";
+        const urlPingWhatsApp = "https://servidorparawhatsapp.onrender.com/ping";
 
         console.log("Iniciando estímulo de fondo para despertar el backend...");
 
         // Hacemos el disparo sin 'await' para que no bloquee el renderizado de la UI
-        fetch(urlPing)
+        fetch(urlPingUsuarios)
             .then(response => {
                 if (response.ok) {
                     console.log("¡Backend despierto y respondiendo impecable! 🚀");
@@ -566,6 +567,18 @@
                 // Si el servidor estaba dormido de verdad, va a entrar por acá por "timeout"
                 // o tardará en responder, pero al menos ya recibió el estímulo para arrancar.
                 console.log("Estímulo enviado. El servidor se está levantando de su letargo...");
+            });
+
+        fetch(urlPingWhatsApp)
+            .then(response => {
+                if (response.ok) {
+                    console.log("¡Backend de WhatsApp despierto y respondiendo impecable! 🚀");
+                } else {
+                    console.warn("El servidor de WhatsApp respondió con un estado inesperado:", response.status);
+                }
+            })
+            .catch(() => {
+                console.log("Estímulo enviado al servidor de WhatsApp. Se está levantando...");
             });
     });
 
