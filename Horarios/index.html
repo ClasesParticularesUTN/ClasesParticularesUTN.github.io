@@ -151,6 +151,30 @@
 
         .sidebar-header { padding: 40px 25px 20px; text-align: center; }
         .profile-img { width: 60px; height: 60px; background: var(--primary); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 10px; font-weight: 700; box-shadow: 0 0 15px rgba(243, 166, 97, 0.3); }
+        .sidebar-profile-actions {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+        }
+        .sidebar-profile-btn {
+            border: 1px solid rgba(243, 166, 97, 0.5);
+            background: rgba(243, 166, 97, 0.12);
+            color: var(--primary);
+            border-radius: 999px;
+            padding: 10px 16px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 0 0 rgba(243, 166, 97, 0);
+        }
+        .sidebar-profile-btn:hover {
+            background: rgba(243, 166, 97, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(243, 166, 97, 0.15);
+        }
 
         .sidebar-content {
             padding: 10px 25px;
@@ -732,6 +756,9 @@
             <div class="profile-img" id="user-initial">?</div>
             <h2 id="sb-nombre-completo">-</h2>
             <p id="sb-correo" style="font-size: 0.8rem; opacity: 0.6;"></p>
+            <div class="sidebar-profile-actions">
+                <button type="button" class="sidebar-profile-btn" onclick="window.location.href = '/Reservas';">Ver reservas</button>
+            </div>
         </div>
         <div class="sidebar-content">
             <div class="sidebar-data-loader" id="sidebar-data-loader" role="status" aria-live="polite">
