@@ -1105,9 +1105,13 @@
         }
 
         function obtenerDeudasAlumno() {
-            const tomadas = parseMontoAlumno(Alumno?.dineroQueDebe);
-            const futuro = parseMontoAlumno(Alumno?.dineroDebeAFuturo);
-            return { tomadas, futuro, total: tomadas + futuro };
+            // El servidor manda:
+            //   - dineroQueDebe:      deuda TOTAL (clases ya tomadas + clases futuras sin pagar)
+            //   - dineroDebeAFuturo:  cuánto de ESA misma deuda corresponde a clases que todavía no se dieron
+            // O sea que "futuro" es un desglose del total, no un monto extra: no hay que sumarlo.
+            const total = parseMontoAlumno(Alumno?.dineroQueDebe);
+            const futuro = Math.min(parseMontoAlumno(Alumno?.dineroDebeAFuturo), total);
+            return { tomadas: total - futuro, futuro, total };
         }
 
         function obtenerMontoDeuda() {
