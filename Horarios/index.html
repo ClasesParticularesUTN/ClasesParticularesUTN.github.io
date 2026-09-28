@@ -2335,10 +2335,6 @@
                         Swal.showValidationMessage('Elegí solo una opción: Trabajo Práctico o Clase de Consulta');
                         return false;
                     }
-                    if (!isAdmin && soloPuedeReservarConsultas(Alumno) && !esConsulta) {
-                        Swal.showValidationMessage('Solamente hay disponibles clases de consulta.');
-                        return false;
-                    }
                     return { materia: v, esTP, esConsulta };
                 },
                 didOpen: () => {
@@ -2390,6 +2386,22 @@
             const materia = materiaResult.materia;
             const esTP = materiaResult.esTP || false;
             const esConsulta = materiaResult.esConsulta || false;
+
+            // Correos que solo pueden reservar clases de consulta (ver correosSoloConsultas.js)
+            if (!isAdmin && soloPuedeReservarConsultas(Alumno) && !esConsulta) {
+                // Dejamos la materia y el check de consulta preseleccionados para el próximo intento
+                guardarPreferenciasReserva({ materia, esTP: false, esConsulta: true });
+                await Swal.fire({
+                    icon: 'info',
+                    title: 'Solo clases de consulta',
+                    html: 'Solamente hay disponibles <strong>clases de consulta</strong>.<br><br>Para reservar, marcá la opción <strong>"Voy a realizar una Clase de Consulta"</strong> al elegir la materia.',
+                    background: '#1a1a1a',
+                    color: '#fff',
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#f3a661'
+                });
+                return;
+            }
             guardarPreferenciasReserva({ materia, esTP, esConsulta });
 
             if (esConsulta) {
