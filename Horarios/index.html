@@ -2035,6 +2035,25 @@
             return msg;
         }
 
+        function mostrarAvisoSoloConsulta() {
+            if (document.getElementById('solo-consulta-overlay')) return;
+            const overlay = document.createElement('div');
+            overlay.id = 'solo-consulta-overlay';
+            overlay.style.cssText = 'position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:20000; display:flex; align-items:center; justify-content:center; padding:16px;';
+            overlay.innerHTML = `
+                <div style="background:#1a1a1a; color:#fff; border-radius:14px; max-width:380px; width:100%; padding:26px 22px; text-align:center; box-shadow:0 12px 40px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.08);">
+                    <div style="font-size:2.4rem; margin-bottom:10px;">ℹ️</div>
+                    <h3 style="margin:0 0 12px; font-size:1.15rem; color:#fff;">Solo clases de consulta</h3>
+                    <p style="margin:0 0 20px; font-size:0.9rem; line-height:1.45; color:#ddd;">Solamente hay disponibles <strong>clases de consulta</strong>.<br><br>Para reservar, marcá la opción <strong>"Voy a realizar una Clase de Consulta"</strong>.</p>
+                    <button type="button" id="solo-consulta-ok-btn" style="background:#f3a661; color:#1a1a1a; border:none; border-radius:8px; padding:10px 26px; font-weight:700; font-size:0.9rem; cursor:pointer;">Entendido</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            const cerrar = () => overlay.remove();
+            overlay.querySelector('#solo-consulta-ok-btn').addEventListener('click', cerrar);
+            overlay.addEventListener('click', (ev) => { if (ev.target === overlay) cerrar(); });
+        }
+
         async function gestionarReserva() {
             const horarios18Sin17 = diasConHorario18Sin17(selectedSlots);
             if (horarios18Sin17.length > 0) {
@@ -2291,12 +2310,10 @@
                     : precioTP2h;
             })();
             const precioConsultaValor = (mod === 'grupal' ? PRECIOS.grupal.consulta1h : PRECIOS.individual.consulta1h) * selectedSlots.length;
-            const diffTP = precioTPValor - precioPorPersona;
-            const diffConsulta = precioConsultaValor - precioPorPersona;
-            const formatearDiferencia = (diff) => {
-                if (diff === 0) return '';
-                const signo = diff > 0 ? '+' : '-';
-                return ' <span class="diff-amount" style="display:none; font-weight:700;">(' + signo + formatearMontoDeuda(Math.abs(diff)) + ')</span>';
+            const totalFinalTP = precioTPValor * (mod === 'grupal' ? integrantes.length : 1);
+            const totalFinalConsulta = precioConsultaValor * (mod === 'grupal' ? integrantes.length : 1);
+            const formatearPrecioFinal = (monto) => {
+                return ' <span class="diff-amount" style="display:none; font-weight:700;">(Precio final: ' + formatearMontoDeuda(monto) + ')</span>';
             };
             window.actualizarVisibilidadDiff = function(checkbox) {
                 if (!checkbox) return;
@@ -2309,8 +2326,8 @@
                 const checkStyle = 'width:15px; height:15px; accent-color:#f3a661; cursor:pointer; flex-shrink:0;';
                 const labelStyle = 'font-size:0.8rem; color:#4a3520; font-weight:600; line-height:1.2;';
                 const cards = MATERIAS_RESERVA.map((m, i) => {
-                    const tpSubrow = '<label class="tp-subrow materia-subrow" style="' + subrowStyle + ' background:rgba(243,166,97,0.13); border:1px solid rgba(243,166,97,0.30);" onclick="event.stopPropagation()"><input type="checkbox" class="tp-check" data-tp-idx="' + i + '" style="' + checkStyle + '" onchange="actualizarVisibilidadDiff(this)"><span style="' + labelStyle + '">Voy a hacer un Trabajo Pr\u00e1ctico' + formatearDiferencia(diffTP) + '</span></label>';
-                    const consultaSubrow = '<label class="consulta-subrow materia-subrow" style="' + subrowStyle + ' background:rgba(240,228,1,0.15); border:1px solid rgba(240,228,1,0.45);" onclick="event.stopPropagation()"><input type="checkbox" class="consulta-check" data-consulta-idx="' + i + '" style="' + checkStyle + '" onchange="actualizarVisibilidadDiff(this)"><span style="' + labelStyle + '">Voy a realizar una Clase de Consulta' + formatearDiferencia(diffConsulta) + '</span><button type="button" class="consulta-info-trigger" onclick="abrirModalInfoConsulta(event)" aria-label="¿Qué es una clase de consulta?">¿Qué son?</button></label>';
+                    const tpSubrow = '<label class="tp-subrow materia-subrow" style="' + subrowStyle + ' background:rgba(243,166,97,0.13); border:1px solid rgba(243,166,97,0.30);" onclick="event.stopPropagation()"><input type="checkbox" class="tp-check" data-tp-idx="' + i + '" style="' + checkStyle + '" onchange="actualizarVisibilidadDiff(this)"><span style="' + labelStyle + '">Voy a hacer un Trabajo Pr\u00e1ctico' + formatearPrecioFinal(totalFinalTP) + '</span></label>';
+                    const consultaSubrow = '<label class="consulta-subrow materia-subrow" style="' + subrowStyle + ' background:rgba(240,228,1,0.15); border:1px solid rgba(240,228,1,0.45);" onclick="event.stopPropagation()"><input type="checkbox" class="consulta-check" data-consulta-idx="' + i + '" style="' + checkStyle + '" onchange="actualizarVisibilidadDiff(this)"><span style="' + labelStyle + '">Voy a realizar una Clase de Consulta' + formatearPrecioFinal(totalFinalConsulta) + '</span><button type="button" class="consulta-info-trigger" onclick="abrirModalInfoConsulta(event)" aria-label="¿Qué es una clase de consulta?">¿Qué son?</button></label>';
                     return '<div class="mod-card materia-card" data-materia-idx="' + i + '" style="max-width:none; min-width:0; text-align:left; padding-bottom:10px;"><div class="mod-title" style="font-size:0.85rem; line-height:1.35;">' + m + '</div>' + tpSubrow + consultaSubrow + '</div>';
                 }).join('');
                 return '<input type="hidden" id="materiaValue" value="" /><p style="margin:0 0 12px; font-size:0.9rem; color:#333; text-align:center;">\u00bfA qu\u00e9 materia vas a asistir?</p><div class="mod-selector" style="flex-direction:column; width:100%; gap:10px;">' + cards + '</div>';
@@ -2325,7 +2342,7 @@
                 cancelButtonText: 'Cancelar',
                 confirmButtonText: 'Continuar',
                 confirmButtonColor: '#f3a661',
-                preConfirm: async () => {
+                preConfirm: () => {
                     const v = document.getElementById('materiaValue').value;
                     if (!v) { Swal.showValidationMessage('Elegí una materia'); return false; }
                     const selectedCard = document.querySelector('.materia-card.selected');
@@ -2335,16 +2352,8 @@
                         Swal.showValidationMessage('Elegí solo una opción: Trabajo Práctico o Clase de Consulta');
                         return false;
                     }
-                    if (!isAdmin && soloPuedeReservarConsultas(Alumno) && !esConsulta) {
-                        await Swal.fire({
-                            icon: 'info',
-                            title: 'Solo clases de consulta',
-                            html: 'Solamente hay disponibles <strong>clases de consulta</strong>.<br><br>Para reservar, marcá la opción <strong>"Voy a realizar una Clase de Consulta"</strong>.',
-                            background: '#1a1a1a',
-                            color: '#fff',
-                            confirmButtonText: 'Entendido',
-                            confirmButtonColor: '#f3a661'
-                        });
+                    if (!isAdmin && typeof soloPuedeReservarConsultas === 'function' && soloPuedeReservarConsultas(Alumno) && !esConsulta) {
+                        mostrarAvisoSoloConsulta();
                         return false;
                     }
                     return { materia: v, esTP, esConsulta };
@@ -2938,4 +2947,4 @@ Si querés reservar otro horario, podés hacerlo desde la sección de Horarios.`
 
     </script>
 </body>
-</html>
+</html> 
