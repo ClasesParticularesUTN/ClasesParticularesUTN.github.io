@@ -8,6 +8,7 @@
     <script src="../precios.js"></script>
     <script src="./preciosActualizados.js"></script>
     <script src="./personalizados.js"></script>
+    <script src="./correosSoloConsultas.js"></script>
     <!-- Sistema de permisos: orden importa, permisosMotor.js depende de los 3 anteriores -->
     <script src="./Permisos/permisos.js"></script>
     <script src="./Permisos/permisosPorCondicionPago.js"></script>
@@ -2332,6 +2333,10 @@
                     const esConsulta = selectedCard?.querySelector('.consulta-check')?.checked || false;
                     if (esTP && esConsulta) {
                         Swal.showValidationMessage('Elegí solo una opción: Trabajo Práctico o Clase de Consulta');
+                        return false;
+                    }
+                    if (!isAdmin && soloPuedeReservarConsultas(Alumno) && !esConsulta) {
+                        Swal.showValidationMessage('Solamente hay disponibles clases de consulta.');
                         return false;
                     }
                     return { materia: v, esTP, esConsulta };
