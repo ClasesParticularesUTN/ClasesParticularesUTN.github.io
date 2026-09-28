@@ -59,19 +59,19 @@ const PERMISOS_GLOBAL = {
 
     // Reservar aunque el alumno tenga dinero pendiente de pago.
     reservarConDeudaDeDinero: {
-        activo: true,
+        activo: false,
         descripcion: 'Permite reservar aunque el alumno deba dinero. Se restringe explícitamente en permisosPorCondicionPago.js.'
     },
 
     // Reservar aunque tenga 2 o más clases pendientes de pago (condición "Normal").
     reservarConClasesPendientes: {
-        activo: true,
+        activo: false,
         descripcion: 'Permite reservar con 2 o más clases pendientes de pago. Se restringe explícitamente para la condición "Normal".'
     },
 
     // Reservar aunque tenga 2+ clases pendientes y la más vieja supere la semana (condición "Regular").
     reservarConClasesPendientesAntiguas: {
-        activo: true,
+        activo: false,
         descripcion: 'Permite reservar con 2+ clases pendientes de más de una semana. Se restringe explícitamente para la condición "Regular".'
     },
 
