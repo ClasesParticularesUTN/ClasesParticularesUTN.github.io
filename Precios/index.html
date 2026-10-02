@@ -410,6 +410,154 @@
             }
             .modal-box-consulta h4 { font-size: 1.05rem; }
         }
+
+        /* --- TEST: ¿QUÉ CLASE ME CONVIENE? --- */
+        .btn-test {
+            display: inline-flex; align-items: center; gap: 10px;
+            margin: -12px auto 36px; padding: 13px 26px;
+            background: var(--primary); color: #1a1a24;
+            border: none; border-radius: 999px;
+            font-size: 0.9rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(243, 166, 97, 0.25);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .btn-test:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(243, 166, 97, 0.35); }
+        .btn-test:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+
+        .swal2-container.cs-swal-container {
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+        }
+        .cs-swal-popup { --cs-surface: #131d36; }
+        body.light-mode .cs-swal-popup { --cs-surface: #ffffff; }
+        .swal2-popup.cs-swal-popup {
+            background: var(--cs-surface); color: var(--text-main);
+            border: 1px solid var(--glass-border); border-radius: 28px;
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.45);
+            padding: 0; width: min(94vw, 540px); overflow: hidden;
+        }
+        .swal2-popup.cs-popup-chico { width: min(92vw, 400px); }
+        .cs-swal-popup .swal2-html-container.cs-swal-html {
+            margin: 0; padding: 0; justify-content: flex-start;
+            color: var(--text-main); font-size: 1rem; text-align: left; overflow: visible;
+        }
+        .cs-swal-popup .swal2-close {
+            top: 12px; right: 12px; width: 36px; height: 36px; font-size: 1.8rem;
+            color: var(--text-subtitle); z-index: 2;
+        }
+        .cs-swal-popup .swal2-close:hover { color: var(--primary); background: transparent; }
+        .cs-popup-resultado .swal2-close, .cs-popup-resultado .swal2-close:hover { color: #1a1a24; }
+        .cs-swal-popup .swal2-actions.cs-actions {
+            margin: 0; padding: 4px 28px 26px; width: 100%; box-sizing: border-box;
+            gap: 10px; flex-wrap: wrap; justify-content: flex-start;
+        }
+        .cs-swal-popup .swal2-actions.cs-actions-centro,
+        .cs-popup-resultado .swal2-actions.cs-actions { justify-content: center; }
+
+        .cs-btn {
+            padding: 12px 24px; border-radius: 999px; cursor: pointer;
+            font-size: 0.92rem; font-weight: 700; border: none;
+            background: var(--primary); color: #1a1a24;
+            transition: transform 0.25s, filter 0.25s, background 0.25s;
+        }
+        .cs-btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+        .cs-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+        .cs-btn.cs-btn-suave {
+            background: transparent; color: var(--text-subtitle);
+            border: 1px solid rgba(148, 163, 184, 0.4);
+        }
+        .cs-btn.cs-btn-suave:hover { color: var(--text-main); background: rgba(148, 163, 184, 0.12); filter: none; }
+
+        .cs-body { padding: 26px 28px 22px; }
+        .cs-barra { height: 4px; background: rgba(148, 163, 184, 0.2); }
+        .cs-barra span { display: block; height: 100%; background: var(--primary); border-radius: 0 4px 4px 0; transition: width 0.45s ease; }
+        .cs-paso { font-size: 0.85rem; font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+        .cs-pregunta { font-size: 1.55rem; font-weight: 700; line-height: 1.25; color: var(--text-main); margin-bottom: 22px; }
+
+        .cs-opciones { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .cs-opt {
+            display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+            min-height: 150px; padding: 18px 16px; text-align: left; cursor: pointer;
+            background: var(--item-bg); color: var(--text-main);
+            border: 1px solid var(--glass-border); border-radius: 18px;
+            transition: transform 0.25s, border-color 0.25s, background 0.25s;
+        }
+        .cs-opt:hover, .cs-opt:focus-visible { transform: translateY(-3px); border-color: var(--primary); background: rgba(243, 166, 97, 0.08); outline: none; }
+        .cs-opt-icon {
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+            width: 44px; height: 44px; border-radius: 14px; font-size: 1.15rem;
+            background: rgba(243, 166, 97, 0.15); color: var(--primary); transition: 0.25s;
+        }
+        .cs-opt:hover .cs-opt-icon, .cs-opt:focus-visible .cs-opt-icon { background: var(--primary); color: #1a1a24; }
+        .cs-opt-texto { display: block; }
+        .cs-opt strong { display: block; font-size: 0.98rem; font-weight: 600; line-height: 1.35; }
+        .cs-opt small { display: block; margin-top: 4px; font-size: 0.8rem; line-height: 1.45; color: var(--text-subtitle); }
+
+        .cs-centrado { text-align: center; padding-top: 34px; }
+        .cs-centrado .cs-pregunta { text-align: center; font-size: 1.3rem; margin-bottom: 10px; }
+        .cs-hero {
+            display: flex; align-items: center; justify-content: center;
+            width: 64px; height: 64px; margin: 0 auto 18px; border-radius: 20px;
+            background: rgba(243, 166, 97, 0.15); color: var(--primary); font-size: 1.7rem;
+        }
+        .cs-texto { margin: 0; font-size: 0.95rem; line-height: 1.6; color: var(--text-subtitle); }
+
+        .cs-res-head { padding: 28px 56px 24px; background: var(--primary); color: #1a1a24; text-align: center; }
+        .cs-res-top { display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 0.85rem; font-weight: 600; }
+        .cs-pill { padding: 3px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 700; background: rgba(26, 26, 36, 0.14); }
+        .cs-res-nombre { margin-top: 10px; font-size: 1.75rem; font-weight: 700; line-height: 1.15; }
+        .cs-res-detalle { margin-top: 4px; font-size: 0.9rem; opacity: 0.8; }
+        .cs-res-precio { font-size: 2.3rem; font-weight: 700; line-height: 1; color: var(--text-main); text-align: center; }
+        .cs-res-motivo { margin: 14px 0 0; text-align: center; font-size: 0.95rem; line-height: 1.6; color: var(--text-main); }
+        .cs-res-precio-doble { display: flex; justify-content: center; gap: 28px; font-size: 1.7rem; }
+        .cs-res-precio-doble small { display: block; font-size: 0.72rem; font-weight: 600; opacity: 0.7; margin-bottom: 4px; }
+        .cs-res-extra {
+            margin-top: 14px; padding: 12px 14px; border-radius: 14px;
+            font-size: 0.85rem; line-height: 1.55; color: var(--text-subtitle); text-align: center;
+            background: rgba(243, 166, 97, 0.1);
+        }
+        .cs-res-extra strong { color: var(--text-main); font-weight: 600; }
+        .cs-btn-wa {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; margin-top: 18px; padding: 13px 20px; border-radius: 999px;
+            background: #25d366; color: #fff; font-size: 0.95rem; font-weight: 700;
+            text-decoration: none; transition: transform 0.25s, background 0.25s;
+        }
+        .cs-btn-wa:hover { background: #20bd5a; transform: translateY(-1px); }
+        .cs-btn-wa:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+        .cs-btn-wa i { font-size: 1.25rem; }
+
+        @media (max-width: 520px) {
+            .cs-body { padding: 22px 20px 18px; }
+            .cs-pregunta { font-size: 1.35rem; }
+            .cs-opciones { grid-template-columns: 1fr; }
+            .cs-opt { flex-direction: row; align-items: center; min-height: 0; }
+            .cs-res-head { padding: 24px 52px 20px; }
+            .cs-swal-popup .swal2-actions.cs-actions { padding: 4px 20px 22px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .btn-test, .cs-btn, .cs-opt, .cs-opt-icon, .cs-btn-wa, .cs-barra span { transition: none; }
+            .btn-test:hover, .cs-btn:hover, .cs-opt:hover, .cs-btn-wa:hover { transform: none; }
+        }
+
+        /* Opción resaltada en las tarjetas de precios */
+        .price-item.cs-recomendado {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(243, 166, 97, 0.25);
+            animation: cs-latido 1.6s ease-in-out 3;
+        }
+        .price-item.cs-recomendado::before {
+            content: 'Recomendada para vos';
+            position: absolute; top: -10px; left: 14px; z-index: 1;
+            background: var(--primary); color: #1a1a24;
+            font-size: 0.68rem; font-weight: 700; padding: 2px 10px; border-radius: 10px;
+        }
+        @keyframes cs-latido {
+            0%, 100% { box-shadow: 0 0 0 3px rgba(243, 166, 97, 0.25); }
+            50% { box-shadow: 0 0 0 7px rgba(243, 166, 97, 0.12); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .price-item.cs-recomendado { animation: none; }
+        }
     </style>
     <script src="/JS/clear-storage-shortcut.js"></script>
 </head>
@@ -437,6 +585,9 @@
     <section class="pricing-section" id="precios">
         <h2>Elegí tu Plan de Éxito</h2>
         <p class="subtitle">Inversión en tu formación académica con Ingenieros profesionales.</p>
+        <button type="button" class="btn-test" onclick="iniciarTestClase()">
+            <i class="fas fa-compass"></i> ¿No sabés qué clase elegir? Hacé el test
+        </button>
         
         <div class="pricing-container">
             <div class="pricing-card">
@@ -719,18 +870,6 @@
             //     });
             // }
        
-            // Si no existe la persona en localStorage, ocultar la opción de "Clase de Consulta"
-            if (!localStorage.getItem('persona')) {
-                const itemClaseConsulta = document.getElementById('item-clase-consulta');
-                if (itemClaseConsulta) {
-                    itemClaseConsulta.style.display = 'none';
-                }
-                const itemClaseConsultaGrupal = document.getElementById('item-clase-consulta-grupal');
-                if (itemClaseConsultaGrupal) {
-                    itemClaseConsultaGrupal.style.display = 'none';
-                }
-            }
-
             if (typeof PRECIOS !== 'undefined') {
                 document.getElementById('precio-ind-expres').textContent = '$' + PRECIOS.individual.expres1h.toLocaleString('es-AR');
                 document.getElementById('precio-ind-estandar').textContent = '$' + PRECIOS.individual.estandar2h.toLocaleString('es-AR');
@@ -781,5 +920,336 @@
             }
         }
     </script>
+    <script>
+        /* ======================================================
+           TEST: ¿QUÉ CLASE ME CONVIENE?
+           Para cambiar qué clase recomienda cada combinación,
+           editá solamente la función elegirClase().
+           ====================================================== */
+
+        // Cada clase apunta a los ids de los precios que ya existen en la página.
+        // grup: null = esa clase no existe en modalidad grupal.
+        const CLASES_TEST = {
+            express:     { nombre: 'Clase Express',               detalle: '1 hora de clase',           ind: 'precio-ind-expres',      grup: null },
+            estandar:    { nombre: 'Clase Estándar',              detalle: '2 horas seguidas',          ind: 'precio-ind-estandar',    grup: 'precio-grup-estandar' },
+            consulta:    { nombre: 'Clase de Consulta',           detalle: '1 hora de clase',           ind: 'precio-ind-consulta-1h', grup: 'precio-grup-consulta-1h' },
+            packExamen:  { nombre: 'Pack Preparación Examen',     detalle: '10 clases (20 hs totales)', ind: 'precio-ind-pack-examen', grup: 'precio-grup-pack-examen' },
+            packMateria: { nombre: 'Pack Preparación de Materia', detalle: '20 clases (40 hs totales)', ind: 'precio-ind-pack-materia', grup: 'precio-grup-pack-materia' }
+        };
+
+        const PREGUNTAS_TEST = [
+            {
+                id: 'instancia',
+                texto: '¿Para qué instancia es?',
+                opciones: () => [
+                    { valor: 'cursando', icono: 'fa-book-open', titulo: 'Estoy cursando la materia', detalle: 'Quiero avanzar con la cursada y sus parciales' },
+                    { valor: 'final', icono: 'fa-graduation-cap',    titulo: 'Es para un final',          detalle: 'Ya cursé y me preparo para rendir' }
+                ]
+            },
+            {
+                id: 'objetivo',
+                texto: '¿Qué querés lograr?',
+                opciones: (r) => [
+                    { valor: 'preparar', icono: 'fa-bullseye', titulo: r.instancia === 'final' ? 'Preparar el final' : 'Preparar un parcial', detalle: 'Un plan ordenado para llegar bien al examen' },
+                    { valor: 'dudas', icono: 'fa-circle-question',    titulo: 'Sacarme algunas dudas',     detalle: 'Tengo consultas puntuales' }
+                ]
+            },
+            {
+                id: 'enfoque',
+                texto: '¿Cómo venís con los temas?',
+                // Con "Sacarme algunas dudas" se va directo al resultado (Clase de Consulta).
+                si: (r) => r.objetivo !== 'dudas',
+                opciones: () => [
+                    { valor: 'profundizar', icono: 'fa-list-check', titulo: 'Quiero entender un poco mejor cada tema', detalle: '' },
+                    { valor: 'tema', icono: 'fa-bookmark',        titulo: 'Quiero ver un tema, del examen, en específico',   detalle: 'Pero verlo completo' }
+                ]
+            },
+            {
+                id: 'modalidad',
+                texto: '¿Cómo preferís las clases?',
+                si: (r) => r.objetivo !== 'dudas',
+                opciones: () => [
+                    { valor: 'individual', icono: 'fa-user', titulo: 'Individual', detalle: 'Clase exclusiva, a tu ritmo' },
+                    { valor: 'grupal', icono: 'fa-user-group',     titulo: 'Grupal',     detalle: 'Con un amigo o compañero. El grupo lo armás vos' }
+                ]
+            },
+            {
+                id: 'pago',
+                texto: '¿Cómo preferís pagar las clases?',
+                // Solo se pregunta cuando la recomendación es la Clase Estándar.
+                si: (r) => esEstandar(r),
+                opciones: () => [
+                    { valor: 'separado', icono: 'fa-coins', titulo: 'Pagar cada clase individualmente', detalle: 'Pagás clase a clase, sin comprometerte con varias' },
+                    { valor: 'juntas', icono: 'fa-layer-group',   titulo: 'Comprar varias clases juntas', detalle: 'El precio final por clase es menor' }
+                ]
+            }
+        ];
+
+        // "Sacarme algunas dudas" o "ver un tema en específico" => Clase de Consulta. Todo lo demás => Clase Estándar.
+        function quiereConsulta(r) {
+            return r.objetivo === 'dudas' || r.enfoque === 'tema';
+        }
+
+        // Todo lo que no sea Consulta es Clase Estándar (individual o en pack).
+        // La pregunta de pago depende de esta función.
+        function esEstandar(r) {
+            return !quiereConsulta(r);
+        }
+
+        function preguntasVisibles(r) {
+            return PREGUNTAS_TEST.filter(p => !p.si || p.si(r));
+        }
+
+        const WHATSAPP_TEST = 'https://wa.me/543425271005?text=' +
+            encodeURIComponent('Hola, quiero ayuda para saber qué tipo de clase me conviene');
+
+        function elegirClase(r) {
+            const esFinal = r.instancia === 'final';
+            const alExamen = esFinal ? 'al final' : 'al parcial';
+            const elExamen = esFinal ? 'el final' : 'el parcial';
+            let clave, motivo, alternativa = null;
+
+            if (quiereConsulta(r)) {
+                clave = 'consulta';
+                motivo = r.objetivo === 'dudas'
+                    ? 'Vos marcás la agenda: traés tus ejercicios o dudas y la clase gira en torno a eso.'
+                    : 'Vos marcás la agenda: traés el tema del examen que querés ver y la clase gira en torno a eso.';
+            } else if (r.pago === 'juntas') {
+                // Clases Estándar compradas en pack: menor precio final por clase.
+                clave = 'packExamen';
+                motivo = 'Un plan ordenado de 10 clases para llegar ' + alExamen + ' con los temas bien afianzados, y te sale menos por clase que pagarlas por separado.';
+                if (esFinal) alternativa = 'packMateria';
+            } else {
+                clave = 'estandar';
+                motivo = 'Pagás cada clase por separado, de a 2 horas, y vas entendiendo mejor cada tema para ' + elExamen + ' sin comprometerte con varias clases.';
+            }
+
+            // Si la alternativa no existe en la modalidad elegida, se descarta.
+            if (alternativa && !CLASES_TEST[alternativa][r.modalidad === 'grupal' ? 'grup' : 'ind']) alternativa = null;
+
+            return { clave, motivo, alternativa, modalidad: r.modalidad };
+        }
+
+        function testEscapar(texto) {
+            return String(texto).replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+        }
+
+        function testIdPrecio(clave, modalidad) {
+            return CLASES_TEST[clave][modalidad === 'grupal' ? 'grup' : 'ind'];
+        }
+
+        function testPrecio(clave, modalidad) {
+            const el = document.getElementById(testIdPrecio(clave, modalidad));
+            return el ? el.textContent.trim() : '';
+        }
+
+        function claseSwal(popup, actions) {
+            return {
+                container: 'cs-swal-container',
+                popup: 'cs-swal-popup ' + (popup || ''),
+                title: 'cs-swal-title',
+                htmlContainer: 'cs-swal-html',
+                actions: 'cs-actions ' + (actions || ''),
+                confirmButton: 'cs-btn',
+                denyButton: 'cs-btn cs-btn-suave',
+                cancelButton: 'cs-btn cs-btn-suave'
+            };
+        }
+        const TEST_CLASES_SWAL = claseSwal();
+        const SIN_ANIMACION = { popup: 'swal2-noanimation' };
+        const SIN_SALIDA = { popup: '' };
+
+        function preguntarTest(p, indice, total, respuestas) {
+            const opciones = p.opciones(respuestas);
+            let elegido = null;
+            const desde = (indice / total) * 100;
+            const hasta = ((indice + 1) / total) * 100;
+
+            const botones = opciones.map(o =>
+                '<button type="button" class="cs-opt" data-valor="' + testEscapar(o.valor) + '">' +
+                '<span class="cs-opt-icon"><i class="fas ' + testEscapar(o.icono || 'fa-circle') + '"></i></span>' +
+                '<span class="cs-opt-texto"><strong>' + testEscapar(o.titulo) + '</strong>' +
+                (o.detalle ? '<small>' + testEscapar(o.detalle) + '</small>' : '') + '</span></button>'
+            ).join('');
+
+            const animacion = indice === 0 ? {} : { showClass: SIN_ANIMACION };
+
+            return Swal.fire({
+                ...animacion,
+                customClass: TEST_CLASES_SWAL,
+                buttonsStyling: false,
+                html: '<div class="cs-barra"><span style="width:' + desde + '%"></span></div>' +
+                      '<div class="cs-body">' +
+                      '<div class="cs-paso">Pregunta ' + (indice + 1) + ' de ' + total + '</div>' +
+                      '<div class="cs-pregunta">' + testEscapar(p.texto) + '</div>' +
+                      '<div class="cs-opciones">' + botones + '</div></div>',
+                showConfirmButton: false,
+                showDenyButton: indice > 0,
+                denyButtonText: '<i class="fas fa-arrow-left"></i> Atrás',
+                showCloseButton: true,
+                focusConfirm: false,
+                hideClass: SIN_SALIDA,
+                preConfirm: () => elegido,
+                didOpen: (popup) => {
+                    // La barra avanza hasta el paso actual.
+                    const barra = popup.querySelector('.cs-barra span');
+                    if (barra) requestAnimationFrame(() => requestAnimationFrame(() => { barra.style.width = hasta + '%'; }));
+                    popup.querySelectorAll('.cs-opt').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            elegido = btn.dataset.valor;
+                            Swal.clickConfirm();
+                        });
+                    });
+                }
+            });
+        }
+
+        function limpiarRecomendacion() {
+            document.querySelectorAll('.price-item.cs-recomendado').forEach(el => el.classList.remove('cs-recomendado'));
+        }
+
+        function resaltarRecomendacion(clave, modalidad) {
+            limpiarRecomendacion();
+            const modos = modalidad ? [modalidad] : ['individual', 'grupal'];
+            const items = modos
+                .filter(m => CLASES_TEST[clave][m === 'grupal' ? 'grup' : 'ind'])
+                .map(m => document.getElementById(testIdPrecio(clave, m)))
+                .map(el => el ? el.closest('.price-item') : null)
+                .filter(Boolean);
+            if (!items.length) return;
+            items.forEach(item => item.classList.add('cs-recomendado'));
+            items[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function mostrarResultadoTest(respuestas) {
+            const rec = elegirClase(respuestas);
+            const clase = CLASES_TEST[rec.clave];
+            const modo = rec.modalidad ? (rec.modalidad === 'grupal' ? 'Grupal' : 'Individual') : 'Individual o Grupal';
+
+            let extra = '';
+            if (rec.alternativa) {
+                const alt = CLASES_TEST[rec.alternativa];
+                extra += '<div class="cs-res-extra">Si vas a preparar el final de la materia completa, mirá también el <strong>' +
+                         testEscapar(alt.nombre) + '</strong> (' + testEscapar(testPrecio(rec.alternativa, rec.modalidad)) + ').</div>';
+            }
+
+            // Con modalidad elegida: un precio grande. Sin modalidad (camino de "dudas"): individual y grupal.
+            let precioHtml;
+            if (rec.modalidad) {
+                precioHtml = '<div class="cs-res-precio">' + testEscapar(testPrecio(rec.clave, rec.modalidad)) + '</div>';
+            } else {
+                precioHtml = '<div class="cs-res-precio cs-res-precio-doble">' +
+                    '<div><small>Individual</small>' + testEscapar(testPrecio(rec.clave, 'individual')) + '</div>' +
+                    (CLASES_TEST[rec.clave].grup ? '<div><small>Grupal</small>' + testEscapar(testPrecio(rec.clave, 'grupal')) + '</div>' : '') +
+                    '</div>';
+            }
+
+            return Swal.fire({
+                customClass: claseSwal('cs-popup-resultado'),
+                buttonsStyling: false,
+                html: '<div class="cs-res-head">' +
+                        '<div class="cs-res-top"><span>Tu clase ideal</span><span class="cs-pill">' + modo + '</span></div>' +
+                        '<div class="cs-res-nombre">' + testEscapar(clase.nombre) + '</div>' +
+                        '<div class="cs-res-detalle">' + testEscapar(clase.detalle) + '</div>' +
+                      '</div>' +
+                      '<div class="cs-body">' +
+                        precioHtml +
+                        '<p class="cs-res-motivo">' + testEscapar(rec.motivo) + '</p>' +
+                        extra +
+                        '<a class="cs-btn-wa" href="' + WHATSAPP_TEST + '" target="_blank" rel="noopener">' +
+                        '<i class="fab fa-whatsapp"></i> Consultar por WhatsApp</a>' +
+                      '</div>',
+                showCloseButton: true,
+                showConfirmButton: true,
+                confirmButtonText: 'Ver todos los precios',
+                showDenyButton: true,
+                denyButtonText: 'Repetir el test',
+                focusConfirm: false,
+                showClass: SIN_ANIMACION,
+                hideClass: SIN_SALIDA
+            }).then(res => {
+                if (res.isConfirmed) resaltarRecomendacion(rec.clave, rec.modalidad);
+                else if (res.isDenied) return iniciarTestClase();
+            });
+        }
+
+        async function iniciarTestClase() {
+            if (typeof Swal === 'undefined') return;
+            limpiarRecomendacion();
+            const respuestas = {};
+            let paso = 0;
+            while (true) {
+                const visibles = preguntasVisibles(respuestas);
+                if (paso >= visibles.length) break;
+                const p = visibles[paso];
+                const res = await preguntarTest(p, paso, visibles.length, respuestas);
+                if (res.isDenied) { paso = Math.max(0, paso - 1); continue; }
+                if (!res.isConfirmed) return; // cerró el test
+                respuestas[p.id] = res.value;
+                // Si cambió una respuesta, se descartan las de las preguntas siguientes.
+                PREGUNTAS_TEST.slice(PREGUNTAS_TEST.indexOf(p) + 1).forEach(q => delete respuestas[q.id]);
+                paso++;
+            }
+            await mostrarResultadoTest(respuestas);
+        }
+
+        function modalSimple(icono, titulo, texto) {
+            return '<div class="cs-body cs-centrado"><div class="cs-hero"><i class="fas ' + icono + '"></i></div>' +
+                   '<div class="cs-pregunta">' + testEscapar(titulo) + '</div>' +
+                   '<p class="cs-texto">' + testEscapar(texto) + '</p></div>';
+        }
+
+        // Si no hay `persona` en localStorage (sin sesión iniciada): iniciar sesión o "Soy nuevo" (solo cierra el modal).
+        function ofrecerInicioSesion() {
+            return Swal.fire({
+                customClass: claseSwal('cs-popup-chico', 'cs-actions-centro'),
+                buttonsStyling: false,
+                html: modalSimple('fa-user', '¿Ya tenés cuenta?', 'Iniciá sesión para agendar tus clases.'),
+                showCancelButton: true,
+                confirmButtonText: 'Iniciar sesión',
+                cancelButtonText: 'Soy nuevo',
+                focusConfirm: false
+            }).then(res => {
+                if (res.isConfirmed) window.location.href = '/Horarios/Login/Login.html';
+            });
+        }
+
+        // Al entrar: 1) se ofrece el test; la marca en localStorage se guarda SOLO si el usuario toca "Ahora no"
+        // (si lo ignora, lo cierra con la X/Esc o hace el test, el aviso vuelve a aparecer en la próxima visita);
+        // 2) cuando termina o se rechaza, si no hay sesión se ofrece iniciar sesión.
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(async function () {
+                if (typeof Swal === 'undefined') return;
+
+                let rechazado = false;
+                try {
+                    rechazado = !!localStorage.getItem('csTestOfrecido');
+                } catch (e) { /* si no hay storage, se ofrece igual */ }
+
+                if (!rechazado) {
+                    const res = await Swal.fire({
+                        customClass: claseSwal('cs-popup-chico', 'cs-actions-centro'),
+                        buttonsStyling: false,
+                        html: modalSimple('fa-compass', '¿No sabés qué clase elegir?', 'Respondé unas preguntas rápidas y te recomendamos la que mejor se adapta a lo que necesitás.'),
+                        showCancelButton: true,
+                        confirmButtonText: 'Hacer el test',
+                        cancelButtonText: 'Ahora no',
+                        focusConfirm: false
+                    });
+                    if (res.isConfirmed) {
+                        await iniciarTestClase();
+                    } else if (res.dismiss === Swal.DismissReason.cancel) {
+                        // Tocó "Ahora no": no se vuelve a ofrecer.
+                        try { localStorage.setItem('csTestOfrecido', '1'); } catch (e) { /* sin storage */ }
+                    }
+                }
+
+                let haySesion = false;
+                try { haySesion = !!localStorage.getItem('persona'); } catch (e) { /* sin storage */ }
+                if (!haySesion) await ofrecerInicioSesion();
+            }, 700);
+        });
+    </script>
+
 </body>
 </html>
