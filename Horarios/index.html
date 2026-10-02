@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script src="/JS/ping-usuarios.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Reserva De Clase</title>
@@ -903,7 +904,6 @@
     <script>
         document.addEventListener("DOMContentLoaded", () => {
         const urlPingWhatsApp = "https://servidorwhatsappnuevo.onrender.com/health";
-        const urlPingUsuarios = "https://servidorusuarios.onrender.com/ping";
 
         console.log("Iniciando estímulo de fondo para despertar el backend...");
 
@@ -919,17 +919,6 @@
                 console.log("Estímulo enviado. El servidor se está levantando de su letargo...");
             });
 
-        fetchSilencioso(urlPingUsuarios)
-            .then(response => {
-                if (response.ok) {
-                    console.log("¡Backend de usuarios despierto y respondiendo impecable! 🚀");
-                } else {
-                    console.warn("El servidor de usuarios respondió con un estado inesperado:", response.status);
-                }
-            })
-            .catch(error => {
-                console.log("Estímulo enviado al servidor de usuarios. Se está levantando...");
-            });
     });
         const URLHorarios = "https://script.google.com/macros/s/AKfycbxR8IoHxqiJRlt8eOsQsu57b6yjOPfSwDJdVCt_dX6JzxbWGS4r2SOhaI_uVafWKNc/exec"; 
         // ⚠️ COMPLETAR: reemplazá esto por la URL pública real de tu server.js

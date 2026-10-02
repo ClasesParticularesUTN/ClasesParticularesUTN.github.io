@@ -1,6 +1,7 @@
 df<!DOCTYPE html>
 <html lang="es">
 <head>
+        <script src="/JS/ping-usuarios.js" defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C/S | Clases Particulares</title>
@@ -550,26 +551,11 @@ df<!DOCTYPE html>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
         // URL del endpoint que acabamos de crear en tu backend
-        const urlPingUsuarios = "https://servidorusuarios.onrender.com/ping";
         const urlPingWhatsApp = "https://servidorparawhatsapp.onrender.com/ping";
 
         console.log("Iniciando estímulo de fondo para despertar el backend...");
 
         // Hacemos el disparo sin 'await' para que no bloquee el renderizado de la UI
-        fetch(urlPingUsuarios)
-            .then(response => {
-                if (response.ok) {
-                    console.log("¡Backend despierto y respondiendo impecable! 🚀");
-                } else {
-                    console.warn("El servidor respondió, pero con un estado inesperado:", response.status);
-                }
-            })
-            .catch(error => {
-                // Si el servidor estaba dormido de verdad, va a entrar por acá por "timeout"
-                // o tardará en responder, pero al menos ya recibió el estímulo para arrancar.
-                console.log("Estímulo enviado. El servidor se está levantando de su letargo...");
-            });
-
         fetch(urlPingWhatsApp)
             .then(response => {
                 if (response.ok) {
