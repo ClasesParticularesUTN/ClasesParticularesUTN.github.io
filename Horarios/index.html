@@ -769,14 +769,14 @@
                 <span>Actualizando tus datos...</span>
             </div>
             <div class="info-card info-card-deuda" id="sb-deuda-card">
-                <span class="info-label">Deuda Total</span>
+                <span class="info-label">Deuda</span>
                 <div class="deuda-header" id="sb-deuda-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="sb-deuda-detalle">
                     <div class="info-value" id="sb-deuda"></div>
                     <button type="button" class="deuda-toggle-btn" aria-label="Ver detalle de deuda" tabindex="-1"><i class="fa-solid fa-chevron-down"></i></button>
                 </div>
                 <div class="deuda-detalle" id="sb-deuda-detalle" hidden>
-                    <div class="deuda-detalle-item"><span>Debe de clases ya tomadas:</span><span id="sb-deuda-tomadas"></span></div>
-                    <div class="deuda-detalle-item"><span>Debe de clases a futuro:</span><span id="sb-deuda-futuro"></span></div>
+                    <div class="deuda-detalle-item"><span>De clases ya tomadas:</span><span id="sb-deuda-tomadas"></span></div>
+                    <div class="deuda-detalle-item"><span>Clases a futuro (no es deuda):</span><span id="sb-deuda-futuro"></span></div>
                 </div>
             </div>
             <div class="info-card"><span class="info-label">Horas a Favor</span><div class="info-value" id="sb-horas"></div></div>
@@ -1105,8 +1105,10 @@
             return { tomadas: total - futuro, futuro, total };
         }
 
+        // Deuda "real": solo lo de clases YA TOMADAS. La plata de clases a futuro
+        // NO es deuda: no genera carteles, avisos ni restricciones para reservar.
         function obtenerMontoDeuda() {
-            return obtenerDeudasAlumno().total;
+            return obtenerDeudasAlumno().tomadas;
         }
 
         function formatearMontoDeuda(monto) {
@@ -1645,6 +1647,7 @@
         async function mostrarRecordatorioDeudaCorreosEspecificos() {
             if (!Alumno?.correoElectronico) return;
             if (!tienePermiso('verRecordatorioDeudaEspecifico', Alumno)) return;
+            if (obtenerMontoDeuda() <= 0) return;
             if (sessionStorage.getItem(RECORDATORIO_DEUDA_ESPECIFICA_KEY)) return;
             sessionStorage.setItem(RECORDATORIO_DEUDA_ESPECIFICA_KEY, '1');
             await Swal.fire({
@@ -1783,7 +1786,7 @@
             document.getElementById('sb-nombre-completo').innerText = `${Alumno.nombre} ${Alumno.apellido}`;
             document.getElementById('sb-correo').innerText = Alumno.correoElectronico;
             const deudas = obtenerDeudasAlumno();
-            document.getElementById('sb-deuda').innerText = formatearMontoDeuda(deudas.total);
+            document.getElementById('sb-deuda').innerText = formatearMontoDeuda(deudas.tomadas);
             document.getElementById('sb-deuda-tomadas').innerText = formatearMontoDeuda(deudas.tomadas);
             document.getElementById('sb-deuda-futuro').innerText = formatearMontoDeuda(deudas.futuro);
             document.getElementById('sb-horas').innerText = Alumno.horasAFavor + " hs";
@@ -2097,7 +2100,7 @@
             // ahora cada restricción se resuelve con tienePermiso() según
             // permisos.js / permisosPorCondicionPago.js / permisosPorCorreo.js)
 
-            if (!isAdmin && parseMontoAlumno(Alumno.dineroQueDebe) > 0 && !tienePermiso('reservarConDeudaDeDinero', Alumno)) {
+            if (!isAdmin && obtenerMontoDeuda() > 0 && !tienePermiso('reservarConDeudaDeDinero', Alumno)) {
                 return swalPagoDeuda({
                     icon: 'error',
                     title: 'Permiso Denegado',
@@ -2126,7 +2129,7 @@
 
             if (!isAdmin && tienePermiso('verAvisoInteresPorDeuda', Alumno)) {
                 const debeClases = Number(Alumno.cantidadDebe) || 0;
-                const dineroPendiente = parseMontoAlumno(Alumno.dineroQueDebe);
+                const dineroPendiente = obtenerMontoDeuda();
                 const debePeroPuedeReservar = debeClases >= 1 || dineroPendiente > 0;
                 if (debePeroPuedeReservar && localStorage.getItem("avisoDeuda") == undefined) {
                     const avisoDeuda = await swalPagoDeuda({
