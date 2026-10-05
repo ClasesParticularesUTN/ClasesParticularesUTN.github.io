@@ -1197,7 +1197,7 @@
         function modalSimple(icono, titulo, texto) {
             return '<div class="cs-body cs-centrado"><div class="cs-hero"><i class="fas ' + icono + '"></i></div>' +
                    '<div class="cs-pregunta">' + testEscapar(titulo) + '</div>' +
-                   '<p class="cs-texto">' + testEscapar(texto) + '</p></div>';
+                   (texto ? '<p class="cs-texto">' + testEscapar(texto) + '</p>' : '') + '</div>';
         }
 
         // Si no hay `persona` en localStorage (sin sesión iniciada): iniciar sesión o "Soy nuevo" (solo cierra el modal).
@@ -1205,22 +1205,33 @@
             return Swal.fire({
                 customClass: claseSwal('cs-popup-chico', 'cs-actions-centro'),
                 buttonsStyling: false,
-                html: modalSimple('fa-user', '¿Ya tenés cuenta?', 'Iniciá sesión para agendar tus clases.'),
+                html: modalSimple('fa-user', '¿Ya tenés cuenta?', 'Debes iniciar sesión primero'),
                 showCancelButton: true,
                 confirmButtonText: 'Iniciar sesión',
                 cancelButtonText: 'Soy nuevo',
                 focusConfirm: false
             }).then(res => {
-                if (res.isConfirmed) window.location.href = '/Horarios/Login/Login.html';
+                if (res.isConfirmed) {
+                    window.location.href = '/Horarios/Login/Login.html';
+                    return true; // se va a la pantalla de login: no seguir con el test
+                }
+                return false;
             });
         }
 
-        // Al entrar: 1) se ofrece el test; la marca en localStorage se guarda SOLO si el usuario toca "Ahora no"
-        // (si lo ignora, lo cierra con la X/Esc o hace el test, el aviso vuelve a aparecer en la próxima visita);
-        // 2) cuando termina o se rechaza, si no hay sesión se ofrece iniciar sesión.
+        // Al entrar: 1) si no hay sesión, se ofrece iniciar sesión primero ("Soy nuevo" solo cierra el modal);
+        // 2) después se ofrece el test; la marca en localStorage se guarda SOLO si el usuario toca "Ahora no"
+        // (si lo ignora, lo cierra con la X/Esc o hace el test, el aviso vuelve a aparecer en la próxima visita).
         document.addEventListener('DOMContentLoaded', function () {
             setTimeout(async function () {
                 if (typeof Swal === 'undefined') return;
+
+                let haySesion = false;
+                try { haySesion = !!localStorage.getItem('persona'); } catch (e) { /* sin storage */ }
+                if (!haySesion) {
+                    const iraLogin = await ofrecerInicioSesion();
+                    if (iraLogin) return; // lo mandamos al login, el test se ofrece en la próxima visita
+                }
 
                 let rechazado = false;
                 try {
@@ -1244,10 +1255,6 @@
                         try { localStorage.setItem('csTestOfrecido', '1'); } catch (e) { /* sin storage */ }
                     }
                 }
-
-                let haySesion = false;
-                try { haySesion = !!localStorage.getItem('persona'); } catch (e) { /* sin storage */ }
-                if (!haySesion) await ofrecerInicioSesion();
             }, 700);
         });
     </script>
