@@ -780,6 +780,7 @@
                 </div>
             </div>
             <div class="info-card"><span class="info-label">Horas a Favor</span><div class="info-value" id="sb-horas"></div></div>
+            <div class="info-card" id="sb-horas-comparadas-card" hidden><span class="info-label">Horas Comparadas</span><div class="info-value" id="sb-horas-comparadas"></div></div>
             <div class="info-card" style="border:none; background:transparent; padding:5px 0;">
                 <span class="info-label" id="sb-horarios-label">Mis Horarios Reservados</span>
                 <div id="sb-lista-horarios"></div>
@@ -1790,6 +1791,13 @@
             document.getElementById('sb-deuda-tomadas').innerText = formatearMontoDeuda(deudas.tomadas);
             document.getElementById('sb-deuda-futuro').innerText = formatearMontoDeuda(deudas.futuro);
             document.getElementById('sb-horas').innerText = Alumno.horasAFavor + " hs";
+            const packNum = Number(Alumno.pack);
+            const cardComparadas = document.getElementById('sb-horas-comparadas-card');
+            if (cardComparadas) {
+                const mostrarComparadas = Alumno.pack !== null && Alumno.pack !== '' && Number.isFinite(packNum) && packNum > 0;
+                cardComparadas.hidden = !mostrarComparadas;
+                if (mostrarComparadas) document.getElementById('sb-horas-comparadas').innerText = packNum + " hs";
+            }
             const container = document.getElementById('sb-lista-horarios');
             const lista = Alumno.horarios || [];
             const totalHorasReservadas = lista.reduce((acc, h) => acc + (cantidadHorasHorarioReserva(h) || 0), 0);
