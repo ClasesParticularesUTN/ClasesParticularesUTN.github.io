@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+        <script src="/JS/ping-usuarios.js" defer></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Clases Particulares UTN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="/precios.js" charset="UTF-8"></script>
+    <script src="PagosPersonalizados.js" charset="UTF-8"></script>
+    <script src="cupones.js" charset="UTF-8"></script>
+    <style>
+        :root {
+            --primary: #f3a661; --primary-dark: #d48b45; --primary-glow: rgba(243, 166, 97, 0.35);
+            --danger: #e74c3c; --danger-dark: #c0392b; --danger-glow: rgba(231, 76, 60, 0.35);
+            --bg: #1a1a24; --header-bg: rgba(37, 37, 51, 0.95); --card-bg: #252533;
+            --text-main: #e2e2e8; --text-muted: #b0b0b8; --glass-border: rgba(243, 166, 97, 0.25);
+            --shadow: 0 4px 20px rgba(0,0,0,0.35); --footer-bg: rgba(37, 37, 51, 0.98);
+            --radius: 20px; --radius-sm: 14px;
+        }
+        body.light-mode { --bg: #f0f4f8; --header-bg: rgba(255, 255, 255, 0.95); --card-bg: #ffffff; --text-main: #1a1a24; --text-muted: #64748b; --glass-border: rgba(243, 166, 97, 0.4); --shadow: 0 4px 20px rgba(0, 0, 0, 0.08); --footer-bg: rgba(255, 255, 255, 0.98); --primary-glow: rgba(243, 166, 97, 0.2); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: var(--bg); color: var(--text-main); font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif; line-height: 1.6; transition: 0.3s; }
+        header { background: var(--header-bg); backdrop-filter: blur(15px); padding: 18px 20px; text-align: center; border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 1000; display: flex; justify-content: center; align-items: center; }
+        header h1 { font-size: 1.25rem; font-weight: 700; flex-grow: 1; letter-spacing: 0.02em; }
+        .theme-toggle { background: rgba(243, 166, 97, 0.12); border: 1px solid var(--glass-border); color: var(--primary); width: 42px; height: 42px; border-radius: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.25s; }
+        .theme-toggle:hover { background: rgba(243, 166, 97, 0.25); transform: scale(1.05); }
+        .loader {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            z-index: 20000; /* por encima de header/footer y la mayoría de overlays */
+            flex-direction: column;
+            gap: 18px;
+            text-align: center;
+            padding: 20px;
+            background: var(--bg); /* fondo sólido para que no se vea “raro” el contenido detrás */
+        }
+        /* loader de "procesando orden" debe ir arriba de TODO (incluye modales) */
+        .loader.loader--processing { z-index: 40000; }
+        .loader.hidden { display:none; }
+        body.is-busy { overflow: hidden; }
+
+        .loader-card {
+            width: min(420px, 92vw);
+            border-radius: 24px;
+            background: color-mix(in srgb, var(--card-bg) 88%, transparent);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 28px 72px rgba(0,0,0,0.55);
+            padding: 26px 22px 22px;
+        }
+        .loader-title { font-weight: 900; font-size: 1.05rem; letter-spacing: 0.01em; margin-bottom: 6px; }
+        .loader-subtitle { color: var(--text-muted); font-size: 0.92rem; font-weight: 600; }
+
+        .spinner {
+            width: 54px;
+            height: 54px;
+            border-radius: 999px;
+            background:
+                conic-gradient(from 180deg, rgba(243,166,97,0.05), rgba(243,166,97,0.95), rgba(212,139,69,0.95), rgba(243,166,97,0.05));
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 0);
+            mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 0);
+            animation: spin 0.8s linear infinite;
+            filter: drop-shadow(0 10px 18px rgba(243, 166, 97, 0.25));
+            margin: 2px auto 14px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .dots {
+            display: inline-flex;
+            gap: 6px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+        .dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--primary) 85%, transparent);
+            animation: dot 1s infinite ease-in-out;
+        }
+        .dots span:nth-child(2) { animation-delay: 0.15s; opacity: 0.85; }
+        .dots span:nth-child(3) { animation-delay: 0.3s; opacity: 0.7; }
+        @keyframes dot { 0%, 80%, 100% { transform: translateY(0); } 40% { transform: translateY(-4px); } }
+
+        .progress-container {
+            width: 100%;
+            height: 10px;
+            background: rgba(128,128,128,0.18);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 16px;
+            position: relative;
+        }
+        .progress-container::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+            transform: translateX(-40%);
+            animation: shimmer 1.2s infinite linear;
+            pointer-events: none;
+        }
+        @keyframes shimmer { to { transform: translateX(40%); } }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            border-radius: 999px;
+            animation: progress 45s linear forwards;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.08) inset;
+        }
+        @keyframes progress { to { width: 95%; } }
+        .container { max-width: 600px; margin: 0 auto; padding: 0 18px 200px; }
+        .modo-selector { display: flex; gap: 12px; justify-content: center; margin: 18px 0; }
+        .card { display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); border-radius: var(--radius); padding: 20px; border: 1px solid var(--glass-border); margin-bottom: 14px; box-shadow: var(--shadow); transition: transform 0.2s, box-shadow 0.2s; }
+        .card:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(0,0,0,0.4); }
+        body.light-mode .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+        /* Clase cancelada: aviso sutil (no bloquea el pago) */
+        .card.is-cancelada { border-color: rgba(243, 166, 97, 0.28); background: var(--card-bg); }
+        .card.is-cancelada:hover { box-shadow: 0 8px 28px rgba(0,0,0,0.4); }
+        .info strong { font-size: 1.1rem; color: var(--primary); display: block; font-weight: 600; }
+        .info .details { font-size: 0.85rem; color: var(--text-muted); display: block; margin-top: 4px; }
+        .info .details i { margin-right: 6px; opacity: 0.85; color: var(--primary); }
+        .cancel-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 10px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: color-mix(in srgb, var(--text-muted) 80%, var(--primary) 20%);
+            background: rgba(243, 166, 97, 0.10);
+            border: 1px solid rgba(243, 166, 97, 0.25);
+        }
+        .cancel-badge i { font-size: 0.85rem; opacity: 0.8; }
+        .controles { display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+        .pago-checkbox { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-main); cursor: pointer; background: rgba(128,128,128,0.12); padding: 10px 18px; border-radius: var(--radius-sm); transition: 0.2s; }
+        .pago-checkbox:hover { background: rgba(128,128,128,0.2); }
+        .pago-checkbox:has(input:checked) { background: var(--primary); color: #1a1a24; }
+        .price-display { font-size: 1.25rem; font-weight: 800; color: var(--text-main); letter-spacing: 0.02em; }
+        .footer-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--footer-bg); padding: 18px 0 28px; backdrop-filter: blur(20px); box-shadow: 0 -12px 32px rgba(0,0,0,0.2); display: none; z-index: 1000; border-top-left-radius: 28px; border-top-right-radius: 28px; border-top: 1px solid var(--glass-border); }
+        .footer-bar.footer-hidden-processing { display: none !important; }
+        .metodo-selector { display: flex; gap: 12px; justify-content: center; margin-bottom: 16px; }
+        .metodo-btn { background: rgba(128,128,128,0.12); border: 1px solid var(--glass-border); padding: 10px 16px; border-radius: var(--radius-sm); color: var(--text-muted); font-size: 0.85rem; font-weight: 600; cursor: pointer; flex: 1; max-width: 150px; transition: 0.2s; }
+        .metodo-btn:hover { color: var(--text-main); background: rgba(128,128,128,0.2); }
+        .metodo-btn.active { background: var(--primary); color: #1a1a24; border-color: var(--primary); }
+        .select-all-mini {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
+            background: rgba(128,128,128,0.08);
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+        }
+        .select-all-mini:hover { background: rgba(128,128,128,0.14); color: var(--text-main); }
+        .select-all-mini input { width: 16px; height: 16px; accent-color: var(--primary); }
+        .select-all-mini.is-visible { display: inline-flex; }
+        .select-all-mini.is-visible:has(input:disabled) { opacity: 0.55; cursor: not-allowed; }
+        .footer-content { max-width: 600px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+        .total-text .total-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; }
+        .total-text .total-value { font-size: 1.6rem; font-weight: 900; letter-spacing: 0.02em; }
+        button.btn-pago { background: var(--primary); color: #1a1a24; border: none; border-radius: 18px; padding: 14px 28px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: 0.25s; box-shadow: 0 4px 14px var(--primary-glow); }
+        button.btn-pago:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--primary-glow); }
+        button.btn-pago:active { transform: translateY(0); }
+
+        /* Modal overlay */
+        #modalQR, #modalExito, #modalInfoQR, #modalInfoCupon { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10001; padding: 24px; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        #modalQR .modal-inner, #modalExito .modal-inner { animation: modalIn 0.35s ease; }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+
+        /* QR modal */
+        .qr-container { background: var(--card-bg); padding: 0; border-radius: 24px; text-align: center; max-width: 340px; width: 100%; overflow: hidden; border: 1px solid var(--glass-border); box-shadow: 0 24px 56px rgba(0,0,0,0.45); }
+        .qr-container .modal-inner { padding: 28px 24px 24px; }
+        .qr-container .qr-header { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .qr-container .qr-header i { font-size: 1.5rem; color: var(--primary); }
+        .qr-container .qr-header span { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+        .qr-container .qr-frame { background: #fff; border-radius: 16px; padding: 20px; margin: 0 auto 20px; width: fit-content; box-shadow: 0 8px 24px rgba(0,0,0,0.2), inset 0 0 0 1px rgba(0,0,0,0.06); }
+        .qr-container #qrImgContainer { line-height: 0; }
+        .qr-container #qrImgContainer img { width: 220px; height: 220px; display: block; border-radius: 8px; }
+        .qr-container .qr-hint { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 22px; margin-top: 22px; font-weight: 500; }
+        .qr-container .btn-cerrar { background: rgba(128,128,128,0.15); color: var(--text-main); border: 1px solid var(--glass-border); width: 100%; border-radius: 14px; padding: 14px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .qr-container .btn-cerrar:hover { background: rgba(231, 76, 60, 0.2); color: #e74c3c; border-color: rgba(231, 76, 60, 0.4); }
+
+        /* Layout lateral QR + sugerencia (solo packs) */
+        .qr-pack-layout { display: block; }
+        .qr-container.has-pack-note { max-width: 620px; }
+        @media (min-width: 720px) {
+            .qr-container.has-pack-note .qr-pack-layout {
+                display: grid;
+                grid-template-columns: auto 1fr;
+                gap: 14px;
+                align-items: start;
+                justify-content: center;
+                margin-bottom: 16px;
+            }
+            .qr-container.has-pack-note .qr-frame { margin: 0; }
+        }
+        @media (max-width: 719px) {
+            .qr-container.has-pack-note .qr-frame { margin: 0 auto 14px; }
+        }
+
+        /* Éxito modal */
+        .exito-container { background: var(--card-bg); padding: 32px 28px; border-radius: 24px; text-align: center; max-width: 340px; width: 100%; border: 1px solid var(--glass-border); box-shadow: 0 24px 56px rgba(0,0,0,0.45); }
+        .exito-container .modal-inner { padding: 0; }
+        .exito-container i { font-size: 3.5rem; color: #2ecc71; margin-bottom: 16px; display: block; filter: drop-shadow(0 4px 12px rgba(46, 204, 113, 0.4)); }
+        .exito-container h2 { font-size: 1.35rem; margin-bottom: 8px; font-weight: 700; }
+        .exito-container .exito-msg { margin-bottom: 24px; color: var(--text-muted); font-size: 0.95rem; }
+        
+        /* Info QR modal */
+        .infoqr-container { background: var(--card-bg); padding: 28px 24px; border-radius: 24px; text-align: left; max-width: 420px; width: 100%; border: 1px solid var(--glass-border); box-shadow: 0 24px 56px rgba(0,0,0,0.45); }
+        .infoqr-container h2 { font-size: 1.25rem; margin-bottom: 10px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .infoqr-container h2 i { color: var(--primary); }
+        .infoqr-container p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; }
+        .infoqr-container ul { margin: 8px 0 16px 18px; color: var(--text-muted); font-size: 0.9rem; }
+        .infoqr-container ul li { margin-bottom: 6px; }
+        .infoqr-container ul li.cupon-destacado { color: var(--text-main); font-weight: 700; }
+        .infoqr-container ul li.cupon-destacado i { color: var(--primary); margin-right: 4px; }
+        .infoqr-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+        .infoqr-actions button { flex: 1; min-width: 140px; }
+
+        /* Rechazo modal */
+        #modalRechazo { position: fixed; top:0; left:0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10001; padding: 24px; animation: fadeIn 0.25s ease; }
+        #modalRechazo .modal-inner { animation: modalIn 0.35s ease; }
+        .rechazo-container { background: var(--card-bg); padding: 32px 28px; border-radius: 24px; text-align: center; max-width: 340px; width: 100%; border: 1px solid var(--glass-border); box-shadow: 0 24px 56px rgba(0,0,0,0.45); }
+        .rechazo-container i { font-size: 3.5rem; color: #e74c3c; margin-bottom: 16px; display: block; filter: drop-shadow(0 4px 12px rgba(231, 76, 60, 0.35)); }
+        .rechazo-container h2 { font-size: 1.35rem; margin-bottom: 8px; font-weight: 700; }
+        .rechazo-container .rechazo-msg { margin-bottom: 24px; color: var(--text-muted); font-size: 0.95rem; }
+
+        /* Animaciones generales */
+        @media (prefers-reduced-motion: no-preference) {
+            .card { animation: cardIn 0.35s ease both; }
+            @keyframes cardIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+            .modo-selector { animation: fadeSlideDown 0.35s ease both; }
+            .container { animation: fadeInSlow 0.4s ease both; }
+            .footer-bar { animation: slideUp 0.35s ease both; }
+
+            @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+            @keyframes fadeInSlow { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+            @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+            button, .metodo-btn, .pago-checkbox { transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, color 0.15s ease; }
+            button:active, .metodo-btn:active, .pago-checkbox:active { transform: scale(0.97); }
+        }
+
+        /* Compra de horas */
+        .packs-layout { display: block; }
+        .horas-compra-card { flex-direction: column; align-items: stretch; gap: 18px; }
+        .horas-compra-card .info { width: 100%; }
+        .horas-modalidad { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+        .horas-mod-btn {
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+            padding: 14px 10px; border-radius: var(--radius-sm);
+            border: 2px solid var(--glass-border); background: rgba(128,128,128,0.08);
+            color: var(--text-muted); font-family: inherit; cursor: pointer; transition: 0.2s;
+        }
+        .horas-mod-btn i { font-size: 1.2rem; color: var(--primary); }
+        .horas-mod-btn strong { font-size: 0.9rem; color: var(--text-main); }
+        .horas-mod-btn span { font-size: 0.72rem; text-align: center; line-height: 1.3; }
+        .horas-mod-btn.active { border-color: var(--primary); background: rgba(243, 166, 97, 0.14); color: var(--text-main); }
+        .horas-input-row { display: flex; align-items: center; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+        .horas-input-row label { font-size: 0.85rem; font-weight: 700; color: var(--text-main); white-space: nowrap; }
+        .horas-input-row input[type="number"] {
+            flex: 1; min-width: 80px; max-width: 120px;
+            padding: 12px 14px; border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border); background: rgba(128,128,128,0.12);
+            color: var(--text-main); font-weight: 700; font-size: 1rem; font-family: inherit;
+        }
+        .horas-desglose {
+            margin-top: 4px; padding: 12px 14px; border-radius: var(--radius-sm);
+            background: rgba(128,128,128,0.08); border: 1px solid var(--glass-border);
+            font-size: 0.82rem; color: var(--text-muted); line-height: 1.55;
+        }
+        .horas-desglose .desglose-linea { display: flex; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+        .horas-desglose .desglose-linea:last-child { margin-bottom: 0; }
+        .horas-desglose .desglose-linea strong { color: var(--text-main); font-weight: 700; }
+        .pack-auto-note { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; line-height: 1.3; }
+        .pack-auto-note strong { color: var(--text-main); }
+        .horas-desglose .desglose-total { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--glass-border); font-weight: 800; color: var(--primary); display: flex; justify-content: space-between; }
+        .horas-aviso { font-size: 0.78rem; color: var(--text-muted); margin-top: 6px; }
+        .horas-info-msg {
+            display: flex; gap: 10px; align-items: flex-start;
+            padding: 12px 14px; margin-bottom: 4px; border-radius: var(--radius-sm);
+            border: 1px solid rgba(243, 166, 97, 0.28);
+            background: rgba(243, 166, 97, 0.10);
+            font-size: 0.82rem; line-height: 1.5; color: var(--text-main);
+        }
+        .horas-info-msg i { color: var(--primary); margin-top: 2px; flex-shrink: 0; }
+        .horas-info-msg strong { color: var(--primary); font-weight: 700; }
+        .pack-directo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .pack-directo-btn { width: 100%; padding: 16px 12px; font-size: 0.95rem; }
+        .horas-custom-section { padding-top: 18px; border-top: 1px solid var(--glass-border); }
+        .horas-custom-section > strong { display: block; font-size: 0.9rem; color: var(--text-main); margin-bottom: 12px; }
+        .horas-aceptar-row { margin-top: 16px; }
+        .horas-aceptar-row .btn-pago { width: 100%; }
+
+        /* Nota discreta dentro del modal QR (solo packs) */
+        .qr-pack-note {
+            width: 100%;
+            margin-top: 0;
+            padding: 12px 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(243, 166, 97, 0.28);
+            background: rgba(243, 166, 97, 0.10);
+            text-align: left;
+        }
+        .qr-pack-note.hidden { display: none; }
+        .qr-pack-note .note-title {
+            font-size: 0.85rem;
+            font-weight: 900;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: center;
+        }
+        .qr-pack-note .note-text {
+            color: #ff4d4d;
+            font-size: 0.8rem;
+            font-weight: 800;
+            line-height: 1.5;
+            text-shadow: 0 0 10px rgba(255, 77, 77, 0.18);
+        }
+        .qr-pack-note .note-pill {
+            margin-top: 8px;
+            font-size: 0.72rem;
+            padding: 7px 10px;
+            font-weight: 700;
+        }
+
+        /* Título grande del pago personalizado (reemplaza a la nota de packs) */
+        .qr-personalizado-titulo {
+            width: 100%;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            line-height: 1.35;
+            margin: -4px 0 22px;
+            padding: 16px 18px;
+            border-radius: 18px;
+            background: var(--primary-glow);
+            border: 1.5px solid var(--primary);
+            box-shadow: 0 0 24px var(--primary-glow);
+            letter-spacing: 0.2px;
+        }
+        .qr-personalizado-titulo.hidden { display: none; }
+
+
+        /* Cupones de descuento */
+        .cupon-card {
+            background: var(--card-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+            padding: 14px 16px; margin-bottom: 14px; box-shadow: var(--shadow);
+            display: none; flex-direction: column; gap: 10px;
+        }
+        .cupon-card.is-visible { display: flex; }
+        .cupon-row { display: flex; align-items: center; gap: 10px; }
+        .cupon-row.hidden { display: none; }
+        .cupon-row i { color: var(--primary); font-size: 1rem; flex-shrink: 0; }
+        .cupon-row input {
+            flex: 1; min-width: 0; padding: 10px 14px; border-radius: 12px;
+            border: 1px solid var(--glass-border); background: rgba(128,128,128,0.1);
+            color: var(--text-main); font-family: inherit; font-size: 0.9rem;
+        }
+        .cupon-row input::placeholder { color: var(--text-muted); }
+        .cupon-row input:focus { outline: none; border-color: var(--primary); }
+        .btn-cupon {
+            background: rgba(243, 166, 97, 0.15); border: 1px solid var(--primary); color: var(--primary);
+            padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 0.85rem;
+            cursor: pointer; white-space: nowrap; transition: 0.2s; font-family: inherit;
+        }
+        .btn-cupon:hover { background: var(--primary); color: #1a1a24; }
+        .btn-cupon-info {
+            background: rgba(128,128,128,0.14); border: 1px solid var(--glass-border); color: var(--text-muted);
+            width: 38px; height: 38px; min-width: 38px; border-radius: 50%; font-weight: 800; font-size: 0.9rem;
+            cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; font-family: inherit;
+        }
+        .btn-cupon-info:hover { background: var(--primary); color: #1a1a24; border-color: var(--primary); }
+
+        /* Hint animado: indica al usuario que puede clickear el "?" de cupones */
+        .btn-cupon-info-wrap { position: relative; flex-shrink: 0; }
+        .cupon-info-hint-ring {
+            position: absolute; inset: -3px;
+            border-radius: 50%;
+            border: 2px solid #ffd23f;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .cupon-info-hint-icon {
+            position: absolute;
+            bottom: -10px; right: -10px;
+            font-size: 12rem;
+            color: #ffd23f;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.45));
+            transform-origin: 30% 20%;
+            transition: opacity 0.2s ease;
+        }
+        .btn-cupon-info-wrap.is-hint-visible .cupon-info-hint-icon { opacity: 1; }
+        @media (prefers-reduced-motion: no-preference) {
+            .btn-cupon-info-wrap.is-hint-visible .cupon-info-hint-icon { animation: cuponHintTap 1.3s ease-in-out infinite; }
+            .btn-cupon-info-wrap.is-hint-visible .cupon-info-hint-ring { animation: cuponHintRing 1.3s ease-out infinite; }
+        }
+        @keyframes cuponHintTap {
+            0%, 55%, 100% { transform: translate(0, 0) scale(1.3); }
+            20% { transform: translate(-14px, -14px) scale(1.3); }
+            35% { transform: translate(0, 0) scale(1.3); }
+        }
+        @keyframes cuponHintRing {
+            0%, 15% { opacity: 0; transform: scale(0.6); }
+            30% { opacity: 0.8; transform: scale(0.7); }
+            55% { opacity: 0; transform: scale(1.3); }
+            100% { opacity: 0; transform: scale(1.3); }
+        }
+        .cupon-aplicado {
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.35);
+            border-radius: 12px; padding: 10px 14px; font-size: 0.85rem; font-weight: 600; color: var(--text-main);
+        }
+        .cupon-aplicado.hidden { display: none; }
+        .cupon-aplicado i { color: #2ecc71; margin-right: 4px; }
+        .btn-quitar-cupon {
+            background: transparent; border: none; color: var(--danger); font-size: 0.8rem; font-weight: 700;
+            cursor: pointer; padding: 4px 8px; white-space: nowrap; font-family: inherit;
+        }
+        .btn-quitar-cupon:hover { text-decoration: underline; }
+
+        /* Desglose de total con descuento */
+        .subtotal-row, .descuento-row {
+            font-size: 0.78rem; font-weight: 600; color: var(--text-muted);
+            display: flex; justify-content: flex-end; gap: 6px;
+        }
+        .subtotal-row.hidden, .descuento-row.hidden { display: none; }
+        .descuento-row { color: #2ecc71; }
+
+        /* Confirmacion de clases pendientes al comprar un pack */
+        #modalPackClases { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 10001; padding: 24px; animation: fadeIn 0.25s ease; }
+        #modalPackClases .modal-inner { animation: modalIn 0.35s ease; }
+        .pack-clases-container { background: var(--card-bg); padding: 26px 22px 22px; border-radius: 24px; text-align: left; max-width: 480px; width: 100%; max-height: min(680px, 90vh); overflow-y: auto; border: 1px solid var(--glass-border); box-shadow: 0 24px 56px rgba(0,0,0,0.45); }
+        .pack-clases-container h2 { font-size: 1.25rem; margin-bottom: 6px; font-weight: 700; }
+        .pack-clases-container > p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 16px; }
+        .pack-seleccionado { display: flex; justify-content: space-between; gap: 12px; padding: 11px 12px; margin-bottom: 10px; border-radius: 14px; background: var(--primary-glow); border: 1px solid var(--primary); color: var(--text-main); font-size: 0.85rem; font-weight: 700; }
+        .pack-seleccionado strong { color: var(--primary); white-space: nowrap; }
+        .pack-clases-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+        .pack-clase-option { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 14px; background: rgba(128,128,128,0.1); border: 1px solid var(--glass-border); cursor: pointer; }
+        .pack-clase-option input { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--primary); }
+        .pack-clase-option .pack-clase-info { min-width: 0; flex: 1; }
+        .pack-clase-option strong { display: block; color: var(--text-main); font-size: 0.9rem; }
+        .pack-clase-option span { display: block; color: var(--text-muted); font-size: 0.76rem; }
+        .pack-clases-total { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 0.85rem; }
+        .pack-clases-total strong { color: var(--primary); font-size: 1rem; }
+        .pack-clases-actions { display: flex; gap: 10px; }
+        .pack-clases-actions button { flex: 1; }
+        .pack-clases-actions .btn-cerrar { background: rgba(128,128,128,0.15); color: var(--text-main); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+        @media (max-width: 480px) { .pack-clases-actions { flex-direction: column-reverse; } }
+    </style>
+    <script src="/JS/clear-storage-shortcut.js"></script>
+</head>
+<body>
+
+<header>
+    <div style="width: 40px;"></div> <h1>Registro de pagos</h1>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <i id="theme-icon" class="fas fa-sun"></i>
+    </button>
+</header>
+
+<div class="container">
+    <div class="modo-selector">
+        <button class="metodo-btn active" onclick="setModoPago('clases')" id="btnModoClases"><i class="fas fa-list"></i> Clases pendientes</button>
+        <button class="metodo-btn" onclick="setModoPago('pack')" id="btnModoPack"><i class="fas fa-clock"></i> Comprar Horas / Packs</button>
+        <button class="metodo-btn" onclick="setModoPago('admin')" id="btnModoAdmin" style="display:none;"><i class="fas fa-user-shield"></i> Admin</button>
+        <label id="selectAllClasesWrap" class="select-all-mini" title="Seleccionar todas las clases pendientes">
+            <input id="selectAllClases" type="checkbox" onchange="toggleSelectAllClases()">
+            <span>Todas</span>
+        </label>
+    </div>
+    <div class="cupon-card is-visible" id="cuponCard">
+        <div class="cupon-row" id="cuponRow">
+            <i class="fas fa-tag" aria-hidden="true"></i>
+            <input type="text" id="cuponInput" placeholder="&#191;Ten&#233;s un cup&#243;n de descuento? Ingres&#225;lo" autocomplete="off" onfocus="ocultarHintCupon()" onkeydown="if(event.key==='Enter'){event.preventDefault();aplicarCupon();}">
+            <button type="button" class="btn-cupon" onclick="aplicarCupon()">Aplicar</button>
+            <div class="btn-cupon-info-wrap" id="btnCuponInfoWrap">
+                <button type="button" class="btn-cupon-info" onclick="abrirInfoCupon()" aria-label="&#191;C&#243;mo consigo cupones?" title="&#191;C&#243;mo consigo cupones?">?</button>
+                <span class="cupon-info-hint-ring" aria-hidden="true"></span>
+                <i class="fas fa-hand-pointer cupon-info-hint-icon" aria-hidden="true"></i>
+            </div>
+        </div>
+        <div class="cupon-aplicado hidden" id="cuponAplicadoInfo">
+            <span><i class="fas fa-check-circle" aria-hidden="true"></i> Cup&#243;n <strong id="cuponAplicadoCodigo"></strong> aplicado (<span id="cuponAplicadoDetalle"></span>)</span>
+            <button type="button" class="btn-quitar-cupon" onclick="quitarCupon()"><i class="fas fa-times"></i> Quitar</button>
+        </div>
+    </div>
+    <div class="productos" id="productos"></div>
+    <div class="packs-container" id="packsContainer" style="display: none;">
+        <div class="packs-layout">
+            <div class="card horas-compra-card" id="horasCompraCard">
+                <p class="horas-info-msg" role="note">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i>
+                    <span>Podés comprar un <strong>pack</strong> o una <strong>cantidad de clases menor</strong> (por ejemplo, 3) y usarlas después al reservar turnos en Horarios.</span>
+                </p>
+                <div class="horas-modalidad" role="group" aria-label="Modalidad">
+                    <button type="button" class="horas-mod-btn active" data-mod="individual" onclick="setHorasModalidad('individual')">
+                        <i class="fas fa-user"></i>
+                        <strong>Individual</strong>
+                    </button>
+                    <button type="button" class="horas-mod-btn" data-mod="grupal" onclick="setHorasModalidad('grupal')">
+                        <i class="fas fa-users"></i>
+                        <strong>Grupal</strong>
+                    </button>
+                </div>
+                <div class="pack-directo-row">
+                    <button type="button" class="btn-pago pack-directo-btn" onclick="pagarPackDirecto('examen')">Pack Examen</button>
+                    <button type="button" class="btn-pago pack-directo-btn" onclick="pagarPackDirecto('materia')">Pack Materia</button>
+                </div>
+                <div class="horas-custom-section">
+                    <strong>Otra cantidad de clases</strong>
+                    <div class="horas-input-row">
+                        <label for="horasCompraInput">Clases</label>
+                        <input id="horasCompraInput" type="number" min="1" step="1" value="1" inputmode="numeric" oninput="onHorasCompraInput()">
+                    </div>
+                    <p class="horas-aviso">Cada clase dura 2 horas.</p>
+                    <p class="horas-aviso" id="horasCompraAviso"></p>
+                    <div id="horasDesglose" class="horas-desglose" aria-live="polite"></div>
+                    <div class="horas-aceptar-row">
+                        <button type="button" class="btn-pago" id="btnAceptarHoras" onclick="aceptarCompraHoras()">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="packs-container" id="adminContainer" style="display: none;">
+        <h3 style="margin-bottom: 12px; color: var(--primary); font-size: 1rem;">Generar QR manual (Admin)</h3>
+        <div class="card" style="align-items: stretch;">
+            <div class="info" style="flex:1;">
+                <strong>Pago manual</strong>
+                <span class="details">Ingres&#225; un monto y gener&#225; el QR</span>
+            </div>
+            <div class="controles" style="align-items: stretch; min-width: 160px;">
+                <input id="adminPrecio" inputmode="numeric" type="number" min="1" step="1" placeholder="Monto" style="width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--glass-border); background: rgba(128,128,128,0.12); color: var(--text-main); font-weight: 700;">
+                <button class="btn-pago" onclick="generarQRAdmin()" style="width: 100%;">Generar QR</button>
+            </div>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center;">Atajo: Alt+S habilita Admin en esta sesi&#243;n.</p>
+    </div>
+</div>
+
+<div id="loaderClases" class="loader hidden" role="status" aria-live="polite" aria-busy="true">
+    <div class="loader-card">
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="loader-title">Cargando</div>
+        <div class="loader-subtitle">Buscando clases pendientes<span class="dots" aria-hidden="true"><span></span><span></span><span></span></span></div>
+    </div>
+</div>
+<div id="loaderPago" class="loader loader--processing hidden" role="status" aria-live="polite" aria-busy="true">
+    <div class="loader-card">
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="loader-title">Procesando orden<span class="dots" aria-hidden="true"><span></span><span></span><span></span></span></div>
+        <div class="loader-subtitle">No cierres esta ventana</div>
+        <div class="progress-container"><div class="progress-bar"></div></div>
+    </div>
+</div>
+
+<div id="modalQR">
+    <div class="qr-container">
+        <div class="modal-inner">
+            <div class="qr-header">
+                <i class="fas fa-qrcode"></i>
+                <span>Escane&#225; para pagar</span>
+            </div>
+            <div id="qrPersonalizadoTitulo" class="qr-personalizado-titulo hidden"></div>
+            <div class="qr-pack-layout">
+                <div class="qr-frame">
+                    <div id="qrImgContainer"></div>
+                </div>
+                <div id="qrPackNote" class="qr-pack-note hidden" aria-live="polite">
+                    <div class="note-title"><i class="fas fa-wallet" aria-hidden="true"></i> Advertencia</div>
+                    <div class="note-text" style="text-align: center;">
+                        No pagués usando <strong>Mercado Pago</strong>; usá <strong>otra billetera</strong> para la transacción.
+                    </div>
+             
+                    <span class="note-pill"><i class="fas fa-lightbulb" aria-hidden="true"></i> Tip: Sirve cualquiera: Ualá, Lemon, Modo, BNA, NaranjaX, etc</span>
+                </div>
+            </div>
+            <p class="qr-hint">Abr&#237; la app de tu banco o billetera y escane&#225; el c&#243;digo</p>
+            <button class="btn-cerrar" onclick="cerrarQR()"><i class="fas fa-times"></i> Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalInfoQR">
+    <div class="infoqr-container">
+        <h2><i class="fas fa-info-circle"></i> Importante</h2>
+        <p>Este QR se escanea con el <strong>celular</strong> desde la app del banco/billetera, por eso te conviene abrir esta p&aacute;gina en una <strong>PC u otro dispositivo</strong>.</p>
+        <p>Tambi&eacute;n pod&eacute;s <strong>mantener apretado el QR</strong> (o clic derecho) para <strong>descargarlo o compartirlo</strong>, por ejemplo por <strong>WhatsApp Web</strong>, y tenerlo en la compu.</p>
+        <div class="infoqr-actions">
+            <button class="btn-pago" onclick="aceptarInfoQR()">Entendido, mostrar QR</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalPackClases">
+    <div class="pack-clases-container">
+        <div class="modal-inner">
+            <h2>Sumar clases pendientes</h2>
+            <p>El pack se puede pagar junto con estas clases. Destildá las que quieras dejar para después.</p>
+            <div id="packSeleccionado" class="pack-seleccionado"></div>
+            <div id="packClasesList" class="pack-clases-list"></div>
+            <div class="pack-clases-total">
+                <span>Total con el pack</span>
+                <strong>$<span id="packClasesTotal">0,00</span></strong>
+            </div>
+            <div class="pack-clases-actions">
+                <button type="button" class="btn-pago" onclick="confirmarPackConClases()">Generar QR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalInfoCupon">
+    <div class="infoqr-container">
+        <h2><i class="fas fa-gift"></i> &#191;C&#243;mo consigo cupones?</h2>
+        <p>Pod&eacute;s conseguir cupones de descuento en estas situaciones:</p>
+        <ul>
+            <li class="cupon-destacado" style="color: #ffd23f;"><i class="fas fa-star" aria-hidden="true"></i>Mandando fotos al profesor de los ex&aacute;menes que les hayan tomado.</li>
+            <li>Deudas pendientes que quedaron de pagos anteriores.</li>
+            <li class="cupon-destacado" style="color: #ffd23f;"><i class="fas fa-star" aria-hidden="true"></i>Recomendando a un compa&ntilde;ero que termina anot&aacute;ndose y pagando.</li>
+            <li>Problemas t&eacute;cnicos de nuestro lado (ej: ca&iacute;da del QR/plataforma que gener&oacute; demoras).</li>
+        </ul>
+        <div class="infoqr-actions">
+            <button class="btn-pago" onclick="cerrarInfoCupon()" style="width:100%;">Entendido</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalExito">
+    <div class="exito-container">
+        <div class="modal-inner">
+            <i class="fas fa-check-circle"></i>
+            <h2>&#161;Pago exitoso!</h2>
+            <p class="exito-msg">El pago ha sido acreditado correctamente.</p>
+            <button class="btn-pago" onclick="window.location.reload()" style="width:100%;">Aceptar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalRechazo">
+    <div class="rechazo-container">
+        <div class="modal-inner">
+            <i class="fas fa-times-circle"></i>
+            <h2>Pago rechazado</h2>
+            <p class="rechazo-msg">No se pudo procesar el pago. Prob&#225; nuevamente o eleg&#237; otro medio.</p>
+            <button class="btn-pago" onclick="cerrarRechazo()" style="width:100%;">Volver</button>
+        </div>
+    </div>
+</div>
+
+<div class="footer-bar" id="totalContainer">
+    <div class="metodo-selector">
+        <button class="metodo-btn" onclick="setMetodo('online')" id="btnOnline"><i class="fas fa-credit-card"></i> Online</button>
+        <button class="metodo-btn active" onclick="setMetodo('qr')" id="btnQR"><i class="fas fa-qrcode"></i> QR UTN</button>
+    </div>
+    <div class="footer-content">
+        <div class="total-text">
+            <div class="total-label">TOTAL</div>
+            <div class="pack-auto-note hidden" id="packAutoNote"></div>
+            <div class="subtotal-row hidden" id="subtotalRow">Subtotal: $<span id="subtotal">0,00</span></div>
+            <div class="descuento-row hidden" id="descuentoRow">Descuento: -$<span id="descuentoValor">0,00</span></div>
+            <div class="total-value">$<span id="total">0,00</span></div>
+        </div>
+        <button class="btn-pago" id="btnAccion" onclick="pagarSeleccion()">Generar QR</button>
+    </div>
+</div>
+
+<script>
+const sessionData = sessionStorage.getItem("persona");
+let Alumno = sessionData ? JSON.parse(sessionData) : null;
+const GAS_URL = "https://servidorusuarios.onrender.com";
+const BASE_BACKEND = "https://mercadopago-di7q.onrender.com";
+
+let miOrdenId = null;
+const socket = io(BASE_BACKEND);
+let clases = [];
+let metodoPago = 'qr';
+let modoPago = 'clases'; // 'clases' | 'pack' | 'admin'
+let isAdmin = false;
+let isPersonalizado = false;
+let horasCompraModalidad = 'individual';
+let horasCompraConfirmada = false;
+let cuponAplicado = null; // { codigo, correo, descuento } cuando hay un cupón validado y aplicado
+let pagoPackPendiente = null;
+
+const HORAS_PACK_EXAMEN = 20;
+const HORAS_PACK_MATERIA = 40;
+
+// Precio especial fijo: 40 clases individuales (80 hs), aunque no exista un pack armado para esa cantidad.
+const CLASES_PROMO_ESPECIAL = 40;
+const PRECIO_PROMO_ESPECIAL = 250000;
+const MODALIDAD_PROMO_ESPECIAL = 'individual';
+
+/** Monto con 2 decimales (evita basura de float al enviar al backend / MP). */
+function redondearPrecio(valor) {
+    const n = Number(valor);
+    if (!Number.isFinite(n)) return 0;
+    return Math.round(n * 100) / 100;
+}
+
+/**
+ * MP exige total_amount con ≤2 decimales. Si el backend suma precios en float,
+ * mezclas como 1.14 + 1 dan 2.139999… y MP responde invalid_total_amount.
+ * Sumamos en centavos; si hay más de una línea, enviamos un solo ítem con ese total
+ * (referencias / detalle siguen en su array; el QR cobra el total exacto).
+ */
+function itemsYTotalParaMercadoPago(lineas, descuentoInfo) {
+    if (!lineas.length) return { items: [], total_amount: 0 };
+    const cents = lineas.reduce((acc, L) => acc + Math.round(redondearPrecio(L.precio) * 100), 0);
+    const descuentoCents = descuentoInfo ? Math.round(redondearPrecio(descuentoInfo.monto) * 100) : 0;
+    const totalCents = Math.max(cents - descuentoCents, 0);
+    const total_amount = totalCents / 100;
+
+    if (lineas.length === 1 && !descuentoInfo) {
+        const L = lineas[0];
+        const item = { title: L.title, price: redondearPrecio(L.precio) };
+        if (L.codigo != null && L.codigo !== "") item.codigo = L.codigo;
+        if (L.packKey != null && L.packKey !== "") item.packKey = L.packKey;
+        return { items: [item], total_amount };
+    }
+
+    let title = lineas.map(L => L.title).join(" + ");
+    if (descuentoInfo) title += ` (Cup\u00f3n ${descuentoInfo.codigo})`;
+    return {
+        items: [{ title, price: total_amount }],
+        total_amount
+    };
+}
+
+/* ===================== Sistema de cupones ===================== */
+
+function normalizarCodigoCupon(codigo) {
+    return String(codigo || "").trim().toUpperCase();
+}
+
+const CUPONES_USADOS_KEY = "cuponesUsados";
+
+/** Devuelve la lista de claves "correo|codigo" de cupones ya usados, guardada en localStorage. */
+function getCuponesUsados() {
+    try {
+        const raw = localStorage.getItem(CUPONES_USADOS_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function claveCupon(correo, codigo) {
+    return `${normalizarCorreo(correo)}|${normalizarCodigoCupon(codigo)}`;
+}
+
+/** true si ese cupón (correo + código) ya fue usado antes en este navegador. */
+function cuponYaUsado(correo, codigo) {
+    return getCuponesUsados().includes(claveCupon(correo, codigo));
+}
+
+/** Marca un cupón como usado en localStorage para que no se pueda volver a aplicar. */
+function marcarCuponComoUsado(cupon) {
+    if (!cupon) return;
+    const usados = getCuponesUsados();
+    const clave = claveCupon(cupon.correo, cupon.codigo);
+    if (!usados.includes(clave)) {
+        usados.push(clave);
+        try {
+            localStorage.setItem(CUPONES_USADOS_KEY, JSON.stringify(usados));
+        } catch (e) {
+            console.error("No se pudo guardar el estado del cup\u00f3n usado:", e);
+        }
+    }
+}
+
+/** Busca un cupón que coincida con el correo del alumno logueado y el código ingresado. */
+function buscarCupon(correo, codigo) {
+    const lista = Array.isArray(window.CUPONES) ? window.CUPONES : [];
+    const correoKey = normalizarCorreo(correo);
+    const codigoKey = normalizarCodigoCupon(codigo);
+    if (!correoKey || !codigoKey) return null;
+    return lista.find(c => normalizarCorreo(c?.correo) === correoKey && normalizarCodigoCupon(c?.codigo) === codigoKey) || null;
+}
+
+/**
+ * Interpreta el string de descuento de un cupón.
+ * "%25" o "25%" -> 25% de descuento sobre el monto a pagar.
+ * "$25" o "25$" -> $25 de descuento fijo sobre el monto a pagar.
+ */
+function parseDescuentoCupon(descuentoStr) {
+    const s = String(descuentoStr || "").trim();
+    if (!s) return null;
+    const esPorcentaje = s.includes("%");
+    const esFijo = s.includes("$");
+    if (!esPorcentaje && !esFijo) return null;
+    const numMatch = s.match(/[\d.,]+/);
+    if (!numMatch) return null;
+    const valor = parseFloat(numMatch[0].replace(",", "."));
+    if (!Number.isFinite(valor) || valor <= 0) return null;
+    return { tipo: esPorcentaje ? "porcentaje" : "fijo", valor };
+}
+
+/** Calcula el monto de descuento (en $) que corresponde aplicar sobre un subtotal dado. */
+function calcularDescuentoCupon(subtotal, descuentoStr) {
+    const parsed = parseDescuentoCupon(descuentoStr);
+    if (!parsed || !subtotal || subtotal <= 0) return 0;
+    if (parsed.tipo === "porcentaje") {
+        const pct = Math.min(parsed.valor, 100);
+        return redondearPrecio(subtotal * (pct / 100));
+    }
+    return redondearPrecio(Math.min(parsed.valor, subtotal));
+}
+
+function textoDescuentoCupon(descuentoStr) {
+    const parsed = parseDescuentoCupon(descuentoStr);
+    if (!parsed) return "";
+    return parsed.tipo === "porcentaje" ? `${parsed.valor}% off` : `$${parsed.valor} off`;
+}
+
+function aplicarCupon() {
+    ocultarHintCupon();
+    if (!Alumno || !Alumno.correoElectronico) return;
+    const input = document.getElementById("cuponInput");
+    const codigo = input ? input.value : "";
+
+    if (!codigo || !codigo.trim()) {
+        Swal.fire({ icon: "warning", title: "Ingres\u00e1 un c\u00f3digo", text: "Escrib\u00ed el c\u00f3digo del cup\u00f3n antes de aplicar.", confirmButtonColor: "#f3a661" });
+        return;
+    }
+
+    const cupon = buscarCupon(Alumno.correoElectronico, codigo);
+    if (!cupon) {
+        Swal.fire({ icon: "error", title: "Cup\u00f3n inv\u00e1lido", text: "El c\u00f3digo ingresado no existe o no corresponde a tu cuenta.", confirmButtonColor: "#f3a661" });
+        return;
+    }
+
+    if (cuponYaUsado(cupon.correo, cupon.codigo)) {
+        Swal.fire({ icon: "info", title: "Cup\u00f3n ya utilizado", text: "Ya usaste este cup\u00f3n anteriormente. No se puede volver a aplicar.", confirmButtonColor: "#f3a661" });
+        return;
+    }
+
+    const parsed = parseDescuentoCupon(cupon.descuento);
+    if (!parsed) {
+        Swal.fire({ icon: "error", title: "Cup\u00f3n inv\u00e1lido", text: "Este cup\u00f3n tiene un descuento mal configurado.", confirmButtonColor: "#f3a661" });
+        return;
+    }
+
+    cuponAplicado = { codigo: cupon.codigo, correo: cupon.correo, descuento: cupon.descuento };
+    mostrarCuponAplicadoUI();
+    actualizarTotal();
+}
+
+function mostrarCuponAplicadoUI() {
+    const row = document.getElementById("cuponRow");
+    const info = document.getElementById("cuponAplicadoInfo");
+    const codigoSpan = document.getElementById("cuponAplicadoCodigo");
+    const detalleSpan = document.getElementById("cuponAplicadoDetalle");
+    if (row) row.classList.add("hidden");
+    if (info) info.classList.remove("hidden");
+    if (codigoSpan) codigoSpan.textContent = cuponAplicado ? cuponAplicado.codigo : "";
+    if (detalleSpan) detalleSpan.textContent = cuponAplicado ? textoDescuentoCupon(cuponAplicado.descuento) : "";
+}
+
+function mostrarHintCupon() {
+    const wrap = document.getElementById("btnCuponInfoWrap");
+    if (!wrap) return;
+    wrap.classList.add("is-hint-visible");
+    clearTimeout(window._cuponHintTimeout);
+    window._cuponHintTimeout = setTimeout(ocultarHintCupon, 8000);
+}
+
+function ocultarHintCupon() {
+    const wrap = document.getElementById("btnCuponInfoWrap");
+    if (wrap) wrap.classList.remove("is-hint-visible");
+    clearTimeout(window._cuponHintTimeout);
+}
+
+function abrirInfoCupon() {
+    ocultarHintCupon();
+    const modal = document.getElementById("modalInfoCupon");
+    if (modal) modal.style.display = "flex";
+}
+
+function cerrarInfoCupon() {
+    const modal = document.getElementById("modalInfoCupon");
+    if (modal) modal.style.display = "none";
+}
+
+function quitarCupon() {
+    cuponAplicado = null;
+    const input = document.getElementById("cuponInput");
+    if (input) input.value = "";
+    const row = document.getElementById("cuponRow");
+    const info = document.getElementById("cuponAplicadoInfo");
+    if (row) row.classList.remove("hidden");
+    if (info) info.classList.add("hidden");
+    actualizarTotal();
+}
+
+/** Aplica el descuento del cupón (si hay uno) sobre un subtotal y actualiza el desglose en el footer. */
+function aplicarDescuentoYRenderizarTotal(subtotal, mostrarFooter) {
+    const descuento = cuponAplicado ? calcularDescuentoCupon(subtotal, cuponAplicado.descuento) : 0;
+    const totalFinal = redondearPrecio(Math.max(subtotal - descuento, 0));
+
+    const subtotalRow = document.getElementById("subtotalRow");
+    const descuentoRow = document.getElementById("descuentoRow");
+    if (cuponAplicado && descuento > 0) {
+        if (subtotalRow) subtotalRow.classList.remove("hidden");
+        if (descuentoRow) descuentoRow.classList.remove("hidden");
+        const subtotalEl = document.getElementById("subtotal");
+        const descuentoEl = document.getElementById("descuentoValor");
+        if (subtotalEl) subtotalEl.textContent = subtotal.toFixed(2).replace(".", ",");
+        if (descuentoEl) descuentoEl.textContent = descuento.toFixed(2).replace(".", ",");
+    } else {
+        if (subtotalRow) subtotalRow.classList.add("hidden");
+        if (descuentoRow) descuentoRow.classList.add("hidden");
+    }
+
+    const totalEl = document.getElementById("total");
+    if (totalEl) totalEl.textContent = totalFinal.toFixed(2).replace(".", ",");
+    return totalFinal;
+}
+
+function setProcessingUI(isProcessing) {
+    const loaderPago = document.getElementById("loaderPago");
+    const footer = document.getElementById("totalContainer");
+    if (isProcessing) {
+        document.body.classList.add("is-busy");
+        if (loaderPago) loaderPago.classList.remove("hidden");
+        if (footer) footer.classList.add("footer-hidden-processing");
+    } else {
+        if (loaderPago) loaderPago.classList.add("hidden");
+        document.body.classList.remove("is-busy");
+        if (footer) footer.classList.remove("footer-hidden-processing");
+    }
+}
+
+function generarNuevaOrdenId() {
+    miOrdenId = "ordenQR_" + Date.now();
+    if (socket.connected) socket.emit("join", miOrdenId);
+}
+
+socket.on("connect", () => {
+    if (!miOrdenId) generarNuevaOrdenId();
+    else socket.emit("join", miOrdenId);
+});
+
+socket.on("pago_aprobado", () => {
+    if (cuponAplicado) marcarCuponComoUsado(cuponAplicado);
+    cerrarQR();
+    setProcessingUI(false);
+    document.getElementById("modalExito").style.display = "flex";
+});
+
+socket.on("pago_rechazado", () => {
+    cerrarQR();
+    setProcessingUI(false);
+    document.getElementById("modalRechazo").style.display = "flex";
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+    if (!Alumno || !Alumno.correoElectronico){
+        document.querySelector(".container").style.display = "none";
+        
+        document.querySelector("header").style.display = "none";
+        Swal.fire({
+                title: '¡Bienvenido!',
+                text: 'Para reservar un horario primero debes ingresar a tu cuenta.',
+                icon: 'info',
+                background: '#151517',
+                color: '#fff',
+                showCancelButton: true,
+                confirmButtonText: '<i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión',
+                cancelButtonText: '<i class="fa-solid fa-user-plus"></i> Registrarse',
+                confirmButtonColor: '#f3a661',
+                cancelButtonColor: '#222',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                customClass: {
+                    confirmButton: 'btn-footer',
+                    cancelButton: 'btn-footer'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Horarios/Login/Login.html';
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    // Cambia esta ruta si tu archivo de registro se llama distinto
+                    window.location.href = '/Horarios/Registro/Registro.html'; 
+                }
+            });
+            
+            
+    }else{
+        generarNuevaOrdenId();
+
+        // Modo admin SOLO si Alumno.admin === true al cargar
+        isAdmin = Alumno?.admin === true;
+        actualizarUIAdmin();
+
+        // Si el correo está configurado en personalizado.js, saltear UI normal
+        if (tryIniciarPagoPersonalizado()) {
+            return;
+        }
+
+        cargarClases();
+        initCompraHoras();
+        mostrarHintCupon();
+    }
+});
+
+function normalizarCorreo(correo) {
+    return String(correo || "").trim().toLowerCase();
+}
+
+function getConfigPersonalizadoPorCorreo(correo) {
+    const list = Array.isArray(window.PERSONALIZADO_PAGOS) ? window.PERSONALIZADO_PAGOS : [];
+    const key = normalizarCorreo(correo);
+    return list.find(p => normalizarCorreo(p?.correo) === key) || null;
+}
+
+function tryIniciarPagoPersonalizado() {
+    const correo = Alumno?.correoElectronico;
+    const cfg = getConfigPersonalizadoPorCorreo(correo);
+    if (!cfg) return false;
+
+    const precio = Number(cfg.precio);
+    if (!Number.isFinite(precio) || precio <= 0) return false;
+
+    isPersonalizado = true;
+
+    // Ocultar toda la UI normal (incluye botones/modos/listas/footer)
+    const container = document.querySelector(".container");
+    const header = document.querySelector("header");
+    if (container) container.style.display = "none";
+    if (header) header.style.display = "none";
+
+    // Asegurar que no quede nada "seleccionado" y que no se vea el footer
+    document.getElementById("totalContainer").style.display = "none";
+
+    // Generar QR directo
+    generarQRPersonalizado({
+        precio,
+        titulo: cfg.titulo || "Pago personalizado",
+        referencia: cfg.referencia || `personalizado_${normalizarCorreo(correo)}`
+    });
+    return true;
+}
+
+async function generarQRPersonalizado({ precio, titulo, referencia }) {
+    // Siempre usar una orden nueva
+    generarNuevaOrdenId();
+
+    const { items, total_amount } = itemsYTotalParaMercadoPago([{ title: titulo, precio: Number(precio) }]);
+    const payload = {
+        items,
+        total_amount,
+        email: Alumno?.correoElectronico,
+        referencias: [referencia],
+        external_reference: miOrdenId,
+        tipoPago: "personalizado"
+    };
+
+    try {
+        setProcessingUI(true);
+        const res = await fetch(`${BASE_BACKEND}/crear-qr`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.qr_data) {
+            setProcessingUI(false);
+            document.getElementById("qrImgContainer").innerHTML =
+                `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
+
+            // En personalizado no va la nota de packs, va el título grande en su lugar.
+            const note = document.getElementById("qrPackNote");
+            if (note) note.classList.add("hidden");
+            const qrContainer = document.querySelector("#modalQR .qr-container");
+            if (qrContainer) qrContainer.classList.remove("has-pack-note");
+            const tituloEl = document.getElementById("qrPersonalizadoTitulo");
+            if (tituloEl) {
+                tituloEl.textContent = titulo;
+                tituloEl.classList.remove("hidden");
+            }
+
+            // En personalizado, mostramos directo el QR (sin la pantalla informativa).
+            document.getElementById("modalInfoQR").style.display = "none";
+            document.getElementById("modalQR").style.display = "flex";
+        } else {
+            throw new Error(data.error || "Error al generar QR");
+        }
+    } catch (e) {
+        setProcessingUI(false);
+        alert("Error: " + e.message);
+    }
+}
+
+window.addEventListener("keydown", (e) => {
+    if (e.altKey && (e.key === "s" || e.key === "S")) {
+        e.preventDefault();
+        // Atajo Alt+S: habilita admin solo para esta carga de p&#225;gina
+        isAdmin = true;
+        actualizarUIAdmin();
+        setModoPago("admin");
+    }
+});
+
+function actualizarUIAdmin() {
+    const btnAdminModo = document.getElementById("btnModoAdmin");
+    const btnOnline = document.getElementById("btnOnline");
+    const btnQR = document.getElementById("btnQR");
+    const metodoSelector = document.querySelector(".metodo-selector");
+    const btnAccion = document.getElementById("btnAccion");
+
+    if (isAdmin) {
+        // Modo Admin ACTIVO: mostrar pesta&#241;a Admin, selector de m&#233;todo y opci&#243;n Online
+        if (btnAdminModo) btnAdminModo.style.display = "";
+        if (metodoSelector) metodoSelector.style.display = "";
+        if (btnOnline) btnOnline.style.display = "";
+        if (btnQR) btnQR.style.display = "";
+    } else {
+        // Usuario normal: ocultar todo lo de admin
+        if (btnAdminModo) btnAdminModo.style.display = "none";
+        if (metodoSelector) metodoSelector.style.display = "none";
+        metodoPago = "qr";
+        if (btnOnline) {
+            btnOnline.style.display = "none";
+            btnOnline.classList.remove("active");
+        }
+        if (btnQR) {
+            btnQR.style.display = "";
+            btnQR.classList.add("active");
+        }
+        if (btnAccion) btnAccion.textContent = "Generar QR";
+    }
+}
+
+function setModoPago(modo) {
+    modoPago = modo;
+    document.getElementById('btnModoClases').classList.toggle('active', modo === 'clases');
+    document.getElementById('btnModoPack').classList.toggle('active', modo === 'pack');
+    const btnAdmin = document.getElementById('btnModoAdmin');
+    if (btnAdmin) btnAdmin.classList.toggle('active', modo === 'admin');
+    document.getElementById("productos").style.display = modo === 'clases' ? 'block' : 'none';
+    document.getElementById("packsContainer").style.display = modo === 'pack' ? 'block' : 'none';
+    document.getElementById("adminContainer").style.display = modo === 'admin' ? 'block' : 'none';
+    document.getElementById("cuponCard")?.classList.toggle('is-visible', modo === 'clases' || modo === 'pack');
+    document.getElementById("totalContainer").style.display = 'none';
+    document.querySelectorAll('.productos input[type="checkbox"]').forEach(cb => cb.checked = false);
+    if (modo === 'pack') {
+        resetCompraHoras();
+    }
+    syncSelectAllClasesState();
+    actualizarUIAdmin();
+}
+
+function setMetodo(metodo) {
+    // Si no es admin, siempre forzar QR
+    if (metodo === 'online' && !isAdmin) {
+        metodo = 'qr';
+    }
+    metodoPago = metodo;
+    document.getElementById('btnOnline').classList.toggle('active', metodo === 'online');
+    document.getElementById('btnQR').classList.toggle('active', metodo === 'qr');
+    document.getElementById('btnAccion').textContent = metodo === 'online' ? 'Pagar Online' : 'Generar QR';
+}
+
+function initCompraHoras() {
+    resetCompraHoras();
+}
+
+function resetCompraHoras() {
+    horasCompraConfirmada = false;
+    const input = document.getElementById('horasCompraInput');
+    if (input) input.value = '1';
+    setHorasModalidad('individual', { skipReset: true });
+    actualizarVistaCompraHoras();
+}
+
+function invalidarCompraHoras() {
+    if (!horasCompraConfirmada) return;
+    horasCompraConfirmada = false;
+    document.getElementById("totalContainer").style.display = "none";
+}
+
+function onHorasCompraInput() {
+    invalidarCompraHoras();
+    actualizarVistaCompraHoras();
+}
+
+function getLineaPack(tipoPack) {
+    if (typeof PRECIOS === 'undefined') return null;
+    const modalidad = horasCompraModalidad;
+    const precios = PRECIOS[modalidad];
+    const esMateria = tipoPack === 'materia';
+    const precio = redondearPrecio(esMateria ? precios?.packMateria : precios?.packExamen);
+    if (!precio || precio <= 0) return null;
+    const key = `${modalidad}_${esMateria ? 'packMateria' : 'packExamen'}`;
+    const modLabel = modalidad === 'grupal' ? 'Grupal' : 'Individual';
+    const titulo = esMateria ? `Pack Materia (${modLabel})` : `Pack Examen (${modLabel})`;
+    return { title: titulo, precio, packKey: key, referencia: key };
+}
+
+async function pagarPackDirecto(tipoPack) {
+    const linea = getLineaPack(tipoPack);
+    if (!linea) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'No hay precio cargado para este pack.', confirmButtonColor: '#f3a661' });
+        return;
+    }
+    iniciarPagoPack({
+        lineas: [linea],
+        referencias: [linea.referencia],
+        tipoPago: 'pack'
+    });
+}
+
+function setHorasModalidad(modalidad, opts = {}) {
+    horasCompraModalidad = modalidad;
+    document.querySelectorAll('.horas-mod-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.mod === modalidad);
+    });
+    if (!opts.skipReset) invalidarCompraHoras();
+    actualizarVistaCompraHoras();
+}
+
+function actualizarVistaCompraHoras() {
+    const clases = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+    const horas = clases * 2; // cada clase dura 2 horas
+    const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
+    renderizarDesgloseHoras(calc);
+    if (modoPago === 'pack') {
+        const footer = document.getElementById("totalContainer");
+        if (horasCompraConfirmada && calc) {
+            footer.style.display = "block";
+            aplicarDescuentoYRenderizarTotal(calc.total, true);
+        } else {
+            footer.style.display = "none";
+        }
+    }
+}
+
+function aceptarCompraHoras() {
+    const clases = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+    const horas = clases * 2; // cada clase dura 2 horas
+    const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
+    if (!calc) {
+        const msg = horasCompraModalidad === 'grupal' && horas < 2
+            ? 'Grupal: mínimo 1 clase.'
+            : 'Ingresá una cantidad válida de clases.';
+        Swal.fire({ icon: 'warning', title: 'Revisá la compra', text: msg, confirmButtonColor: '#f3a661' });
+        return;
+    }
+    horasCompraConfirmada = true;
+    actualizarVistaCompraHoras();
+    document.getElementById("totalContainer")?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function calcularPrecioHorasSueltas(horas, modalidad) {
+    const h = Math.floor(Number(horas));
+    if (h < 1) return 0;
+    if (modalidad === 'individual') {
+        const rate = h === 1 ? PRECIOS.individual.precioPorHora1 : PRECIOS.individual.precioPorHora2;
+        return redondearPrecio(rate * h);
+    }
+    return redondearPrecio(PRECIOS.grupal.precioPorHora * h);
+}
+
+function calcularPrecioCompraHoras(horas, modalidad) {
+    if (typeof PRECIOS === 'undefined') return null;
+    const h = Math.floor(Number(horas));
+    if (h < 1) return null;
+    if (modalidad === 'grupal' && h < 2) return null;
+
+    // Precio especial fijo: 40 clases individuales (80 hs) = $250.000,
+    // aunque no exista un pack armado para esa cantidad exacta.
+    if (modalidad === MODALIDAD_PROMO_ESPECIAL && h === CLASES_PROMO_ESPECIAL * 2) {
+        const precio = PRECIO_PROMO_ESPECIAL;
+        const ref = { tipo: 'horas_sueltas', modalidad, cantidad: h };
+        return {
+            total: precio,
+            lineas: [{ title: `${CLASES_PROMO_ESPECIAL} clases Individual (precio especial)`, precio, horasSueltas: ref }],
+            referencias: [ref],
+            desglose: [{ label: `${CLASES_PROMO_ESPECIAL} clases (precio especial)`, precio }],
+            horas: h,
+            modalidad,
+            tienePacks: false,
+            tieneSueltas: true
+        };
+    }
+
+    const precios = PRECIOS[modalidad];
+    if (!precios?.packExamen || !precios?.packMateria) return null;
+
+    let resto = h;
+    const nMateria = Math.floor(resto / HORAS_PACK_MATERIA);
+    resto %= HORAS_PACK_MATERIA;
+    const nExamen = Math.floor(resto / HORAS_PACK_EXAMEN);
+    resto %= HORAS_PACK_EXAMEN;
+    const sueltas = resto;
+
+    const lineas = [];
+    const referencias = [];
+    const desglose = [];
+
+    if (nMateria > 0) {
+        const precio = redondearPrecio(precios.packMateria * nMateria);
+        const key = `${modalidad}_packMateria`;
+        const titulo = `Pack Materia (${modalidad === 'grupal' ? 'Grupal' : 'Individual'})${nMateria > 1 ? ` x${nMateria}` : ''}`;
+        lineas.push({ title: titulo, precio, packKey: key });
+        desglose.push({ label: `${nMateria} pack${nMateria > 1 ? 's' : ''} materia (40 hs c/u)`, precio });
+        for (let i = 0; i < nMateria; i++) referencias.push(key);
+    }
+    if (nExamen > 0) {
+        const precio = redondearPrecio(precios.packExamen * nExamen);
+        const key = `${modalidad}_packExamen`;
+        const titulo = `Pack Examen (${modalidad === 'grupal' ? 'Grupal' : 'Individual'})${nExamen > 1 ? ` x${nExamen}` : ''}`;
+        lineas.push({ title: titulo, precio, packKey: key });
+        desglose.push({ label: `${nExamen} pack${nExamen > 1 ? 's' : ''} examen (20 hs c/u)`, precio });
+        for (let i = 0; i < nExamen; i++) referencias.push(key);
+    }
+    if (sueltas > 0) {
+        const precio = calcularPrecioHorasSueltas(sueltas, modalidad);
+        const ref = { tipo: 'horas_sueltas', modalidad, cantidad: sueltas };
+        const modLabel = modalidad === 'grupal' ? 'Grupal' : 'Individual';
+        lineas.push({ title: `${sueltas} hs ${modLabel} (por separado)`, precio, horasSueltas: ref });
+        desglose.push({ label: `${sueltas} hs por separado`, precio });
+        referencias.push(ref);
+    }
+
+    const total = redondearPrecio(lineas.reduce((acc, L) => acc + L.precio, 0));
+    return {
+        total,
+        lineas,
+        referencias,
+        desglose,
+        horas: h,
+        modalidad,
+        tienePacks: nMateria + nExamen > 0,
+        tieneSueltas: sueltas > 0
+    };
+}
+
+function getTipoPagoCompraHoras(calc) {
+    if (!calc.tieneSueltas) return 'pack';
+    if (!calc.tienePacks) return 'horas';
+    return 'pack_horas';
+}
+
+function renderizarDesgloseHoras(calc) {
+    const box = document.getElementById('horasDesglose');
+    const aviso = document.getElementById('horasCompraAviso');
+    if (!box) return;
+
+    if (!calc) {
+        box.innerHTML = '<span style="color: var(--text-muted);">Ingresá una cantidad válida de clases.</span>';
+        if (aviso) aviso.textContent = horasCompraModalidad === 'grupal' ? 'Grupal: mínimo 1 clase.' : '';
+        return;
+    }
+
+    const lineasHtml = calc.desglose.map(d =>
+        `<div class="desglose-linea"><span>${d.label}</span><strong>$${d.precio.toFixed(2)}</strong></div>`
+    ).join('');
+    box.innerHTML = `${lineasHtml}<div class="desglose-total"><span>Total (${calc.horas / 2} clases / ${calc.horas} hs)</span><span>$${calc.total.toFixed(2)}</span></div>`;
+    if (aviso) aviso.textContent = horasCompraModalidad === 'grupal' ? 'Grupal: mínimo 1 clase. Precio por persona.' : '';
+}
+
+async function cargarClases() {
+    try {
+        document.body.classList.add("is-busy");
+        document.getElementById("loaderClases").classList.remove("hidden");
+        const res = await fetch(`${GAS_URL}?funcion=devolverDeuda&correo=${encodeURIComponent(Alumno.correoElectronico)}`);
+        const data = await res.json();
+        clases = data.map((c, index) => {
+            const base = parseFloat(c.precio) || 0;
+            const recargo = (Alumno.condicionPago === 'Libre') ? 0 : (parseFloat(c.recargo) || 0);
+            return {
+                id: index,
+                fecha: c.fecha,
+                modalidad: c.modalidad,
+                modo: c.modo || '',
+                horas: c.horas,
+                precioBase: redondearPrecio(base),
+                precioEditado: redondearPrecio(base + recargo),
+                codigo: c.codigo,
+                cancelada: c.cancelada === true || String(c.cancelada).toLowerCase() === 'true'
+            };
+        });
+        mostrarClases();
+    } catch(e) { alert("Error al cargar deuda."); }
+    finally {
+        document.getElementById("loaderClases").classList.add("hidden");
+        document.body.classList.remove("is-busy");
+    }
+}
+
+function mostrarClases() {
+    const contenedor = document.getElementById("productos");
+    contenedor.innerHTML = clases.length === 0
+        ? `<div style="text-align:center; padding:50px;"><h2>\u00a1Est\u00e1s al d\u00eda!</h2></div>`
+        : "";
+    clases.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+        if (c.cancelada) card.classList.add("is-cancelada");
+        const tieneRecargo = c.precioBase && c.precioEditado && c.precioEditado !== c.precioBase;
+        const precioBaseHtml = tieneRecargo
+            ? `<span style="font-size:0.8rem; color:var(--text-muted); text-decoration:line-through; display:block;">$${c.precioBase.toFixed(2)}</span>`
+            : "";
+        const cancelBadgeHtml = c.cancelada
+            ? `<div class="cancel-badge"><i class="fas fa-info-circle"></i> Clase cancelada</div>`
+            : "";
+        card.innerHTML = `<div class="info">
+                <strong>${c.modalidad}</strong>
+                <span class="details"><i class="fas fa-calendar-alt"></i> ${c.fecha} | <i class="fas fa-clock"></i> ${c.horas} hs</span>
+                ${cancelBadgeHtml}
+            </div>
+            <div class="controles">
+                ${precioBaseHtml}
+                <span class="price-display">$${c.precioEditado.toFixed(2)}</span>
+                <label class="pago-checkbox">
+                    <input type="checkbox" value="${c.id}" onchange="actualizarTotal()"> Pagar
+                </label>
+            </div>`;
+        contenedor.appendChild(card);
+    });
+
+    // Inicializar estado del "Seleccionar todas" después de renderizar
+    syncSelectAllClasesState();
+}
+
+function getClaseCheckboxes() {
+    return Array.from(document.querySelectorAll('.productos input[type="checkbox"]'));
+}
+
+function syncSelectAllClasesState() {
+    const wrap = document.getElementById("selectAllClasesWrap");
+    const selectAll = document.getElementById("selectAllClases");
+    if (!wrap || !selectAll) return;
+
+    const isVisible = modoPago === 'clases' && clases.length > 0;
+    wrap.classList.toggle("is-visible", isVisible);
+    if (!isVisible) {
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+        selectAll.disabled = true;
+        return;
+    }
+
+    const cbs = getClaseCheckboxes();
+    if (cbs.length === 0) {
+        selectAll.checked = false;
+        selectAll.indeterminate = false;
+        selectAll.disabled = true;
+        return;
+    }
+    selectAll.disabled = false;
+
+    const checkedCount = cbs.filter(cb => cb.checked).length;
+    selectAll.checked = checkedCount === cbs.length;
+    selectAll.indeterminate = checkedCount > 0 && checkedCount < cbs.length;
+}
+
+function toggleSelectAllClases() {
+    const selectAll = document.getElementById("selectAllClases");
+    if (!selectAll) return;
+    const shouldCheck = !!selectAll.checked;
+    getClaseCheckboxes().forEach(cb => { cb.checked = shouldCheck; });
+    actualizarTotal();
+}
+
+/**
+ * Pack automático al pagar clases: dentro de lo que el alumno selecciona, cada 20 hs
+ * de una misma modalidad (individual / grupal) se cobran como Pack Examen en vez de
+ * clase por clase. Lo que no completa 20 hs (el excedente) se cobra al precio normal
+ * de cada clase. Ej.: 26 hs individuales = 1 Pack Examen Individual + 6 hs sueltas.
+ *
+ * Las clases cubiertas por el pack igual viajan como `referencias` (sus códigos), así
+ * que el servidor las marca como pagadas; no se suma saldo de horas extra.
+ * Se toman de las más viejas a las más nuevas y se excluyen las canceladas (son un
+ * cargo por cancelación, no horas dictadas).
+ */
+function modoDeClase(c) {
+    const m = String(c.modo || c.modalidad || '').toLowerCase();
+    return m.includes('grupal') ? 'grupal' : 'individual';
+}
+
+function calcularPagoClases(seleccionadas) {
+    const cubiertas = new Set();
+    const packs = []; // { modo, cantidad, precio, clases }
+
+    ['individual', 'grupal'].forEach(modo => {
+        const precioPack = redondearPrecio(typeof PRECIOS !== 'undefined' ? PRECIOS[modo]?.packExamen : 0);
+        if (!precioPack || precioPack <= 0) return;
+
+        let pool = seleccionadas
+            .filter(c => !c.cancelada && modoDeClase(c) === modo && Number(c.horas) > 0)
+            .sort((a, b) => a.id - b.id);
+        const grupos = [];
+
+        while (true) {
+            let acum = 0;
+            const grupo = [];
+            for (const c of pool) {
+                if (acum + Number(c.horas) <= HORAS_PACK_EXAMEN) {
+                    grupo.push(c);
+                    acum += Number(c.horas);
+                    if (acum === HORAS_PACK_EXAMEN) break;
+                }
+            }
+            if (acum !== HORAS_PACK_EXAMEN) break; // no se llega justo a 20 hs: no hay más packs
+            grupo.forEach(c => cubiertas.add(c.id));
+            grupos.push(grupo);
+            pool = pool.filter(c => !cubiertas.has(c.id));
+        }
+
+        if (grupos.length) {
+            packs.push({
+                modo,
+                cantidad: grupos.length,
+                precio: redondearPrecio(precioPack * grupos.length),
+                clases: grupos.flat()
+            });
+        }
+    });
+
+    const lineas = [];
+    const referencias = [];
+
+    packs.forEach(p => {
+        const modLabel = p.modo === 'grupal' ? 'Grupal' : 'Individual';
+        lineas.push({
+            title: `Pack Examen (${modLabel})${p.cantidad > 1 ? ` x${p.cantidad}` : ''} - ${p.cantidad * HORAS_PACK_EXAMEN} hs`,
+            precio: p.precio
+        });
+        p.clases.forEach(c => referencias.push(c.codigo));
+    });
+
+    const excedentes = seleccionadas.filter(c => !cubiertas.has(c.id));
+    excedentes.forEach(c => {
+        lineas.push({ title: c.modalidad, precio: c.precioEditado, codigo: c.codigo });
+        referencias.push(c.codigo);
+    });
+
+    const total = redondearPrecio(lineas.reduce((acc, L) => acc + redondearPrecio(L.precio), 0));
+    return {
+        lineas,
+        referencias,
+        packs,
+        excedentes,
+        horasExcedentes: excedentes.reduce((acc, c) => acc + (Number(c.horas) || 0), 0),
+        total
+    };
+}
+
+function renderizarNotaPackAutomatico(calc) {
+    const el = document.getElementById("packAutoNote");
+    if (!el) return;
+    if (!calc || !calc.packs.length) {
+        el.classList.add("hidden");
+        el.innerHTML = "";
+        return;
+    }
+    const partes = calc.packs.map(p =>
+        `<strong>Pack Examen ${p.modo === 'grupal' ? 'Grupal' : 'Individual'}${p.cantidad > 1 ? ` x${p.cantidad}` : ''}</strong> (${p.cantidad * HORAS_PACK_EXAMEN} hs)`
+    );
+    if (calc.excedentes.length) partes.push(`${calc.horasExcedentes} hs por separado`);
+    el.innerHTML = partes.join(" + ");
+    el.classList.remove("hidden");
+}
+
+function actualizarTotal() {
+    if (modoPago === 'pack') {
+        renderizarNotaPackAutomatico(null);
+        actualizarVistaCompraHoras();
+        return;
+    }
+    let total = 0, sel = false;
+    let calcClases = null;
+    if (modoPago === 'clases') {
+        const seleccionadas = Array.from(document.querySelectorAll('.productos input[type="checkbox"]:checked')).map(cb => clases[cb.value]);
+        sel = seleccionadas.length > 0;
+        if (sel) {
+            calcClases = calcularPagoClases(seleccionadas);
+            total = calcClases.total;
+        }
+        syncSelectAllClasesState();
+    }
+    renderizarNotaPackAutomatico(calcClases);
+    document.getElementById("totalContainer").style.display = sel ? "block" : "none";
+    aplicarDescuentoYRenderizarTotal(total, sel);
+}
+
+async function ejecutarPago({ lineas, referencias, tipoPago, desglose = null }) {
+    if (!lineas?.length) return;
+
+    generarNuevaOrdenId();
+
+    const subtotal = redondearPrecio(lineas.reduce((acc, L) => acc + redondearPrecio(L.precio), 0));
+    const descuentoMonto = cuponAplicado ? calcularDescuentoCupon(subtotal, cuponAplicado.descuento) : 0;
+    const descuentoInfo = (cuponAplicado && descuentoMonto > 0)
+        ? { codigo: cuponAplicado.codigo, monto: descuentoMonto }
+        : null;
+
+    const { items, total_amount } = itemsYTotalParaMercadoPago(lineas, descuentoInfo);
+    const payload = {
+        items,
+        total_amount,
+        email: Alumno.correoElectronico,
+        referencias,
+        external_reference: miOrdenId,
+        tipoPago,
+        desglose,
+        cupon: descuentoInfo ? { codigo: descuentoInfo.codigo, descuento: cuponAplicado.descuento, montoDescontado: descuentoMonto } : null
+    };
+
+    console.log("[FRONTEND] Datos enviados al servidor:", JSON.stringify(payload, null, 2));
+
+    try {
+        setProcessingUI(true);
+        const res = await fetch(`${BASE_BACKEND}/${metodoPago === 'online' ? 'crear-preferencia' : 'crear-qr'}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        if (metodoPago === 'online' && data.init_point) {
+            if (cuponAplicado) marcarCuponComoUsado(cuponAplicado);
+            window.location.href = data.init_point;
+        } else if (metodoPago === 'qr' && data.qr_data) {
+            setProcessingUI(false);
+            document.getElementById("qrImgContainer").innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
+            const note = document.getElementById("qrPackNote");
+            const esPack = tipoPago === "pack" || tipoPago === "pack_horas";
+            if (note) note.classList.toggle("hidden", !esPack);
+            const qrContainer = document.querySelector("#modalQR .qr-container");
+            if (qrContainer) qrContainer.classList.toggle("has-pack-note", esPack);
+            const tituloPersonalizadoEl = document.getElementById("qrPersonalizadoTitulo");
+            if (tituloPersonalizadoEl) tituloPersonalizadoEl.classList.add("hidden");
+            if (!localStorage.getItem("qrInfoShown")) {
+                document.getElementById("modalInfoQR").style.display = "flex";
+            } else {
+                document.getElementById("modalQR").style.display = "flex";
+            }
+        } else {
+            throw new Error(data.error || "Error al procesar el pago");
+        }
+    } catch (e) {
+        alert("Error: " + e.message);
+        setProcessingUI(false);
+    }
+}
+
+function iniciarPagoPack({ lineas, referencias, tipoPago }) {
+    if (clases.length > 0) {
+        pagoPackPendiente = { lineas, referencias, tipoPago };
+        mostrarModalPackClases();
+        return;
+    }
+    ejecutarPago({ lineas, referencias, tipoPago });
+}
+
+function mostrarModalPackClases() {
+    const lista = document.getElementById('packClasesList');
+    const modal = document.getElementById('modalPackClases');
+    if (!lista || !modal || !pagoPackPendiente) return;
+
+    const packEl = document.getElementById('packSeleccionado');
+    if (packEl) {
+        const pack = pagoPackPendiente.lineas.reduce((texto, linea) => texto ? `${texto} + ${linea.title}` : linea.title, '');
+        const precio = pagoPackPendiente.lineas.reduce((total, linea) => total + linea.precio, 0);
+        packEl.innerHTML = `<span>${pack}</span><strong>$${precio.toFixed(2)}</strong>`;
+    }
+    lista.innerHTML = '';
+    clases.forEach(clase => {
+        const label = document.createElement('label');
+        label.className = 'pack-clase-option';
+        label.innerHTML = `<input type="checkbox" value="${clase.id}" checked onchange="actualizarResumenPackClases()">
+            <span class="pack-clase-info"><strong>${clase.modalidad} - $${clase.precioEditado.toFixed(2)}</strong><span>${clase.fecha} | ${clase.horas} hs</span></span>`;
+        lista.appendChild(label);
+    });
+    actualizarResumenPackClases();
+    modal.style.display = 'flex';
+}
+
+function getClasesPackSeleccionadas() {
+    return Array.from(document.querySelectorAll('#packClasesList input[type="checkbox"]:checked'))
+        .map(checkbox => clases[checkbox.value])
+        .filter(Boolean);
+}
+
+function actualizarResumenPackClases() {
+    if (!pagoPackPendiente) return;
+    const clasesSeleccionadas = getClasesPackSeleccionadas();
+    const subtotal = redondearPrecio(
+        pagoPackPendiente.lineas.reduce((total, linea) => total + linea.precio, 0) +
+        clasesSeleccionadas.reduce((total, clase) => total + clase.precioEditado, 0)
+    );
+    const total = redondearPrecio(Math.max(subtotal - calcularDescuentoCupon(subtotal, cuponAplicado?.descuento), 0));
+    const totalEl = document.getElementById('packClasesTotal');
+    if (totalEl) totalEl.textContent = total.toFixed(2).replace('.', ',');
+}
+
+function confirmarPackConClases() {
+    if (!pagoPackPendiente) return;
+    const clasesSeleccionadas = getClasesPackSeleccionadas();
+    const lineas = [...pagoPackPendiente.lineas];
+    const referencias = [...pagoPackPendiente.referencias];
+
+    // Guardamos por separado las referencias del pack y las de las clases sueltas
+    // ANTES de mezclarlas, para poder avisarle a GAS de cada cosa por separado.
+    const referenciasPack = [...pagoPackPendiente.referencias];
+    const tipoPagoPack = pagoPackPendiente.tipoPago;
+    const referenciasClases = [];
+
+    clasesSeleccionadas.forEach(clase => {
+        lineas.push({ title: clase.modalidad, precio: clase.precioEditado, codigo: clase.codigo });
+        referencias.push(clase.codigo);
+        referenciasClases.push(clase.codigo);
+    });
+
+    const tipoPago = clasesSeleccionadas.length ? 'pack_horas' : pagoPackPendiente.tipoPago;
+
+    // Si en la misma orden hay clases sueltas Y pack, mandamos el desglose para que
+    // el backend, al aprobarse el pago, avise primero de las clases y luego del pack.
+    const desglose = (referenciasClases.length && referenciasPack.length)
+        ? {
+            clases: { referencias: referenciasClases, tipoPago: 'clase' },
+            pack: { referencias: referenciasPack, tipoPago: tipoPagoPack }
+        }
+        : null;
+
+    const modal = document.getElementById('modalPackClases');
+    if (modal) modal.style.display = 'none';
+    pagoPackPendiente = null;
+    ejecutarPago({ lineas, referencias, tipoPago, desglose });
+}
+
+async function pagarSeleccion() {
+    const lineas = [];
+    let referencias = [];
+    let tipoPago = 'clase';
+
+    if (modoPago === 'clases') {
+        const seleccionadas = Array.from(document.querySelectorAll('.productos input[type="checkbox"]:checked')).map(cb => clases[cb.value]);
+        if (!seleccionadas.length) return;
+        const calc = calcularPagoClases(seleccionadas);
+        lineas.push(...calc.lineas);
+        referencias = calc.referencias;
+    } else if (modoPago === 'pack') {
+        if (!horasCompraConfirmada) return;
+        const cantidadClases = parseInt(document.getElementById('horasCompraInput')?.value || '0', 10);
+        const horas = cantidadClases * 2; // cada clase dura 2 horas
+        const calc = calcularPrecioCompraHoras(horas, horasCompraModalidad);
+        if (!calc) return;
+        lineas.push(...calc.lineas);
+        referencias = calc.referencias;
+        tipoPago = getTipoPagoCompraHoras(calc);
+    }
+
+    if (modoPago === 'pack') {
+        iniciarPagoPack({ lineas, referencias, tipoPago });
+        return;
+    }
+    await ejecutarPago({ lineas, referencias, tipoPago });
+}
+
+async function generarQRAdmin() {
+    if (!isAdmin) return;
+    const input = document.getElementById("adminPrecio");
+    const precio = parseFloat(input?.value || "");
+    if (!precio || precio <= 0) return alert("Ingres&#225; un monto v&#225;lido.");
+
+    // Para QR admin, tambi&#233;n usar siempre una orden nueva
+    generarNuevaOrdenId();
+
+    const { items, total_amount } = itemsYTotalParaMercadoPago([{ title: "Pago manual (Admin)", precio }]);
+    const payload = {
+        items,
+        total_amount,
+        email: Alumno?.correoElectronico,
+        referencias: ["admin_manual"],
+        external_reference: miOrdenId,
+        tipoPago: "admin"
+    };
+
+    try {
+        setProcessingUI(true);
+        const res = await fetch(`${BASE_BACKEND}/crear-qr`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.qr_data) {
+            setProcessingUI(false);
+            document.getElementById("qrImgContainer").innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(data.qr_data)}&size=220x220&margin=10" alt="QR de pago">`;
+            const tituloPersonalizadoEl = document.getElementById("qrPersonalizadoTitulo");
+            if (tituloPersonalizadoEl) tituloPersonalizadoEl.classList.add("hidden");
+            if (!localStorage.getItem("qrInfoShown")) {
+                document.getElementById("modalInfoQR").style.display = "flex";
+            } else {
+                document.getElementById("modalQR").style.display = "flex";
+            }
+        } else {
+            throw new Error(data.error || "Error al generar QR");
+        }
+    } catch (e) {
+        alert("Error: " + e.message);
+        setProcessingUI(false);
+    }
+}
+
+function cerrarQR() {
+        document.getElementById("modalQR").style.display = "none";
+        document.getElementById("loaderPago").classList.add("hidden");
+        const note = document.getElementById("qrPackNote");
+        if (note) note.classList.add("hidden");
+        const qrContainer = document.querySelector("#modalQR .qr-container");
+        if (qrContainer) qrContainer.classList.remove("has-pack-note");
+        const tituloPersonalizadoEl = document.getElementById("qrPersonalizadoTitulo");
+        if (tituloPersonalizadoEl) tituloPersonalizadoEl.classList.add("hidden");
+    }
+function cerrarRechazo() {
+        document.getElementById("modalRechazo").style.display = "none";
+        setProcessingUI(false);
+    }
+function aceptarInfoQR() {
+        localStorage.setItem("qrInfoShown", "true");
+        const infoModal = document.getElementById("modalInfoQR");
+        if (infoModal) infoModal.style.display = "none";
+        const qrModal = document.getElementById("modalQR");
+        if (qrModal) qrModal.style.display = "flex";
+    }
+function toggleTheme() { document.body.classList.toggle('light-mode'); }
+</script>
+</body>
+</html>
