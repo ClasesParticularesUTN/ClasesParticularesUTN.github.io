@@ -1514,6 +1514,32 @@ function modoDeClase(c) {
     return m.includes('grupal') ? 'grupal' : 'individual';
 }
 
+/**
+ * Busca una combinación de clases cuyas horas sumen EXACTAMENTE `objetivo`, dando
+ * prioridad a las más viejas (el pool ya viene ordenado de más vieja a más nueva).
+ * Hace backtracking porque ir tomando en orden no alcanza: con 3,3,2,5,5,4,3 hs el
+ * orden simple llega a 18 y se traba, pero 3+3+2+5+4+3 = 20 existe.
+ */
+function buscarClasesQueSuman(pool, objetivo) {
+    const fallos = new Set();
+    function buscar(i, resto) {
+        if (resto === 0) return [];
+        if (i >= pool.length || resto < 0) return null;
+        const clave = i + '|' + resto;
+        if (fallos.has(clave)) return null;
+        const h = Number(pool[i].horas);
+        if (h > 0 && h <= resto) {
+            const r = buscar(i + 1, resto - h);
+            if (r) return [pool[i], ...r];
+        }
+        const sinEsta = buscar(i + 1, resto);
+        if (sinEsta) return sinEsta;
+        fallos.add(clave);
+        return null;
+    }
+    return buscar(0, objetivo);
+}
+
 function calcularPagoClases(seleccionadas) {
     const cubiertas = new Set();
     const packs = []; // { modo, cantidad, precio, clases }
@@ -1528,16 +1554,8 @@ function calcularPagoClases(seleccionadas) {
         const grupos = [];
 
         while (true) {
-            let acum = 0;
-            const grupo = [];
-            for (const c of pool) {
-                if (acum + Number(c.horas) <= HORAS_PACK_EXAMEN) {
-                    grupo.push(c);
-                    acum += Number(c.horas);
-                    if (acum === HORAS_PACK_EXAMEN) break;
-                }
-            }
-            if (acum !== HORAS_PACK_EXAMEN) break; // no se llega justo a 20 hs: no hay más packs
+            const grupo = buscarClasesQueSuman(pool, HORAS_PACK_EXAMEN);
+            if (!grupo) break; // ninguna combinación suma justo 20 hs: no hay más packs
             grupo.forEach(c => cubiertas.add(c.id));
             grupos.push(grupo);
             pool = pool.filter(c => !cubiertas.has(c.id));
