@@ -1402,7 +1402,9 @@ async function cargarClases() {
         const data = await res.json();
         clases = data.map((c, index) => {
             const base = parseFloat(c.precio) || 0;
-            const recargo = (Alumno.condicionPago === 'Libre') ? 0 : (parseFloat(c.recargo) || 0);
+            // El servidor ya decide el recargo (incluida la regla "Libre": sin
+            // mora general, pero SÍ con interés personalizado), así que se usa tal cual.
+            const recargo = parseFloat(c.recargo) || 0;
             return {
                 id: index,
                 fecha: c.fecha,
@@ -1411,6 +1413,8 @@ async function cargarClases() {
                 horas: c.horas,
                 precioBase: redondearPrecio(base),
                 precioEditado: redondearPrecio(base + recargo),
+                recargo: redondearPrecio(recargo),
+                interesPersonalizado: c.interesPersonalizado === true,
                 codigo: c.codigo,
                 cancelada: c.cancelada === true || String(c.cancelada).toLowerCase() === 'true'
             };
@@ -1562,11 +1566,16 @@ function calcularPagoClases(seleccionadas) {
         }
 
         if (grupos.length) {
+            const clasesPack = grupos.flat();
+            // El pack va a precio fijo, pero el interés personalizado de sus
+            // clases no se pierde: se suma al precio del pack.
+            const interesPack = clasesPack.reduce(
+                (acc, c) => acc + (c.interesPersonalizado ? (Number(c.recargo) || 0) : 0), 0);
             packs.push({
                 modo,
                 cantidad: grupos.length,
-                precio: redondearPrecio(precioPack * grupos.length),
-                clases: grupos.flat()
+                precio: redondearPrecio(precioPack * grupos.length + interesPack),
+                clases: clasesPack
             });
         }
     });
