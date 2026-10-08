@@ -2604,20 +2604,15 @@
                 }
                 const textoFechas = fechasFormateadas.map(f => `    • ${f}`).join('\n');
 
-                const horasAFavorRecordatorio = Number(Alumno?.horasAFavor) || 0;
-                const usoHorasAFavor = horasAFavorRecordatorio > 0 && selectedSlots.length <= horasAFavorRecordatorio;
-                const incluirLinkPago = !usoHorasAFavor;
-
                 const precioFinalRecordatorio = (esTP || esConsulta) ? formatearMontoDeuda(montoAMostrar) : null;
                 const modalidadRecordatorio = (esTP || esConsulta) ? modalidadTexto : null;
                 const etiquetaPrecioRecordatorio = (esTP || esConsulta) ? leyendaPrecio : null;
 
-                const bloquePago = `----------------------------------------
-💳 *LINK DE PAGO:*
-clasesparticularesutn.com.ar/pagos
-
-¿No sabes como pagar?
-clasesparticularesutn.com.ar/tutoriales
+                const bloqueChat = `----------------------------------------
+💬 Recuerda que podés escribir en el chat:
+• */clases* para saber tus clases a futuro
+• */deuda* para consultar tu saldo
+• */pagar* para abonar tus clases
 ----------------------------------------`;
                 const bloqueModalidad = modalidadRecordatorio ? `👥 *Modalidad:* ${modalidadRecordatorio}` : null;
                 const bloquePrecioFinal = precioFinalRecordatorio ? `💰 *${etiquetaPrecioRecordatorio}:* ${precioFinalRecordatorio}` : null;
@@ -2633,7 +2628,7 @@ ${textoFechas}`
                 ];
                 if (bloqueModalidad) partes.push(bloqueModalidad);
                 if (bloquePrecioFinal) partes.push(bloquePrecioFinal);
-                if (incluirLinkPago) partes.push(bloquePago);
+                partes.push(bloqueChat);
                 partes.push('¡Nos vemos en clase! 💻🚀');
                 const mensajeEstructurado = partes.join('\n\n');
 
@@ -2681,7 +2676,7 @@ ${textoFechas}`
                     document.getElementById('loader-text').textContent = 'Confirmando reserva...';
 
                     if (recordatorio === 'Whatsapp') {
-                        void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { incluirLinkPago, precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
+                        void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
                     }
 
                     const resAsignar = await fetchDirectoConReintento(URLUsuarios, {
@@ -2856,14 +2851,13 @@ ${textoFechas}`
         }
     }
 
-    const { incluirLinkPago = true, precioFinal = null, modalidad = null, etiquetaPrecio = 'Precio final' } = opciones;
+    const { precioFinal = null, modalidad = null, etiquetaPrecio = 'Precio final' } = opciones;
 
-    const bloquePago = `----------------------------------------
-💳 *LINK DE PAGO:*
-clasesparticularesutn.com.ar/pagos
-
-¿No sabes como pagar?
-clasesparticularesutn.com.ar/tutoriales
+    const bloqueChat = `----------------------------------------
+💬 Recuerda que podés escribir en el chat:
+• */clases* para saber tus clases a futuro
+• */deuda* para consultar tu saldo
+• */pagar* para abonar tus clases
 ----------------------------------------`;
 
     const bloqueModalidad = modalidad ? `👥 *Modalidad:* ${modalidad}` : null;
@@ -2882,7 +2876,7 @@ ${fechaTexto}`
 
     if (bloqueModalidad) partes.push(bloqueModalidad);
     if (bloquePrecioFinal) partes.push(bloquePrecioFinal);
-    if (incluirLinkPago) partes.push(bloquePago);
+    partes.push(bloqueChat);
     partes.push('¡Nos vemos en clase! 💻🚀');
 
     const mensajeEstructurado = partes.join('\n\n');
