@@ -628,7 +628,7 @@
     <div class="pack-clases-container">
         <div class="modal-inner">
             <h2>Sumar clases pendientes</h2>
-            <p>El pack se puede pagar junto con estas clases. Destildá las que quieras dejar para después.</p>
+            <p id="packClasesSubtitulo">El pack se puede pagar junto con estas clases. Destildá las que quieras dejar para después.</p>
             <div id="packSeleccionado" class="pack-seleccionado"></div>
             <div id="packClasesList" class="pack-clases-list"></div>
             <div class="pack-clases-total">
@@ -1667,6 +1667,7 @@ async function ejecutarPago({ lineas, referencias, tipoPago, desglose = null }) 
         external_reference: miOrdenId,
         tipoPago,
         desglose,
+        condicionPago: Alumno?.condicionPago || null,
         cupon: descuentoInfo ? { codigo: descuentoInfo.codigo, descuento: cuponAplicado.descuento, montoDescontado: descuentoMonto } : null
     };
 
@@ -1708,6 +1709,16 @@ async function ejecutarPago({ lineas, referencias, tipoPago, desglose = null }) 
     }
 }
 
+/** true si el alumno tiene condición "PackConDeuda": al comprar un pack solo paga el interés de sus clases pendientes. */
+function esPackConDeuda() {
+    return String(Alumno?.condicionPago || '').trim().toLowerCase() === 'packcondeuda';
+}
+
+/** Monto que aporta una clase pendiente al comprarse junto con un pack. */
+function montoClaseConPack(clase) {
+    return esPackConDeuda() ? redondearPrecio(clase.recargo) : clase.precioEditado;
+}
+
 function iniciarPagoPack({ lineas, referencias, tipoPago }) {
     if (clases.length > 0) {
         pagoPackPendiente = { lineas, referencias, tipoPago };
@@ -1722,6 +1733,13 @@ function mostrarModalPackClases() {
     const modal = document.getElementById('modalPackClases');
     if (!lista || !modal || !pagoPackPendiente) return;
 
+    const subtituloEl = document.getElementById('packClasesSubtitulo');
+    if (subtituloEl) {
+        subtituloEl.textContent = esPackConDeuda()
+            ? 'Con tu condición, al sumar estas clases solo se cobran sus intereses. Destildá las que quieras dejar para después.'
+            : 'El pack se puede pagar junto con estas clases. Destildá las que quieras dejar para después.';
+    }
+
     const packEl = document.getElementById('packSeleccionado');
     if (packEl) {
         const pack = pagoPackPendiente.lineas.reduce((texto, linea) => texto ? `${texto} + ${linea.title}` : linea.title, '');
@@ -1732,8 +1750,12 @@ function mostrarModalPackClases() {
     clases.forEach(clase => {
         const label = document.createElement('label');
         label.className = 'pack-clase-option';
+        const monto = montoClaseConPack(clase);
+        const textoMonto = esPackConDeuda()
+            ? `Solo interés: $${monto.toFixed(2)}`
+            : `$${monto.toFixed(2)}`;
         label.innerHTML = `<input type="checkbox" value="${clase.id}" checked onchange="actualizarResumenPackClases()">
-            <span class="pack-clase-info"><strong>${clase.modalidad} - $${clase.precioEditado.toFixed(2)}</strong><span>${clase.fecha} | ${clase.horas} hs</span></span>`;
+            <span class="pack-clase-info"><strong>${clase.modalidad} - ${textoMonto}</strong><span>${clase.fecha} | ${clase.horas} hs</span></span>`;
         lista.appendChild(label);
     });
     actualizarResumenPackClases();
@@ -1751,7 +1773,7 @@ function actualizarResumenPackClases() {
     const clasesSeleccionadas = getClasesPackSeleccionadas();
     const subtotal = redondearPrecio(
         pagoPackPendiente.lineas.reduce((total, linea) => total + linea.precio, 0) +
-        clasesSeleccionadas.reduce((total, clase) => total + clase.precioEditado, 0)
+        clasesSeleccionadas.reduce((total, clase) => total + montoClaseConPack(clase), 0)
     );
     const total = redondearPrecio(Math.max(subtotal - calcularDescuentoCupon(subtotal, cuponAplicado?.descuento), 0));
     const totalEl = document.getElementById('packClasesTotal');
@@ -1771,7 +1793,16 @@ function confirmarPackConClases() {
     const referenciasClases = [];
 
     clasesSeleccionadas.forEach(clase => {
-        lineas.push({ title: clase.modalidad, precio: clase.precioEditado, codigo: clase.codigo });
+        const monto = montoClaseConPack(clase);
+        // PackConDeuda: solo se cobra el interés. Si no hay interés, no se agrega línea,
+        // pero la clase igual viaja en referencias para que el servidor la marque como pagada.
+        if (monto > 0) {
+            lineas.push({
+                title: esPackConDeuda() ? `Interés ${clase.modalidad}` : clase.modalidad,
+                precio: monto,
+                codigo: clase.codigo
+            });
+        }
         referencias.push(clase.codigo);
         referenciasClases.push(clase.codigo);
     });
