@@ -2608,17 +2608,17 @@
                 const modalidadRecordatorio = (esTP || esConsulta) ? modalidadTexto : null;
                 const etiquetaPrecioRecordatorio = (esTP || esConsulta) ? leyendaPrecio : null;
 
-                const bloqueChat = `----------------------------------------------------
+                const bloqueChat = `~----------------------------------------------------~
 💬 Recuerda que podés escribir en el chat:
 • */clases* para saber tus clases a futuro
 • */deuda* para consultar tu saldo
 • */pagar* para abonar tus clases
-----------------------------------------------------`;
+~----------------------------------------------------~`;
                 const bloqueModalidad = modalidadRecordatorio ? `👥 *Modalidad:* ${modalidadRecordatorio}` : null;
                 const bloquePrecioFinal = precioFinalRecordatorio ? `💰 *${etiquetaPrecioRecordatorio}:* ${precioFinalRecordatorio}` : null;
                 const partes = [
                     `🎓 *Clases Particulares UTN*
-----------------------------------------------------
+~----------------------------------------------------~
 ¡Hola *${Alumno.nombre}*! 👋
 
 Confirmamos la reserva de tu clase particular.
@@ -2854,19 +2854,19 @@ ${textoFechas}`
 
     const { precioFinal = null, modalidad = null, etiquetaPrecio = 'Precio final', incluirComandos = false } = opciones;
 
-    const bloqueChat = `----------------------------------------
+    const bloqueChat = `~----------------------------------------------------~
 💬 Recuerda que podés escribir en el chat:
 • */reservas* para saber tus clases a futuro
 • */deuda* para consultar cuandto dinero debes
 • */pagar* para abonar tus clases
-----------------------------------------`;
+~----------------------------------------------------~`;
 
     const bloqueModalidad = modalidad ? `👥 *Modalidad:* ${modalidad}` : null;
     const bloquePrecioFinal = precioFinal ? `💰 *${etiquetaPrecio}:* ${precioFinal}` : null;
 
     const partes = [
         `🎓 *Clases Particulares UTN*
-----------------------------------------
+~----------------------------------------~
 ¡Hola *${nombre}*! 👋
 
 Confirmamos tu reserva para la clase particular:
