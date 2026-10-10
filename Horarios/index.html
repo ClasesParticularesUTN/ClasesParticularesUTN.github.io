@@ -1027,7 +1027,7 @@
         const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases reservadas. Si quiere reservar mas clases, podes pagar las que ya reservaste y luego sacar mas turnos o comprar horas por adelantado';
 
         const NUMERO_WHATSAPP_PROFESOR = "5493425271005";
-        const MENSAJE_WHATSAPP_PRIMERA_CLASE = "Hola, estoy interesado en tomar mi primera clase";
+        const MENSAJE_WHATSAPP_PRIMERA_CLASE = "Hola, me interesa reservar mi primera clase y quisiera coordinar los detalles.";
 
         // Si el alumno tiene condicionPago == '0' (aún no habló con el profesor / primera clase),
         // se le muestra un aviso y se lo invita a contactarlo por WhatsApp antes de reservar.
@@ -2621,15 +2621,16 @@
 ----------------------------------------------------
 ¡Hola *${Alumno.nombre}*! 👋
 
-Confirmamos tu reserva para la clase particular:
+Confirmamos la reserva de tu clase particular.
 
-📅 *Fecha:*
+📅 *Horario reservado:*
 ${textoFechas}`
                 ];
                 if (bloqueModalidad) partes.push(bloqueModalidad);
                 if (bloquePrecioFinal) partes.push(bloquePrecioFinal);
-                partes.push(bloqueChat);
-                partes.push('¡Nos vemos en clase! 💻🚀');
+                partes.push(`📌 *Importante:* si necesitás modificar o cancelar la reserva, podés avisarnos por este chat.`);
+                if (Alumno.primerReserva === false) partes.push(bloqueChat);
+                partes.push('¡Te esperamos en clase! 💻🚀');
                 const mensajeEstructurado = partes.join('\n\n');
 
                 const payload = {
@@ -2676,7 +2677,7 @@ ${textoFechas}`
                     document.getElementById('loader-text').textContent = 'Confirmando reserva...';
 
                     if (recordatorio === 'Whatsapp') {
-                        void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
+                        void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio, incluirComandos: Alumno.primerReserva === false });
                     }
 
                     const resAsignar = await fetchDirectoConReintento(URLUsuarios, {
@@ -2851,7 +2852,7 @@ ${textoFechas}`
         }
     }
 
-    const { precioFinal = null, modalidad = null, etiquetaPrecio = 'Precio final' } = opciones;
+    const { precioFinal = null, modalidad = null, etiquetaPrecio = 'Precio final', incluirComandos = false } = opciones;
 
     const bloqueChat = `----------------------------------------
 💬 Recuerda que podés escribir en el chat:
@@ -2876,7 +2877,7 @@ ${fechaTexto}`
 
     if (bloqueModalidad) partes.push(bloqueModalidad);
     if (bloquePrecioFinal) partes.push(bloquePrecioFinal);
-    partes.push(bloqueChat);
+    if (incluirComandos) partes.push(bloqueChat);
     partes.push('¡Nos vemos en clase! 💻🚀');
 
     const mensajeEstructurado = partes.join('\n\n');
