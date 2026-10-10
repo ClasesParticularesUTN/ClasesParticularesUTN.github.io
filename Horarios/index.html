@@ -2610,9 +2610,11 @@
 
                 const bloqueChat = `~----------------------------------------------------~
 💬 Recuerda que podés escribir en el chat:
-• */clases* para saber tus clases a futuro
-• */deuda* para consultar tu saldo
-• */pagar* para abonar tus clases
+
+    • */reservas*  – Tus próximas clases reservadas
+    • */deuda* - Tu deuda pendiente y horas a favor
+    • */pagar* – Link de pago y tutoriales
+
 ~----------------------------------------------------~`;
                 const bloqueModalidad = modalidadRecordatorio ? `👥 *Modalidad:* ${modalidadRecordatorio}` : null;
                 const bloquePrecioFinal = precioFinalRecordatorio ? `💰 *${etiquetaPrecioRecordatorio}:* ${precioFinalRecordatorio}` : null;
@@ -2856,11 +2858,12 @@ ${textoFechas}`
 
     const bloqueChat = `~----------------------------------------------------~
 💬 Recuerda que podés escribir en el chat:
-• */reservas* para saber tus clases a futuro
-• */deuda* para consultar cuandto dinero debes
-• */pagar* para abonar tus clases
-~----------------------------------------------------~`;
 
+    • */reservas*  – Tus próximas clases reservadas
+    • */deuda* - Tu deuda pendiente y horas a favor
+    • */pagar* – Link de pago y tutoriales
+
+~----------------------------------------------------~`;
     const bloqueModalidad = modalidad ? `👥 *Modalidad:* ${modalidad}` : null;
     const bloquePrecioFinal = precioFinal ? `💰 *${etiquetaPrecio}:* ${precioFinal}` : null;
 
