@@ -734,7 +734,54 @@
     <script>
         const URLUsuarios = "https://script.google.com/macros/s/AKfycbxdU8UEBWmBuNYAZbrGNPxPiMBlckCYI2NxITttfWCPbTnHbT5fCuG1zcYYEQ4U-74E/exec";
 
-        function notificarVisitaPrecios() {
+        // Servidor propio (Node/Express en Render). Se usa para saber quién visita la
+        // página según su IP (GET ?funcion=quienSoy). El envío del correo sigue
+        // yendo por Apps Script (URLUsuarios), porque el servidor no manda mails.
+        const URLServidor = "https://servidorusuarios.onrender.com";
+
+        function escaparHtml(texto) {
+            return String(texto).replace(/[&<>'"]/g, caracter => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                "'": '&#39;',
+                '"': '&quot;'
+            }[caracter]));
+        }
+
+        // Le pregunta al servidor quién es el visitante.
+        //   - IP asociada a un alumno      → "Nombre Apellido"
+        //   - IP compartida por varios     → "Podría ser: A / B (IP x.x.x.x)"
+        //   - IP sin alumno asociado       → la IP
+        //   - el servidor no respondió     → null
+        // Ojo: en Render el servidor puede tardar en "despertar", por eso el
+        // tiempo de espera es generoso.
+        async function obtenerVisitanteDesdeServidor() {
+            const controlador = new AbortController();
+            const temporizador = setTimeout(() => controlador.abort(), 25000);
+
+            try {
+                const respuesta = await fetch(`${URLServidor}/?funcion=quienSoy`, { signal: controlador.signal });
+                if (!respuesta.ok) throw new Error(`El servidor respondió ${respuesta.status}`);
+                const datos = await respuesta.json();
+
+                if (datos.nombre) {
+                    return `${datos.nombre} ${datos.apellido || ''}`.trim();
+                }
+                if (Array.isArray(datos.usuarios) && datos.usuarios.length > 0) {
+                    const nombres = datos.usuarios.map(u => `${u.nombre} ${u.apellido || ''}`.trim()).join(' / ');
+                    return `Podría ser: ${nombres} (IP ${datos.ip})`;
+                }
+                return datos.ip || null;
+            } catch (error) {
+                console.error('No se pudo consultar quién visita la página:', error);
+                return null;
+            } finally {
+                clearTimeout(temporizador);
+            }
+        }
+
+        async function notificarVisitaPrecios() {
             let persona;
 
             try {
@@ -745,16 +792,23 @@
 
             if (persona?.admin === true) return;
 
-            const nombre = persona?.nombre || localStorage.getItem('Nombre') || 'Desconocido';
-            const apellido = persona?.apellido || localStorage.getItem('Apellido') || 'Desconocido';
-            const nombreCompleto = `${nombre} ${apellido}`;
-            const nombreSeguro = nombreCompleto.replace(/[&<>'"]/g, caracter => ({
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                "'": '&#39;',
-                '"': '&quot;'
-            }[caracter]));
+            // Mismo criterio que usa el resto de la página para saber si hay sesión.
+            const estabaLogueado = !!persona;
+
+            let visitante = await obtenerVisitanteDesdeServidor();
+
+            // Si el servidor no respondió, no perdemos el aviso: usamos lo que haya
+            // en el navegador (como hacía antes) o "Desconocido".
+            if (!visitante) {
+                const nombre = persona?.nombre || localStorage.getItem('Nombre');
+                const apellido = persona?.apellido || localStorage.getItem('Apellido');
+                visitante = nombre || apellido
+                    ? `${nombre || ''} ${apellido || ''}`.trim() + ' (el servidor no respondió)'
+                    : 'Desconocido (el servidor no respondió)';
+            }
+
+            const visitanteSeguro = escaparHtml(visitante);
+            const sesionTexto = estabaLogueado ? 'Sí' : 'No';
 
             fetch(URLUsuarios, {
                 method: 'POST',
@@ -770,7 +824,10 @@
                             </div>
                             <p style="margin: 0 0 18px; font-size: 16px; line-height: 1.6;">Alguien entró a ver los precios.</p>
                             <div style="padding: 14px 16px; background: #fff7ed; border-left: 4px solid #f3a661; border-radius: 6px; font-size: 16px;">
-                                <strong>Visitante:</strong> ${nombreSeguro}
+                                <strong>Visitante:</strong> ${visitanteSeguro}
+                            </div>
+                            <div style="margin-top: 12px; padding: 14px 16px; background: #fff7ed; border-left: 4px solid #f3a661; border-radius: 6px; font-size: 16px;">
+                                <strong>Sesión iniciada:</strong> ${sesionTexto}
                             </div>
                         </div>
                     `
