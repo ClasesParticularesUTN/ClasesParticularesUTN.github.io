@@ -27,4 +27,5 @@ window.CUPONES = [
     // { correo: "alumno@ejemplo.com",      codigo: "BIENVENIDO10", descuento: "%10" },
     // { correo: "otro.alumno@ejemplo.com", codigo: "DESCUENTO5",   descuento: "$5"  },
     { correo: "suaffine@gmail.com", codigo: "DESCUENTO10", descuento: "%10" },
+    { correo: "juanma.2000@hotmail.com", codigo: "DESCUENTO-x2h", descuento: "$8000" },
 ];
