@@ -394,7 +394,7 @@ function enviarRecordatorioReserva(nombre, telefono, fechas, mensaje) {
     );
 
     UrlFetchApp.fetch(
-      "https://servidorparawhatsapp.onrender.com/api/send-message",
+      "https://servidorwhatsappnuevo.onrender.com/api/send-message",
       opciones
     );
 
