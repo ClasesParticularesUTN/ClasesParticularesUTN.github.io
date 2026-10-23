@@ -171,6 +171,7 @@
         }
     </style>
     <script src="/JS/clear-storage-shortcut.js"></script>
+    <script src="/JS/ai-chat.js" defer></script>
 </head>
 <body>
 
@@ -480,8 +481,7 @@ Tu registro fue completado con éxito. Ya podés ingresar al sistema y ver que h
         body: JSON.stringify({ to: `+${numeroCelular}`, message: mensaje })
     })
     .then(response => {
-        if (response.ok) console.log("[WhatsApp] Bienvenida enviada con éxito.");
-        else console.warn("[WhatsApp] Error al enviar bienvenida. Código:", response.status);
+        if (!response.ok) console.warn("[WhatsApp] Error al enviar bienvenida. Código:", response.status);
     })
     .catch(error => console.error("[WhatsApp] Error de red al enviar bienvenida:", error));
 }
@@ -492,7 +492,6 @@ function enviar(datos) {
     document.querySelector(".loader").style.display = "block";
     document.querySelector("form").style.opacity = "0.3";
 
-    console.log("Datos a enviar al registrar el usuario:", datos);
 
     fetch(URLUsuarios, {
         method: 'POST',
@@ -635,7 +634,6 @@ function validarFormulario() {
         document.getElementById("input_26").value = "Cursando";
         document.getElementById("input_27").value = "Estoy preparando parciales y necesito reforzar los temas prácticos.";
 
-        console.log("Formulario completado.");
     }
 
     document.addEventListener("keydown", function (e) {

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirigiendo a la carpeta compartida</title>
+  <script>
+    const destinoPorDefecto = "https://drive.google.com/drive/folders/1vF2sgXp3dpjPqcP3JsPXt_OrJlaBZneh?usp=sharing";
+    const redireccionesPorCorreo = [
+      {
+        correo: "valedasilvacatela.vdc@gmail.com",
+        link: "https://google.com.ar"
+      }
+    ];
+
+    let destino = destinoPorDefecto;
+
+    try {
+      const persona = JSON.parse(localStorage.getItem("persona") || "null");
+      const correo = typeof persona?.correoElectronico === "string"
+        ? persona.correoElectronico.trim().toLowerCase()
+        : "";
+      const redireccion = redireccionesPorCorreo.find(
+        (item) => item.correo.trim().toLowerCase() === correo
+      );
+
+      if (redireccion) destino = redireccion.link;
+    } catch (error) {
+      console.error("No se pudo leer la persona guardada; se usará el destino predeterminado.", error);
+    }
+
+    window.location.replace(destino);
+  </script>
+    <script src="/JS/ai-chat.js" defer></script>
+</head>
+<body>
+  <p>Si no se abre automáticamente, <a href="https://drive.google.com/drive/folders/1vF2sgXp3dpjPqcP3JsPXt_OrJlaBZneh?usp=sharing">abrí la carpeta compartida</a>.</p>
+</body>
+</html>

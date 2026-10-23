@@ -480,6 +480,7 @@
         @media (max-width: 480px) { .pack-clases-actions { flex-direction: column-reverse; } }
     </style>
     <script src="/JS/clear-storage-shortcut.js"></script>
+    <script src="/JS/ai-chat.js" defer></script>
 </head>
 <body>
 
@@ -1671,7 +1672,6 @@ async function ejecutarPago({ lineas, referencias, tipoPago, desglose = null }) 
         cupon: descuentoInfo ? { codigo: descuentoInfo.codigo, descuento: cuponAplicado.descuento, montoDescontado: descuentoMonto } : null
     };
 
-    console.log("[FRONTEND] Datos enviados al servidor:", JSON.stringify(payload, null, 2));
 
     try {
         setProcessingUI(true);

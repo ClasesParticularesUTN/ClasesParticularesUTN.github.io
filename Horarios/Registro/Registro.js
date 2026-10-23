@@ -87,7 +87,6 @@ function validarContrasenia(){
           });
           contardorContraseñas++;
           if(!contraseñas.includes(contraseña)) contraseñas.push(contraseña);
-          console.log(contraseñas);
           return false;
     }else if(contraseña.length < 4){
         Swal.fire({
@@ -184,7 +183,6 @@ function enviar(datos){
       }).then(function(response) {
           //conso(response);
 
-          console.log(datos);
           document.querySelector(".loader").style.display = "none";
           document.querySelector(".contenedorLouder").style.zIndex = "-100";
           document.querySelector("form").style.opacity = "1";

@@ -164,7 +164,6 @@ function enviar(urlFinal) {
       if (data.apellido) localStorage.setItem('Apellido', JSON.stringify(data.apellido));
       // Guardar último correo tras login exitoso
       try { if (correo && typeof correo === 'string') localStorage.setItem('UltimoCorreo', JSON.stringify(correo)); } catch(e) { console.warn('No se pudo guardar UltimoCorreo tras login:', e); }
-      console.log(urlFinal)
       // Redirigir: mantener la lógica original con excepciones conocidas
       if (document.referrer !== '' && document.referrer !== 'https://clasesparticularesutn.com.ar/Horarios/Registro/Registro.html' && document.referrer !== 'https://clasesparticularesutn.com.ar/Horarios/Login/RecuperarContraseña.html'  && document.referrer !== 'http://127.0.0.1:5501/Horarios/Login/Login2.html') {
         window.location.href = document.referrer;
@@ -205,6 +204,3 @@ document.addEventListener('keydown', function(event) {
     }
   }
 });
-
-console.log(document.referrer);
-

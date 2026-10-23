@@ -15,6 +15,7 @@ Sitio estático para **clases particulares de Ingeniería en Sistemas**: landing
 | **Materias** (`/Materias`) | Materias dictadas y planes de estudio |
 | **Precios** (`/Precios`) | Tarifas individuales, grupales y packs |
 | **Pagos** (`/Pagos`) | Flujo informativo / enlaces relacionados al pago |
+| **Compartir** (`/Compartir`) | Redirección a la carpeta compartida de Google Drive |
 | **Otros** | Foro, materiales de Algoritmos, Arquitectura, Paradigmas, ubicación, carga de comprobantes, área administrativa, etc. |
 
 ---

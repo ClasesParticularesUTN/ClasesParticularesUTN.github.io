@@ -743,6 +743,7 @@
         .cancel-tyc-pct.full { color: var(--danger); background: rgba(255, 95, 95, 0.12); }
     </style>
     <script src="/JS/clear-storage-shortcut.js"></script>
+    <script src="/JS/ai-chat.js" defer></script>
 </head>
 <body>
 
@@ -906,18 +907,15 @@
         document.addEventListener("DOMContentLoaded", () => {
         const urlPingWhatsApp = "https://servidorwhatsappnuevo.onrender.com/health";
 
-        console.log("Iniciando estímulo de fondo para despertar el backend...");
 
         fetchSilencioso(urlPingWhatsApp)
             .then(response => {
                 if (response.ok) {
-                    console.log("¡Backend despierto y respondiendo impecable! 🚀");
                 } else {
                     console.warn("El servidor respondió, pero con un estado inesperado:", response.status);
                 }
             })
             .catch(error => {
-                console.log("Estímulo enviado. El servidor se está levantando de su letargo...");
             });
 
     });
@@ -939,12 +937,6 @@
             'Paradigmas de Programacion',
             'Sintaxis y Semantica'
         ];
-
-        const __originalFetch = window.fetch.bind(window);
-        window.fetch = async function(...args) {
-            console.log('Enviando petición al servidor:', ...args);
-            return __originalFetch(...args);
-        };
 
         // ── Clave de la semana calendario actual (lunes a domingo) ──────────────
         function claveSemanaActual() {
@@ -1757,7 +1749,6 @@
             try {
                 const response = await fetchConReintentos(urlFinal);
                 const data = await response.json();
-                console.log("data: ", data);
                 if (data.sesion) {
                     Alumno = data;
                     localStorage.setItem('persona', JSON.stringify(data));
@@ -2019,7 +2010,6 @@
         }
 
         function calcularMensaje(data) {
-            console.log("data: ", data);
             let msg = "";
             if (data.faltantes) {
                 let textoFaltantes = Array.isArray(data.faltantes) ? data.faltantes.join(', ') : data.faltantes;
@@ -2252,7 +2242,6 @@
                         inputValue: (prefsReserva.emailsIntegrantes && prefsReserva.emailsIntegrantes[i - 1]) || '',
                         confirmButtonColor: '#f3a661',
                         inputValidator: (value) => {
-                            console.log(value);
                             if (!value) {
                                 return 'Debes ingresar un correo';
                             }
@@ -2660,8 +2649,6 @@ ${textoFechas}`
                         signal: AbortSignal.timeout(20000)
                     }, 'No se pudo verificar la disponibilidad del horario.', 20000);
                     const resultadoReserva = await responseReserva.json();
-                    console.log('[reservarHorario] Resultado del servidor:', resultadoReserva);
-
                     if (resultadoReserva && resultadoReserva.ok === false) {
                         document.getElementById('loader-overlay').style.display = 'none';
                         await Swal.fire({
@@ -2689,8 +2676,6 @@ ${textoFechas}`
                     }, 'El horario se tomó, pero no se pudo guardar la reserva en tu cuenta.', 20000);
                     let dataAsignar = {};
                     try { dataAsignar = await resAsignar.json(); } catch (e) { dataAsignar = {}; }
-                    console.log('[asignarHorario] Resultado del servidor:', resAsignar.status, dataAsignar);
-
                     document.getElementById('loader-overlay').style.display = 'none';
 
                     if (!resAsignar.ok || dataAsignar.ok === false || dataAsignar.exito === false) {
@@ -2885,8 +2870,6 @@ ${fechaTexto}`
 
     const mensajeEstructurado = partes.join('\n\n');
 
-    console.log(`[WhatsApp] Intentando enviar recordatorio directo al servidor de WhatsApp...`);
-
     void fetchSilencioso(URLWhatsapp, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-api-key': WHATSAPP_API_KEY },
@@ -2894,9 +2877,7 @@ ${fechaTexto}`
         signal: AbortSignal.timeout(15000)
     })
     .then(async response => {
-        if (response.ok) {
-            console.log("[WhatsApp] Mensaje enviado directo por el servidor de WhatsApp.");
-        } else {
+        if (!response.ok) {
             const texto = await response.text().catch(() => '');
             console.warn("[WhatsApp] El servidor de WhatsApp respondió con error. Código:", response.status, texto);
         }

@@ -314,4 +314,3 @@ if (Nombre && Apellido) {
  * EJEMPLO
  * ============================================
  */
-console.log("Precio final:", PRECIOS.individual.expres1h);

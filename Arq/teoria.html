@@ -47,6 +47,7 @@
     }
   </style>
   <script src="/JS/clear-storage-shortcut.js"></script>
+    <script src="/JS/ai-chat.js" defer></script>
 </head>
 <body>
   <header>
@@ -112,7 +113,6 @@ A = 1010, F = 1111
     (function activar(){
     if(sessionStorage.getItem('persona') !== null){
         let Aux = JSON.parse(sessionStorage.getItem('persona'));
-        console.log("probando validacion", Aux)
         if(Aux.correoElectronico == "valedasilvacatela.vdc@gmail.com"){
             let contenedores = document.querySelectorAll("*");
             contenedores.forEach((elem)=>{
