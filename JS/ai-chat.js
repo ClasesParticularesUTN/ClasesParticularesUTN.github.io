@@ -1,9 +1,8 @@
 (() => {
     if (document.getElementById('ai-chat-open')) return;
 
-    const GROQ_API_KEY = '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';
     const GROQ_MODEL = 'openai/gpt-oss-120b';
-    const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+    const GROQ_API_URL = 'https://groq-proxy.valedasilvacatela-vdsc.workers.dev';
     const EMAIL_NOTIFICATION_URL = 'https://script.google.com/macros/s/AKfycbxdU8UEBWmBuNYAZbrGNPxPiMBlckCYI2NxITttfWCPbTnHbT5fCuG1zcYYEQ4U-74E/exec';
     const AI_CONTEXT_URL = '/informacion.txt';
     const HISTORY_STORAGE_KEY = 'clasesParticularesAiChatHistory';
@@ -661,7 +660,12 @@
         } catch (error) {
             console.warn('No se pudo guardar el historial de actividad de esta sesión.', error);
         }
-        console.info('[Actividad de sesión]', safeEntry);
+        const isFetchEntry = ['request', 'response', 'request-error'].includes(safeEntry.type);
+        if (isFetchEntry && !window.__aiFetchTrackerInstalled) {
+            console.info('[Resultado de petición]', JSON.stringify(safeEntry));
+        } else if (!isFetchEntry) {
+            console.info('[Actividad de sesión]', safeEntry);
+        }
     }
 
     function elementLabel(element) {
@@ -704,7 +708,7 @@
 
     async function readResponseSummary(response) {
         const contentType = response.headers.get('content-type') || '';
-        if (!/json|text\/plain|text\/csv/i.test(contentType)) {
+        if (/image\/|audio\/|video\/|font\/|application\/(?:octet-stream|pdf|zip|gzip)/i.test(contentType)) {
             return `[cuerpo omitido: ${contentType || 'tipo de contenido desconocido'}]`;
         }
         if (!response.body) return '[respuesta sin cuerpo]';
@@ -731,17 +735,26 @@
         }
         text += decoder.decode();
         if (bytesRead >= maxBytes) wasTruncated = true;
-        if (wasTruncated) return '[respuesta truncada; cuerpo omitido para proteger datos]';
 
         try {
-            return sanitizeData(JSON.parse(text));
+            const parsed = JSON.parse(text);
+            return wasTruncated
+                ? `${JSON.stringify(sanitizeData(parsed)).slice(0, MAX_ACTIVITY_TEXT_LENGTH)} [respuesta truncada]`
+                : sanitizeData(parsed);
         } catch (error) {
-            return sanitizeText(text);
+            const sanitizedText = sanitizeText(text);
+            return wasTruncated
+                ? `${sanitizedText.slice(0, MAX_ACTIVITY_TEXT_LENGTH)} [respuesta truncada]`
+                : sanitizedText;
         }
     }
 
     function trackFetch() {
         const originalFetch = window.fetch;
+        if (window.__aiFetchTrackerInstalled) {
+            window.__aiRecordFetchActivity = recordActivity;
+            return;
+        }
         if (!originalFetch || originalFetch.__aiActivityTracked) return;
 
         const trackedFetch = async function(input, init) {
@@ -1260,16 +1273,11 @@
     }
 
     async function sendQuery(query, loadingMessage, retryAttempt = 0) {
-        if (!GROQ_API_KEY || GROQ_API_KEY === 'PEGAR_API_KEY_DE_GROQ_AQUI') {
-            throw new Error('Todavía falta configurar la API key de Groq en JS/ai-chat.js.');
-        }
-
         const siteContext = await loadContext();
         const response = await fetch(GROQ_API_URL, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${GROQ_API_KEY}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 model: GROQ_MODEL,
