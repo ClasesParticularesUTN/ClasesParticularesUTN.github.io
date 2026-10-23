@@ -4,10 +4,13 @@
     const GROQ_API_KEY = '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';
     const GROQ_MODEL = 'openai/gpt-oss-120b';
     const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+    const EMAIL_NOTIFICATION_URL = 'https://script.google.com/macros/s/AKfycbxdU8UEBWmBuNYAZbrGNPxPiMBlckCYI2NxITttfWCPbTnHbT5fCuG1zcYYEQ4U-74E/exec';
     const AI_CONTEXT_URL = '/informacion.txt';
     const HISTORY_STORAGE_KEY = 'clasesParticularesAiChatHistory';
     const ACTIVITY_STORAGE_KEY = 'clasesParticularesAiActivity';
     const RATE_LIMIT_STORAGE_KEY = 'clasesParticularesAiRateLimitState';
+    const FIRST_USE_STORAGE_KEY = 'clasesParticularesAiFirstUse';
+    const FIRST_USE_FREE_QUESTIONS = 4;
     const RATE_LIMIT_MAX_QUESTIONS = 2;
     const RATE_LIMIT_WINDOW_MS = 30_000;
     const GROQ_MAX_RATE_LIMIT_RETRIES = 2;
@@ -540,7 +543,7 @@
                         </svg>
                     </button>
                 </form>
-                <p class="ai-chat-disclaimer">La actividad y las respuestas del sitio se comparten con Groq para dar contexto. Se intenta redactar credenciales y datos de contacto.</p>
+                <p class="ai-chat-disclaimer">La actividad del sitio se comparte con Groq para dar contexto. Si tu nombre está guardado, también se envía a Groq para personalizar las respuestas. Tus preguntas y respuestas se envían por correo para control del servicio; si tu nombre y apellido están guardados, también se incluyen. Evitá compartir otros datos personales o sensibles. <a href="/TerminosYCondiciones#chat-ia">Más información</a>.</p>
             </section>
             <div class="ai-chat-confirm-overlay" id="ai-chat-confirm-overlay" aria-hidden="true">
                 <section class="ai-chat-confirm" role="alertdialog" aria-modal="true" aria-labelledby="ai-chat-confirm-title" aria-describedby="ai-chat-confirm-description">
@@ -577,6 +580,8 @@
     const history = loadHistory();
     const activity = loadActivity();
     let rateLimitState = loadRateLimitState();
+    let firstUseState = loadFirstUseState();
+    const userFirstName = loadUserFirstName();
     let context = null;
     let contextRequest = null;
     let isSending = false;
@@ -590,6 +595,15 @@
             .replace(/([?&][^=&#\s]+=)[^&#\s]*/g, '$1[valor redactado]')
             .replace(/(?<!\w)\+?\d[\d\s().-]{7,}\d(?!\w)/g, '[número redactado]')
             .slice(0, MAX_ACTIVITY_TEXT_LENGTH);
+    }
+
+    function loadUserFirstName() {
+        try {
+            return localStorage.getItem('Nombre')?.trim().replace(/[\u0000-\u001f\u007f"]/g, '').slice(0, 80) || '';
+        } catch (error) {
+            console.warn('No se pudo leer el nombre del usuario para personalizar el Bot con IA.', error);
+            return '';
+        }
     }
 
     function sanitizeData(value, key = '') {
@@ -733,55 +747,42 @@
         const trackedFetch = async function(input, init) {
             const request = input instanceof Request ? input : null;
             const requestUrl = request?.url || String(input);
-            const requestPath = pagePath(requestUrl);
             const requestDestination = requestTarget(requestUrl);
             const method = (init?.method || request?.method || 'GET').toUpperCase();
             const requestId = ++nextRequestId;
-            const isAiRequest = requestUrl.startsWith(GROQ_API_URL);
-            const isContextRequest = requestPath === AI_CONTEXT_URL;
-
-            if (!isAiRequest && !isContextRequest) {
-                recordActivity({ type: 'request', requestId, method, path: requestDestination });
-            }
+            recordActivity({ type: 'request', requestId, method, path: requestDestination });
 
             try {
                 const response = await Reflect.apply(originalFetch, this, arguments);
-                if (!isAiRequest && !isContextRequest) {
+                const isOpaqueResponse = response.type === 'opaque';
+                let responseSummary = isOpaqueResponse
+                    ? '[respuesta opaca: el navegador no permite leer el estado ni el cuerpo]'
+                    : '[no se pudo leer la respuesta]';
+                if (!isOpaqueResponse) {
                     try {
-                        const responseSummary = await readResponseSummary(response.clone());
-                        recordActivity({
-                            type: 'response',
-                            requestId,
-                            method,
-                            path: requestDestination,
-                            status: response.status,
-                            ok: response.ok,
-                            body: responseSummary
-                        });
+                        responseSummary = await readResponseSummary(response.clone());
                     } catch (error) {
-                        recordActivity({
-                            type: 'response',
-                            requestId,
-                            method,
-                            path: requestDestination,
-                            status: response.status,
-                            ok: response.ok,
-                            body: '[no se pudo leer la respuesta]'
-                        });
                         console.warn('No se pudo leer el resumen de una respuesta de red.', error);
                     }
                 }
+                recordActivity({
+                    type: 'response',
+                    requestId,
+                    method,
+                    path: requestDestination,
+                    status: isOpaqueResponse ? 'opaque' : response.status,
+                    ok: isOpaqueResponse ? null : response.ok,
+                    body: responseSummary
+                });
                 return response;
             } catch (error) {
-                if (!isAiRequest && !isContextRequest) {
-                    recordActivity({
-                        type: 'request-error',
-                        requestId,
-                        method,
-                        path: requestDestination,
-                        error: sanitizeText(error.message || 'Error de red sin detalle')
-                    });
-                }
+                recordActivity({
+                    type: 'request-error',
+                    requestId,
+                    method,
+                    path: requestDestination,
+                    error: sanitizeText(error.message || 'Error de red sin detalle')
+                });
                 throw error;
             }
         };
@@ -870,7 +871,26 @@
         return parsedState;
     }
 
+    function loadFirstUseState() {
+        const savedState = localStorage.getItem(FIRST_USE_STORAGE_KEY);
+        if (!savedState) return { completedQuestions: 0, exhausted: false };
+
+        const parsedState = JSON.parse(savedState);
+        if (!parsedState
+            || !Number.isInteger(parsedState.completedQuestions)
+            || parsedState.completedQuestions < 0
+            || parsedState.completedQuestions > FIRST_USE_FREE_QUESTIONS
+            || typeof parsedState.exhausted !== 'boolean'
+            || (parsedState.exhausted && parsedState.completedQuestions !== FIRST_USE_FREE_QUESTIONS)
+        ) {
+            throw new Error('El registro del primer uso del chat no tiene un formato válido.');
+        }
+        return parsedState;
+    }
+
     function getCooldownRemaining(now = Date.now()) {
+        firstUseState = loadFirstUseState();
+        if (!firstUseState.exhausted) return 0;
         return Math.max(0, rateLimitState.cooldownUntil - now);
     }
 
@@ -903,6 +923,22 @@
     }
 
     function registerQuestion() {
+        firstUseState = loadFirstUseState();
+        if (!firstUseState.exhausted) {
+            firstUseState.completedQuestions += 1;
+            if (firstUseState.completedQuestions === FIRST_USE_FREE_QUESTIONS) {
+                firstUseState.exhausted = true;
+                rateLimitState = {
+                    completedQuestions: 0,
+                    cooldownUntil: Date.now() + RATE_LIMIT_WINDOW_MS
+                };
+                sessionStorage.setItem(RATE_LIMIT_STORAGE_KEY, JSON.stringify(rateLimitState));
+            }
+            localStorage.setItem(FIRST_USE_STORAGE_KEY, JSON.stringify(firstUseState));
+            updateRateLimit();
+            return;
+        }
+
         rateLimitState.completedQuestions += 1;
         if (rateLimitState.completedQuestions === RATE_LIMIT_MAX_QUESTIONS) {
             rateLimitState = {
@@ -1067,7 +1103,7 @@
         welcomeMessage.className = 'ai-chat-message ai-chat-message-assistant ai-chat-welcome';
         const title = document.createElement('h3');
         title.className = 'ai-chat-welcome-title';
-        title.textContent = '¡Hola! 👋';
+        title.textContent = userFirstName ? `¡Hola, ${userFirstName}! 👋` : '¡Hola! 👋';
         const description = document.createElement('p');
         description.className = 'ai-chat-welcome-copy';
         description.textContent = 'Soy tu asistente virtual para clases particulares. Puedo ayudarte con tus dudas sobre las clases.';
@@ -1169,6 +1205,60 @@
         return waitMatch[2].toLowerCase().startsWith('m') ? value : value * 1000;
     }
 
+    function escapeEmailHtml(value) {
+        return String(value).replace(/[&<>'"]/g, (character) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[character]));
+    }
+
+    async function notifyConversation(question, answer) {
+        const questionHtml = escapeEmailHtml(question);
+        const answerHtml = escapeEmailHtml(answer).replace(/\r?\n/g, '<br>');
+        let fullNameHtml = '';
+
+        try {
+            const firstName = localStorage.getItem('Nombre')?.trim();
+            const lastName = localStorage.getItem('Apellido')?.trim();
+            if (firstName && lastName) {
+                fullNameHtml = `<div style="margin-bottom: 12px; padding: 14px 16px; background: #fff; border-left: 4px solid #d1d5db; border-radius: 6px; font-size: 15px; line-height: 1.6;"><strong>Usuario:</strong> ${escapeEmailHtml(`${firstName} ${lastName}`)}</div>`;
+            }
+        } catch (error) {
+            console.warn('No se pudo leer el nombre guardado para el correo del Bot con IA.', error);
+        }
+
+        try {
+            await fetch(EMAIL_NOTIFICATION_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify({
+                    funcion: 'enviarCorreo',
+                    asunto: 'Consulta al Bot con IA',
+                    texto: `
+                        <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; padding: 28px; color: #1f2937; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 14px;">
+                            <div style="margin-bottom: 22px; padding-bottom: 16px; border-bottom: 3px solid #f3a661;">
+                                <div style="font-size: 12px; font-weight: 700; letter-spacing: 1.5px; color: #a35a2d; text-transform: uppercase;">C/S Ingeniería en Sistemas</div>
+                                <h2 style="margin: 8px 0 0; font-size: 24px; color: #111827;">Intercambio con el Bot con IA</h2>
+                            </div>
+                            ${fullNameHtml}
+                            <div style="margin-bottom: 12px; padding: 14px 16px; background: #fff7ed; border-left: 4px solid #f3a661; border-radius: 6px; font-size: 15px; line-height: 1.6;">
+                                <strong>Pregunta:</strong><br>${questionHtml}
+                            </div>
+                            <div style="padding: 14px 16px; background: #fff; border-left: 4px solid #d1d5db; border-radius: 6px; font-size: 15px; line-height: 1.6;">
+                                <strong>Respuesta:</strong><br>${answerHtml}
+                            </div>
+                        </div>
+                    `
+                })
+            });
+        } catch (error) {
+            console.error('No se pudo enviar por correo el intercambio con el Bot con IA.', error);
+        }
+    }
+
     async function sendQuery(query, loadingMessage, retryAttempt = 0) {
         if (!GROQ_API_KEY || GROQ_API_KEY === 'PEGAR_API_KEY_DE_GROQ_AQUI') {
             throw new Error('Todavía falta configurar la API key de Groq en JS/ai-chat.js.');
@@ -1186,9 +1276,17 @@
                 temperature: 0.4,
                 messages: [
                     { role: 'system', content: SYSTEM_PROMPT(siteContext) },
+                    ...(userFirstName ? [{
+                        role: 'system',
+                        content: `El nombre de pila de la persona es "${userFirstName}". Usalo ocasionalmente para responderle de forma personalizada y natural, sin repetirlo en cada mensaje.`
+                    }] : []),
                     {
                         role: 'system',
                         content: 'Regla obligatoria de precios: cada vez que compares o expliques el precio de la Clase de Consulta frente a Express, Estándar u otras modalidades, aclará que Consulta es para pocas clases puntuales y dudas concretas, mientras que Express, Estándar y sus packs están pensados para tomar varias clases y recorrer más temas con menor costo por hora y de forma más económica. No menciones que Consulta es más cara sin explicar inmediatamente este propósito y diferencia.'
+                    },
+                    {
+                        role: 'system',
+                        content: 'Para diagnosticar problemas, usa los eventos request, response y request-error del historial siguiente, incluidos los del propio servicio de IA. Relacioná host, ruta, método y resultado HTTP; un status opaque significa que el navegador no permitió leer la respuesta y no confirma éxito ni error. Explicá únicamente lo que respaldan esos datos y diferenciá hechos de causas posibles.'
                     },
                     { role: 'system', content: `Historial reciente de acciones y respuestas de esta sesión en formato JSON:\n${JSON.stringify(activity.slice(-MAX_ACTIVITY_ENTRIES))}` },
                     ...history,
@@ -1232,6 +1330,7 @@
             { role: 'user', content: query },
             { role: 'assistant', content: answer }
         );
+        void notifyConversation(query, answer);
         loadingMessage.remove();
         appendMessage(answer, 'assistant');
     }
