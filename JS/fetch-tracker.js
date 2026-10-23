@@ -10,7 +10,12 @@
         const savedActivity = sessionStorage.getItem(ACTIVITY_STORAGE_KEY);
         if (savedActivity) {
             const parsedActivity = JSON.parse(savedActivity);
-            if (Array.isArray(parsedActivity)) savedEvents = parsedActivity.slice(-MAX_ACTIVITY_ENTRIES);
+            if (Array.isArray(parsedActivity)) {
+                savedEvents = parsedActivity
+                    .filter((entry) => !(entry?.type === 'response' && (entry.ok === true || entry.status === 'opaque')))
+                    .slice(-MAX_ACTIVITY_ENTRIES);
+                sessionStorage.setItem(ACTIVITY_STORAGE_KEY, JSON.stringify(savedEvents));
+            }
         }
     } catch (error) {
         console.warn('No se pudo recuperar el registro previo de peticiones fetch.', error);
@@ -134,20 +139,22 @@
 
             try {
                 const response = await Reflect.apply(originalFetch, this, arguments);
-                void readResponse(response.clone()).then((body) => {
-                    const responseEntry = record({
-                        type: 'response',
-                        requestId,
-                        method,
-                        path: target,
-                        status: response.type === 'opaque' ? 'opaque' : response.status,
-                        ok: response.type === 'opaque' ? null : response.ok,
-                        body
+                if (response.type !== 'opaque' && !response.ok) {
+                    void readResponse(response.clone()).then((body) => {
+                        const responseEntry = record({
+                            type: 'response',
+                            requestId,
+                            method,
+                            path: target,
+                            status: response.status,
+                            ok: false,
+                            body
+                        });
+                        console.error('[Error fetch]', JSON.stringify(responseEntry));
+                    }).catch((error) => {
+                        console.warn('No se pudo registrar el cuerpo de una respuesta fetch fallida.', error);
                     });
-                    console.info('[Resultado fetch]', JSON.stringify(responseEntry));
-                }).catch((error) => {
-                    console.warn('No se pudo registrar el cuerpo de una respuesta fetch.', error);
-                });
+                }
                 return response;
             } catch (error) {
                 const errorEntry = record({
@@ -157,7 +164,7 @@
                     path: target,
                     error: sanitizeText(error.message || 'Error de red sin detalle')
                 });
-                console.info('[Resultado fetch]', JSON.stringify(errorEntry));
+                console.error('[Error fetch]', JSON.stringify(errorEntry));
                 throw error;
             }
         };

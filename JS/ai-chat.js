@@ -54,8 +54,7 @@
             pointer-events: none;
             backdrop-filter: blur(10px);
         }
-        .ai-chat-toggle:hover .ai-chat-tooltip,
-        .ai-chat-toggle:focus-visible .ai-chat-tooltip {
+        .ai-chat-toggle.ai-chat-tooltip-visible .ai-chat-tooltip {
             opacity: 1;
             transform: translateX(0);
         }
@@ -570,6 +569,7 @@
     const confirmOverlay = document.getElementById('ai-chat-confirm-overlay');
     const confirmCancelButton = document.getElementById('ai-chat-confirm-cancel');
     const confirmDeleteButton = document.getElementById('ai-chat-confirm-delete');
+    let chatTooltipShown = false;
     const form = document.getElementById('ai-chat-form');
     const input = document.getElementById('ai-chat-input');
     const sendButton = document.getElementById('ai-chat-send');
@@ -638,7 +638,15 @@
             )) {
                 throw new Error('El registro de actividad de esta sesión no tiene un formato válido.');
             }
-            return parsedActivity.slice(-MAX_ACTIVITY_ENTRIES);
+            const filteredActivity = parsedActivity
+                .filter((entry) => !(entry.type === 'response' && (entry.ok === true || entry.status === 'opaque')))
+                .slice(-MAX_ACTIVITY_ENTRIES);
+            try {
+                sessionStorage.setItem(ACTIVITY_STORAGE_KEY, JSON.stringify(filteredActivity));
+            } catch (error) {
+                console.warn('No se pudo actualizar el historial de actividad de esta sesión.', error);
+            }
+            return filteredActivity;
         } catch (error) {
             console.warn('No se pudo interpretar el historial de actividad de esta sesión.', error);
             return [];
@@ -661,8 +669,10 @@
             console.warn('No se pudo guardar el historial de actividad de esta sesión.', error);
         }
         const isFetchEntry = ['request', 'response', 'request-error'].includes(safeEntry.type);
-        if (isFetchEntry && !window.__aiFetchTrackerInstalled) {
-            console.info('[Resultado de petición]', JSON.stringify(safeEntry));
+        if (isFetchEntry && !window.__aiFetchTrackerInstalled && safeEntry.type === 'request') {
+            console.info('[Petición fetch]', JSON.stringify(safeEntry));
+        } else if (isFetchEntry && !window.__aiFetchTrackerInstalled) {
+            console.error('[Error fetch]', JSON.stringify(safeEntry));
         } else if (!isFetchEntry) {
             console.info('[Actividad de sesión]', safeEntry);
         }
@@ -767,26 +777,23 @@
 
             try {
                 const response = await Reflect.apply(originalFetch, this, arguments);
-                const isOpaqueResponse = response.type === 'opaque';
-                let responseSummary = isOpaqueResponse
-                    ? '[respuesta opaca: el navegador no permite leer el estado ni el cuerpo]'
-                    : '[no se pudo leer la respuesta]';
-                if (!isOpaqueResponse) {
+                if (response.type !== 'opaque' && !response.ok) {
+                    let responseSummary = '[no se pudo leer la respuesta]';
                     try {
                         responseSummary = await readResponseSummary(response.clone());
                     } catch (error) {
-                        console.warn('No se pudo leer el resumen de una respuesta de red.', error);
+                        console.warn('No se pudo leer el resumen de una respuesta fallida.', error);
                     }
+                    recordActivity({
+                        type: 'response',
+                        requestId,
+                        method,
+                        path: requestDestination,
+                        status: response.status,
+                        ok: false,
+                        body: responseSummary
+                    });
                 }
-                recordActivity({
-                    type: 'response',
-                    requestId,
-                    method,
-                    path: requestDestination,
-                    status: isOpaqueResponse ? 'opaque' : response.status,
-                    ok: isOpaqueResponse ? null : response.ok,
-                    body: responseSummary
-                });
                 return response;
             } catch (error) {
                 recordActivity({
@@ -1294,9 +1301,9 @@
                     },
                     {
                         role: 'system',
-                        content: 'Para diagnosticar problemas, usa los eventos request, response y request-error del historial siguiente, incluidos los del propio servicio de IA. Relacioná host, ruta, método y resultado HTTP; un status opaque significa que el navegador no permitió leer la respuesta y no confirma éxito ni error. Explicá únicamente lo que respaldan esos datos y diferenciá hechos de causas posibles.'
+                        content: 'Para diagnosticar problemas, usa las solicitudes registradas y los errores de red o respuestas HTTP fallidas del historial siguiente, incluidos los del propio servicio de IA. Relacioná host, ruta, método y resultado HTTP. Explicá únicamente lo que respaldan esos datos y diferenciá hechos de causas posibles.'
                     },
-                    { role: 'system', content: `Historial reciente de acciones y respuestas de esta sesión en formato JSON:\n${JSON.stringify(activity.slice(-MAX_ACTIVITY_ENTRIES))}` },
+                    { role: 'system', content: `Historial reciente de acciones y errores de red de esta sesión en formato JSON:\n${JSON.stringify(activity.slice(-MAX_ACTIVITY_ENTRIES))}` },
                     ...history,
                     { role: 'user', content: query }
                 ]
@@ -1343,6 +1350,15 @@
         appendMessage(answer, 'assistant');
     }
 
+    function showChatTooltipOnce() {
+        if (chatTooltipShown) return;
+        chatTooltipShown = true;
+        openButton.classList.add('ai-chat-tooltip-visible');
+        window.setTimeout(() => openButton.classList.remove('ai-chat-tooltip-visible'), 5000);
+    }
+
+    openButton.addEventListener('mouseenter', showChatTooltipOnce, { once: true });
+    openButton.addEventListener('focus', showChatTooltipOnce, { once: true });
     openButton.addEventListener('click', openChat);
     closeButton.addEventListener('click', closeChat);
     clearButton.addEventListener('click', openClearConfirmation);
