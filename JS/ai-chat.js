@@ -484,13 +484,16 @@
             .ai-chat-toggle { right: 20px; bottom: 20px; }
             .ai-chat-icon { width: 54px; height: 54px; }
             .ai-chat-overlay {
-                align-items: flex-end;
-                justify-content: center;
-                padding: 12px 12px 84px;
+                align-items: stretch;
+                justify-content: stretch;
+                padding: 0;
             }
             .ai-chat-panel {
-                height: min(620px, calc(100dvh - 108px));
-                min-height: 350px;
+                width: 100%;
+                height: 100%;
+                min-height: 0;
+                max-height: 100%;
+                border-radius: 0;
             }
         }
         @media (prefers-reduced-motion: reduce) {
