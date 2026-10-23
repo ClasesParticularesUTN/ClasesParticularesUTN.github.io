@@ -487,16 +487,17 @@
             .ai-chat-toggle { right: 20px; bottom: 20px; }
             .ai-chat-icon { width: 54px; height: 54px; }
             .ai-chat-overlay {
-                align-items: stretch;
-                justify-content: stretch;
-                padding: 0;
+                align-items: center;
+                justify-content: center;
+                padding: 12px;
             }
             .ai-chat-panel {
-                width: 100%;
-                height: 100%;
+                width: min(100%, 480px);
+                height: calc(100% - 24px);
                 min-height: 0;
                 max-height: 100%;
-                border-radius: 0;
+                border-radius: 22px;
+                box-shadow: 0 18px 50px rgba(0, 0, 0, .55);
             }
         }
         @media (prefers-reduced-motion: reduce) {
