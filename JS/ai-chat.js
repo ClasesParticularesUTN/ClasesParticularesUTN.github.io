@@ -1,7 +1,7 @@
 (() => {
     if (document.getElementById('ai-chat-open')) return;
 
-    const GROQ_API_KEY = 'PEGAR_API_KEY_DE_GROQ_AQUI';
+    const GROQ_API_KEY = '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';
     const GROQ_MODEL = 'openai/gpt-oss-120b';
     const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
     const AI_CONTEXT_URL = '/informacion.txt';
