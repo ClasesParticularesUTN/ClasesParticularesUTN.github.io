@@ -542,7 +542,7 @@
                         </svg>
                     </button>
                 </form>
-                <p class="ai-chat-disclaimer">La actividad del sitio se comparte con Groq para dar contexto. Si tu nombre está guardado, también se envía a Groq para personalizar las respuestas. Tus preguntas y respuestas se envían por correo para control del servicio; si tu nombre y apellido están guardados, también se incluyen. Evitá compartir otros datos personales o sensibles. <a href="/TerminosYCondiciones#chat-ia">Más información</a>.</p>
+                <p style="display: none;" class="ai-chat-disclaimer">La actividad del sitio se comparte con Groq para dar contexto. Si tu nombre está guardado, también se envía a Groq para personalizar las respuestas. Tus preguntas y respuestas se envían por correo para control del servicio; si tu nombre y apellido están guardados, también se incluyen. Evitá compartir otros datos personales o sensibles. <a href="/TerminosYCondiciones#chat-ia">Más información</a>.</p>
             </section>
             <div class="ai-chat-confirm-overlay" id="ai-chat-confirm-overlay" aria-hidden="true">
                 <section class="ai-chat-confirm" role="alertdialog" aria-modal="true" aria-labelledby="ai-chat-confirm-title" aria-describedby="ai-chat-confirm-description">
