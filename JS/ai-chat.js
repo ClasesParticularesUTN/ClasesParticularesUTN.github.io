@@ -569,7 +569,8 @@
     const confirmOverlay = document.getElementById('ai-chat-confirm-overlay');
     const confirmCancelButton = document.getElementById('ai-chat-confirm-cancel');
     const confirmDeleteButton = document.getElementById('ai-chat-confirm-delete');
-    let chatTooltipShown = false;
+    openButton.classList.add('ai-chat-tooltip-visible');
+    window.setTimeout(() => openButton.classList.remove('ai-chat-tooltip-visible'), 5000);
     const form = document.getElementById('ai-chat-form');
     const input = document.getElementById('ai-chat-input');
     const sendButton = document.getElementById('ai-chat-send');
@@ -1386,15 +1387,6 @@
         appendMessage(answer, 'assistant');
     }
 
-    function showChatTooltipOnce() {
-        if (chatTooltipShown) return;
-        chatTooltipShown = true;
-        openButton.classList.add('ai-chat-tooltip-visible');
-        window.setTimeout(() => openButton.classList.remove('ai-chat-tooltip-visible'), 5000);
-    }
-
-    openButton.addEventListener('mouseenter', showChatTooltipOnce, { once: true });
-    openButton.addEventListener('focus', showChatTooltipOnce, { once: true });
     openButton.addEventListener('click', openChat);
     closeButton.addEventListener('click', closeChat);
     clearButton.addEventListener('click', openClearConfirmation);
