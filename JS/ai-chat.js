@@ -1301,6 +1301,10 @@
                     },
                     {
                         role: 'system',
+                        content: 'Regla obligatoria sobre intereses y recargos: si preguntan por intereses, recargos o cómo evitar que sigan cobrándose al pagar clases, explicá primero las condiciones informadas al reservar: el pago dentro de las primeras 24 horas desde la clase no tiene recargo; pasadas las 24 horas se aplica un 5%; desde las 48 horas se suma un 1% por cada día de demora sobre el monto total acumulado. Indicá que para evitar que se sigan acumulando debe regularizarse la deuda pendiente. No prometas quitar ni modificar cargos ya aplicados. No derives directamente a WhatsApp antes de explicar estas condiciones; sugerilo solo si pregunta por revisar su caso o disputar un cargo concreto.'
+                    },
+                    {
+                        role: 'system',
                         content: 'Para diagnosticar problemas, usa las solicitudes registradas y los errores de red o respuestas HTTP fallidas del historial siguiente, incluidos los del propio servicio de IA. Relacioná host, ruta, método y resultado HTTP. Explicá únicamente lo que respaldan esos datos y diferenciá hechos de causas posibles.'
                     },
                     { role: 'system', content: `Historial reciente de acciones y errores de red de esta sesión en formato JSON:\n${JSON.stringify(activity.slice(-MAX_ACTIVITY_ENTRIES))}` },
