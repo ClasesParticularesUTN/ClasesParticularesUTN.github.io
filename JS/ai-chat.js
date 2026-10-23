@@ -1235,9 +1235,41 @@
         }[character]));
     }
 
+    function formatAssistantEmailHtml(text) {
+        const container = document.createElement('div');
+        renderFormattedMessage(container, text);
+
+        container.querySelectorAll('p').forEach((element) => {
+            element.setAttribute('style', 'margin:0 0 9px;');
+        });
+        container.querySelectorAll('p:last-child').forEach((element) => {
+            element.style.marginBottom = '0';
+        });
+        container.querySelectorAll('h3, h4').forEach((element) => {
+            element.setAttribute('style', 'margin:4px 0 9px;color:#ffd0a0;font-size:15px;line-height:1.4;');
+        });
+        container.querySelectorAll('ul, ol').forEach((element) => {
+            element.setAttribute('style', 'margin:4px 0 10px;padding-left:21px;');
+        });
+        container.querySelectorAll('li').forEach((element) => {
+            element.setAttribute('style', 'padding-left:2px;margin-bottom:5px;');
+        });
+        container.querySelectorAll('strong').forEach((element) => {
+            element.setAttribute('style', 'color:#ffd0a0;font-weight:700;');
+        });
+        container.querySelectorAll('a').forEach((element) => {
+            element.setAttribute('style', 'color:#ffc080;font-weight:600;text-decoration:underline;');
+        });
+        container.querySelectorAll('code').forEach((element) => {
+            element.setAttribute('style', 'padding:2px 5px;border-radius:5px;color:#ffd0a0;background:#151520;font-family:Consolas,monospace;font-size:13px;');
+        });
+
+        return container.innerHTML;
+    }
+
     async function notifyConversation(question, answer) {
         const questionHtml = escapeEmailHtml(question);
-        const answerHtml = escapeEmailHtml(answer).replace(/\r?\n/g, '<br>');
+        const answerHtml = formatAssistantEmailHtml(answer);
         let fullNameHtml = '';
 
         try {
@@ -1264,11 +1296,11 @@
                                 <h2 style="margin: 8px 0 0; font-size: 24px; color: #111827;">Intercambio con el Bot con IA</h2>
                             </div>
                             ${fullNameHtml}
-                            <div style="margin-bottom: 12px; padding: 14px 16px; background: #fff7ed; border-left: 4px solid #f3a661; border-radius: 6px; font-size: 15px; line-height: 1.6;">
-                                <strong>Pregunta:</strong><br>${questionHtml}
+                            <div style="margin-bottom: 12px; padding: 11px 14px; color: #17131b; background: #f3a661; border-radius: 16px 16px 5px 16px; font-size: 14px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere;">
+                                <div style="margin-bottom: 6px; color: #5b3418; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;">Pregunta</div>${questionHtml}
                             </div>
-                            <div style="padding: 14px 16px; background: #fff; border-left: 4px solid #d1d5db; border-radius: 6px; font-size: 15px; line-height: 1.6;">
-                                <strong>Respuesta:</strong><br>${answerHtml}
+                            <div style="padding: 11px 14px; color: #fff; background: #242432; border: 1px solid #353545; border-radius: 16px 16px 16px 5px; font-size: 14px; line-height: 1.55; overflow-wrap: anywhere;">
+                                <div style="margin-bottom: 6px; color: #a0a0b0; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;">Respuesta</div>${answerHtml}
                             </div>
                         </div>
                     `
