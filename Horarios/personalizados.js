@@ -77,6 +77,13 @@ const HORARIOS_PERSONALIZADOS = {
 
         ]
     },
+    "suaffine@gmail.com": {
+        habilitadas: [],
+        deshabilitadas: [
+            { semana: 0, celda: "B3:C13" },
+            { semana: 1, celda: "B3:C13" },
+        ]
+    },
     "renzomercanti2005@gmail.com": {
         habilitadas: [],
         deshabilitadas: [
