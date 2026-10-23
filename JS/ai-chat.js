@@ -13,7 +13,10 @@
     const FIRST_USE_FREE_QUESTIONS = 4;
     const RATE_LIMIT_MAX_QUESTIONS = 2;
     const RATE_LIMIT_WINDOW_MS = 30_000;
-    const GROQ_MAX_RATE_LIMIT_RETRIES = 2;
+    const GROQ_MAX_RATE_LIMIT_RETRIES = 5;
+    const MAX_HISTORY_CONTEXT_MESSAGES = 8;
+    const MAX_ACTIVITY_CONTEXT_ENTRIES = 12;
+    const MAX_ACTIVITY_CONTEXT_TEXT_LENGTH = 500;
     const MAX_ACTIVITY_ENTRIES = 40;
     const MAX_ACTIVITY_TEXT_LENGTH = 1200;
     const SUGGESTED_QUESTIONS = [
@@ -1350,6 +1353,9 @@
     }
 
     async function sendQuery(query, loadingMessage, retryAttempt = 0) {
+        const historyContextLimit = Math.max(2, MAX_HISTORY_CONTEXT_MESSAGES - retryAttempt * 2);
+        const activityContextLimit = Math.max(4, MAX_ACTIVITY_CONTEXT_ENTRIES - retryAttempt * 2);
+        const activityTextLimit = Math.max(150, MAX_ACTIVITY_CONTEXT_TEXT_LENGTH - retryAttempt * 75);
         const siteContext = await loadContext();
         const response = await fetch(GROQ_API_URL, {
             method: 'POST',
@@ -1377,8 +1383,12 @@
                         role: 'system',
                         content: 'Para diagnosticar problemas, usa las solicitudes registradas y los errores de red o respuestas HTTP fallidas del historial siguiente, incluidos los del propio servicio de IA. Relacioná host, ruta, método y resultado HTTP. Explicá únicamente lo que respaldan esos datos y diferenciá hechos de causas posibles.'
                     },
-                    { role: 'system', content: `Historial reciente de acciones y errores de red de esta sesión en formato JSON:\n${JSON.stringify(activity.slice(-MAX_ACTIVITY_ENTRIES))}` },
-                    ...history,
+                    { role: 'system', content: `Historial reciente de acciones y errores de red de esta sesión en formato JSON:\n${JSON.stringify(activity.slice(-activityContextLimit).map((entry) => ({
+                        ...entry,
+                        error: typeof entry.error === 'string' ? entry.error.slice(0, activityTextLimit) : entry.error,
+                        body: typeof entry.body === 'string' ? entry.body.slice(0, activityTextLimit) : entry.body
+                    })))}` },
+                    ...history.slice(-historyContextLimit),
                     { role: 'user', content: query }
                 ]
             })
@@ -1392,12 +1402,24 @@
             } catch (error) {
                 console.warn('No se pudo leer el detalle del error de Groq.', error);
             }
+            const isRequestTooLarge = response.status === 413
+                || /request too large|requested\s+\d+.*(?:tokens per minute|\bTPM\b)/i.test(detail);
             const isTokenRateLimit = response.status === 429
                 && /rate limit reached|tokens per minute|\bTPM\b/i.test(detail);
-            if (isTokenRateLimit && retryAttempt < GROQ_MAX_RATE_LIMIT_RETRIES) {
-                const waitMs = Math.min(Math.max(getGroqRetryDelay(response, detail) ?? 1000, 250), 30_000);
+            if ((isTokenRateLimit || isRequestTooLarge) && retryAttempt < GROQ_MAX_RATE_LIMIT_RETRIES) {
+                const waitMs = Math.min(
+                    Math.max(getGroqRetryDelay(response, detail) ?? (isRequestTooLarge ? 1000 : 5000 * (retryAttempt + 1)), 1000),
+                    60_000
+                );
+                loadingMessage.textContent = isRequestTooLarge
+                    ? `Reduciendo el contexto y reintentando (${retryAttempt + 1}/${GROQ_MAX_RATE_LIMIT_RETRIES})...`
+                    : `Groq está ocupado. Reintentando (${retryAttempt + 1}/${GROQ_MAX_RATE_LIMIT_RETRIES})...`;
+                console.warn(`[Bot con IA] ${isRequestTooLarge ? 'La solicitud supera el límite de tokens' : 'Límite temporal de tokens'}; reintento ${retryAttempt + 1}/${GROQ_MAX_RATE_LIMIT_RETRIES} en ${Math.ceil(waitMs / 1000)} segundos.`);
                 await new Promise((resolve) => window.setTimeout(resolve, waitMs));
                 return sendQuery(query, loadingMessage, retryAttempt + 1);
+            }
+            if (isRequestTooLarge) {
+                throw new Error('La consulta y el contexto siguen superando el límite de tamaño de Groq. Probá con una pregunta más breve o iniciá un chat nuevo.');
             }
             if (isTokenRateLimit) {
                 throw new Error('Groq sigue ocupado por el límite temporal de tokens. Esperá unos segundos y volvé a intentar.');
