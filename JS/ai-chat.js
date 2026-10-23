@@ -571,7 +571,7 @@
     const confirmCancelButton = document.getElementById('ai-chat-confirm-cancel');
     const confirmDeleteButton = document.getElementById('ai-chat-confirm-delete');
     openButton.classList.add('ai-chat-tooltip-visible');
-    window.setTimeout(() => openButton.classList.remove('ai-chat-tooltip-visible'), 5000);
+    window.setTimeout(() => openButton.classList.remove('ai-chat-tooltip-visible'), 10000);
     const form = document.getElementById('ai-chat-form');
     const input = document.getElementById('ai-chat-input');
     const sendButton = document.getElementById('ai-chat-send');
