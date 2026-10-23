@@ -7,6 +7,7 @@
     const AI_CONTEXT_URL = '/informacion.txt';
     const HISTORY_STORAGE_KEY = 'clasesParticularesAiChatHistory';
     const ACTIVITY_STORAGE_KEY = 'clasesParticularesAiActivity';
+    const GROQ_TOKEN_USAGE_STORAGE_KEY = 'clasesParticularesGroqTokenUsage';
     const RATE_LIMIT_STORAGE_KEY = 'clasesParticularesAiRateLimitState';
     const FIRST_USE_STORAGE_KEY = 'clasesParticularesAiFirstUse';
     const FIRST_USE_FREE_QUESTIONS = 4;
@@ -1226,6 +1227,39 @@
         return waitMatch[2].toLowerCase().startsWith('m') ? value : value * 1000;
     }
 
+    function recordGroqTokenUsage(usage) {
+        const totalTokens = Number(usage?.total_tokens);
+        if (!Number.isFinite(totalTokens) || totalTokens < 0) {
+            console.warn('[Consumo Groq] La respuesta no incluyó un total_tokens válido.', usage);
+            return;
+        }
+
+        const now = new Date();
+        const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+        let tokensToday = 0;
+
+        try {
+            const savedUsage = JSON.parse(localStorage.getItem(GROQ_TOKEN_USAGE_STORAGE_KEY) || '{}');
+            if (savedUsage.date === today && Number.isFinite(savedUsage.totalTokens)) {
+                tokensToday = savedUsage.totalTokens;
+            }
+            tokensToday += totalTokens;
+            localStorage.setItem(GROQ_TOKEN_USAGE_STORAGE_KEY, JSON.stringify({
+                date: today,
+                totalTokens: tokensToday
+            }));
+        } catch (error) {
+            console.error('[Consumo Groq] No se pudo guardar el acumulado diario en localStorage.', error);
+            console.info(`[Consumo Groq] Esta consulta: ${totalTokens} tokens.`, usage);
+            return;
+        }
+
+        console.info(
+            `[Consumo Groq] Esta consulta: ${totalTokens} tokens. Tokens hoy: ${tokensToday}.`,
+            usage
+        );
+    }
+
     function escapeEmailHtml(value) {
         return String(value).replace(/[&<>'"]/g, (character) => ({
             '&': '&amp;',
@@ -1369,6 +1403,7 @@
         }
 
         const data = await response.json();
+        recordGroqTokenUsage(data.usage);
         const answer = data.choices?.[0]?.message?.content?.trim();
         if (!answer) throw new Error('La respuesta de Groq llegó vacía. Probá de nuevo.');
 
