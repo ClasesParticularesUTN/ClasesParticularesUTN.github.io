@@ -2599,12 +2599,7 @@
                 const etiquetaPrecioRecordatorio = (esTP || esConsulta) ? leyendaPrecio : null;
 
                 const bloqueChat = `~----------------------------------------------------~
-💬 Recuerda que podés escribir en el chat:
-
-    • */reservas*  – Tus próximas clases reservadas
-    * /recordatorio – Te aviso 1 hora antes de cada clase
-    • */deuda* - Tu deuda pendiente y horas a favor
-    • */pagar* – Link de pago y tutoriales
+💬 Podés escribir */comandos* para ver los comandos y consultar reservas, deuda, links de pago, etc.
 
 ~----------------------------------------------------~`;
                 const bloqueModalidad = modalidadRecordatorio ? `👥 *Modalidad:* ${modalidadRecordatorio}` : null;
@@ -2844,11 +2839,7 @@ ${textoFechas}`
     const { precioFinal = null, modalidad = null, etiquetaPrecio = 'Precio final', incluirComandos = false } = opciones;
 
     const bloqueChat = `~----------------------------------------------------~
-💬 Recuerda que podés escribir en el chat:
-
-    • */reservas*  – Tus próximas clases reservadas
-    • */deuda* - Tu deuda pendiente y horas a favor
-    • */pagar* – Link de pago y tutoriales
+💬 Podés escribir */comandos* para ver los comandos y consultar reservas, deuda, links de pago, etc.
 
 ~----------------------------------------------------~`;
     const bloqueModalidad = modalidad ? `👥 *Modalidad:* ${modalidad}` : null;
