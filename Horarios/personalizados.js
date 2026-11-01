@@ -34,7 +34,13 @@
  */
 
 const HORARIOS_PERSONALIZADOS = {
-    
+    "renzomercanti2005@gmail.com": {
+        habilitadas: [],
+        deshabilitadas: [
+            { semana: 0, celda: "B3:B13" },
+
+        ]
+    },
     
     // ── Podés agregar más alumnos debajo ──────────────────────────────────────
     // "otro.alumno@gmail.com": {
