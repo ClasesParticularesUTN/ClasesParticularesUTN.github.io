@@ -34,63 +34,7 @@
  */
 
 const HORARIOS_PERSONALIZADOS = {
-    "vmosquen@gmail.com": {
-        habilitadas: [],
-        deshabilitadas: [
-            { semana: 0, celda: "F8:F13" },
-            { semana: 0, celda: "B3:B13" },
-            { semana: 0, celda: "C7:C13" },
-            { semana: 1, celda: "F8:F13" },
-            
-            { semana: 0, celda: "D3:D13" },
-            { semana: 1, celda: "D3:D13" },
-        ]
-    },
-    "juanma.2000@hotmail.com": {
-         habilitadas: [],
-        deshabilitadas: [
-            { semana: 0, celda: "F8:F13" },
-            { semana: 0, celda: "B3:B13" },
-            { semana: 0, celda: "C7:C13" },
-            { semana: 1, celda: "F8:F13" },
-            
-            { semana: 0, celda: "D3:D13" },
-            { semana: 1, celda: "D3:D13" },
-        ]
-    },
-    "delfibert@gmail.com": {
-         habilitadas: [],
-        deshabilitadas: [
-            { semana: 0, celda: "F8:F13" },
-            { semana: 0, celda: "B3:B13" },
-            { semana: 0, celda: "C7:C13" },
-            { semana: 1, celda: "F8:F13" },
-            
-            { semana: 0, celda: "D3:D13" },
-            { semana: 1, celda: "D3:D13" },
-        ]
-    },
-    "sebasmaina@gmail.com": {
-        habilitadas: [],
-        deshabilitadas: [
-            { semana: 0, celda: "B3:F13" },
-
-        ]
-    },
-    "suaffine@gmail.com": {
-        habilitadas: [],
-        deshabilitadas: [
-            { semana: 0, celda: "B3:C13" },
-            { semana: 1, celda: "B3:C13" },
-        ]
-    },
-    "renzomercanti2005@gmail.com": {
-        habilitadas: [],
-        deshabilitadas: [
-            { semana: 0, celda: "B3:F13" },
-
-        ]
-    },
+    
     
     // ── Podés agregar más alumnos debajo ──────────────────────────────────────
     // "otro.alumno@gmail.com": {
