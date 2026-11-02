@@ -10,6 +10,7 @@
     const GROQ_TOKEN_USAGE_STORAGE_KEY = 'clasesParticularesGroqTokenUsage';
     const RATE_LIMIT_STORAGE_KEY = 'clasesParticularesAiRateLimitState';
     const FIRST_USE_STORAGE_KEY = 'clasesParticularesAiFirstUse';
+    const CHAT_BUTTON_POSITION_STORAGE_KEY = 'clasesParticularesAiChatButtonPosition';
     const FIRST_USE_FREE_QUESTIONS = 4;
     const RATE_LIMIT_MAX_QUESTIONS = 2;
     const RATE_LIMIT_WINDOW_MS = 30_000;
@@ -42,9 +43,17 @@
             border: 0;
             color: inherit;
             background: transparent;
-            cursor: pointer;
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+        }
+        .ai-chat-toggle.ai-chat-dragging {
+            cursor: grabbing;
         }
         .ai-chat-tooltip {
+            position: absolute;
+            top: 50%;
+            right: calc(100% + 10px);
             padding: 8px 14px;
             border: 1px solid rgba(255, 255, 255, .1);
             border-radius: 20px;
@@ -53,14 +62,14 @@
             font: 600 .75rem/1.4 Poppins, sans-serif;
             white-space: nowrap;
             opacity: 0;
-            transform: translateX(10px);
+            transform: translate(10px, -50%);
             transition: opacity .3s ease, transform .3s ease;
             pointer-events: none;
             backdrop-filter: blur(10px);
         }
         .ai-chat-toggle.ai-chat-tooltip-visible .ai-chat-tooltip {
             opacity: 1;
-            transform: translateX(0);
+            transform: translate(0, -50%);
         }
         .ai-chat-icon {
             position: relative;
@@ -577,6 +586,87 @@
     const confirmOverlay = document.getElementById('ai-chat-confirm-overlay');
     const confirmCancelButton = document.getElementById('ai-chat-confirm-cancel');
     const confirmDeleteButton = document.getElementById('ai-chat-confirm-delete');
+    let activePointerId = null;
+    let dragStart = null;
+    let hasDragged = false;
+    let suppressNextClick = false;
+
+    function setChatButtonPosition(left, top) {
+        const maxLeft = Math.max(0, window.innerWidth - openButton.offsetWidth);
+        const maxTop = Math.max(0, window.innerHeight - openButton.offsetHeight);
+        const position = {
+            left: Math.min(Math.max(0, left), maxLeft),
+            top: Math.min(Math.max(0, top), maxTop)
+        };
+        openButton.style.left = `${position.left}px`;
+        openButton.style.top = `${position.top}px`;
+        openButton.style.right = 'auto';
+        openButton.style.bottom = 'auto';
+        return position;
+    }
+
+    function restoreChatButtonPosition() {
+        try {
+            const savedPosition = JSON.parse(localStorage.getItem(CHAT_BUTTON_POSITION_STORAGE_KEY));
+            if (Number.isFinite(savedPosition?.left) && Number.isFinite(savedPosition?.top)) {
+                setChatButtonPosition(savedPosition.left, savedPosition.top);
+            }
+        } catch (error) {
+            console.warn('No se pudo restaurar la posición del botón del Bot con IA.', error);
+        }
+    }
+
+    openButton.addEventListener('pointerdown', (event) => {
+        if (!event.isPrimary || (event.pointerType === 'mouse' && event.button !== 0)) return;
+        activePointerId = event.pointerId;
+        dragStart = {
+            pointerX: event.clientX,
+            pointerY: event.clientY,
+            buttonLeft: openButton.getBoundingClientRect().left,
+            buttonTop: openButton.getBoundingClientRect().top
+        };
+        hasDragged = false;
+    });
+
+    window.addEventListener('pointermove', (event) => {
+        if (event.pointerId !== activePointerId || !dragStart) return;
+        const deltaX = event.clientX - dragStart.pointerX;
+        const deltaY = event.clientY - dragStart.pointerY;
+        if (!hasDragged && Math.hypot(deltaX, deltaY) < 5) return;
+        hasDragged = true;
+        openButton.classList.add('ai-chat-dragging');
+        setChatButtonPosition(dragStart.buttonLeft + deltaX, dragStart.buttonTop + deltaY);
+    });
+
+    function finishChatButtonDrag(event) {
+        if (event.pointerId !== activePointerId) return;
+        if (hasDragged) {
+            suppressNextClick = true;
+            window.setTimeout(() => { suppressNextClick = false; }, 0);
+            try {
+                const rect = openButton.getBoundingClientRect();
+                localStorage.setItem(CHAT_BUTTON_POSITION_STORAGE_KEY, JSON.stringify({
+                    left: rect.left,
+                    top: rect.top
+                }));
+            } catch (error) {
+                console.warn('No se pudo guardar la posición del botón del Bot con IA.', error);
+            }
+        }
+        openButton.classList.remove('ai-chat-dragging');
+        activePointerId = null;
+        dragStart = null;
+    }
+
+    window.addEventListener('pointerup', finishChatButtonDrag);
+    window.addEventListener('pointercancel', finishChatButtonDrag);
+    window.addEventListener('resize', () => {
+        if (openButton.style.left && openButton.style.top) {
+            const rect = openButton.getBoundingClientRect();
+            setChatButtonPosition(rect.left, rect.top);
+        }
+    });
+    restoreChatButtonPosition();
     openButton.classList.add('ai-chat-tooltip-visible');
     window.setTimeout(() => openButton.classList.remove('ai-chat-tooltip-visible'), 10000);
     const form = document.getElementById('ai-chat-form');
@@ -1448,7 +1538,10 @@
         appendMessage(answer, 'assistant');
     }
 
-    openButton.addEventListener('click', openChat);
+    openButton.addEventListener('click', () => {
+        if (suppressNextClick) return;
+        openChat();
+    });
     closeButton.addEventListener('click', closeChat);
     clearButton.addEventListener('click', openClearConfirmation);
     confirmCancelButton.addEventListener('click', closeClearConfirmation);
