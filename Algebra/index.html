@@ -22,9 +22,12 @@ img {
 /* ===============================
    BLOQUEO DE COPIAR / SELECCIONAR
    =============================== */
+
+const correosPermitidos = ["valedasilvacatela.vdc@gmail.com"];
 document.addEventListener("DOMContentLoaded", ()=> {
-    if(JSON.parse(localStorage.getItem("UltimoCorreo")) != "juanma.2000@hotmail.com"){
-        alert(JSON.parse(localStorage.getItem("UltimoCorreo")))
+    const ultimoCorreo = JSON.parse(localStorage.getItem("UltimoCorreo"));
+    if (!correosPermitidos.includes(ultimoCorreo)) {
+        alert(ultimoCorreo)
         window.location.href = '/Horarios/Login/Login.html';
     }else{
     }
