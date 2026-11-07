@@ -771,13 +771,12 @@
                 <span>Actualizando tus datos...</span>
             </div>
             <div class="info-card info-card-deuda" id="sb-deuda-card">
-                <span class="info-label">Deuda</span>
+                <span class="info-label">De clases ya tomadas:</span>
                 <div class="deuda-header" id="sb-deuda-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="sb-deuda-detalle">
                     <div class="info-value" id="sb-deuda"></div>
                     <button type="button" class="deuda-toggle-btn" aria-label="Ver detalle de deuda" tabindex="-1"><i class="fa-solid fa-chevron-down"></i></button>
                 </div>
                 <div class="deuda-detalle" id="sb-deuda-detalle" hidden>
-                    <div class="deuda-detalle-item"><span>De clases ya tomadas:</span><span id="sb-deuda-tomadas"></span></div>
                     <div class="deuda-detalle-item"><span>Clases a futuro (no es deuda):</span><span id="sb-deuda-futuro"></span></div>
                 </div>
             </div>
@@ -1017,7 +1016,7 @@
             return reservadas + contarDiasUnicos(slots) > 2;
         }
 
-        const MSG_LIMITE_IMPAGAS = 'Sin un pack solo podes tener dos clases reservadas. Si quiere reservar mas clases, podes pagar las que ya reservaste y luego sacar mas turnos o comprar horas por adelantado';
+        const MSG_LIMITE_RESERVAS_SIN_PACK = 'Sin un pack solo podés tener dos clases reservadas. Para reservar más, aboná por adelantado tus próximas clases o comprá horas por adelantado.';
 
         const NUMERO_WHATSAPP_PROFESOR = "5493425271005";
         const MENSAJE_WHATSAPP_PRIMERA_CLASE = "Hola, me interesa reservar mi primera clase y quisiera coordinar los detalles.";
@@ -1647,7 +1646,7 @@
             await Swal.fire({
                 icon: 'warning',
                 title: 'Recordatorio de deuda',
-                text: 'Recuerde que debe dinero. Por favor, regularice su situación.',
+                html: `De clases ya tomadas: <strong>${formatearMontoDeuda(obtenerMontoDeuda())}</strong>. Por favor, regularice su situación.`,
                 background: '#1a1a1a',
                 color: '#fff',
                 confirmButtonText: 'Entendido',
@@ -1674,7 +1673,7 @@
             await Swal.fire({
                 icon: 'warning',
                 title: 'Recordatorio de deuda',
-                html: `Tenés una deuda pendiente de <strong>${formatearMontoDeuda(monto)}</strong>. Podés regularizarla desde la sección de pagos.`,
+                html: `De clases ya tomadas: <strong>${formatearMontoDeuda(monto)}</strong>. Podés regularizarla desde la sección de pagos.`,
                 background: '#1a1a1a',
                 color: '#fff',
                 confirmButtonText: 'Pagar',
@@ -1780,7 +1779,6 @@
             document.getElementById('sb-correo').innerText = Alumno.correoElectronico;
             const deudas = obtenerDeudasAlumno();
             document.getElementById('sb-deuda').innerText = formatearMontoDeuda(deudas.tomadas);
-            document.getElementById('sb-deuda-tomadas').innerText = formatearMontoDeuda(deudas.tomadas);
             document.getElementById('sb-deuda-futuro').innerText = formatearMontoDeuda(deudas.futuro);
             document.getElementById('sb-horas').innerText = Alumno.horasAFavor + " hs";
             const packNum = Number(Alumno.pack);
@@ -1982,8 +1980,8 @@
                             if (!isAdmin && superaLimiteClasesImpagas(slotsConNuevo)) {
                                 return swalPagoDeuda({
                                     icon: 'error',
-                                    title: 'Límite de clases impagas',
-                                    text: MSG_LIMITE_IMPAGAS
+                                    title: 'Límite de reservas sin pack',
+                                    text: MSG_LIMITE_RESERVAS_SIN_PACK
                                 });
                             }
                             if (selectedSlots.length === 0) mostrarAvisoPackTerminadoSiCorresponde();
@@ -2072,8 +2070,8 @@
                 if (superaLimiteClasesImpagas(selectedSlots)) {
                     return swalPagoDeuda({
                         icon: 'error',
-                        title: 'Límite de clases impagas',
-                        text: MSG_LIMITE_IMPAGAS
+                        title: 'Límite de reservas sin pack',
+                        text: MSG_LIMITE_RESERVAS_SIN_PACK
                     });
                 }
                 if (superaHorasDisponiblesEnPack(selectedSlots)) {
@@ -2099,42 +2097,40 @@
             // ahora cada restricción se resuelve con tienePermiso() según
             // permisos.js / permisosPorCondicionPago.js / permisosPorCorreo.js)
 
-            if (!isAdmin && obtenerMontoDeuda() > 0 && !tienePermiso('reservarConDeudaDeDinero', Alumno)) {
+            const deudaClasesTomadas = obtenerMontoDeuda();
+            if (!isAdmin && deudaClasesTomadas > 0 && !tienePermiso('reservarConDeudaDeDinero', Alumno)) {
                 return swalPagoDeuda({
                     icon: 'error',
                     title: 'Permiso Denegado',
-                    text: 'No podés reservar nuevos horarios porque debés dinero. Regularizá tu deuda antes de sacar más turnos.',
+                    text: `De clases ya tomadas: ${formatearMontoDeuda(deudaClasesTomadas)}. No podés reservar nuevos horarios hasta regularizar esa deuda.`,
                     confirmButtonColor: '#ff5f5f'
                 });
             }
 
-            if (!isAdmin && Number(Alumno.cantidadDebe) >= 2 && !tienePermiso('reservarConClasesPendientes', Alumno)) {
+            if (!isAdmin && deudaClasesTomadas > 0 && Number(Alumno.cantidadDebe) >= 2 && !tienePermiso('reservarConClasesPendientes', Alumno)) {
                 return swalPagoDeuda({
                     icon: 'error',
                     title: 'Permiso Denegado',
-                    text: 'No puedes reservar nuevos horarios porque tienes 2 o más clases pendientes de pago.',
+                    text: `De clases ya tomadas: ${formatearMontoDeuda(deudaClasesTomadas)}. No podés reservar nuevos horarios porque tenés 2 o más clases pendientes de pago.`,
                     confirmButtonColor: '#ff5f5f'
                 });
             }
 
-            if (!isAdmin && Number(Alumno.cantidadDebe) >= 2 && Number(Alumno.deudaMasVieja) > 6 && !tienePermiso('reservarConClasesPendientesAntiguas', Alumno)) {
+            if (!isAdmin && deudaClasesTomadas > 0 && Number(Alumno.cantidadDebe) >= 2 && Number(Alumno.deudaMasVieja) > 6 && !tienePermiso('reservarConClasesPendientesAntiguas', Alumno)) {
                 return swalPagoDeuda({
                     icon: 'error',
                     title: 'Permiso Denegado',
-                    text: 'No puedes reservar nuevos horarios porque tienes 2 o más clases pendientes de pago y hace mas de una semana que no abona.',
+                    text: `De clases ya tomadas: ${formatearMontoDeuda(deudaClasesTomadas)}. No podés reservar nuevos horarios porque tenés 2 o más clases pendientes de pago desde hace más de una semana.`,
                     confirmButtonColor: '#ff5f5f'
                 });
             }
 
             if (!isAdmin && tienePermiso('verAvisoInteresPorDeuda', Alumno)) {
-                const debeClases = Number(Alumno.cantidadDebe) || 0;
-                const dineroPendiente = obtenerMontoDeuda();
-                const debePeroPuedeReservar = debeClases >= 1 || dineroPendiente > 0;
-                if (debePeroPuedeReservar && localStorage.getItem("avisoDeuda") == undefined) {
+                if (deudaClasesTomadas > 0 && localStorage.getItem("avisoDeuda") == undefined) {
                     const avisoDeuda = await swalPagoDeuda({
                         icon: 'warning',
                         title: 'Cuidado, tenés deuda pendiente',
-                        html: 'Podés seguir sacando horarios, pero <strong>se te están cobrando intereses por día</strong>.',
+                        html: `De clases ya tomadas: <strong>${formatearMontoDeuda(deudaClasesTomadas)}</strong>. Podés seguir sacando horarios, pero <strong>se te están cobrando intereses por día</strong>.`,
                         showCancelButton: true,
                         confirmButtonText: 'Ir a pagar',
                         cancelButtonText: 'OK',
@@ -2280,7 +2276,11 @@
                         if (dataVerif.faltantes) {
                             return Swal.fire({ icon: 'error', title: 'Verificar Integrantes', html: calcularMensaje(dataVerif) });
                         }
-                        return swalPagoDeuda({ icon: 'error', title: 'Deuda Pendiente', html: calcularMensaje(dataVerif) });
+                        return swalPagoDeuda({
+                            icon: 'error',
+                            title: 'Deuda Pendiente',
+                            html: `De clases ya tomadas: <strong>${formatearMontoDeuda(obtenerMontoDeuda())}</strong>.${calcularMensaje(dataVerif)}`
+                        });
                     }
                 } catch (err) {
                     document.getElementById('loader-overlay').style.display = 'none';
