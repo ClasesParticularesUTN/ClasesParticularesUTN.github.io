@@ -771,13 +771,14 @@
                 <span>Actualizando tus datos...</span>
             </div>
             <div class="info-card info-card-deuda" id="sb-deuda-card">
-                <span class="info-label">De clases ya tomadas:</span>
+                <span class="info-label">Deuda total:</span>
                 <div class="deuda-header" id="sb-deuda-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="sb-deuda-detalle">
                     <div class="info-value" id="sb-deuda"></div>
                     <button type="button" class="deuda-toggle-btn" aria-label="Ver detalle de deuda" tabindex="-1"><i class="fa-solid fa-chevron-down"></i></button>
                 </div>
                 <div class="deuda-detalle" id="sb-deuda-detalle" hidden>
-                    <div class="deuda-detalle-item"><span>Clases a futuro (no es deuda):</span><span id="sb-deuda-futuro"></span></div>
+                    <div class="deuda-detalle-item"><span>Clases ya tomadas:</span><span id="sb-deuda-tomadas"></span></div>
+                    <div class="deuda-detalle-item"><span>Clases a futuro:</span><span id="sb-deuda-futuro"></span></div>
                 </div>
             </div>
             <div class="info-card"><span class="info-label">Horas a Favor</span><div class="info-value" id="sb-horas"></div></div>
@@ -1089,17 +1090,13 @@
         }
 
         function obtenerDeudasAlumno() {
-            // El servidor manda:
-            //   - dineroQueDebe:      deuda TOTAL (clases ya tomadas + clases futuras sin pagar)
-            //   - dineroDebeAFuturo:  cuánto de ESA misma deuda corresponde a clases que todavía no se dieron
-            // O sea que "futuro" es un desglose del total, no un monto extra: no hay que sumarlo.
-            const total = parseMontoAlumno(Alumno?.dineroQueDebe);
-            const futuro = Math.min(parseMontoAlumno(Alumno?.dineroDebeAFuturo), total);
-            return { tomadas: total - futuro, futuro, total };
+            const tomadas = parseMontoAlumno(Alumno?.dineroQueDebe);
+            const futuro = parseMontoAlumno(Alumno?.dineroDebeAFuturo);
+            return { tomadas, futuro, total: tomadas + futuro };
         }
 
-        // Deuda "real": solo lo de clases YA TOMADAS. La plata de clases a futuro
-        // NO es deuda: no genera carteles, avisos ni restricciones para reservar.
+        // Las clases a futuro solo se incluyen en el total del menú; los avisos y
+        // restricciones consideran únicamente la deuda de clases ya tomadas.
         function obtenerMontoDeuda() {
             return obtenerDeudasAlumno().tomadas;
         }
@@ -1778,7 +1775,8 @@
             document.getElementById('sb-nombre-completo').innerText = `${Alumno.nombre} ${Alumno.apellido}`;
             document.getElementById('sb-correo').innerText = Alumno.correoElectronico;
             const deudas = obtenerDeudasAlumno();
-            document.getElementById('sb-deuda').innerText = formatearMontoDeuda(deudas.tomadas);
+            document.getElementById('sb-deuda').innerText = formatearMontoDeuda(deudas.total);
+            document.getElementById('sb-deuda-tomadas').innerText = formatearMontoDeuda(deudas.tomadas);
             document.getElementById('sb-deuda-futuro').innerText = formatearMontoDeuda(deudas.futuro);
             document.getElementById('sb-horas').innerText = Alumno.horasAFavor + " hs";
             const packNum = Number(Alumno.pack);
