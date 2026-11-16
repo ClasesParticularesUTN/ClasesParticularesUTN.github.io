@@ -2596,10 +2596,6 @@
                 const modalidadRecordatorio = (esTP || esConsulta) ? modalidadTexto : null;
                 const etiquetaPrecioRecordatorio = (esTP || esConsulta) ? leyendaPrecio : null;
 
-                const bloqueChat = `~----------------------------------------------------~
-💬 Podés escribir */comandos* para ver los comandos y consultar reservas, deuda, links de pago, etc.
-
-~----------------------------------------------------~`;
                 const bloqueModalidad = modalidadRecordatorio ? `👥 *Modalidad:* ${modalidadRecordatorio}` : null;
                 const bloquePrecioFinal = precioFinalRecordatorio ? `💰 *${etiquetaPrecioRecordatorio}:* ${precioFinalRecordatorio}` : null;
                 const partes = [
@@ -2609,13 +2605,14 @@
 
 Confirmamos la reserva de tu clase particular.
 
+📚 *Materia:* ${materia}
+
 📅 *Horario reservado:*
 ${textoFechas}`
                 ];
                 if (bloqueModalidad) partes.push(bloqueModalidad);
                 if (bloquePrecioFinal) partes.push(bloquePrecioFinal);
                 partes.push(`📌 *Importante:* si necesitás modificar o cancelar la reserva, podés avisarnos por este chat.`);
-                if (Alumno.primerReserva === false) partes.push(bloqueChat);
                 partes.push('¡Te esperamos en clase! 💻🚀');
                 const mensajeEstructurado = partes.join('\n\n');
 
@@ -2661,7 +2658,7 @@ ${textoFechas}`
                     document.getElementById('loader-text').textContent = 'Confirmando reserva...';
 
                     if (recordatorio === 'Whatsapp') {
-                        void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, { precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio, incluirComandos: Alumno.primerReserva === false });
+                        void enviarRecordatorioReserva(Alumno.nombre, Alumno.telefono, textoFechas, materia, { precioFinal: precioFinalRecordatorio, modalidad: modalidadRecordatorio, etiquetaPrecio: etiquetaPrecioRecordatorio });
                     }
 
                     const resAsignar = await fetchDirectoConReintento(URLUsuarios, {
@@ -2823,7 +2820,7 @@ ${textoFechas}`
             });
         })();
 
-        function enviarRecordatorioReserva(nombre, telefono, fechaTexto, opciones = {}) {
+        function enviarRecordatorioReserva(nombre, telefono, fechaTexto, materia, opciones = {}) {
     let telefonoLimpio = String(telefono).replace(/\D/g, ''); 
     
     if (!telefonoLimpio.startsWith('54')) {
@@ -2834,12 +2831,8 @@ ${textoFechas}`
         }
     }
 
-    const { precioFinal = null, modalidad = null, etiquetaPrecio = 'Precio final', incluirComandos = false } = opciones;
+    const { precioFinal = null, modalidad = null, etiquetaPrecio = 'Precio final' } = opciones;
 
-    const bloqueChat = `~----------------------------------------------------~
-💬 Podés escribir */comandos* para ver los comandos y consultar reservas, deuda, links de pago, etc.
-
-~----------------------------------------------------~`;
     const bloqueModalidad = modalidad ? `👥 *Modalidad:* ${modalidad}` : null;
     const bloquePrecioFinal = precioFinal ? `💰 *${etiquetaPrecio}:* ${precioFinal}` : null;
 
@@ -2850,13 +2843,14 @@ ${textoFechas}`
 
 Confirmamos tu reserva para la clase particular:
 
+📚 *Materia:* ${materia}
+
 📅 *Fecha:*
 ${fechaTexto}`
     ];
 
     if (bloqueModalidad) partes.push(bloqueModalidad);
     if (bloquePrecioFinal) partes.push(bloquePrecioFinal);
-    if (incluirComandos) partes.push(bloqueChat);
     partes.push('¡Nos vemos en clase! 💻🚀');
 
     const mensajeEstructurado = partes.join('\n\n');
