@@ -853,7 +853,7 @@
                     <p class="terms-intro">Podés cancelar desde el <strong>menú de usuario</strong> (tocá el ícono de perfil arriba a la derecha y revisá tus horarios reservados).</p>
                     <ul class="terms-list">
                         <li><strong>Dos días antes o más</strong> (respecto al día de la clase) → <strong>sin costo</strong> (no se cobra interés ni recargo).</li>
-                        <li><strong>El día anterior</strong> a la clase → se cobra el <strong>25&nbsp;%</strong> de la tarifa de la clase.</li>
+                        <li><strong>El día anterior</strong> a la clase → se cobra el <strong>25&nbsp;%</strong> si reprogramás para otra fecha de la misma semana calendario (de lunes a domingo), o el <strong>50&nbsp;%</strong> si no reprogramás dentro de esa semana.</li>
                         <li><strong>El mismo día</strong> de la clase → se cobra la <strong>tarifa completa</strong> (100&nbsp;%).</li>
                     </ul>
                 </section>
@@ -1352,10 +1352,27 @@
                     color: '#fff'
                 });
             }
+            const decisionReprogramacion = await Swal.fire({
+                title: '¿Vas a reprogramar esta clase?',
+                text: '¿La nueva fecha será durante esta misma semana calendario (de lunes a domingo)?',
+                icon: 'question',
+                showDenyButton: true,
+                showCancelButton: true,
+                confirmButtonText: 'Sí, dentro de esta semana',
+                denyButtonText: 'No, cancelar igual',
+                cancelButtonText: 'Volver',
+                confirmButtonColor: '#f3a661',
+                denyButtonColor: '#555',
+                background: '#151517',
+                color: '#fff'
+            });
+            if (decisionReprogramacion.isDismissed) return;
+            const reprogramaMismaSemana = decisionReprogramacion.isConfirmed;
             const { isConfirmed, value: razonCancelacion } = await Swal.fire({
                 title: '¿Cancelar esta clase?',
                 html: `
                     <p style="text-align: center;" class="cancel-tyc-intro">Recordá los términos y condiciones de cancelación antes de confirmar:</p>
+                    <p style="text-align: center;">${reprogramaMismaSemana ? 'Indicás que vas a reprogramar dentro de esta semana.' : 'Indicás que no vas a reprogramar dentro de esta semana.'}</p>
                     <div class="cancel-tyc-list">
                         <div class="cancel-tyc-row">
                             <span class="cancel-tyc-dot ok"></span>
@@ -1364,8 +1381,13 @@
                         </div>
                         <div class="cancel-tyc-row">
                             <span class="cancel-tyc-dot mid"></span>
-                            <span class="cancel-tyc-label">El día anterior<small>A la fecha de la clase</small></span>
+                            <span class="cancel-tyc-label">El día anterior<small>Si reprogramás dentro de esta semana (lunes a domingo)</small></span>
                             <span class="cancel-tyc-pct mid">25% del precio</span>
+                        </div>
+                        <div class="cancel-tyc-row">
+                            <span class="cancel-tyc-dot mid"></span>
+                            <span class="cancel-tyc-label">El día anterior<small>Si no reprogramás dentro de esta semana</small></span>
+                            <span class="cancel-tyc-pct mid">50% del precio</span>
                         </div>
                         <div class="cancel-tyc-row">
                             <span class="cancel-tyc-dot full"></span>
@@ -1399,7 +1421,7 @@
             document.getElementById('loader-overlay').style.display = 'flex';
             document.getElementById('loader-text').textContent = 'Cancelando clase...';
             try {
-                const url = `${URLUsuarios}?funcion=cancelarReserva&correo=${encodeURIComponent(Alumno.correoElectronico)}&codigo=${encodeURIComponent(codigo)}&admin=${isAdmin}`;
+                const url = `${URLUsuarios}?funcion=cancelarReserva&correo=${encodeURIComponent(Alumno.correoElectronico)}&codigo=${encodeURIComponent(codigo)}&admin=${isAdmin}&reprogramaMismaSemana=${reprogramaMismaSemana}`;
                 const res = await fetchConReintentos(url);
                 const text = await res.text();
                 let data = {};

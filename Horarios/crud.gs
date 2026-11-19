@@ -96,7 +96,7 @@ function doGet(e) {
       break;
     case "cancelarReserva":
         try {
-          resultado = cancelarReserva(e.parameter.correo, e.parameter.codigo, e.parameter.admin);
+          resultado = cancelarReserva(e.parameter.correo, e.parameter.codigo, e.parameter.admin, e.parameter.reprogramaMismaSemana);
         } catch (err) {
           resultado = { exito: false, mensaje: String(err.message || err) };
         }
