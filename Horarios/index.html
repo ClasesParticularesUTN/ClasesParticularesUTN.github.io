@@ -1445,7 +1445,7 @@
                 if (Alumno.contrasenia) {
                     await actualizarDatos(Alumno.correoElectronico, Alumno.contrasenia);
                 }
-                let avisarPorWhatsapp = true;
+                let avisarPorWhatsapp = !isAdmin;
                 if (isAdmin) {
                     const decisionWhatsapp = await Swal.fire({
                         icon: 'question',
