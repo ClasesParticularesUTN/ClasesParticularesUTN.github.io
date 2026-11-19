@@ -1462,7 +1462,7 @@
                     avisarPorWhatsapp = decisionWhatsapp.isConfirmed;
                 }
                 if (avisarPorWhatsapp) {
-                    void enviarNotificacionCancelacion(Alumno.nombre, Alumno.telefono, textoHorarioReserva(reservaCancelada), razonCancelacion.trim());
+                    void enviarNotificacionCancelacion(Alumno.nombre, Alumno.telefono, textoHorarioReserva(reservaCancelada), razonCancelacion.trim(), data.costoCancelacion);
                 }
                 document.getElementById('loader-overlay').style.display = 'none';
                 const htmlCancelacion = data.mensaje
@@ -2872,12 +2872,16 @@ ${fechaTexto}`
     });
 }
 
-        function enviarNotificacionCancelacion(nombre, telefono, fechaTexto, razon) {
+        function enviarNotificacionCancelacion(nombre, telefono, fechaTexto, razon, costoCancelacion) {
             let telefonoLimpio = String(telefono).replace(/\D/g, '');
             if (!telefonoLimpio.startsWith('54')) {
                 telefonoLimpio = telefonoLimpio.startsWith('9') ? '54' + telefonoLimpio : '549' + telefonoLimpio;
             }
 
+            const montoCancelacion = Number(costoCancelacion);
+            const bloqueCostoCancelacion = Number.isFinite(montoCancelacion) && montoCancelacion !== 0
+                ? `\n\n💰 *Costo de cancelación:* ${formatearMontoDeuda(montoCancelacion)}`
+                : '';
             const mensaje = `🎓 *Clases Particulares UTN*
 ----------------------------------------
 Hola *${nombre}*.
@@ -2889,6 +2893,7 @@ ${fechaTexto || 'No disponible'}
 
 📝 *Motivo de cancelación:*
 ${razon}
+${bloqueCostoCancelacion}
 
 Si querés reservar otro horario, podés hacerlo desde la sección de Horarios.`;
 
