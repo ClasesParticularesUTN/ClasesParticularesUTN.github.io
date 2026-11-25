@@ -47,7 +47,7 @@ const HORARIOS_PERSONALIZADOS = {
             { semana: 1, celda: "C3:D13" }, 
 
         ]
-    },sd
+    },
     
     // ── Podés agregar más alumnos debajo ──────────────────────────────────────
     // "otro.alumno@gmail.com": {
